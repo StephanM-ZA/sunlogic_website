@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Calculator — Test Harness</title>
+<style>
+  body { margin: 0; padding: 3rem 2rem; background: #f3f4f6; font-family: system-ui, sans-serif; }
+  .wrap { max-width: 700px; margin: 0 auto; display: flex; flex-direction: column; gap: 3rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div>
+    <h1>Residential mode</h1>
+    <plugin-calculator mode="residential" webhook="PENDING_BACKEND"></plugin-calculator>
+  </div>
+  <div>
+    <h1>SME mode</h1>
+    <plugin-calculator mode="sme" webhook="PENDING_BACKEND"></plugin-calculator>
+  </div>
+</div>
+<script src="assumptions.js"></script>
+<script src="calculator-math.js"></script>
+<script src="calculator.js" defer></script>
+</body>
+</html>
