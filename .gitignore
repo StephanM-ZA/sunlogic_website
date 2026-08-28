@@ -12,3 +12,6 @@ Thumbs.db
 # Editor directories
 .vscode/
 .idea/
+
+# Subagent-driven-development scratch workspace (ledgers, briefs, reports)
+.superpowers/
