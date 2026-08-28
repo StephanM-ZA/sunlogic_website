@@ -1,0 +1,51 @@
+// Development fixture data — replaced with real Sunlogic reviews in Task 4.
+window.PLUGIN_REVIEWS = [
+  {
+    name: "Amanda Fischer",
+    avatar: null,
+    rating: 5,
+    text: "The team sized our system properly instead of just selling us the biggest package. Install was clean, inverter runs quiet, and the compliance paperwork was sorted within a week.",
+    url: "https://www.google.com/maps",
+    date: "June 2026",
+  },
+  {
+    name: "Thabo Nkosi",
+    avatar: null,
+    rating: 5,
+    text: "Honest quote, no upselling. They explained the payback period in plain terms and it matched what they promised.",
+    url: "https://www.google.com/maps",
+    date: "May 2026",
+  },
+  {
+    name: "Deirdre van Wyk",
+    avatar: null,
+    rating: 4,
+    text: "Good communication throughout the project. Only reason it's not five stars is scheduling took a bit longer than the original estimate, but the finished work is solid.",
+    url: "https://www.google.com/maps",
+    date: "April 2026",
+  },
+  {
+    name: "Riaan Botha",
+    avatar: null,
+    rating: 5,
+    text: "Commercial install for our warehouse. Section 12B deduction was handled correctly by their team and the load profile analysis was genuinely useful, not just a sales pitch.",
+    url: "https://www.google.com/maps",
+    date: "March 2026",
+  },
+  {
+    name: "Nomvula Dlamini",
+    avatar: null,
+    rating: 5,
+    text: "Electrical work was done to a proper standard. Certificate of Compliance arrived without having to chase anyone for it.",
+    url: "https://www.google.com/maps",
+    date: "February 2026",
+  },
+  {
+    name: "Chris Adams",
+    avatar: null,
+    rating: 4,
+    text: "Solid installation, monitoring app works well. Would like faster response times on support tickets but the core work is excellent.",
+    url: "https://www.google.com/maps",
+    date: "January 2026",
+  },
+];
