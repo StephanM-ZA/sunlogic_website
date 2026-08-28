@@ -1,6 +1,8 @@
 (function () {
   if (customElements.get('plugin-calculator')) return;
 
+  let instanceCounter = 0;
+
   function injectBaseStyles() {
     if (document.getElementById('plugin-calculator-styles')) return;
     const style = document.createElement('style');
@@ -96,6 +98,64 @@
         color: var(--plugin-calc-text-color);
         line-height: 1.5;
       }
+
+      .plugin-calc-gate {
+        margin-top: 1rem;
+      }
+
+      .plugin-calc-gate label {
+        display: block;
+        font-weight: 700;
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .plugin-calc-gate-row {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .plugin-calc-email {
+        flex: 1;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid var(--plugin-calc-text-muted);
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+      }
+
+      .plugin-calc-submit {
+        background: var(--plugin-calc-accent);
+        color: #ffffff;
+        border: none;
+        border-radius: 0.5rem;
+        padding: 0.5rem 1.25rem;
+        font-weight: 700;
+        font-size: 0.875rem;
+        cursor: pointer;
+      }
+
+      .plugin-calc-hp {
+        position: absolute;
+        left: -9999px;
+      }
+
+      .plugin-calc-detail {
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--plugin-calc-text-muted);
+      }
+
+      .plugin-calc-detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .plugin-calc-chart svg {
+        width: 100%;
+        height: auto;
+      }
     `;
     document.head.appendChild(style);
   }
@@ -104,6 +164,23 @@
     const rounded = Math.round(amount);
     const withSeparators = rounded.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     return 'R' + withSeparators;
+  }
+
+  function buildChartSvg(cumulativeByYear) {
+    const width = 400;
+    const height = 160;
+    const barGap = 2;
+    const barWidth = width / cumulativeByYear.length - barGap;
+    const maxValue = cumulativeByYear[cumulativeByYear.length - 1];
+
+    const bars = cumulativeByYear.map((value, index) => {
+      const barHeight = (value / maxValue) * (height - 20);
+      const x = index * (barWidth + barGap);
+      const y = height - barHeight;
+      return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barWidth.toFixed(1)}" height="${barHeight.toFixed(1)}" fill="var(--plugin-calc-accent)"/>`;
+    }).join('');
+
+    return `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="20-year cumulative savings projection, reaching approximately ${formatRand(maxValue)} by year 20">${bars}</svg>`;
   }
 
   function residentialInputsHtml() {
@@ -148,15 +225,30 @@
       this._mode = this.getAttribute('mode') === 'sme' ? 'sme' : 'residential';
       const inputsHtml = this._mode === 'sme' ? smeInputsHtml() : residentialInputsHtml();
 
+      this._instanceId = 'plugin-calc-' + (instanceCounter++);
+
       this.innerHTML = `
         <div class="plugin-calc-card">
           <div class="plugin-calc-inputs">${inputsHtml}</div>
           <div class="plugin-calc-headline"></div>
           <div class="plugin-calc-disclaimer">${DISCLAIMER_TEXT}</div>
+          <form class="plugin-calc-gate" novalidate>
+            <label for="${this._instanceId}-email">Unlock your full savings report</label>
+            <div class="plugin-calc-gate-row">
+              <input type="email" id="${this._instanceId}-email" class="plugin-calc-email" placeholder="you@example.com" required/>
+              <button type="submit" class="plugin-calc-submit">Unlock</button>
+            </div>
+            <div class="plugin-calc-hp" aria-hidden="true">
+              <label for="${this._instanceId}-website">Website</label>
+              <input type="text" id="${this._instanceId}-website" class="plugin-calc-honeypot" tabindex="-1" autocomplete="off"/>
+            </div>
+          </form>
+          <div class="plugin-calc-detail" hidden></div>
         </div>
       `;
 
       this._wireInputs();
+      this._wireGate();
       this._recalculate();
     }
 
@@ -181,6 +273,77 @@
           this._recalculate();
         });
       });
+    }
+
+    _wireGate() {
+      const form = this.querySelector('.plugin-calc-gate');
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const honeypot = this.querySelector('.plugin-calc-honeypot');
+        if (honeypot && honeypot.value) return;
+
+        const emailInput = this.querySelector('.plugin-calc-email');
+        if (!emailInput.checkValidity()) {
+          emailInput.reportValidity();
+          return;
+        }
+
+        const inputs =
+          this._mode === 'sme'
+            ? { bill: this._getFieldValue('bill', 15000), operatingHoursPerWeek: this._getFieldValue('hours', 63) }
+            : { bill: this._getFieldValue('bill', 2500) };
+
+        const payload = {
+          mode: this._mode,
+          inputs,
+          results: this._lastResult,
+          email: emailInput.value,
+          timestamp: new Date().toISOString(),
+        };
+
+        const webhookUrl = this.getAttribute('webhook');
+        if (webhookUrl && webhookUrl !== 'PENDING_BACKEND') {
+          fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          }).catch(() => {});
+        } else {
+          console.warn('[plugin-calculator] No webhook configured (or still PENDING_BACKEND) — lead not sent:', payload);
+        }
+
+        form.hidden = true;
+        this._revealDetail();
+      });
+    }
+
+    _revealDetail() {
+      const detail = this.querySelector('.plugin-calc-detail');
+      const r = this._lastResult;
+
+      if (this._mode === 'sme') {
+        detail.innerHTML = `
+          <div class="plugin-calc-detail-grid">
+            <div><div class="plugin-calc-headline-label">Recommended panels</div><div>${r.panelKw.toFixed(1)} kW</div></div>
+            <div><div class="plugin-calc-headline-label">Recommended inverter</div><div>${r.inverterKw} kW</div></div>
+            <div><div class="plugin-calc-headline-label">Recommended battery</div><div>${r.batteryKwh.toFixed(1)} kWh</div></div>
+            <div><div class="plugin-calc-headline-label">Estimated system cost</div><div>${formatRand(r.systemCost)}</div></div>
+          </div>
+        `;
+      } else {
+        detail.innerHTML = `
+          <div class="plugin-calc-detail-grid">
+            <div><div class="plugin-calc-headline-label">Recommended panels</div><div>${r.panelKw.toFixed(1)} kW</div></div>
+            <div><div class="plugin-calc-headline-label">Recommended inverter</div><div>${r.inverterKw} kW</div></div>
+            <div><div class="plugin-calc-headline-label">Recommended battery</div><div>${r.batteryKwh.toFixed(1)} kWh</div></div>
+            <div><div class="plugin-calc-headline-label">Estimated system cost</div><div>${formatRand(r.systemCost)}</div></div>
+            <div><div class="plugin-calc-headline-label">First-year savings</div><div>${formatRand(r.firstYearSavings)}</div></div>
+          </div>
+          <div class="plugin-calc-chart">${buildChartSvg(r.cumulativeByYear)}</div>
+        `;
+      }
+      detail.hidden = false;
     }
 
     _getFieldValue(field, fallback) {
