@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Contact Us | Sunlogic SA</title>
+<meta name="description" content="Get in touch with Sunlogic SA for solar and electrical work in Cape Town and the Western Cape. Call, email, or send us your details and we'll come back to you."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="https://sunlogic.co.za/contact.html"/>
+<!-- Open Graph -->
+<meta property="og:title" content="Contact Us | Sunlogic SA"/>
+<meta property="og:description" content="Get in touch with Sunlogic SA for solar and electrical work in Cape Town and the Western Cape."/>
+<meta property="og:url" content="https://sunlogic.co.za/contact.html"/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="Sunlogic SA"/>
+<meta property="og:locale" content="en_ZA"/>
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Contact Us | Sunlogic SA"/>
+<meta name="twitter:description" content="Get in touch with Sunlogic SA for solar and electrical work in Cape Town and the Western Cape."/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;700;800;900&amp;family=Jetbrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<script src="shared/tokens.js"></script>
+<script src="shared/icons.js"></script>
+<script src="shared/components.js" defer></script>
+<script src="shared/forms.js" defer></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ElectricalContractor",
+  "name": "Sunlogic SA",
+  "legalName": "Sunlogic SA (Pty) Ltd",
+  "url": "https://sunlogic.co.za/",
+  "telephone": "+27826555371",
+  "email": "sales@sunlogic.co.za",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "9 Chesham Road, Claremont",
+    "addressLocality": "Cape Town",
+    "postalCode": "7708",
+    "addressCountry": "ZA"
+  },
+  "areaServed": "Western Cape, South Africa",
+  "sameAs": [
+    "https://www.linkedin.com/company/sunlogic-sa",
+    "https://www.facebook.com/sunlogicsa",
+    "https://www.instagram.com/sunlogic_sa"
+  ]
+}
+</script>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased overflow-x-hidden">
+<sl-nav-bar active="contact"></sl-nav-bar>
+
+<!-- Page Hero -->
+<section class="relative pb-section-gap-mobile md:pb-section-gap-desktop px-margin-mobile md:px-gutter min-h-[400px] flex items-center bg-primary-container pt-40">
+<div class="relative z-10 mx-auto max-w-6xl text-on-primary text-center">
+<h1 class="font-display-lg text-display-lg max-md:font-headline-lg-mobile max-md:text-headline-lg-mobile leading-[1.1] mb-6">Get in Touch</h1>
+<p class="font-body-lg text-body-lg text-inverse-primary max-w-2xl mx-auto opacity-90">Tell us a bit about your property and what you need, and we'll come back to you [response-time commitment — placeholder pending].</p>
+</div>
+</section>
+
+<!-- Form + Contact Info -->
+<sl-section bg="surface-container-lowest" id="get-in-touch">
+<div class="mx-auto max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+
+<!-- Left: Form -->
+<div class="lg:col-span-7">
+<sl-panel>
+<div class="mb-8">
+<h3 class="font-headline-sm text-headline-sm text-primary-container mb-3">Send Us Your Details</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">We'll be in touch as soon as we can.</p>
+</div>
+<form class="grid grid-cols-1 md:grid-cols-2 gap-5" data-sl-form data-webhook="PENDING_BACKEND" data-redirect="thank-you.html" novalidate>
+<sl-field label="Name*" type="text" placeholder="Your full name" field-id="contact-name" required></sl-field>
+<sl-field label="Email address*" type="email" placeholder="you@example.com" field-id="contact-email" required></sl-field>
+<sl-field label="Phone number*" type="tel" placeholder="012 345 6789" field-id="contact-phone" required></sl-field>
+<sl-field label="What you need*" type="select" field-id="contact-need" required>
+  <option value="" disabled selected>Select an option</option>
+  <option>Solar</option>
+  <option>Electrical</option>
+  <option>Not sure yet</option>
+</sl-field>
+<sl-field label="Property type*" type="select" field-id="contact-property-type" required>
+  <option value="" disabled selected>Select an option</option>
+  <option>Residential</option>
+  <option>Small Business</option>
+  <option>Commercial</option>
+</sl-field>
+<div class="md:col-span-2">
+<sl-field label="Message*" type="textarea" placeholder="Tell us about your property and what you need" field-id="contact-message" rows="4" required></sl-field>
+</div>
+<!-- Honeypot -->
+<div class="absolute -left-[9999px]" aria-hidden="true">
+<label for="contact-website">Website</label>
+<input class="sl-hp-trap" id="contact-website" name="website" type="text" tabindex="-1" autocomplete="off"/>
+</div>
+<div class="md:col-span-2">
+<sl-button variant="dark" size="form" full-width shadow="hover-md-lg" type="submit">Send Message</sl-button>
+</div>
+</form>
+</sl-panel>
+</div>
+
+<!-- Right: Contact Info -->
+<div class="lg:col-span-5 flex flex-col gap-8">
+<div class="bg-surface-container-lowest p-8 rounded-2xl shadow-card border border-surface-variant/50">
+<h3 class="font-headline-sm text-headline-sm text-primary-container mb-6">Contact Details</h3>
+<div class="flex flex-col gap-5">
+<a class="flex items-start gap-4 group" href="tel:+27826555371">
+<div class="w-11 h-11 shrink-0 rounded-[0.75rem] bg-surface-container flex items-center justify-center text-secondary-container group-hover:bg-secondary-container group-hover:text-on-primary transition-colors">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z"/></svg>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Office</p>
+<p class="font-body-md text-body-md text-on-surface">(082) 655-5371</p>
+</div>
+</a>
+<a class="flex items-start gap-4 group" href="mailto:sales@sunlogic.co.za">
+<div class="w-11 h-11 shrink-0 rounded-[0.75rem] bg-surface-container flex items-center justify-center text-secondary-container group-hover:bg-secondary-container group-hover:text-on-primary transition-colors">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Sales</p>
+<p class="font-body-md text-body-md text-on-surface">sales@sunlogic.co.za</p>
+</div>
+</a>
+<a class="flex items-start gap-4 group" href="mailto:support@sunlogic.co.za">
+<div class="w-11 h-11 shrink-0 rounded-[0.75rem] bg-surface-container flex items-center justify-center text-secondary-container group-hover:bg-secondary-container group-hover:text-on-primary transition-colors">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Support</p>
+<p class="font-body-md text-body-md text-on-surface">support@sunlogic.co.za</p>
+</div>
+</a>
+<div class="flex items-start gap-4">
+<div class="w-11 h-11 shrink-0 rounded-[0.75rem] bg-surface-container flex items-center justify-center text-secondary-container">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Address</p>
+<p class="font-body-md text-body-md text-on-surface">9 Chesham Road, Claremont, Cape Town, 7708</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<div class="w-11 h-11 shrink-0 rounded-[0.75rem] bg-surface-container flex items-center justify-center text-secondary-container">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Hours</p>
+<p class="font-body-md text-body-md text-on-surface">[Business hours — placeholder pending]</p>
+</div>
+</div>
+</div>
+<div class="flex gap-3 mt-8 pt-6 border-t border-surface-variant/50">
+<a aria-label="LinkedIn" href="https://www.linkedin.com/company/sunlogic-sa" target="_blank" rel="noopener" class="w-10 h-10 rounded-[0.75rem] bg-surface-container flex items-center justify-center text-primary-container hover:bg-secondary-container hover:text-on-primary transition-colors font-label-md text-label-md">in</a>
+<a aria-label="Facebook" href="https://www.facebook.com/sunlogicsa" target="_blank" rel="noopener" class="w-10 h-10 rounded-[0.75rem] bg-surface-container flex items-center justify-center text-primary-container hover:bg-secondary-container hover:text-on-primary transition-colors font-label-md text-label-md">f</a>
+<a aria-label="Instagram" href="https://www.instagram.com/sunlogic_sa" target="_blank" rel="noopener" class="w-10 h-10 rounded-[0.75rem] bg-surface-container flex items-center justify-center text-primary-container hover:bg-secondary-container hover:text-on-primary transition-colors font-label-md text-label-md">ig</a>
+</div>
+</div>
+
+<!-- Map -->
+<div class="rounded-2xl overflow-hidden shadow-card h-64">
+<iframe class="w-full h-full border-0" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=9+Chesham+Road,+Claremont,+Cape+Town,+7708&output=embed" title="Sunlogic SA location"></iframe>
+</div>
+</div>
+
+</div>
+</sl-section>
+
+<!-- Meet the Team -->
+<sl-section bg="surface-container" id="meet-the-team">
+<div class="mx-auto max-w-6xl">
+<sl-section-header eyebrow="Our People" heading="Meet the Team" subtext="The people who'll actually be on site or on the phone — not a call centre." gap="lg"></sl-section-header>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="bg-surface-container-lowest p-8 rounded-2xl shadow-card text-center">
+<div class="w-24 h-24 mx-auto rounded-full bg-surface-container mb-5"></div>
+<h3 class="font-headline-sm text-headline-sm text-primary-container mb-1">[Name — pending]</h3>
+<p class="font-label-md text-label-md text-secondary-container uppercase tracking-wider mb-3">[Role — pending]</p>
+<p class="font-body-md text-body-md text-on-surface-variant">[Short bio and certification — pending, nothing invented]</p>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-2xl shadow-card text-center">
+<div class="w-24 h-24 mx-auto rounded-full bg-surface-container mb-5"></div>
+<h3 class="font-headline-sm text-headline-sm text-primary-container mb-1">[Name — pending]</h3>
+<p class="font-label-md text-label-md text-secondary-container uppercase tracking-wider mb-3">[Role — pending]</p>
+<p class="font-body-md text-body-md text-on-surface-variant">[Short bio and certification — pending, nothing invented]</p>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-2xl shadow-card text-center">
+<div class="w-24 h-24 mx-auto rounded-full bg-surface-container mb-5"></div>
+<h3 class="font-headline-sm text-headline-sm text-primary-container mb-1">[Name — pending]</h3>
+<p class="font-label-md text-label-md text-secondary-container uppercase tracking-wider mb-3">[Role — pending]</p>
+<p class="font-body-md text-body-md text-on-surface-variant">[Short bio and certification — pending, nothing invented]</p>
+</div>
+</div>
+</div>
+</sl-section>
+
+<sl-footer></sl-footer>
+</body>
+</html>

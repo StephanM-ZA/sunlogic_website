@@ -1,0 +1,27 @@
+User-agent: *
+Allow: /
+Disallow: /component-gallery.html
+Disallow: /homepage-audience-options.html
+Disallow: /homepage-audience-options-v2.html
+Disallow: /thank-you.html
+
+# AI crawlers / answer engines — explicitly allowed for discoverability
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://sunlogic.co.za/sitemap.xml
