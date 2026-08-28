@@ -120,3 +120,32 @@ class SlCard extends HTMLElement {
   }
 }
 customElements.define('sl-card', SlCard);
+
+class SlField extends HTMLElement {
+  connectedCallback() {
+    const label = this.getAttribute('label') || '';
+    const type = this.getAttribute('type') || 'text';
+    const placeholder = this.getAttribute('placeholder') || '';
+    const fieldId = this.getAttribute('field-id') || '';
+    const inputClasses = 'w-full bg-surface border-2 border-surface-variant rounded-[0.5rem] px-4 py-2.5 text-on-surface focus:border-secondary-container focus:ring-0 transition-colors';
+    const labelClasses = 'block font-label-md text-label-md text-primary-container mb-1.5';
+
+    if (type === 'select') {
+      const options = [...this.querySelectorAll(':scope > option')].map(o => o.outerHTML).join('');
+      this.innerHTML = `
+        <div>
+          <label class="${labelClasses}" for="${fieldId}">${label}</label>
+          <select class="${inputClasses}" id="${fieldId}">${options}</select>
+        </div>
+      `;
+    } else {
+      this.innerHTML = `
+        <div>
+          <label class="${labelClasses}" for="${fieldId}">${label}</label>
+          <input class="${inputClasses}" id="${fieldId}" placeholder="${placeholder}" type="${type}"/>
+        </div>
+      `;
+    }
+  }
+}
+customElements.define('sl-field', SlField);

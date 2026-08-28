@@ -69,32 +69,17 @@
 </div>
 <form class="relative z-10 space-y-5">
 <div class="grid grid-cols-2 gap-5">
-<div>
-<label class="block font-label-md text-label-md text-primary-container mb-1.5" for="assessment-name">Name*</label>
-<input class="w-full bg-surface border-2 border-surface-variant rounded-[0.5rem] px-4 py-2.5 text-on-surface focus:border-secondary-container focus:ring-0 transition-colors" id="assessment-name" placeholder="John" type="text"/>
+<sl-field label="Name*" type="text" placeholder="John" field-id="assessment-name"></sl-field>
+<sl-field label="Surname*" type="text" placeholder="Doe" field-id="assessment-surname"></sl-field>
 </div>
-<div>
-<label class="block font-label-md text-label-md text-primary-container mb-1.5" for="assessment-surname">Surname*</label>
-<input class="w-full bg-surface border-2 border-surface-variant rounded-[0.5rem] px-4 py-2.5 text-on-surface focus:border-secondary-container focus:ring-0 transition-colors" id="assessment-surname" placeholder="Doe" type="text"/>
-</div>
-</div>
-<div>
-<label class="block font-label-md text-label-md text-primary-container mb-1.5" for="assessment-email">Email address*</label>
-<input class="w-full bg-surface border-2 border-surface-variant rounded-[0.5rem] px-4 py-2.5 text-on-surface focus:border-secondary-container focus:ring-0 transition-colors" id="assessment-email" placeholder="john@example.com" type="email"/>
-</div>
-<div>
-<label class="block font-label-md text-label-md text-primary-container mb-1.5" for="assessment-tel">Contact number*</label>
-<input class="w-full bg-surface border-2 border-surface-variant rounded-[0.5rem] px-4 py-2.5 text-on-surface focus:border-secondary-container focus:ring-0 transition-colors" id="assessment-tel" placeholder="012 345 6789" type="tel"/>
-</div>
-<div>
-<label class="block font-label-md text-label-md text-primary-container mb-1.5" for="assessment-service">Service Required*</label>
-<select class="w-full bg-surface border-2 border-surface-variant rounded-[0.5rem] px-4 py-2.5 text-on-surface focus:border-secondary-container focus:ring-0 transition-colors" id="assessment-service">
-<option>Full Solar system</option>
-<option>Update to an existing system</option>
-<option>Electrical servicing</option>
-<option>Electrical installation</option>
-</select>
-</div>
+<sl-field label="Email address*" type="email" placeholder="john@example.com" field-id="assessment-email"></sl-field>
+<sl-field label="Contact number*" type="tel" placeholder="012 345 6789" field-id="assessment-tel"></sl-field>
+<sl-field label="Service Required*" type="select" field-id="assessment-service">
+  <option>Full Solar system</option>
+  <option>Update to an existing system</option>
+  <option>Electrical servicing</option>
+  <option>Electrical installation</option>
+</sl-field>
 <sl-button variant="dark" size="form" full-width shadow="hover-md-lg" type="submit">Submit Enquiry</sl-button>
 </form>
 </div>
