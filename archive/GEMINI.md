@@ -1,0 +1,5 @@
+- Analyzed the Sunlogic SA website.
+- Identified and analyzed the top 10 competitors.
+- Created a competitor analysis table.
+- Developed a website restructuring strategy.
+- Saved the analysis and strategy in `website_strat.md`.
