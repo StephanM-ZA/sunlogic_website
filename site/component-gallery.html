@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sunlogic | Component Gallery</title>
+<meta name="robots" content="noindex,nofollow"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;700;800;900&family=Jetbrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<script src="shared/tokens.js"></script>
+<script src="shared/icons.js"></script>
+<script src="shared/components.js" defer></script>
+<style>
+  .gallery-section {
+    border-bottom: 2px dashed #c3c7ca;
+  }
+  .gallery-label {
+    font-family: monospace;
+    font-size: 12px;
+    color: #73787b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+</style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased">
+
+<div class="max-w-6xl mx-auto px-8 pt-32 pb-16 space-y-24">
+
+  <header>
+    <h1 class="font-headline-lg text-headline-lg text-primary-container">Component Gallery</h1>
+    <p class="font-body-md text-body-md text-on-surface-variant mt-2">Every &lt;sl-*&gt; component, every variant, in isolation. Not a page — a review harness.</p>
+  </header>
+
+  <!-- ===================== sl-button ===================== -->
+  <section class="gallery-section pb-24" id="sl-button">
+    <h2 class="font-headline-sm text-headline-sm text-primary-container mb-8">sl-button</h2>
+
+    <div class="space-y-3 mb-10">
+      <p class="gallery-label">variant="primary"</p>
+      <div class="flex flex-wrap items-center gap-4 bg-surface-container-lowest p-6 rounded-xl">
+        <sl-button variant="primary" size="md">Primary MD</sl-button>
+        <sl-button variant="primary" size="lg">Primary LG</sl-button>
+        <sl-button variant="primary" size="compact">Compact</sl-button>
+        <sl-button variant="primary" size="lg" icon="arrow-right">With Icon</sl-button>
+        <sl-button variant="primary" size="lg" shadow="hover-lg">Shadow (lift is now automatic)</sl-button>
+      </div>
+    </div>
+
+    <div class="space-y-3 mb-10">
+      <p class="gallery-label">variant="secondary" (needs a dark/tinted background to read)</p>
+      <div class="flex flex-wrap items-center gap-4 bg-primary-container p-6 rounded-xl">
+        <sl-button variant="secondary" size="md">Secondary MD</sl-button>
+        <sl-button variant="secondary" size="lg">Secondary LG</sl-button>
+      </div>
+    </div>
+
+    <div class="space-y-3 mb-10">
+      <p class="gallery-label">variant="dark"</p>
+      <div class="flex flex-wrap items-center gap-4 bg-surface-container-lowest p-6 rounded-xl">
+        <sl-button variant="dark" size="md">Dark MD</sl-button>
+        <sl-button variant="dark" size="form" shadow="hover-md-lg">Dark Form Size</sl-button>
+      </div>
+    </div>
+
+    <div class="space-y-3 mb-10">
+      <p class="gallery-label">full-width</p>
+      <div class="max-w-sm bg-surface-container-lowest p-6 rounded-xl">
+        <sl-button variant="primary" size="form" full-width>Full Width</sl-button>
+      </div>
+    </div>
+
+    <div class="space-y-3">
+      <p class="gallery-label">hidden-mobile (resize window to check — disappears below md breakpoint)</p>
+      <div class="bg-surface-container-lowest p-6 rounded-xl">
+        <sl-button variant="primary" size="compact" hidden-mobile>Hidden on Mobile</sl-button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== sl-section-header ===================== -->
+  <section class="gallery-section pb-24" id="sl-section-header">
+    <h2 class="font-headline-sm text-headline-sm text-primary-container mb-8">sl-section-header</h2>
+
+    <div class="space-y-3 mb-10">
+      <p class="gallery-label">default (light background)</p>
+      <div class="bg-surface-container-lowest p-6 rounded-xl">
+        <sl-section-header eyebrow="Services" heading="What We Offer" subtext="Sunlogic will guide you, step-by-step, from assessment to handover of your project requirements."></sl-section-header>
+      </div>
+    </div>
+
+    <div class="space-y-3 mb-10">
+      <p class="gallery-label">on-dark + wide (Process usage)</p>
+      <div class="bg-primary-container p-6 rounded-xl">
+        <sl-section-header eyebrow="Process" heading="Our Process" on-dark wide></sl-section-header>
+      </div>
+    </div>
+
+    <div class="space-y-3">
+      <p class="gallery-label">no subtext, default width</p>
+      <div class="bg-surface-container-lowest p-6 rounded-xl">
+        <sl-section-header eyebrow="Benefits" heading="Why Choose Us"></sl-section-header>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== sl-card ===================== -->
+  <section class="gallery-section pb-24" id="sl-card">
+    <h2 class="font-headline-sm text-headline-sm text-primary-container mb-8">sl-card</h2>
+
+    <div class="space-y-3 mb-10">
+      <p class="gallery-label">variant="service"</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 bg-surface-container-lowest p-6 rounded-xl">
+        <sl-card variant="service" icon="clipboard-document-check" heading="Planning &amp; Assessment" body="Sunlogic provides a full-scope audit to ensure a safe, efficient, and compliant solution.">
+          <li>Investigate Efficiency</li>
+          <li>Custom Power Solutions</li>
+        </sl-card>
+        <sl-card variant="service" icon="archive-box" heading="Product &amp; Logistics" body="Reliable access to certified solar equipment and all necessary electrical components.">
+          <li>No supply chain issues</li>
+          <li>In-house install teams</li>
+        </sl-card>
+      </div>
+    </div>
+
+    <div class="space-y-3">
+      <p class="gallery-label">variant="benefit"</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 bg-surface-container-lowest p-6 rounded-xl">
+        <sl-card variant="benefit" icon="shield-check" heading="Expert Team" body="Highly trained and certified professionals."></sl-card>
+        <sl-card variant="benefit" icon="map-pin" heading="Local Support" body="Fast response times from our local technicians."></sl-card>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== sl-field ===================== -->
+  <section class="gallery-section pb-24" id="sl-field">
+    <h2 class="font-headline-sm text-headline-sm text-primary-container mb-8">sl-field</h2>
+
+    <div class="space-y-3">
+      <p class="gallery-label">all field types</p>
+      <div class="max-w-md flex flex-col gap-5 bg-surface-container-lowest p-6 rounded-xl">
+        <sl-field label="Name*" type="text" placeholder="John" field-id="gallery-name"></sl-field>
+        <sl-field label="Email address*" type="email" placeholder="john@example.com" field-id="gallery-email"></sl-field>
+        <sl-field label="Contact number*" type="tel" placeholder="012 345 6789" field-id="gallery-tel"></sl-field>
+        <sl-field label="Service Required*" type="select" field-id="gallery-service">
+          <option>Full Solar system</option>
+          <option>Update to an existing system</option>
+          <option>Electrical servicing</option>
+        </sl-field>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== sl-panel ===================== -->
+  <section class="gallery-section pb-24" id="sl-panel">
+    <h2 class="font-headline-sm text-headline-sm text-primary-container mb-8">sl-panel</h2>
+    <p class="gallery-label mb-3">glass background, orange top accent bar, decorative blur corner, hover lift — wraps arbitrary content</p>
+    <div class="max-w-md bg-primary-container p-10 rounded-xl">
+      <sl-panel>
+        <div class="mb-6">
+          <h3 class="font-headline-sm text-headline-sm text-primary-container mb-2">Panel Heading</h3>
+          <p class="font-body-md text-body-md text-on-surface-variant">Any content can go here — text, fields, buttons.</p>
+        </div>
+        <sl-button variant="dark" size="md">Example Action</sl-button>
+      </sl-panel>
+    </div>
+  </section>
+
+  <!-- ===================== sl-audience-row ===================== -->
+  <section class="gallery-section pb-24" id="sl-audience-row">
+    <h2 class="font-headline-sm text-headline-sm text-primary-container mb-8">sl-audience-row</h2>
+    <p class="gallery-label mb-3">photo + dark panel, alternating sides via the `flip` attribute — the homepage "Who We Serve" pattern (Option E)</p>
+    <div class="flex flex-col gap-6">
+      <sl-audience-row eyebrow="For Homeowners" heading="Residential" body="Placeholder copy for the gallery — not flipped, photo on the left." image="https://picsum.photos/seed/gallery-residential/900/700" solar-href="#" electrical-href="#"></sl-audience-row>
+      <sl-audience-row eyebrow="For Small Business" heading="Small Business" body="Placeholder copy for the gallery — flip attribute set, photo on the right (desktop only; photo stays on top on mobile either way)." image="https://picsum.photos/seed/gallery-small-business/900/700" solar-href="#" electrical-href="#" flip></sl-audience-row>
+    </div>
+  </section>
+
+  <!-- ===================== sl-faq-item ===================== -->
+  <section class="gallery-section pb-24" id="sl-faq-item">
+    <h2 class="font-headline-sm text-headline-sm text-primary-container mb-8">sl-faq-item</h2>
+    <p class="gallery-label mb-3">native &lt;details&gt;/&lt;summary&gt; accordion — no JS, free keyboard support, chevron rotates via Tailwind's group-open: variant</p>
+    <div class="max-w-3xl bg-surface-container-lowest p-8 rounded-xl">
+      <sl-faq-item question="What is a placeholder question?">This is placeholder answer content for the gallery — real FAQ content is written per service page.</sl-faq-item>
+      <sl-faq-item question="Does this support multiple open at once?">Yes — each item is an independent &lt;details&gt; element, so opening one does not close the others.</sl-faq-item>
+    </div>
+  </section>
+
+  <!-- ===================== sl-nav-bar ===================== -->
+  <section class="gallery-section pb-24" id="sl-nav-bar">
+    <h2 class="font-headline-sm text-headline-sm text-primary-container mb-8">sl-nav-bar</h2>
+    <p class="gallery-label mb-3">active="home" — rendered in a fixed-position, dark-background wrapper since the nav is fixed/transparent by design</p>
+    <div class="relative h-32 bg-primary-container rounded-xl overflow-hidden">
+      <sl-nav-bar active="home"></sl-nav-bar>
+    </div>
+  </section>
+
+  <!-- ===================== sl-footer ===================== -->
+  <section id="sl-footer">
+    <h2 class="font-headline-sm text-headline-sm text-primary-container mb-8">sl-footer</h2>
+    <div class="rounded-xl overflow-hidden">
+      <sl-footer></sl-footer>
+    </div>
+  </section>
+
+</div>
+
+</body>
+</html>
