@@ -179,8 +179,8 @@ number of months).
 
 Worked example (bill = R15,000/month, `overlap_fraction = 1`, i.e.
 operating hours at or above `DAYLIGHT_HOURS_ASSUMPTION` × 7 = 63 hrs/week —
-e.g. a business open ~9 hours/day, 7 days/week): `system_cost ≈ R711,000`
-(at the corrected R14,000/kW),
+e.g. a business open ~9 hours/day, 7 days/week): `panel_kw ≈ 44.44 kW`,
+`system_cost ≈ R622,222`,
 `monthly_installment ≈ R10,988`, `monthly_savings ≈ R13,500`,
 `pivot ≈ +R2,512/month`. Because both `monthly_savings` and
 `monthly_installment` scale linearly with `bill` when `overlap_fraction =
