@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Calculator Math — Test Harness</title>
+<style>
+  body { margin: 0; padding: 3rem 2rem; background: #f3f4f6; font-family: system-ui, sans-serif; }
+  .wrap { max-width: 700px; margin: 0 auto; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; background: #fff; }
+  th, td { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid #e5e7eb; font-size: 0.9rem; }
+  th { background: #f9fafb; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>plugin-calculator math — test harness</h1>
+  <div id="output"></div>
+</div>
+<script src="assumptions.js"></script>
+<script src="calculator-math.js"></script>
+<script>
+  function renderCase(title, result) {
+    const rows = Object.entries(result)
+      .filter(([key]) => key !== 'cumulativeByYear')
+      .map(([key, value]) => `<tr><td>${key}</td><td>${typeof value === 'number' ? value.toFixed(2) : value}</td></tr>`)
+      .join('');
+    const yearRows = result.cumulativeByYear
+      ? `<tr><td>cumulativeByYear[0] (year 1)</td><td>${result.cumulativeByYear[0].toFixed(2)}</td></tr>
+         <tr><td>cumulativeByYear[19] (year 20)</td><td>${result.cumulativeByYear[19].toFixed(2)}</td></tr>`
+      : '';
+    document.getElementById('output').insertAdjacentHTML('beforeend', `
+      <h2>${title}</h2>
+      <table>${rows}${yearRows}</table>
+    `);
+  }
+
+  renderCase('Residential @ R2,500/month', window.PluginCalculatorMath.calculateResidential(2500));
+  renderCase('SME @ R15,000/month, 63 hrs/week', window.PluginCalculatorMath.calculateSme(15000, 63));
+  renderCase('SME @ R15,000/month, 10 hrs/week', window.PluginCalculatorMath.calculateSme(15000, 10));
+</script>
+</body>
+</html>
