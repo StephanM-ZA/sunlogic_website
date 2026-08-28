@@ -24,6 +24,8 @@
 <script src="shared/icons.js"></script>
 <script src="shared/components.js" defer></script>
 <script src="shared/forms.js" defer></script>
+<script src="../plugins/review-carousel/reviews.data.js?v=1"></script>
+<script src="../plugins/review-carousel/review-carousel.js?v=1" defer></script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -155,6 +157,13 @@
 <div class="text-center py-12 border-2 border-dashed border-surface-variant rounded-2xl">
 <p class="font-body-md text-body-md text-on-surface-variant">Posts will appear here once published.</p>
 </div>
+</div>
+</sl-section>
+<!-- Google Reviews Section -->
+<sl-section bg="surface-container" id="reviews">
+<div class="mx-auto max-w-6xl">
+<sl-section-header eyebrow="Reviews" heading="What Customers Say" subtext="Real reviews from Google, not curated testimonials."></sl-section-header>
+<plugin-review-carousel></plugin-review-carousel>
 </div>
 </sl-section>
 <!-- Final CTA Section (copy.md "Final CTA") -->
