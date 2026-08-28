@@ -149,3 +149,94 @@ class SlField extends HTMLElement {
   }
 }
 customElements.define('sl-field', SlField);
+
+class SlNavBar extends HTMLElement {
+  connectedCallback() {
+    const active = this.getAttribute('active') || 'home';
+    const items = [
+      { key: 'home', label: 'Home', href: '#' },
+      { key: 'services', label: 'Services', href: '#services' },
+      { key: 'energy', label: 'Energy Management', href: '#' },
+      { key: 'contact', label: 'Contact', href: '#' },
+    ];
+    const linksHtml = items.map(item => {
+      const classes = item.key === active
+        ? 'text-secondary-container border-b-2 border-secondary-container pb-1 font-label-md uppercase tracking-wide'
+        : 'text-on-primary/80 hover:text-secondary-container transition-colors font-label-md uppercase tracking-wide';
+      return `<a class="${classes}" href="${item.href}">${item.label}</a>`;
+    }).join('');
+
+    this.innerHTML = `
+      <nav class="fixed top-4 z-50 backdrop-blur-md border border-on-primary/10 transition-all duration-300 ease-in-out py-1 mx-auto max-w-6xl shadow-lg rounded-xl left-4 right-4 bg-surface/10">
+        <div class="flex justify-between items-center px-8 py-3">
+          <div class="font-headline-sm text-headline-sm font-bold text-on-primary flex items-center gap-2">
+            <span class="material-symbols-outlined text-secondary-container icon-fill text-3xl">solar_power</span>
+            Sunlogic
+          </div>
+          <div class="hidden md:flex gap-8 items-center">${linksHtml}</div>
+          <sl-button variant="primary" size="compact" shadow="hover-lg" hidden-mobile>Free Assessment</sl-button>
+          <button class="md:hidden text-on-primary p-2">
+            <span class="material-symbols-outlined">menu</span>
+          </button>
+        </div>
+      </nav>
+    `;
+  }
+}
+customElements.define('sl-nav-bar', SlNavBar);
+
+class SlFooter extends HTMLElement {
+  connectedCallback() {
+    this.innerHTML = `
+      <footer class="bg-primary-container w-full border-t border-on-primary/10">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-12 px-gutter py-section-gap-desktop mx-auto max-w-6xl">
+          <div class="col-span-1 md:col-span-1">
+            <div class="font-headline-sm text-headline-sm text-on-primary mb-6 flex items-center gap-2">
+              <span class="material-symbols-outlined text-secondary-container icon-fill text-3xl">solar_power</span>
+              Sunlogic
+            </div>
+            <p class="font-body-md text-body-md mb-8 leading-relaxed text-on-primary">Providing leading Solar and Electrical services across all industries.</p>
+            <div class="flex gap-4">
+              <div aria-label="Share this page" class="w-10 h-10 rounded-[0.75rem] bg-surface/10 flex items-center justify-center hover:bg-secondary-container hover:text-on-primary cursor-pointer transition-colors text-on-primary/80">
+                <span class="material-symbols-outlined text-[20px]">share</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-span-1">
+            <h5 class="font-label-md text-label-md text-secondary-container font-bold mb-6 uppercase tracking-widest">Support</h5>
+            <ul class="space-y-4">
+              <li><a class="font-body-md text-body-md text-on-primary/70 hover:text-secondary-container transition-colors" href="#">Privacy Policy</a></li>
+              <li><a class="font-body-md text-body-md text-on-primary/70 hover:text-secondary-container transition-colors" href="#">Terms of Service</a></li>
+              <li><a class="font-body-md text-body-md text-on-primary/70 hover:text-secondary-container transition-colors" href="#">Safety Certification</a></li>
+              <li><a class="font-body-md text-body-md text-on-primary/70 hover:text-secondary-container transition-colors" href="#">Maintenance Portal</a></li>
+            </ul>
+          </div>
+          <div class="col-span-1">
+            <h5 class="font-label-md text-label-md text-secondary-container font-bold mb-6 uppercase tracking-widest">Recent Posts</h5>
+            <ul class="space-y-4">
+              <li><a class="font-body-md text-body-md text-on-primary/70 hover:text-secondary-container transition-colors" href="#">3 Essential Checks</a></li>
+              <li><a class="font-body-md text-body-md text-on-primary/70 hover:text-secondary-container transition-colors" href="#">Rent-to-own</a></li>
+            </ul>
+          </div>
+          <div class="col-span-1">
+            <h5 class="font-label-md text-label-md text-secondary-container font-bold mb-6 uppercase tracking-widest">Contact</h5>
+            <p class="font-body-md text-body-md mb-6 text-on-primary">Ready to start your project?</p>
+            <sl-button variant="primary" size="md" shadow="static-lg" transition="colors" icon="arrow_forward" href="#">Contact Us</sl-button>
+          </div>
+        </div>
+        <div class="border-t border-on-primary/10 bg-primary/20">
+          <div class="mx-auto px-gutter py-8 flex flex-col md:flex-row justify-between items-center gap-4 max-w-6xl">
+            <p class="font-body-md text-body-md text-on-primary/60 text-on-primary">
+              © 2024 Sunlogic Electrical. All rights reserved.
+            </p>
+            <div aria-label="Share this page" class="flex gap-6">
+              <a class="text-on-primary/60 hover:text-secondary-container transition-colors text-sm" href="#">Privacy</a>
+              <a class="text-on-primary/60 hover:text-secondary-container transition-colors text-sm" href="#">Terms</a>
+            </div>
+          </div>
+        </div>
+      </footer>
+    `;
+  }
+}
+customElements.define('sl-footer', SlFooter);
