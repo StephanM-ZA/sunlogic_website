@@ -64,12 +64,14 @@ class SlSectionHeader extends HTMLElement {
     const subtext = this.getAttribute('subtext');
     const onDark = this.hasAttribute('on-dark');
     const gap = this.getAttribute('gap') || 'md';
+    const wide = this.hasAttribute('wide');
 
     const gapClass = gap === 'lg' ? 'mb-20' : 'mb-16';
     const headingColor = onDark ? 'text-on-primary' : 'text-primary-container';
+    const maxWidthClass = wide ? 'max-w-6xl' : 'max-w-3xl';
 
     this.innerHTML = `
-      <div class="text-center max-w-3xl mx-auto ${gapClass}">
+      <div class="text-center ${maxWidthClass} mx-auto ${gapClass}">
         <span class="inline-block px-4 py-1.5 bg-secondary-container/10 border border-secondary-container/20 rounded-[0.75rem] font-label-md text-label-md text-secondary-container uppercase tracking-widest mb-6">${eyebrow}</span>
         <h2 class="font-headline-lg text-headline-lg max-md:font-headline-lg-mobile max-md:text-headline-lg-mobile ${headingColor}">${heading}</h2>
         ${subtext ? `<p class="font-body-lg text-body-lg text-on-surface-variant mt-6 text-xl">${subtext}</p>` : ''}
