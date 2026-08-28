@@ -56,3 +56,25 @@ class SlButton extends HTMLElement {
   }
 }
 customElements.define('sl-button', SlButton);
+
+class SlSectionHeader extends HTMLElement {
+  connectedCallback() {
+    const eyebrow = this.getAttribute('eyebrow') || '';
+    const heading = this.getAttribute('heading') || '';
+    const subtext = this.getAttribute('subtext');
+    const onDark = this.hasAttribute('on-dark');
+    const gap = this.getAttribute('gap') || 'md';
+
+    const gapClass = gap === 'lg' ? 'mb-20' : 'mb-16';
+    const headingColor = onDark ? 'text-on-primary' : 'text-primary-container';
+
+    this.innerHTML = `
+      <div class="text-center max-w-3xl mx-auto ${gapClass}">
+        <span class="inline-block px-4 py-1.5 bg-secondary-container/10 border border-secondary-container/20 rounded-[0.75rem] font-label-md text-label-md text-secondary-container uppercase tracking-widest mb-6">${eyebrow}</span>
+        <h2 class="font-headline-lg text-headline-lg max-md:font-headline-lg-mobile max-md:text-headline-lg-mobile ${headingColor}">${heading}</h2>
+        ${subtext ? `<p class="font-body-lg text-body-lg text-on-surface-variant mt-6 text-xl">${subtext}</p>` : ''}
+      </div>
+    `;
+  }
+}
+customElements.define('sl-section-header', SlSectionHeader);
