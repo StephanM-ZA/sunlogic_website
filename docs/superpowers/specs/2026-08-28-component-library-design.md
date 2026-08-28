@@ -42,6 +42,18 @@ This was chosen over two alternatives:
 Web Components let every page stay a single static HTML file, openable directly in a browser with
 zero build step, while still eliminating the duplication above.
 
+**Known constraint — `display: contents` and child-margin utilities.** Every component host tag
+gets `display: contents` (set in a shared base `<style>` block in `components.js`) so Tailwind's
+class-scanner can see the generated markup as if it weren't wrapped in a custom element. A side
+effect: the host tag itself renders no box, so it has no margin/padding/border/background of its
+own. Any container that relies on Tailwind's child-margin utilities — `space-y-*`, `space-x-*`,
+`divide-y`, etc. — to space out a row of these components will get **zero** spacing, because those
+utilities apply margin to the *host tag*, and a host with `display: contents` discards that margin
+instead of rendering it. Anyone building future pages against this library should use `gap`-based
+layout (flex/grid with `gap-*`) around these components instead — `gap` applies to whatever ends up
+being the real flex/grid item, which correctly resolves through the `display: contents` host to the
+component's actual rendered inner element.
+
 ## File layout
 
 ```

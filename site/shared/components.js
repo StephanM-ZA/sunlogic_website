@@ -1,3 +1,12 @@
+// `display: contents` on these host tags strips their own margin, padding,
+// border, and background — the host element renders no box at all, only its
+// children do. This means any *container* that relies on child-margin
+// utilities (space-y-*, space-x-*, divide-y, etc.) around one of these tags
+// will NOT get the spacing it expects, because there's no margin-bearing box
+// for those utilities to act on. Use gap-based layout instead (flex/grid with
+// gap-*), which applies to whatever renders as the actual flex/grid item
+// (the component's own inner element) regardless of the `display: contents`
+// indirection. See the hero assessment form in index.html for the pattern.
 const slBaseStyle = document.createElement('style');
 slBaseStyle.textContent = `
   sl-button, sl-section-header, sl-card, sl-field, sl-nav-bar, sl-footer {
@@ -8,6 +17,8 @@ document.head.appendChild(slBaseStyle);
 
 class SlButton extends HTMLElement {
   connectedCallback() {
+    if (this._rendered) return;
+    this._rendered = true;
     const variant = this.getAttribute('variant') || 'primary';
     const size = this.getAttribute('size') || 'md';
     const icon = this.getAttribute('icon');
@@ -29,7 +40,7 @@ class SlButton extends HTMLElement {
       compact: 'px-7 py-2.5 font-body-md',
       md: 'px-8 py-3.5 font-body-md',
       lg: 'px-8 py-4 font-body-md',
-      form: 'px-6 py-4 font-body-lg mt-4',
+      form: 'px-6 py-4 font-body-lg',
     };
     const SHADOW = {
       none: '',
@@ -59,6 +70,8 @@ customElements.define('sl-button', SlButton);
 
 class SlSectionHeader extends HTMLElement {
   connectedCallback() {
+    if (this._rendered) return;
+    this._rendered = true;
     const eyebrow = this.getAttribute('eyebrow') || '';
     const heading = this.getAttribute('heading') || '';
     const subtext = this.getAttribute('subtext');
@@ -83,6 +96,8 @@ customElements.define('sl-section-header', SlSectionHeader);
 
 class SlCard extends HTMLElement {
   connectedCallback() {
+    if (this._rendered) return;
+    this._rendered = true;
     const variant = this.getAttribute('variant') || 'service';
     const icon = this.getAttribute('icon') || '';
     const heading = this.getAttribute('heading') || '';
@@ -123,6 +138,8 @@ customElements.define('sl-card', SlCard);
 
 class SlField extends HTMLElement {
   connectedCallback() {
+    if (this._rendered) return;
+    this._rendered = true;
     const label = this.getAttribute('label') || '';
     const type = this.getAttribute('type') || 'text';
     const placeholder = this.getAttribute('placeholder') || '';
@@ -150,8 +167,18 @@ class SlField extends HTMLElement {
 }
 customElements.define('sl-field', SlField);
 
+function slBrand(extraClasses) {
+  return `<div class="font-headline-sm text-headline-sm text-on-primary flex items-center gap-2 ${extraClasses}"><span class="material-symbols-outlined text-secondary-container icon-fill text-3xl">solar_power</span>Sunlogic</div>`;
+}
+
+function slLinkList(items) {
+  return items.map(item => `<li><a class="font-body-md text-body-md text-on-primary/70 hover:text-secondary-container transition-colors" href="${item.href}">${item.label}</a></li>`).join('');
+}
+
 class SlNavBar extends HTMLElement {
   connectedCallback() {
+    if (this._rendered) return;
+    this._rendered = true;
     const active = this.getAttribute('active') || 'home';
     const items = [
       { key: 'home', label: 'Home', href: '#' },
@@ -169,10 +196,7 @@ class SlNavBar extends HTMLElement {
     this.innerHTML = `
       <nav class="fixed top-4 z-50 backdrop-blur-md border border-on-primary/10 transition-all duration-300 ease-in-out py-1 mx-auto max-w-6xl shadow-lg rounded-xl left-4 right-4 bg-surface/10">
         <div class="flex justify-between items-center px-8 py-3">
-          <div class="font-headline-sm text-headline-sm font-bold text-on-primary flex items-center gap-2">
-            <span class="material-symbols-outlined text-secondary-container icon-fill text-3xl">solar_power</span>
-            Sunlogic
-          </div>
+          ${slBrand('font-bold')}
           <div class="hidden md:flex gap-8 items-center">${linksHtml}</div>
           <sl-button variant="primary" size="compact" shadow="hover-lg" hidden-mobile>Free Assessment</sl-button>
           <button class="md:hidden text-on-primary p-2">
@@ -187,14 +211,13 @@ customElements.define('sl-nav-bar', SlNavBar);
 
 class SlFooter extends HTMLElement {
   connectedCallback() {
+    if (this._rendered) return;
+    this._rendered = true;
     this.innerHTML = `
       <footer class="bg-primary-container w-full border-t border-on-primary/10">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-12 px-gutter py-section-gap-desktop mx-auto max-w-6xl">
           <div class="col-span-1 md:col-span-1">
-            <div class="font-headline-sm text-headline-sm text-on-primary mb-6 flex items-center gap-2">
-              <span class="material-symbols-outlined text-secondary-container icon-fill text-3xl">solar_power</span>
-              Sunlogic
-            </div>
+            ${slBrand('mb-6')}
             <p class="font-body-md text-body-md mb-8 leading-relaxed text-on-primary">Providing leading Solar and Electrical services across all industries.</p>
             <div class="flex gap-4">
               <div aria-label="Share this page" class="w-10 h-10 rounded-[0.75rem] bg-surface/10 flex items-center justify-center hover:bg-secondary-container hover:text-on-primary cursor-pointer transition-colors text-on-primary/80">
@@ -204,19 +227,19 @@ class SlFooter extends HTMLElement {
           </div>
           <div class="col-span-1">
             <h5 class="font-label-md text-label-md text-secondary-container font-bold mb-6 uppercase tracking-widest">Support</h5>
-            <ul class="space-y-4">
-              <li><a class="font-body-md text-body-md text-on-primary/70 hover:text-secondary-container transition-colors" href="#">Privacy Policy</a></li>
-              <li><a class="font-body-md text-body-md text-on-primary/70 hover:text-secondary-container transition-colors" href="#">Terms of Service</a></li>
-              <li><a class="font-body-md text-body-md text-on-primary/70 hover:text-secondary-container transition-colors" href="#">Safety Certification</a></li>
-              <li><a class="font-body-md text-body-md text-on-primary/70 hover:text-secondary-container transition-colors" href="#">Maintenance Portal</a></li>
-            </ul>
+            <ul class="space-y-4">${slLinkList([
+              { label: 'Privacy Policy', href: '#' },
+              { label: 'Terms of Service', href: '#' },
+              { label: 'Safety Certification', href: '#' },
+              { label: 'Maintenance Portal', href: '#' },
+            ])}</ul>
           </div>
           <div class="col-span-1">
             <h5 class="font-label-md text-label-md text-secondary-container font-bold mb-6 uppercase tracking-widest">Recent Posts</h5>
-            <ul class="space-y-4">
-              <li><a class="font-body-md text-body-md text-on-primary/70 hover:text-secondary-container transition-colors" href="#">3 Essential Checks</a></li>
-              <li><a class="font-body-md text-body-md text-on-primary/70 hover:text-secondary-container transition-colors" href="#">Rent-to-own</a></li>
-            </ul>
+            <ul class="space-y-4">${slLinkList([
+              { label: '3 Essential Checks', href: '#' },
+              { label: 'Rent-to-own', href: '#' },
+            ])}</ul>
           </div>
           <div class="col-span-1">
             <h5 class="font-label-md text-label-md text-secondary-container font-bold mb-6 uppercase tracking-widest">Contact</h5>
