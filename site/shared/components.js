@@ -80,3 +80,43 @@ class SlSectionHeader extends HTMLElement {
   }
 }
 customElements.define('sl-section-header', SlSectionHeader);
+
+class SlCard extends HTMLElement {
+  connectedCallback() {
+    const variant = this.getAttribute('variant') || 'service';
+    const icon = this.getAttribute('icon') || '';
+    const heading = this.getAttribute('heading') || '';
+    const body = this.getAttribute('body') || '';
+    const items = [...this.querySelectorAll(':scope > li')].map(li => li.textContent.trim());
+
+    if (variant === 'service') {
+      const listHtml = items.map(item => `
+        <li class="flex items-start gap-3">
+          <span class="material-symbols-outlined text-secondary-container text-xl icon-fill">check_circle</span>
+          <span class="font-body-md text-body-md text-primary-container font-medium">${item}</span>
+        </li>
+      `).join('');
+      this.innerHTML = `
+        <div class="bg-surface p-10 rounded-2xl shadow-card hover:shadow-ambient hover:-translate-y-2 transition-all duration-300 group border-b-4 border-transparent hover:border-secondary-container">
+          <div class="w-14 h-14 rounded-xl bg-solar-sky flex items-center justify-center mb-8 group-hover:bg-secondary-container group-hover:scale-110 transition-all duration-300 shadow-sm">
+            <span class="material-symbols-outlined text-primary-container group-hover:text-on-primary transition-colors text-3xl">${icon}</span>
+          </div>
+          <h4 class="font-headline-sm text-headline-sm text-primary-container mb-4 group-hover:text-secondary-container transition-colors">${heading}</h4>
+          <p class="font-body-md text-body-md text-on-surface-variant mb-8 leading-relaxed">${body}</p>
+          <ul class="space-y-4 pt-4 border-t border-surface-variant/50">${listHtml}</ul>
+        </div>
+      `;
+    } else {
+      this.innerHTML = `
+        <div class="bg-surface p-8 rounded-2xl shadow-card hover:shadow-ambient transition-all duration-300 border border-surface-variant/50">
+          <div class="w-14 h-14 rounded-[0.5rem] bg-secondary-container/20 flex items-center justify-center mb-6 shadow-sm border border-secondary-container/30">
+            <span class="material-symbols-outlined text-secondary-container text-3xl icon-fill">${icon}</span>
+          </div>
+          <h4 class="font-headline-sm text-headline-sm text-primary-container mb-3">${heading}</h4>
+          <p class="font-body-md text-body-md text-on-surface-variant">${body}</p>
+        </div>
+      `;
+    }
+  }
+}
+customElements.define('sl-card', SlCard);
