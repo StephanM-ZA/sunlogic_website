@@ -69,3 +69,47 @@ class DlCallout extends HTMLElement {
   }
 }
 customElements.define('dl-callout', DlCallout);
+
+class DlNavBar extends HTMLElement {
+  connectedCallback() {
+    const active = this.getAttribute('active') || 'none';
+    const links = [
+      { href: 'index.html', key: 'home', label: 'Home' },
+      { href: 'solar.html', key: 'solar', label: 'Solar' },
+      { href: 'electrical.html', key: 'electrical', label: 'Electrical' },
+      { href: 'energy-management.html', key: 'energy', label: 'Energy Management' },
+      { href: 'blog.html', key: 'blog', label: 'Worth Knowing' },
+    ];
+    const linksHtml = links.map(function(l) {
+      const colorClass = l.key === active ? 'text-accent' : 'text-text-muted hover:text-text-primary';
+      return '<a href="' + l.href + '" class="nav-link px-3 py-2 rounded-lg font-body text-sm transition-colors duration-150 ' + colorClass + '">' + l.label + '</a>';
+    }).join('');
+    this.innerHTML =
+      '<nav class="fixed top-0 left-0 right-0 z-[100] flex items-center gap-2 px-6 py-3 border-b border-border bg-background">' +
+      '<a href="index.html" class="font-display text-text-primary text-lg mr-6">Sunlogic</a>' +
+      linksHtml +
+      '<dl-button variant="primary" href="contact.html" class="ml-auto">Get Started</dl-button>' +
+      '</nav>';
+  }
+}
+customElements.define('dl-nav-bar', DlNavBar);
+
+class DlFooter extends HTMLElement {
+  connectedCallback() {
+    this.innerHTML =
+      '<footer class="bg-surface border-t border-border py-16 px-6">' +
+      '<div class="max-w-[1000px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-text-muted font-body text-sm">' +
+      '<div><div class="font-display text-text-primary text-lg mb-4">Sunlogic</div>' +
+      '<p>Solar, electrical, and smart energy management for South African homes and businesses.</p></div>' +
+      '<div class="flex flex-col gap-2">' +
+      '<a href="solar.html" class="hover:text-text-primary">Solar</a>' +
+      '<a href="electrical.html" class="hover:text-text-primary">Electrical</a>' +
+      '<a href="energy-management.html" class="hover:text-text-primary">Energy Management</a>' +
+      '<a href="blog.html" class="hover:text-text-primary">Worth Knowing</a></div>' +
+      '<div class="flex flex-col gap-2">' +
+      '<a href="contact.html" class="hover:text-text-primary">Contact</a>' +
+      '<a href="legal.html" class="hover:text-text-primary">Legal</a></div>' +
+      '</div></footer>';
+  }
+}
+customElements.define('dl-footer', DlFooter);
