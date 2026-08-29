@@ -820,6 +820,47 @@ git commit -m "feat(site-daylight): add media background slot and plugin rethemi
 
 **Files:**
 - Create: `site-daylight/index.html`
+- Create: `site-daylight/shared/forms.js` (pulled forward from Task 10 — see ruling below)
+
+**Amendment (found during execution):** `site/index.html`'s hero is a two-column layout — headline/CTA on one side, an embedded "Free Onsite Assessment" quote-request form (`id="assessment"`) on the other. The original brief text below only covered the headline/CTA half. This form is real content (it's why `#assessment` exists as a link target elsewhere on the site) and must be included. Its exact fields, read from `site/index.html`: heading "Free Onsite Assessment", subtext "Complete the form below to schedule your consultation.", then a two-column row of Name*/Surname* text inputs, then Email address* (email), Contact number* (tel), Service Required* — a dropdown with options "Full Solar system", "Update to an existing system", "Electrical servicing", "Electrical installation" — a hidden honeypot field named `website`, and a submit button reading "Submit Enquiry". Build this using `dl-field` for the text/email/tel inputs. `dl-field` has no dropdown support, so for "Service Required*" write a raw `<select>` styled to match `dl-field`'s visual pattern instead of extending `dl-field` itself: a `<label class="block font-mono text-[11px] uppercase tracking-[0.08em] text-text-muted mb-2">Service Required*</label>` followed by `<select required class="w-full bg-background border border-border rounded-lg px-3 py-2 text-text-primary text-sm focus:outline-none focus:border-accent">` with an `<option value="" disabled selected>Select a service</option>` plus the four options above as plain `<option>` elements. The honeypot input follows the same hidden-offscreen pattern used in Task 10's contact form (`class="absolute -left-[9999px]" aria-hidden="true"`, `name="website"`, `tabindex="-1"`, `autocomplete="off"`). Wrap the whole thing in a `<form data-dl-form data-webhook="PENDING_BACKEND">`, and write `site-daylight/shared/forms.js` with this exact content (this file was originally scheduled for Task 10, but the homepage needs it first, so it's created here — Task 10 will just reuse it, not recreate it):
+
+```js
+function dlInitForm(form) {
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const honeypot = form.querySelector('[name="website"]');
+    if (honeypot && honeypot.value) {
+      return;
+    }
+    const requiredFields = form.querySelectorAll('[required]');
+    for (let i = 0; i < requiredFields.length; i++) {
+      if (!requiredFields[i].value.trim()) {
+        requiredFields[i].focus();
+        return;
+      }
+    }
+    const data = {};
+    new FormData(form).forEach(function(value, key) {
+      if (key !== 'website') { data[key] = value; }
+    });
+    const webhook = form.getAttribute('data-webhook');
+    fetch(webhook, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    }).catch(function(err) {
+      console.warn('Form submission webhook failed:', err);
+    }).finally(function() {
+      form.innerHTML = '<p class="font-body text-text-primary">Thanks — we will be in touch shortly.</p>';
+    });
+  });
+}
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('form[data-dl-form]').forEach(dlInitForm);
+});
+```
+
+Add `<script src="shared/forms.js" defer></script>` to `index.html`'s `<head>`. Do NOT redirect on success (there is no `thank-you.html` in this plan's page set) — the inline "Thanks — we will be in touch shortly." replacement above is the complete, correct behavior, matching Task 10's original design.
 
 No `site-daylight/images/` directory is created in this plan — every `dl-media-bg` slot across all 7 pages uses the no-`src` placeholder-box path (Task 5) rather than a real or borrowed image, since no real Sunlogic photography exists yet and no image from `godaylight-design/screens/` should be used (per the no-ties-to-godaylight constraint, this includes their captured imagery, not only live links). A future task can create `site-daylight/images/` and pass `src` once real photography exists.
 
@@ -986,55 +1027,17 @@ git commit -m "feat(site-daylight): add energy management page"
 
 **Files:**
 - Create: `site-daylight/contact.html`
-- Create: `site-daylight/shared/forms.js`
+
+**Amendment:** `site-daylight/shared/forms.js` was pulled forward into Task 6 (the homepage has its own quote-request form and needed it first) — it already exists by the time this task runs. Do NOT recreate it; just add `<script src="shared/forms.js" defer></script>` to this page's `<head>` and use `data-dl-form data-webhook="..."` on this page's form exactly as Task 6's form does.
 
 **Interfaces:**
-- Consumes: `dl-field` (Task 2), Shared Page Boilerplate.
-- Produces: `dlInitForm(formElement)` — attaches honeypot/validation/webhook submit handling to a `<form data-dl-form data-webhook="...">`. Not consumed by any later task in this plan, but is the pattern any future page's form would use.
+- Consumes: `dl-field` (Task 2), Shared Page Boilerplate, `dlInitForm` / `shared/forms.js` (Task 6).
 
 - [ ] **Step 1: Read the source content**
 
 Read `site/contact.html` in full — canonical copy source, including the exact field list (name, contact details, suburb, "what you need" dropdown options, property-type dropdown options, message) and any surrounding copy/headings.
 
-- [ ] **Step 2: Write `site-daylight/shared/forms.js`**
-
-```js
-function dlInitForm(form) {
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    const honeypot = form.querySelector('[name="website"]');
-    if (honeypot && honeypot.value) {
-      return;
-    }
-    const requiredFields = form.querySelectorAll('[required]');
-    for (let i = 0; i < requiredFields.length; i++) {
-      if (!requiredFields[i].value.trim()) {
-        requiredFields[i].focus();
-        return;
-      }
-    }
-    const data = {};
-    new FormData(form).forEach(function(value, key) {
-      if (key !== 'website') { data[key] = value; }
-    });
-    const webhook = form.getAttribute('data-webhook');
-    fetch(webhook, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    }).catch(function(err) {
-      console.warn('Form submission webhook failed:', err);
-    }).finally(function() {
-      form.innerHTML = '<p class="font-body text-text-primary">Thanks — we will be in touch shortly.</p>';
-    });
-  });
-}
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('form[data-dl-form]').forEach(dlInitForm);
-});
-```
-
-- [ ] **Step 3: Build `site-daylight/contact.html`**
+- [ ] **Step 2: Build `site-daylight/contact.html`**
 
 Shared Page Boilerplate, `active="contact"`, plus `<script src="shared/forms.js" defer></script>` before `</head>`. Build the form using `<dl-field>` per field read in Step 1, with a hidden honeypot field:
 
@@ -1048,21 +1051,18 @@ Shared Page Boilerplate, `active="contact"`, plus `<script src="shared/forms.js"
 
 Transcribe every non-form heading/paragraph from Step 1 exactly, including the Meet the Team section and its HTML comment noting the Office/Support number ambiguity, and the Hours placeholder text `[not published anywhere on your current site]`.
 
-- [ ] **Step 4: Verify**
-
-Run: `node --check site-daylight/shared/forms.js`
-Expected: no output.
+- [ ] **Step 3: Verify**
 
 Run: `grep -rn "godaylight\.com\|stream\.mux\.com\|godaylight-design/" site-daylight/contact.html`
 Expected: no output.
 
 Self-review: confirm every form field name/label/required-status matches `site/contact.html` exactly, and the honeypot field name matches what `forms.js` checks for (`website`).
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 4: Commit**
 
 ```bash
-git add site-daylight/contact.html site-daylight/shared/forms.js
-git commit -m "feat(site-daylight): add contact page and form handling"
+git add site-daylight/contact.html
+git commit -m "feat(site-daylight): add contact page"
 ```
 
 ---
