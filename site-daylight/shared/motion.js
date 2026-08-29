@@ -37,3 +37,7 @@ function dlInitParticles(canvas) {
   }
   draw();
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.dl-particles').forEach(dlInitParticles);
+});

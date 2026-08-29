@@ -11,7 +11,7 @@ customElements.define('dl-section', DlSection);
 class DlCard extends HTMLElement {
   connectedCallback() {
     const content = this.innerHTML;
-    this.innerHTML = `<div class="bg-surface border border-border rounded-lg p-4">${content}</div>`;
+    this.innerHTML = `<div class="bg-surface border border-border rounded-lg p-4 shadow-[0_2px_20px_rgba(0,0,0,0.1)]">${content}</div>`;
   }
 }
 customElements.define('dl-card', DlCard);
