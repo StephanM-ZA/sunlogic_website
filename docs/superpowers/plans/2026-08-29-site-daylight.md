@@ -73,7 +73,7 @@ This table resolves, once, how every component and motion wrapper gets used — 
 | `dl-field` | Every contact-form input | never wrapped in reveal motion — a form must be immediately usable, not gated behind a scroll-triggered animation |
 | `dl-media-bg` | Hero and section background images | never wrapped in reveal motion — it's a background layer, always visible immediately |
 | `dl-nav-bar` / `dl-footer` | Once per page, page chrome | never wrapped in reveal motion |
-| canvas (`dlInitParticles`) | Hero sections only, one `<canvas class="dl-particles">` per hero, layered between `dl-media-bg` and the text content | governs its own motion internally, gated by `prefers-reduced-motion` inside `dlInitParticles` itself (Task 4) |
+| canvas (`dlInitParticles`) | Hero sections only, one `<canvas class="dl-particles">` per hero, layered between `dl-media-bg` and the text content | self-initializes automatically on `DOMContentLoaded` (Task 4) — no per-page invocation script needed; governs its own motion internally, gated by `prefers-reduced-motion` inside `dlInitParticles` itself |
 
 ## Shared Page Boilerplate (used by Tasks 6-12)
 
@@ -340,10 +340,15 @@ customElements.define('dl-section', DlSection);
 class DlCard extends HTMLElement {
   connectedCallback() {
     const content = this.innerHTML;
-    this.innerHTML = `<div class="bg-surface border border-border rounded-lg p-4">${content}</div>`;
+    this.innerHTML = `<div class="bg-surface border border-border rounded-lg p-4 shadow-[0_2px_20px_rgba(0,0,0,0.1)]">${content}</div>`;
   }
 }
 customElements.define('dl-card', DlCard);
+```
+
+**Amendment (found during Task 7's review, applied retroactively):** the `shadow-[...]` class above (matching the existing `--dl-shadow-floating` token value) was added after `index.html` and `solar.html` were already shipped without it — `dl-card`'s `bg-surface` visually blended into `dl-section bg="surface"` sections, leaving only a faint border for separation. The shadow keeps cards visually distinct regardless of which background their section uses. Both already-shipped pages were re-committed with this fix applied automatically (it lives in the shared component, not per-page markup).
+
+```js
 
 class DlBadge extends HTMLElement {
   connectedCallback() {
@@ -668,7 +673,13 @@ function dlInitParticles(canvas) {
   }
   draw();
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.dl-particles').forEach(dlInitParticles);
+});
 ```
+
+**Amendment (found during Task 7's review, applied retroactively):** the DOMContentLoaded listener above was added after `index.html` and `solar.html` were already shipped with a per-page inline `<script>document.querySelectorAll('.dl-particles').forEach(dlInitParticles);</script>` instead — that inline script ran before `motion.js` (loaded `defer`) had executed, so `dlInitParticles` was undefined and the hero particle canvas silently never initialized on those two pages. `motion.js` now self-initializes every `.dl-particles` element on the page, so **no page task needs its own inline invocation script** — just load `motion.js` via the Shared Page Boilerplate's script tags and give the hero's canvas the class `dl-particles`, nothing else. `index.html` and `solar.html` had their now-obsolete inline scripts removed to avoid double-initialization (calling `dlInitParticles` twice on the same canvas would start two overlapping animation loops).
 
 - [ ] **Step 4: Add to the test harness**
 
@@ -677,11 +688,8 @@ Append inside `<body>` of `site-daylight/shared/test-components.html`, before `<
 ```html
 <dl-reveal><h2 class="font-display text-3xl">Reveal test — should fade/slide in on scroll into view</h2></dl-reveal>
 <dl-reveal-lines><h1 class="font-display text-5xl">Masked line reveal test — should slide up from a clipped mask, no fade</h1></dl-reveal-lines>
-<canvas class="dl-particles-test" style="width:400px;height:200px;background:#0a0804;"></canvas>
+<canvas class="dl-particles" style="width:400px;height:200px;background:#0a0804;"></canvas>
 <script src="motion.js"></script>
-<script>
-  document.querySelectorAll('.dl-particles-test').forEach(dlInitParticles);
-</script>
 ```
 
 - [ ] **Step 5: Verify**
@@ -894,8 +902,9 @@ Hero section pattern (fill in the exact H1/subhead/CTA text read in Step 1 — d
     </dl-reveal>
   </div>
 </section>
-<script>document.querySelectorAll('.dl-particles').forEach(dlInitParticles);</script>
 ```
+
+`motion.js` self-initializes every `.dl-particles` canvas on `DOMContentLoaded` — no inline invocation script needed on this or any other page.
 
 The H1 uses `dl-reveal-lines` (masked slide-up, no fade — the signature hero moment), while the subhead and CTA use plain `dl-reveal` (fade+slide), per the Component Usage Guide.
 
