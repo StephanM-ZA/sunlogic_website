@@ -5,7 +5,7 @@ dependency on any host project's Tailwind config or design tokens.
 
 ## Usage
 
-Drop all four files into your project (keep them together), then add:
+Drop all three script files into your project (keep them together), then add:
 
 ```html
 <script src="path/to/assumptions.js"></script>

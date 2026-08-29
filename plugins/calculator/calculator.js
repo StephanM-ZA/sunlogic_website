@@ -10,7 +10,7 @@
     style.textContent = `
       plugin-calculator { display: contents; }
 
-      :root {
+      :where(:root) {
         --plugin-calc-accent: #ff8000;
         --plugin-calc-bg: #ffffff;
         --plugin-calc-text-color: #1a1a1a;
@@ -29,8 +29,9 @@
       }
 
       .plugin-calc-disclaimer {
-        font-size: 0.75rem;
-        color: var(--plugin-calc-text-muted);
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--plugin-calc-text-color);
         margin-top: 0.75rem;
         line-height: 1.4;
       }
@@ -183,32 +184,32 @@
     return `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="20-year cumulative savings projection, reaching approximately ${formatRand(maxValue)} by year 20">${bars}</svg>`;
   }
 
-  function residentialInputsHtml() {
+  function residentialInputsHtml(instanceId) {
     return `
       <div class="plugin-calc-input-group">
-        <label>Average monthly electricity bill</label>
+        <label for="${instanceId}-bill">Average monthly electricity bill</label>
         <div class="plugin-calc-slider-row">
           <input type="range" class="plugin-calc-range" data-field="bill" min="300" max="15000" step="50" value="2500"/>
-          <input type="number" class="plugin-calc-number" data-field="bill" min="300" max="15000" step="50" value="2500"/>
+          <input type="number" id="${instanceId}-bill" class="plugin-calc-number" data-field="bill" min="300" max="15000" step="50" value="2500"/>
         </div>
       </div>
     `;
   }
 
-  function smeInputsHtml() {
+  function smeInputsHtml(instanceId) {
     return `
       <div class="plugin-calc-input-group">
-        <label>Average monthly electricity bill</label>
+        <label for="${instanceId}-bill">Average monthly electricity bill</label>
         <div class="plugin-calc-slider-row">
           <input type="range" class="plugin-calc-range" data-field="bill" min="500" max="100000" step="100" value="15000"/>
-          <input type="number" class="plugin-calc-number" data-field="bill" min="500" max="100000" step="100" value="15000"/>
+          <input type="number" id="${instanceId}-bill" class="plugin-calc-number" data-field="bill" min="500" max="100000" step="100" value="15000"/>
         </div>
       </div>
       <div class="plugin-calc-input-group">
-        <label>Weekly operating hours</label>
+        <label for="${instanceId}-hours">Weekly operating hours</label>
         <div class="plugin-calc-slider-row">
           <input type="range" class="plugin-calc-range" data-field="hours" min="0" max="168" step="1" value="63"/>
-          <input type="number" class="plugin-calc-number" data-field="hours" min="0" max="168" step="1" value="63"/>
+          <input type="number" id="${instanceId}-hours" class="plugin-calc-number" data-field="hours" min="0" max="168" step="1" value="63"/>
         </div>
       </div>
     `;
@@ -222,15 +223,22 @@
       this._rendered = true;
       injectBaseStyles();
 
+      if (!window.PluginCalculatorMath || !window.PLUGIN_CALCULATOR_ASSUMPTIONS) {
+        console.warn('[plugin-calculator] Required scripts (assumptions.js, calculator-math.js) not loaded — cannot render.');
+        return;
+      }
+
       this._mode = this.getAttribute('mode') === 'sme' ? 'sme' : 'residential';
-      const inputsHtml = this._mode === 'sme' ? smeInputsHtml() : residentialInputsHtml();
 
       this._instanceId = 'plugin-calc-' + (instanceCounter++);
+      this._unlocked = false;
+
+      const inputsHtml = this._mode === 'sme' ? smeInputsHtml(this._instanceId) : residentialInputsHtml(this._instanceId);
 
       this.innerHTML = `
         <div class="plugin-calc-card">
           <div class="plugin-calc-inputs">${inputsHtml}</div>
-          <div class="plugin-calc-headline"></div>
+          <div class="plugin-calc-headline" aria-live="polite"></div>
           <div class="plugin-calc-disclaimer">${DISCLAIMER_TEXT}</div>
           <form class="plugin-calc-gate" novalidate>
             <label for="${this._instanceId}-email">Unlock your full savings report</label>
@@ -269,7 +277,22 @@
         number.addEventListener('input', () => {
           const field = number.dataset.field;
           const range = this.querySelector(`.plugin-calc-range[data-field="${field}"]`);
-          if (range) range.value = number.value;
+          // Mirror the *clamped* value onto the slider so the slider position
+          // always matches the value the headline is actually computed from.
+          // The number box itself is left alone mid-typing (see 'change').
+          if (range) range.value = this._getFieldValue(field, range.value);
+          this._recalculate();
+        });
+
+        // On commit (blur / Enter / stepper), normalise the visible number box
+        // to the same clamped value, so an out-of-range or cleared field can't
+        // keep displaying something the headline disagrees with.
+        number.addEventListener('change', () => {
+          const field = number.dataset.field;
+          const clamped = this._getFieldValue(field, number.value);
+          number.value = clamped;
+          const range = this.querySelector(`.plugin-calc-range[data-field="${field}"]`);
+          if (range) range.value = clamped;
           this._recalculate();
         });
       });
@@ -281,7 +304,10 @@
         event.preventDefault();
 
         const honeypot = this.querySelector('.plugin-calc-honeypot');
-        if (honeypot && honeypot.value) return;
+        if (honeypot && honeypot.value) {
+          console.warn('[plugin-calculator] honeypot triggered — submission ignored');
+          return;
+        }
 
         const emailInput = this.querySelector('.plugin-calc-email');
         if (!emailInput.checkValidity()) {
@@ -308,12 +334,15 @@
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
-          }).catch(() => {});
+          }).catch((err) => {
+            console.warn('[plugin-calculator] webhook request failed:', err);
+          });
         } else {
           console.warn('[plugin-calculator] No webhook configured (or still PENDING_BACKEND) — lead not sent:', payload);
         }
 
         form.hidden = true;
+        this._unlocked = true;
         this._revealDetail();
       });
     }
@@ -324,15 +353,23 @@
 
       if (this._mode === 'sme') {
         detail.innerHTML = `
+          <p class="plugin-calc-disclaimer">${DISCLAIMER_TEXT}</p>
           <div class="plugin-calc-detail-grid">
             <div><div class="plugin-calc-headline-label">Recommended panels</div><div>${r.panelKw.toFixed(1)} kW</div></div>
             <div><div class="plugin-calc-headline-label">Recommended inverter</div><div>${r.inverterKw} kW</div></div>
             <div><div class="plugin-calc-headline-label">Recommended battery</div><div>${r.batteryKwh.toFixed(1)} kWh</div></div>
             <div><div class="plugin-calc-headline-label">Estimated system cost</div><div>${formatRand(r.systemCost)}</div></div>
           </div>
+          <div class="plugin-calc-detail-grid">
+            <div><div class="plugin-calc-headline-label">Estimated monthly installment</div><div>${formatRand(r.monthlyInstallment)}</div></div>
+            <div><div class="plugin-calc-headline-label">Estimated monthly savings</div><div>${formatRand(r.monthlySavings)}</div></div>
+            <div><div class="plugin-calc-headline-label">Estimated monthly cash flow</div><div>${formatRand(r.pivot)}</div></div>
+            <div><div class="plugin-calc-headline-label">Illustrative finance term</div><div>${window.PLUGIN_CALCULATOR_ASSUMPTIONS.FINANCE_TERM_MONTHS} months @ ${(window.PLUGIN_CALCULATOR_ASSUMPTIONS.FINANCE_ANNUAL_RATE * 100).toFixed(0)}%</div></div>
+          </div>
         `;
       } else {
         detail.innerHTML = `
+          <p class="plugin-calc-disclaimer">${DISCLAIMER_TEXT}</p>
           <div class="plugin-calc-detail-grid">
             <div><div class="plugin-calc-headline-label">Recommended panels</div><div>${r.panelKw.toFixed(1)} kW</div></div>
             <div><div class="plugin-calc-headline-label">Recommended inverter</div><div>${r.inverterKw} kW</div></div>
@@ -348,8 +385,14 @@
 
     _getFieldValue(field, fallback) {
       const input = this.querySelector(`.plugin-calc-number[data-field="${field}"]`);
-      const value = input ? parseFloat(input.value) : NaN;
-      return Number.isFinite(value) && value > 0 ? value : fallback;
+      if (!input) return fallback;
+      const min = parseFloat(input.min);
+      const max = parseFloat(input.max);
+      const value = parseFloat(input.value);
+      if (!Number.isFinite(value)) {
+        return Number.isFinite(min) ? min : fallback;
+      }
+      return Math.min(Math.max(value, min), max);
     }
 
     _recalculate() {
@@ -362,7 +405,7 @@
         const result = math.calculateSme(bill, hours);
         this._lastResult = result;
 
-        if (result.pivot >= 0) {
+        if (result.pivot >= result.monthlyInstallment * 0.1) {
           headline.innerHTML = `
             <div class="plugin-calc-headline-row">
               <div>
@@ -398,6 +441,10 @@
             </div>
           </div>
         `;
+      }
+
+      if (this._unlocked) {
+        this._revealDetail();
       }
     }
   }

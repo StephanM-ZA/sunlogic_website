@@ -8,7 +8,7 @@
     style.textContent = `
       plugin-review-carousel { display: contents; }
 
-      :root {
+      :where(:root) {
         --plugin-review-accent: #ff8000;
         --plugin-review-card-bg: #ffffff;
         --plugin-review-text-color: #1a1a1a;
