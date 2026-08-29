@@ -113,3 +113,33 @@ class DlFooter extends HTMLElement {
   }
 }
 customElements.define('dl-footer', DlFooter);
+
+class DlReveal extends HTMLElement {
+  connectedCallback() {
+    DlReveal._observer.observe(this);
+  }
+}
+DlReveal._observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('is-visible');
+      DlReveal._observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.2 });
+customElements.define('dl-reveal', DlReveal);
+
+class DlRevealLines extends HTMLElement {
+  connectedCallback() {
+    DlRevealLines._observer.observe(this);
+  }
+}
+DlRevealLines._observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('is-visible');
+      DlRevealLines._observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.2 });
+customElements.define('dl-reveal-lines', DlRevealLines);

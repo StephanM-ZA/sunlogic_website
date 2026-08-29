@@ -22,5 +22,12 @@
 </dl-section>
 <dl-nav-bar active="home"></dl-nav-bar>
 <dl-footer></dl-footer>
+<dl-reveal><h2 class="font-display text-3xl">Reveal test — should fade/slide in on scroll into view</h2></dl-reveal>
+<dl-reveal-lines><h1 class="font-display text-5xl">Masked line reveal test — should slide up from a clipped mask, no fade</h1></dl-reveal-lines>
+<canvas class="dl-particles-test" style="width:400px;height:200px;background:#0a0804;"></canvas>
+<script src="motion.js"></script>
+<script>
+  document.querySelectorAll('.dl-particles-test').forEach(dlInitParticles);
+</script>
 </body>
 </html>
