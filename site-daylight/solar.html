@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Solar Installations for Homes &amp; Business | Sunlogic SA</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="shared/tailwind-config.js"></script>
+<link rel="stylesheet" href="shared/tokens.css"/>
+<link rel="stylesheet" href="shared/plugin-theme.css"/>
+<script src="shared/icons.js" defer></script>
+<script src="shared/components.js" defer></script>
+<script src="shared/motion.js" defer></script>
+<script src="../plugins/calculator/assumptions.js"></script>
+<script src="../plugins/calculator/calculator-math.js"></script>
+<script src="../plugins/calculator/calculator.js"></script>
+</head>
+<body class="bg-background text-text-primary font-body antialiased overflow-x-hidden">
+<dl-nav-bar active="solar"></dl-nav-bar>
+
+<!-- Hero -->
+<section class="relative min-h-screen flex items-center overflow-hidden py-32">
+  <dl-media-bg class="absolute inset-0 w-full h-full" alt="[PLACEHOLDER: real hero photo needed]"></dl-media-bg>
+  <canvas class="dl-particles absolute inset-0 w-full h-full pointer-events-none"></canvas>
+  <div class="absolute inset-0 bg-background opacity-60"></div>
+  <div class="relative z-10 px-6 max-w-[1000px] mx-auto">
+    <dl-reveal-lines>
+      <h1 class="font-display font-bold leading-[1.2] text-[clamp(2rem,4.5vw,4.5rem)]">Solar That Pays For Itself</h1>
+    </dl-reveal-lines>
+    <dl-reveal>
+      <p class="font-body text-base leading-[1.5] text-text-muted mt-6 max-w-2xl">Designed around what your property actually uses, installed and certified by one team.</p>
+    </dl-reveal>
+    <dl-reveal>
+      <div class="flex flex-wrap gap-4 mt-8">
+        <dl-button variant="primary" icon="arrow-right" href="contact.html">Book a Free Site Assessment</dl-button>
+        <dl-button variant="ghost" href="#solar-for-your-home-cost">See what it costs</dl-button>
+      </div>
+    </dl-reveal>
+  </div>
+</section>
+<script>document.querySelectorAll('.dl-particles').forEach(dlInitParticles);</script>
+
+<!-- Why Now -->
+<dl-section bg="surface">
+  <div class="flex flex-col gap-6">
+    <dl-reveal>
+      <p class="font-body text-base leading-[1.5] text-text-muted">Solar used to be about keeping the lights on. Not any more. We've gone more than a year without load shedding, and the reason people are installing solar today is simply that electricity keeps getting more expensive.</p>
+    </dl-reveal>
+    <dl-reveal>
+      <p class="font-body text-base leading-[1.5] text-text-muted">There's a part of that most people miss. It isn't only the rate per unit going up. The fixed monthly charge on your bill has been rising faster than the rate itself, which means your bill can go up in a month where you actually used less.</p>
+    </dl-reveal>
+    <dl-reveal>
+      <p class="font-body text-base leading-[1.5] text-text-muted">Solar won't change what your municipality charges. What it does is take the largest part of your bill and put it back under your control.</p>
+    </dl-reveal>
+    <dl-reveal>
+      <dl-callout icon="shield-check">
+        <strong>Worth knowing — this changes how a system should be sized.</strong><br/>
+        A system built for backup is sized around what you can't afford to lose. A system built to cut your bill is sized around what you actually use, and when you use it.
+        <br/><br/>
+        They're different systems. We build the second kind, unless you tell us you want the first.
+      </dl-callout>
+    </dl-reveal>
+  </div>
+</dl-section>
+
+<!-- Solar for Your Home -->
+<dl-section bg="background" id="at-home">
+  <div class="flex flex-col gap-10">
+    <div>
+      <dl-reveal>
+        <dl-badge>For Your Home</dl-badge>
+      </dl-reveal>
+      <dl-reveal-lines>
+        <h2 class="font-display font-bold leading-[1.2] text-[clamp(1.5rem,2.5vw,2.5rem)] mt-3">Solar for Your Home</h2>
+      </dl-reveal-lines>
+      <dl-reveal>
+        <p class="font-body text-base leading-[1.5] text-text-muted mt-4">A smaller, steadier electricity bill, and a system built around your household rather than pulled off a price list.</p>
+      </dl-reveal>
+    </div>
+
+    <dl-reveal>
+      <div class="flex flex-col gap-4">
+        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">What will it actually save me?</h3>
+        <p class="font-body text-base leading-[1.5] text-text-muted">That depends on how much electricity you use and when you use it, so we work it out from your last twelve months of bills rather than guessing from your roof.</p>
+        <p class="font-body text-base leading-[1.5] text-text-muted">What we can tell you before we arrive is that the saving comes from using your own power rather than buying it. Which brings up the question everyone asks.</p>
+      </div>
+    </dl-reveal>
+
+    <div class="flex flex-col gap-4">
+      <dl-reveal>
+        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">Do I need a battery?</h3>
+      </dl-reveal>
+      <dl-reveal>
+        <p class="font-body text-base leading-[1.5] text-text-muted">Usually, yes, and it's worth knowing why rather than just being sold one.</p>
+      </dl-reveal>
+      <dl-reveal>
+        <p class="font-body text-base leading-[1.5] text-text-muted">Your house uses most of its electricity early in the morning and again in the evening. Your panels produce in the middle of the day, when the house is often empty. Without somewhere to put that daytime power, you sell it back to the grid for a fraction of what you pay to buy it back at supper time.</p>
+      </dl-reveal>
+      <dl-reveal>
+        <p class="font-body text-base leading-[1.5] text-text-muted">A unit of electricity you use yourself is worth considerably more than one you sell back, because it's bought from you for a great deal less than it's sold to you. A battery is simply what lets you keep it.</p>
+      </dl-reveal>
+      <dl-reveal>
+        <dl-callout icon="chart-bar">
+          <strong>The bit nobody mentions — selling power back can put you on a tariff that costs you more.</strong><br/>
+          To sell surplus power back you generally have to move onto a different tariff, and that tariff carries a much higher fixed monthly charge in exchange for a cheaper rate per unit.
+          <br/><br/>
+          The better your solar works, the less that trade is worth. For some households the right answer is a slightly smaller system and no tariff change at all. We check before we quote.
+        </dl-callout>
+      </dl-reveal>
+    </div>
+
+    <dl-reveal>
+      <div class="flex flex-col gap-4">
+        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">Will it fit on my roof?</h3>
+        <p class="font-body text-base leading-[1.5] text-text-muted">For most homes, comfortably. Panels take up less room than people expect, and a household system uses a manageable stretch of roof.</p>
+        <p class="font-body text-base leading-[1.5] text-text-muted">What matters as much as space is which way the roof faces, how steep it's, whether trees or a neighbouring building shade it during the day, and what condition the roof covering is in. Wind matters too, so how the panels are fixed down isn't a detail we rush. We look at all of this on site rather than off a satellite photo.</p>
+      </div>
+    </dl-reveal>
+
+    <dl-reveal>
+      <div class="flex flex-col gap-4">
+        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">One thing about winter</h3>
+        <p class="font-body text-base leading-[1.5] text-text-muted">There's a great deal more sun in midsummer than there is in midwinter, and every system has to live with that.</p>
+        <p class="font-body text-base leading-[1.5] text-text-muted">Build for winter and you have an expensive system that's oversized for most of the year. Build for the annual average and you'll be buying more in winter, exactly when you're heating water and running lights for longer. There's a real judgement call in there, and it's one we'd rather make with you than for you.</p>
+      </div>
+    </dl-reveal>
+
+    <div class="flex flex-col gap-6" id="solar-for-your-home-cost">
+      <dl-reveal>
+        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">What does it cost?</h3>
+      </dl-reveal>
+      <dl-reveal>
+        <p class="font-body text-base leading-[1.5] text-text-muted">There are three things that move the price: how much electricity you use, how much of it you want covered when the sun is down, and how straightforward your roof is. Two houses on the same street can need quite different systems.</p>
+      </dl-reveal>
+      <dl-reveal>
+        <p class="font-body text-base leading-[1.5] text-text-muted">Rather than guess, work it out. Our calculator gives you a realistic range in a couple of minutes, and a site visit turns that into an actual figure.</p>
+      </dl-reveal>
+      <!-- CALCULATOR BLOCK: "What would solar cost at your house?" — placed at the point in the page where the customer is already asking the question, per copy/Sunlogic_Site_Copy.md. Whatever range the calculator returns should be the only pricing anywhere on the site. -->
+      <dl-card>
+        <h4 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)] mb-2">What would solar cost at your house?</h4>
+        <p class="font-body text-base leading-[1.5] text-text-muted mb-6">Answer a few questions about your home and your bill.</p>
+        <plugin-calculator mode="residential" webhook="PENDING_BACKEND"></plugin-calculator>
+      </dl-card>
+    </div>
+
+    <dl-reveal>
+      <div class="flex flex-col gap-4">
+        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">Paying for it</h3>
+        <p class="font-body text-base leading-[1.5] text-text-muted">Not everyone wants to put the full amount down at once. Bank finance, solar-specific loans, rent-to-own arrangements and monthly subscription options all exist in South Africa.</p>
+        <p class="font-body text-base leading-[1.5] text-text-muted">They aren't all equal, and the cancellation terms in particular are worth reading properly before you sign anything. We'll talk you through what suits you. [Confirm which of these Sunlogic offers or has partners for.]</p>
+      </div>
+    </dl-reveal>
+
+    <dl-reveal>
+      <div class="flex flex-col gap-4">
+        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">What happens when something wears out?</h3>
+        <p class="font-body text-base leading-[1.5] text-text-muted">Panels are the least of your worries. They lose a small fraction of their output each year in a predictable way, and good ones carry very long guarantees. Inverters and batteries carry shorter ones, which is normal and not a red flag.</p>
+        <p class="font-body text-base leading-[1.5] text-text-muted">One question worth asking any installer, including us: what does the battery guarantee actually promise? Some are satisfied if the battery still holds a good deal less than it started with, which sounds like a technicality until the day you need it. We'll show you exactly what yours says rather than leaving you to find out later.</p>
+      </div>
+    </dl-reveal>
+
+    <div>
+      <dl-reveal>
+        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)] mb-2">Common Questions</h3>
+      </dl-reveal>
+      <dl-reveal>
+        <div class="flex flex-col gap-4 mt-4">
+          <dl-card>
+            <h4 class="font-display font-bold leading-[1.2] text-[clamp(1.1rem,1.6vw,1.35rem)]">Will I still get a bill?</h4>
+            <p class="font-body text-base leading-[1.5] text-text-muted mt-2">Almost certainly yes, unless you go fully off-grid. You stay connected for evenings, winter and cloudy spells. The bill gets much smaller, and far less of it's outside your control.</p>
+          </dl-card>
+          <dl-card>
+            <h4 class="font-display font-bold leading-[1.2] text-[clamp(1.1rem,1.6vw,1.35rem)]">How long does the installation take?</h4>
+            <p class="font-body text-base leading-[1.5] text-text-muted mt-2">Most home installations take a few days. We'll tell you the expected days on the quote, and how long the power needs to be off.</p>
+          </dl-card>
+          <dl-card>
+            <h4 class="font-display font-bold leading-[1.2] text-[clamp(1.1rem,1.6vw,1.35rem)]">Do I have to register it?</h4>
+            <p class="font-body text-base leading-[1.5] text-text-muted mt-2">Yes, if it stays connected to the grid, and we handle that with your municipality as part of the job. At the moment there's no registration or connection fee, though that's due to change at the end of September 2026.</p>
+          </dl-card>
+          <dl-card>
+            <h4 class="font-display font-bold leading-[1.2] text-[clamp(1.1rem,1.6vw,1.35rem)]">Is there a rebate for homeowners?</h4>
+            <p class="font-body text-base leading-[1.5] text-text-muted mt-2">No. There was one for a short window a few years ago and it has expired. If anyone tells you otherwise, they're working off old information. Businesses are treated differently.</p>
+          </dl-card>
+          <dl-card>
+            <h4 class="font-display font-bold leading-[1.2] text-[clamp(1.1rem,1.6vw,1.35rem)]">Can it charge my car?</h4>
+            <p class="font-body text-base leading-[1.5] text-text-muted mt-2">Yes, and it's worth planning both at the same time rather than adding the charger later. See the <a class="text-accent underline hover:no-underline" href="electrical.html#at-home">Electrical page</a>.</p>
+          </dl-card>
+          <dl-card>
+            <h4 class="font-display font-bold leading-[1.2] text-[clamp(1.1rem,1.6vw,1.35rem)]">What if I sell the house?</h4>
+            <p class="font-body text-base leading-[1.5] text-text-muted mt-2">A well-documented system is a selling point, and the paperwork transfers with the property. We'll make sure you have everything you need.</p>
+          </dl-card>
+        </div>
+      </dl-reveal>
+    </div>
+  </div>
+</dl-section>
+
+<!-- Solar for Your Business -->
+<dl-section bg="surface" id="small-business">
+  <div class="flex flex-col gap-10">
+    <div>
+      <dl-reveal>
+        <dl-badge>For Small Business</dl-badge>
+      </dl-reveal>
+      <dl-reveal-lines>
+        <h2 class="font-display font-bold leading-[1.2] text-[clamp(1.5rem,2.5vw,2.5rem)] mt-3">Solar for Your Business</h2>
+      </dl-reveal-lines>
+      <dl-reveal>
+        <p class="font-body text-base leading-[1.5] text-text-muted mt-4">For shops, offices, workshops, guesthouses and anyone tired of watching electricity eat into a month's takings.</p>
+      </dl-reveal>
+    </div>
+
+    <dl-reveal>
+      <dl-callout icon="chart-bar">
+        <strong>Good news, if you run a business — your business uses power during the day, which is exactly when solar makes it.</strong><br/>
+        That's a genuine advantage over a household. A home has to buy a battery to store daytime power for the evening. A business is usually open and using it as it's produced.
+        <br/><br/>
+        Batteries are the single most expensive part of a system, so needing less of one often means a business gets a better return on a cheaper system.
+      </dl-callout>
+    </dl-reveal>
+
+    <div class="flex flex-col gap-6">
+      <dl-reveal>
+        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">What it costs</h3>
+      </dl-reveal>
+      <dl-reveal>
+        <p class="font-body text-base leading-[1.5] text-text-muted">It depends almost entirely on whether you need storage. A rooftop system without a battery costs considerably less than the same system with one, and for most daytime businesses that's exactly the right trade.</p>
+      </dl-reveal>
+      <dl-reveal>
+        <p class="font-body text-base leading-[1.5] text-text-muted">We quote from your actual consumption rather than your floor area, so the first thing we ask for is twelve months of bills.</p>
+      </dl-reveal>
+      <!-- CALCULATOR BLOCK: "What could solar do for your business?" — a business calculator can be simpler than the home one, since a business owner usually knows their monthly spend off the top of their head, per copy/Sunlogic_Site_Copy.md. -->
+      <dl-card>
+        <h4 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)] mb-2">What could solar do for your business?</h4>
+        <p class="font-body text-base leading-[1.5] text-text-muted mb-6">Tell us roughly what you spend on electricity a month.</p>
+        <plugin-calculator mode="sme" webhook="PENDING_BACKEND"></plugin-calculator>
+      </dl-card>
+    </div>
+
+    <dl-reveal>
+      <div class="flex flex-col gap-4">
+        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">One thing to check early</h3>
+        <p class="font-body text-base leading-[1.5] text-text-muted">If your premises is on a standard single-phase supply, there's a ceiling on how much solar you're permitted to feed back. Going beyond it means upgrading the supply, which is a council charge and a council waiting period, not something an installer controls.</p>
+        <p class="font-body text-base leading-[1.5] text-text-muted">It's far better to find that out during the first site visit than after you have paid a deposit, so it's one of the first things we look at.</p>
+      </div>
+    </dl-reveal>
+
+    <div class="flex flex-col gap-4">
+      <dl-reveal>
+        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">Ways to pay</h3>
+      </dl-reveal>
+      <dl-reveal>
+        <ul class="flex flex-col gap-4">
+          <li class="flex items-start gap-3">
+            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span>
+            <p class="font-body text-base leading-[1.5] text-text-muted"><strong class="text-text-primary">Buy it outright:</strong> Best long-term return, and your business can usually write the full cost off against tax in the year it's installed. Worth confirming with your accountant.</p>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span>
+            <p class="font-body text-base leading-[1.5] text-text-muted"><strong class="text-text-primary">Finance it:</strong> Bank and asset finance are widely available, typically over five to ten years. Repayments are fixed whether the sun shines or not.</p>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span>
+            <p class="font-body text-base leading-[1.5] text-text-muted"><strong class="text-text-primary">Rent to own:</strong> Available in the South African market with no deposit, with the system becoming yours at the end of the term.</p>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span>
+            <p class="font-body text-base leading-[1.5] text-text-muted"><strong class="text-text-primary">Let someone else own it:</strong> A power purchase arrangement means no capital outlay: a provider owns the system and sells you the power at a discount to the grid. Suits larger users staying put for a long time.</p>
+          </li>
+        </ul>
+      </dl-reveal>
+      <dl-reveal>
+        <p class="font-body text-base leading-[1.5] text-text-muted italic">[Confirm which of these Sunlogic actually offers or has finance partners for. Advertising one you can't deliver costs the enquiry.]</p>
+      </dl-reveal>
+    </div>
+
+    <div>
+      <dl-reveal>
+        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)] mb-2">Common Questions</h3>
+      </dl-reveal>
+      <dl-reveal>
+        <div class="flex flex-col gap-4 mt-4">
+          <dl-card>
+            <h4 class="font-display font-bold leading-[1.2] text-[clamp(1.1rem,1.6vw,1.35rem)]">Will it interrupt trading?</h4>
+            <p class="font-body text-base leading-[1.5] text-text-muted mt-2">We schedule around your hours wherever the work allows. There are short periods where the power has to be off for connection and testing, and we agree those with you in advance.</p>
+          </dl-card>
+          <dl-card>
+            <h4 class="font-display font-bold leading-[1.2] text-[clamp(1.1rem,1.6vw,1.35rem)]">How long until it pays for itself?</h4>
+            <p class="font-body text-base leading-[1.5] text-text-muted mt-2">For a daytime business without a big battery, it's one of the faster paybacks around. We calculate it from your bills and show the working rather than quoting a headline figure.</p>
+          </dl-card>
+          <dl-card>
+            <h4 class="font-display font-bold leading-[1.2] text-[clamp(1.1rem,1.6vw,1.35rem)]">We rent the building. Can we still do it?</h4>
+            <p class="font-body text-base leading-[1.5] text-text-muted mt-2">Often yes, though your lease length and your landlord's consent come into it. If there are fewer years left on the lease than the system takes to pay back, that changes the answer, and we'd say so.</p>
+          </dl-card>
+          <dl-card>
+            <h4 class="font-display font-bold leading-[1.2] text-[clamp(1.1rem,1.6vw,1.35rem)]">Can we claim it back on tax?</h4>
+            <p class="font-body text-base leading-[1.5] text-text-muted mt-2">A business that owns the system and uses it in its trade can generally write the full cost off in the first year. Your accountant should confirm the current position.</p>
+          </dl-card>
+        </div>
+      </dl-reveal>
+    </div>
+  </div>
+</dl-section>
+
+<!-- Solar for Larger Sites -->
+<dl-section bg="background" id="larger-sites">
+  <div class="flex flex-col gap-10">
+    <div>
+      <dl-reveal>
+        <dl-badge>For Larger Sites</dl-badge>
+      </dl-reveal>
+      <dl-reveal-lines>
+        <h2 class="font-display font-bold leading-[1.2] text-[clamp(1.5rem,2.5vw,2.5rem)] mt-3">Solar for Larger Sites</h2>
+      </dl-reveal-lines>
+      <dl-reveal>
+        <p class="font-body text-base leading-[1.5] text-text-muted mt-4">Factories, warehouses, farms, retail centres and multi-site operations, where electricity is one of the biggest line items on the account.</p>
+      </dl-reveal>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <dl-reveal>
+        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">Sized on your load, not your roof</h3>
+      </dl-reveal>
+      <dl-reveal>
+        <p class="font-body text-base leading-[1.5] text-text-muted">At this scale the roof sets the ceiling, but your consumption pattern sets the target. We work from your metered data so the system is built around how the site genuinely runs, including the shifts and seasons that make it lumpy.</p>
+      </dl-reveal>
+      <dl-reveal>
+        <dl-callout icon="check-circle">
+          <strong>How commercial solar gets oversold — be careful of a proposal promising to pay for itself almost immediately.</strong><br/>
+          A large electricity bill has several different charges on it, and solar only reduces one of them. Some proposals quietly value every unit of solar at the most expensive rate on the account, which makes the payback look dramatically better than it really is.
+          <br/><br/>
+          A well-built commercial system is a genuinely good investment. It's just not an overnight one, and anyone telling you otherwise has done something to the arithmetic.
+          <br/><br/>
+          We'll show you which rate we have applied and why.
+        </dl-callout>
+      </dl-reveal>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <dl-reveal>
+        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">What solar will and won't fix</h3>
+      </dl-reveal>
+      <dl-reveal>
+        <ul class="flex flex-col gap-4">
+          <li class="flex items-start gap-3">
+            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span>
+            <p class="font-body text-base leading-[1.5] text-text-muted"><strong class="text-text-primary">It will reduce:</strong> The units you buy during daylight hours, which on most sites is the biggest single component of the bill.</p>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span>
+            <p class="font-body text-base leading-[1.5] text-text-muted"><strong class="text-text-primary">It will barely touch:</strong> The demand charge, which is based on your highest peak in the month. On most sites that peak happens on a winter evening, when there's no sun. Reducing it takes storage or changes to how the site runs, which is a separate conversation and not always worth having.</p>
+          </li>
+        </ul>
+      </dl-reveal>
+    </div>
+
+    <dl-reveal>
+      <div class="flex flex-col gap-4">
+        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">Roofs, carports and open ground</h3>
+        <p class="font-body text-base leading-[1.5] text-text-muted">Panels and their framework add real weight, and wind loading is significant, so the structure gets checked properly before anything is designed. Where roof space is short, carports and ground-mounted arrays are both options, though both need groundwork and proper foundations rather than a quick installation.</p>
+      </div>
+    </dl-reveal>
+
+    <dl-reveal>
+      <div class="flex flex-col gap-4">
+        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">Tax</h3>
+        <p class="font-body text-base leading-[1.5] text-text-muted">A business that owns a solar system and uses it in its trade can generally deduct the full cost in the year it's brought into use. An enhanced allowance that ran a few years ago has now ended, so treat any proposal still advertising it as out of date. Confirm the current position with your accountant.</p>
+      </div>
+    </dl-reveal>
+
+    <div>
+      <dl-reveal>
+        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)] mb-2">Common Questions</h3>
+      </dl-reveal>
+      <dl-reveal>
+        <div class="flex flex-col gap-4 mt-4">
+          <dl-card>
+            <h4 class="font-display font-bold leading-[1.2] text-[clamp(1.1rem,1.6vw,1.35rem)]">Can you work across several sites?</h4>
+            <p class="font-body text-base leading-[1.5] text-text-muted mt-2">Yes. The practical benefit is consistency: the same standard and the same paperwork everywhere, rather than a different contractor at each branch.</p>
+          </dl-card>
+          <dl-card>
+            <h4 class="font-display font-bold leading-[1.2] text-[clamp(1.1rem,1.6vw,1.35rem)]">Can we sell surplus power back?</h4>
+            <p class="font-body text-base leading-[1.5] text-text-muted mt-2">Yes, subject to registration, though the rate you're paid is well below the rate you buy at. That's why a sensible design prioritises using your own power over exporting it.</p>
+          </dl-card>
+          <dl-card>
+            <h4 class="font-display font-bold leading-[1.2] text-[clamp(1.1rem,1.6vw,1.35rem)]">What if our consumption changes?</h4>
+            <p class="font-body text-base leading-[1.5] text-text-muted mt-2">Tell us about planned expansion, new equipment or a vehicle fleet at the assessment stage. Allowing for it now costs far less than retrofitting later.</p>
+          </dl-card>
+        </div>
+      </dl-reveal>
+    </div>
+  </div>
+</dl-section>
+
+<!-- Closing CTA -->
+<dl-section bg="surface" class="text-center">
+  <dl-reveal-lines>
+    <h2 class="font-display font-bold leading-[1.2] text-[clamp(1.5rem,2.5vw,2.5rem)]">Start with the numbers</h2>
+  </dl-reveal-lines>
+  <dl-reveal>
+    <p class="font-body text-base leading-[1.5] text-text-muted mt-6 max-w-2xl mx-auto">A free site visit gives you a design, a price and an honest saving figure. If solar isn't worth it for your property yet, we'll tell you that instead.</p>
+  </dl-reveal>
+  <dl-reveal>
+    <div class="flex items-center justify-center mt-10">
+      <dl-button variant="primary" href="contact.html">Book a Free Site Assessment</dl-button>
+    </div>
+  </dl-reveal>
+</dl-section>
+
+<dl-footer></dl-footer>
+</body>
+</html>
