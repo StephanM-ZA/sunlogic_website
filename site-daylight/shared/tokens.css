@@ -1,0 +1,55 @@
+@font-face {
+  font-family: 'aeonikPro';
+  src: url('../fonts/aeonikPro-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'aeonikPro';
+  src: url('../fonts/aeonikPro-500.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'featureDeck';
+  src: url('../fonts/featureDeck-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'socialMono';
+  src: url('../fonts/socialMono-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+
+:root {
+  --dl-color-background: #0a0804;
+  --dl-color-surface: #4c2806;
+  --dl-color-text-primary: #fff7e9;
+  --dl-color-text-muted: #514e4a;
+  --dl-color-border: #1c1c1c;
+  --dl-color-accent: #c8b2ff;
+  --dl-color-danger: #f66f00;
+  --dl-color-warning: #dacab6;
+  --dl-color-info: #321f61;
+
+  --dl-radius-sm: 4px;
+  --dl-radius-md: 6px;
+  --dl-radius-lg: 8px;
+  --dl-radius-xl: 10px;
+  --dl-radius-2xl: 12px;
+  --dl-radius-3xl: 16px;
+
+  --dl-shadow-floating: 0 2px 20px rgba(0, 0, 0, 0.1);
+  --dl-shadow-overlay: 0 8px 32px rgba(0, 0, 0, 0.24);
+
+  --dl-space-section-mobile: 64px;
+  --dl-space-section-desktop: 128px;
+}
+
+body {
+  background: var(--dl-color-background);
+  color: var(--dl-color-text-primary);
+  font-family: 'aeonikPro', sans-serif;
+}
