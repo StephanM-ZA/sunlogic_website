@@ -722,13 +722,22 @@ class DlMediaBg extends HTMLElement {
     const src = this.getAttribute('src') || '';
     const alt = this.getAttribute('alt') || '';
     this.classList.add('relative', 'overflow-hidden', 'block');
-    this.innerHTML = '<img src="' + src + '" alt="' + alt + '" class="absolute inset-0 w-full h-full object-cover" />';
+    if (src) {
+      this.innerHTML = '<img src="' + src + '" alt="' + alt + '" class="absolute inset-0 w-full h-full object-cover" />';
+    } else {
+      this.innerHTML =
+        '<div class="absolute inset-0 flex items-center justify-center border-2 border-dashed border-border bg-surface">' +
+        '<span class="font-mono text-[11px] uppercase tracking-[0.08em] text-text-muted px-4 text-center">' + (alt || '[PLACEHOLDER: image needed]') + '</span>' +
+        '</div>';
+    }
   }
 }
 customElements.define('dl-media-bg', DlMediaBg);
 ```
 
-Note: a `data-video` attribute is intentionally not implemented yet — this component renders a static image only. A future task can add a `<video>` branch when real, self-hosted Sunlogic footage exists, without changing this element's external API (`src`/`alt`).
+`src` is optional. When no real Sunlogic image exists yet for a slot, omit `src` entirely and set only `alt` to the bracket-placeholder text (e.g. `alt="[PLACEHOLDER: real hero photo needed]"`) — the component then renders a labeled dashed-border placeholder box instead of a broken `<img>`, matching the spec's placeholder convention (never a fabricated image passed off as real). Only pass `src` when pointing at an image file that actually exists in `site-daylight/images/`.
+
+Note: a `data-video` attribute is intentionally not implemented yet — this component renders a static image (or placeholder box) only. A future task can add a `<video>` branch when real, self-hosted Sunlogic footage exists, without changing this element's external API (`src`/`alt`).
 
 - [ ] **Step 2: Write `site-daylight/shared/plugin-theme.css`**
 
@@ -782,14 +791,14 @@ Create `site-daylight/shared/test-plugins.html`:
 <script src="../../plugins/review-carousel/review-carousel.js"></script>
 </head>
 <body class="bg-background p-8">
-<dl-media-bg src="../images/placeholder.jpg" alt="[PLACEHOLDER: test image]" style="height:200px;"></dl-media-bg>
+<dl-media-bg alt="[PLACEHOLDER: test image]" style="height:200px;display:block;"></dl-media-bg>
 <plugin-calculator mode="residential" webhook="PENDING_BACKEND"></plugin-calculator>
 <plugin-review-carousel></plugin-review-carousel>
 </body>
 </html>
 ```
 
-Note: `site-daylight/images/placeholder.jpg` does not need to exist yet for this test — a broken image icon is an acceptable visual result for this harness; it only exists to confirm the plugins render with the daylight theme applied and `dl-media-bg` produces the expected markup structure.
+Note: `src` is intentionally omitted here — `site-daylight/images/` doesn't exist until Task 6, and this exercises `dl-media-bg`'s no-`src` placeholder-box path (the one every page will actually use until real photography exists), rather than the `img` path. It only exists to confirm the plugins render with the daylight theme applied and `dl-media-bg` produces the expected markup structure.
 
 - [ ] **Step 4: Verify**
 
@@ -811,7 +820,8 @@ git commit -m "feat(site-daylight): add media background slot and plugin rethemi
 
 **Files:**
 - Create: `site-daylight/index.html`
-- Create: `site-daylight/images/` (placeholder images as needed, copied — never referenced from `godaylight-design/screens/` paths directly; copy first, then reference the local copy)
+
+No `site-daylight/images/` directory is created in this plan — every `dl-media-bg` slot across all 7 pages uses the no-`src` placeholder-box path (Task 5) rather than a real or borrowed image, since no real Sunlogic photography exists yet and no image from `godaylight-design/screens/` should be used (per the no-ties-to-godaylight constraint, this includes their captured imagery, not only live links). A future task can create `site-daylight/images/` and pass `src` once real photography exists.
 
 **Interfaces:**
 - Consumes: everything from Tasks 1-5 (`dl-nav-bar`, `dl-footer`, `dl-section`, `dl-card`, `dl-badge`, `dl-button`, `dl-field`, `dl-reveal`, `dl-media-bg`, `dlInitParticles`, `plugin-review-carousel` with `plugin-theme.css`).
@@ -828,7 +838,7 @@ Hero section pattern (fill in the exact H1/subhead/CTA text read in Step 1 — d
 
 ```html
 <section class="relative h-screen flex items-center overflow-hidden">
-  <dl-media-bg src="images/hero-placeholder.jpg" alt="[PLACEHOLDER: real hero photo needed]"></dl-media-bg>
+  <dl-media-bg alt="[PLACEHOLDER: real hero photo needed]"></dl-media-bg>
   <canvas class="dl-particles absolute inset-0 w-full h-full pointer-events-none"></canvas>
   <div class="absolute inset-0 bg-background opacity-60"></div>
   <div class="relative z-10 px-6 max-w-[1000px] mx-auto">
@@ -862,7 +872,7 @@ Self-review: re-read `site/index.html` side-by-side with the new file and confir
 - [ ] **Step 4: Commit**
 
 ```bash
-git add site-daylight/index.html site-daylight/images/
+git add site-daylight/index.html
 git commit -m "feat(site-daylight): add homepage"
 ```
 
