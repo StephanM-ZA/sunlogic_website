@@ -1,0 +1,22 @@
+plugin-calculator {
+  --plugin-calc-accent: #c8b2ff;
+  --plugin-calc-bg: #4c2806;
+  --plugin-calc-text-color: #fff7e9;
+  --plugin-calc-text-muted: #514e4a;
+  --plugin-calc-radius: 8px;
+  --plugin-calc-font: 'aeonikPro', sans-serif;
+}
+
+plugin-review-carousel {
+  --plugin-review-accent: #c8b2ff;
+  --plugin-review-card-bg: #4c2806;
+  --plugin-review-text-color: #fff7e9;
+  --plugin-review-text-muted: #514e4a;
+  --plugin-review-card-height: 260px;
+  --plugin-review-card-width: 320px;
+  --plugin-review-card-width-mobile: 260px;
+  --plugin-review-radius: 8px;
+  --plugin-review-gap: 1.5rem;
+  --plugin-review-speed: 40s;
+  --plugin-review-font: 'aeonikPro', sans-serif;
+}

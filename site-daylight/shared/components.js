@@ -143,3 +143,20 @@ DlRevealLines._observer = new IntersectionObserver(function(entries) {
   });
 }, { threshold: 0.2 });
 customElements.define('dl-reveal-lines', DlRevealLines);
+
+class DlMediaBg extends HTMLElement {
+  connectedCallback() {
+    const src = this.getAttribute('src') || '';
+    const alt = this.getAttribute('alt') || '';
+    this.classList.add('relative', 'overflow-hidden', 'block');
+    if (src) {
+      this.innerHTML = '<img src="' + src + '" alt="' + alt + '" class="absolute inset-0 w-full h-full object-cover" />';
+    } else {
+      this.innerHTML =
+        '<div class="absolute inset-0 flex items-center justify-center border-2 border-dashed border-border bg-surface">' +
+        '<span class="font-mono text-[11px] uppercase tracking-[0.08em] text-text-muted px-4 text-center">' + (alt || '[PLACEHOLDER: image needed]') + '</span>' +
+        '</div>';
+    }
+  }
+}
+customElements.define('dl-media-bg', DlMediaBg);
