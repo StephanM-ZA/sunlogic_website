@@ -148,7 +148,7 @@ class DlMediaBg extends HTMLElement {
   connectedCallback() {
     const src = this.getAttribute('src') || '';
     const alt = this.getAttribute('alt') || '';
-    this.classList.add('relative', 'overflow-hidden', 'block');
+    this.classList.add('overflow-hidden', 'block');
     if (src) {
       this.innerHTML = '<img src="' + src + '" alt="' + alt + '" class="absolute inset-0 w-full h-full object-cover" />';
     } else {

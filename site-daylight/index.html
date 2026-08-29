@@ -23,11 +23,13 @@
   <dl-media-bg class="absolute inset-0 w-full h-full" alt="[PLACEHOLDER: real hero photo needed]"></dl-media-bg>
   <canvas class="dl-particles absolute inset-0 w-full h-full pointer-events-none"></canvas>
   <div class="absolute inset-0 bg-background opacity-60"></div>
-  <div class="relative z-10 px-6 max-w-[1000px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-    <div>
-      <dl-reveal-lines>
+  <div class="relative z-10 px-6 max-w-[1000px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+    <div class="lg:col-span-7">
+      <dl-reveal>
         <dl-badge>For Office or Home</dl-badge>
-        <h1 class="font-display font-bold leading-[1.2] text-[clamp(2.5rem,6vw,7.5rem)] mt-3">Solar Power &amp; Certified Electrical Contracting</h1>
+      </dl-reveal>
+      <dl-reveal-lines>
+        <h1 class="font-display font-bold leading-[1.2] text-[clamp(2rem,4.5vw,4.5rem)] mt-3">Solar Power &amp; Certified Electrical Contracting</h1>
       </dl-reveal-lines>
       <dl-reveal>
         <p class="font-body text-base leading-[1.5] text-text-muted mt-6 max-w-2xl">Solar and electrical from one team, for homes and businesses.</p>
@@ -39,7 +41,7 @@
         </div>
       </dl-reveal>
     </div>
-    <dl-card>
+    <dl-card class="lg:col-span-5">
       <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)] mb-2">Free Onsite Assessment</h3>
       <p class="font-body text-base leading-[1.5] text-text-muted mb-6">Complete the form below to schedule your consultation.</p>
       <form data-dl-form data-webhook="PENDING_BACKEND" id="assessment" class="flex flex-col gap-5">
@@ -59,7 +61,8 @@
             <option>Electrical installation</option>
           </select>
         </div>
-        <input type="text" name="website" tabindex="-1" autocomplete="off" class="absolute -left-[9999px]" aria-hidden="true"/>
+        <label for="dl-assessment-website" class="absolute -left-[9999px]">Website</label>
+        <input id="dl-assessment-website" type="text" name="website" tabindex="-1" autocomplete="off" class="absolute -left-[9999px]" aria-hidden="true"/>
         <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-body font-medium transition-opacity duration-150 bg-accent text-text-primary hover:opacity-90 w-full justify-center">Submit Enquiry</button>
       </form>
     </dl-card>
@@ -79,8 +82,10 @@
 
 <!-- Section: What We Do -->
 <dl-section bg="background">
-  <dl-reveal-lines>
+  <dl-reveal>
     <dl-badge>What We Do</dl-badge>
+  </dl-reveal>
+  <dl-reveal-lines>
     <h2 class="font-display font-bold leading-[1.2] text-[clamp(1.5rem,2.5vw,2.5rem)] mt-3">What We Do</h2>
   </dl-reveal-lines>
   <dl-reveal>
@@ -139,8 +144,10 @@
 
 <!-- Section: Why Sunlogic -->
 <dl-section bg="surface">
-  <dl-reveal-lines>
+  <dl-reveal>
     <dl-badge>Why Sunlogic</dl-badge>
+  </dl-reveal>
+  <dl-reveal-lines>
     <h2 class="font-display font-bold leading-[1.2] text-[clamp(1.5rem,2.5vw,2.5rem)] mt-3">Why Sunlogic</h2>
   </dl-reveal-lines>
   <dl-reveal>
@@ -163,8 +170,10 @@
 
 <!-- Section: How It Works -->
 <dl-section bg="background">
-  <dl-reveal-lines>
+  <dl-reveal>
     <dl-badge>How It Works</dl-badge>
+  </dl-reveal>
+  <dl-reveal-lines>
     <h2 class="font-display font-bold leading-[1.2] text-[clamp(1.5rem,2.5vw,2.5rem)] mt-3">How It Works</h2>
   </dl-reveal-lines>
   <dl-reveal>
@@ -191,8 +200,10 @@
 
 <!-- Section: Proof -->
 <dl-section bg="surface">
-  <dl-reveal-lines>
+  <dl-reveal>
     <dl-badge>Proof</dl-badge>
+  </dl-reveal>
+  <dl-reveal-lines>
     <h2 class="font-display font-bold leading-[1.2] text-[clamp(1.5rem,2.5vw,2.5rem)] mt-3">Proof</h2>
   </dl-reveal-lines>
   <dl-reveal>
@@ -227,8 +238,10 @@
 
 <!-- Section: From the Blog -->
 <dl-section bg="background">
-  <dl-reveal-lines>
+  <dl-reveal>
     <dl-badge>From the Blog</dl-badge>
+  </dl-reveal>
+  <dl-reveal-lines>
     <h2 class="font-display font-bold leading-[1.2] text-[clamp(1.5rem,2.5vw,2.5rem)] mt-3">Worth Knowing</h2>
   </dl-reveal-lines>
   <dl-reveal>
