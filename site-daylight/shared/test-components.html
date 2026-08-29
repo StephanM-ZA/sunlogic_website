@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Component Test</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="tailwind-config.js"></script>
+<link rel="stylesheet" href="tokens.css"/>
+<script src="icons.js" defer></script>
+<script src="components.js" defer></script>
+</head>
+<body class="bg-background text-text-primary font-body p-8 space-y-8">
+<dl-section bg="surface">
+  <dl-badge>New</dl-badge>
+  <dl-card><p>Card content test</p></dl-card>
+  <dl-button variant="primary" icon="arrow-right">Primary Button</dl-button>
+  <dl-button variant="ghost">Ghost Button</dl-button>
+  <form>
+    <dl-field label="Full Name" name="name" required></dl-field>
+  </form>
+  <dl-callout icon="chart-bar">Callout test content</dl-callout>
+</dl-section>
+</body>
+</html>
