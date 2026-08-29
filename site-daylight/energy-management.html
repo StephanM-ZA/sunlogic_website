@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Smart Energy Management | HotBot &amp; SolarBot | Sunlogic SA</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="shared/tailwind-config.js"></script>
+<link rel="stylesheet" href="shared/tokens.css"/>
+<link rel="stylesheet" href="shared/plugin-theme.css"/>
+<script src="shared/icons.js" defer></script>
+<script src="shared/components.js" defer></script>
+<script src="shared/motion.js" defer></script>
+</head>
+<body class="bg-background text-text-primary font-body antialiased overflow-x-hidden">
+<dl-nav-bar active="energy"></dl-nav-bar>
+
+<!-- Hero -->
+<section class="relative min-h-screen flex items-center overflow-hidden py-32">
+  <dl-media-bg class="absolute inset-0 w-full h-full" alt="[PLACEHOLDER: real HotBot and SolarBot composition photo needed]"></dl-media-bg>
+  <canvas class="dl-particles absolute inset-0 w-full h-full pointer-events-none"></canvas>
+  <div class="absolute inset-0 bg-background opacity-60"></div>
+  <div class="relative z-10 px-6 max-w-[1000px] mx-auto">
+    <dl-reveal-lines>
+      <h1 class="font-display font-bold leading-[1.2] text-[clamp(2rem,4.5vw,4.5rem)]">Smart Control For Your Geyser and Solar</h1>
+    </dl-reveal-lines>
+    <dl-reveal>
+      <p class="font-body text-base leading-[1.5] text-text-muted mt-6 max-w-2xl">Two small devices that quietly make your home cheaper to run.</p>
+    </dl-reveal>
+    <dl-reveal>
+      <div class="flex flex-wrap gap-4 mt-8">
+        <dl-button variant="primary" icon="arrow-right" href="contact.html">Get Started</dl-button>
+      </div>
+    </dl-reveal>
+  </div>
+</section>
+
+<!-- Intro -->
+<dl-section bg="surface">
+  <div class="flex flex-col gap-6 max-w-3xl mx-auto text-center">
+    <dl-reveal>
+      <p class="font-body text-base leading-[1.5] text-text-muted">Your geyser is the single biggest user of electricity in most homes. It heats water on a timer whether you're going to use it or not, and it carries on doing that all year.</p>
+    </dl-reveal>
+    <dl-reveal>
+      <p class="font-body text-base leading-[1.5] text-text-muted">These two controllers fix that, and they're managed from one app on your phone.</p>
+    </dl-reveal>
+    <div class="max-w-lg mx-auto w-full mt-4">
+      <div class="aspect-[400/251] relative rounded-lg overflow-hidden">
+        <dl-media-bg class="absolute inset-0 w-full h-full" alt="[PLACEHOLDER: real HotBot and SolarBot shown together photo needed]"></dl-media-bg>
+      </div>
+    </div>
+  </div>
+</dl-section>
+
+<!-- Products -->
+<dl-section bg="background" id="products">
+  <dl-reveal>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <dl-card>
+        <div class="aspect-[4/3] relative rounded-lg overflow-hidden mb-6">
+          <dl-media-bg class="absolute inset-0 w-full h-full" alt="[PLACEHOLDER: real HotBot geyser controller photo needed]"></dl-media-bg>
+        </div>
+        <dl-badge>Hot Water</dl-badge>
+        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)] mt-3 mb-2">HotBot</h3>
+        <p class="font-mono text-[11px] uppercase tracking-[0.08em] text-text-muted mb-4">R849 once off plus R149 a month</p>
+        <p class="font-body text-base leading-[1.5] text-text-muted">HotBot learns when your household actually uses hot water and heats the geyser to suit, instead of running to a fixed schedule. It also picks up a leak early, which is the difference between a plumber and a new ceiling.</p>
+        <p class="font-body text-base leading-[1.5] text-text-muted mt-4">It works with electric and solar geysers. A home with two geysers needs one for each.</p>
+      </dl-card>
+      <dl-card>
+        <div class="aspect-[4/3] relative rounded-lg overflow-hidden mb-6">
+          <dl-media-bg class="absolute inset-0 w-full h-full" alt="[PLACEHOLDER: real SolarBot solar and battery controller photo needed]"></dl-media-bg>
+        </div>
+        <dl-badge>Solar and Battery</dl-badge>
+        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)] mt-3 mb-2">SolarBot</h3>
+        <p class="font-mono text-[11px] uppercase tracking-[0.08em] text-text-muted mb-4">R849 once off plus R149 a month</p>
+        <p class="font-body text-base leading-[1.5] text-text-muted">If you already have solar, SolarBot decides when to charge and when to draw on the battery, leans on your own power rather than the grid wherever it can, and can heat your water off your solar instead of buying electricity to do it.</p>
+        <p class="font-body text-base leading-[1.5] text-text-muted mt-4">Since a unit you use yourself is worth considerably more than one you sell back, anything that shifts more of your usage onto your own power is working on the right problem.</p>
+      </dl-card>
+    </div>
+  </dl-reveal>
+</dl-section>
+
+<!-- How the Subscription Works -->
+<dl-section bg="surface">
+  <div class="max-w-3xl mx-auto">
+    <dl-reveal-lines>
+      <h2 class="font-display font-bold leading-[1.2] text-[clamp(1.5rem,2.5vw,2.5rem)] text-center">How the Subscription Works</h2>
+    </dl-reveal-lines>
+    <div class="flex flex-col gap-4 mt-10">
+      <dl-reveal>
+        <p class="font-body text-base leading-[1.5] text-text-muted">R849 buys the device. R149 a month covers the app, the monitoring and support.</p>
+      </dl-reveal>
+      <dl-reveal>
+        <dl-callout icon="chart-bar">
+          [Your website and your terms and conditions currently describe different cancellation rules. One says cancel anytime with a fee after 60 days; the other describes a 24 month initial period with a R750 per device cancellation fee. These need to be reconciled before this page goes live, and then stated in one plain sentence here.]
+        </dl-callout>
+      </dl-reveal>
+      <dl-reveal>
+        <p class="font-body text-base leading-[1.5] text-text-muted">Full terms and conditions apply — see the <a class="text-accent underline hover:no-underline" href="legal.html#energy-management-terms">Energy Management Terms</a> for the complete agreement.</p>
+      </dl-reveal>
+    </div>
+  </div>
+</dl-section>
+
+<!-- CTA -->
+<dl-section bg="background" class="text-center">
+  <dl-reveal-lines>
+    <h2 class="font-display font-bold leading-[1.2] text-[clamp(1.5rem,2.5vw,2.5rem)]">Get Started</h2>
+  </dl-reveal-lines>
+  <dl-reveal>
+    <div class="flex flex-wrap items-center justify-center gap-6 mt-10">
+      <dl-button variant="primary" href="contact.html">Get Started</dl-button>
+    </div>
+  </dl-reveal>
+</dl-section>
+
+<dl-footer></dl-footer>
+</body>
+</html>
