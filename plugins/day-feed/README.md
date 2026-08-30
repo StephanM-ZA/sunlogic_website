@@ -57,10 +57,14 @@ The panel models a **company** calendar, not one person's list:
 ## Working hours
 
 Saturday runs a half day — two or three crews, mornings only. Sunday, and
-any time from `rest-from` to `rest-until`, shows the rest message from
-`schedule.data.js` instead of inventing activity. The wording resolves
-`{next}` to "tomorrow", "on Monday" or "in the week ahead" so it reads
-correctly on a Saturday night and on a Sunday.
+any time from `rest-from` to `rest-until`, shows a rest message from
+`schedule.data.js` instead of inventing activity.
+
+There are three of them, because one does not fit: `evening` after the day
+ends, `morning` for the hours before it starts (where "tools down for the
+day" and "tomorrow" would both be wrong), and `sunday`. The wording resolves
+`{next}` to "tomorrow", "on Monday" or "in the week ahead", and `{start}` to
+the hour the day begins.
 
 ## How the day is chosen
 

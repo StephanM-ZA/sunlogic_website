@@ -123,9 +123,12 @@ window.PLUGIN_DAY_FEED = {
   ],
 
   /* Shown outside working hours. {next} resolves to "tomorrow",
-     "on Monday" or "in the week ahead". */
+     "on Monday" or "in the week ahead"; {start} to the hour the day
+     begins. `morning` covers the hours before the day starts, where the
+     evening wording would read wrongly. */
   rest: {
     evening: "Tools down for the day. Resting up, so we can manage your requirements better {next}.",
+    morning: "Still resting up, so we can manage your requirements better. Crews roll out at {start}.",
     sunday: "Sunday. Resting up, so we can manage your requirements better {next}.",
   },
 };

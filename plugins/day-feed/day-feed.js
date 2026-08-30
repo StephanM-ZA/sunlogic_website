@@ -134,16 +134,22 @@
          touching the line are the largest and brightest, and each step
          away is smaller and fainter, so the panel reads as a wheel with
          now at the top of it. */
-      .plugin-day-feed__row[data-depth="0"],
-      .plugin-day-feed__divider[data-depth="0"] { height: 24px; font-size: 12px; opacity: 0.6; }
-      .plugin-day-feed__row[data-depth="1"],
-      .plugin-day-feed__divider[data-depth="1"] { height: 22px; font-size: 11px; opacity: 0.38; }
-      .plugin-day-feed__row[data-depth="2"],
-      .plugin-day-feed__divider[data-depth="2"] { height: 20px; font-size: 10px; opacity: 0.22; }
-      .plugin-day-feed__row[data-depth="3"],
-      .plugin-day-feed__divider[data-depth="3"] { height: 18px; font-size: 9px; opacity: 0.14; }
-      .plugin-day-feed__row[data-depth="4"],
-      .plugin-day-feed__divider[data-depth="4"] { height: 17px; font-size: 9px; opacity: 0.08; }
+      .plugin-day-feed__row[data-depth="0"] { height: 24px; font-size: 12px; opacity: 0.6; }
+      .plugin-day-feed__row[data-depth="1"] { height: 22px; font-size: 11px; opacity: 0.38; }
+      .plugin-day-feed__row[data-depth="2"] { height: 20px; font-size: 10px; opacity: 0.22; }
+      .plugin-day-feed__row[data-depth="3"] { height: 18px; font-size: 9px; opacity: 0.14; }
+      .plugin-day-feed__row[data-depth="4"] { height: 17px; font-size: 9px; opacity: 0.08; }
+
+      /* Dividers keep the depth's height so the layout budget still adds
+         up, but not its fade: a day label is structure, not content. At
+         07:00 the whole top wing is yesterday, and a label at 0.14 left
+         those times looking simply out of order. */
+      .plugin-day-feed__divider[data-depth="0"] { height: 24px; }
+      .plugin-day-feed__divider[data-depth="1"] { height: 22px; }
+      .plugin-day-feed__divider[data-depth="2"] { height: 20px; }
+      .plugin-day-feed__divider[data-depth="3"] { height: 18px; }
+      .plugin-day-feed__divider[data-depth="4"] { height: 17px; }
+      .plugin-day-feed__divider[data-depth] { font-size: 10px; opacity: 0.8; }
 
       /* Where the stream crosses into another day. */
       .plugin-day-feed__divider {
@@ -474,13 +480,20 @@
       return 'tomorrow';
     }
 
-    _renderRest(now, day) {
+    _renderRest(now, day, hour) {
       if (this._mode === 'rest') return this._paintClock(now);
       this._mode = 'rest';
       this._sig = null;
       const rest = this._pools.rest || {};
-      const template = day === 0 ? (rest.sunday || rest.evening || '') : (rest.evening || '');
-      const text = template.replace('{next}', this._nextWorkingDay(day));
+      /* Before the day starts is not the same as after it ends — the
+         evening wording ("tools down", "tomorrow") is plainly wrong at
+         06:00, when the crews roll out within the hour. */
+      const template = day === 0
+        ? (rest.sunday || rest.evening || '')
+        : (hour < this._restUntil ? (rest.morning || rest.evening || '') : (rest.evening || ''));
+      const text = template
+        .replace('{next}', this._nextWorkingDay(day))
+        .replace('{start}', pad(this._restUntil) + ':00');
       this._body.innerHTML =
         '<div class="plugin-day-feed__now">' + this._nowMarkup(now) + '</div>' +
         '<div class="plugin-day-feed__rest">' +
