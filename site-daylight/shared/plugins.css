@@ -250,3 +250,50 @@
    gradient drift. It pauses on hover and focus (plugin default),
    and reduced-motion turns it into a scrollable row. */
 :root { --plugin-review-speed: 60s; }
+
+/* ---- Day feed ----------------------------------------------- */
+
+/* The plugin declares its own defaults behind :where(:root), so the
+   system claims them here by name rather than by overriding classes. */
+:root {
+  --plugin-day-feed-bg: var(--surface-card-warm);
+  --plugin-day-feed-border: var(--border-warm);
+  --plugin-day-feed-radius: var(--radius-md);
+  --plugin-day-feed-height: 320px;
+  --plugin-day-feed-accent: var(--color-orange);
+  --plugin-day-feed-text: var(--text-primary);
+  --plugin-day-feed-muted: var(--text-secondary);
+  --plugin-day-feed-faint: var(--text-disabled);
+  --plugin-day-feed-rule: var(--border-hairline);
+  --plugin-day-feed-font: var(--font-mono);
+  --plugin-day-feed-size: 12px;
+  --plugin-day-feed-row-h: 24px;
+  --plugin-day-feed-slide: var(--dur-base);
+}
+
+/* On navy the panel takes the same glass treatment as dl-terminal, and
+   its recessive greys have to invert or they disappear into the ground. */
+:root .plugin-day-feed--glass {
+  background: var(--glass-bg);
+  border-color: var(--glass-border);
+  backdrop-filter: var(--glass-blur);
+  color: var(--text-inverse);
+  --plugin-day-feed-text: var(--text-inverse);
+  --plugin-day-feed-muted: rgba(255, 255, 255, 0.62);
+  --plugin-day-feed-faint: rgba(255, 255, 255, 0.38);
+  --plugin-day-feed-rule: rgba(255, 255, 255, 0.18);
+}
+
+/* The current-moment row is the one piece of emphasis in the panel;
+   the system sets it in the display face rather than the mono. */
+:root .plugin-day-feed__now {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+:root .plugin-day-feed__now-secs,
+:root .plugin-day-feed__now-label {
+  font-family: var(--font-mono);
+  font-weight: 400;
+}

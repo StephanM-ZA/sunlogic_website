@@ -10,6 +10,9 @@
 <script src="shared/components.js" defer></script>
 <script src="shared/forms.js" defer></script>
 <script src="shared/sunlogic-check.js" defer></script>
+<script src="../plugins/day-feed/schedule.data.js"></script>
+<script src="../plugins/day-feed/day-feed-schedule.js"></script>
+<script src="../plugins/day-feed/day-feed.js" defer></script>
 <script src="../plugins/review-carousel/reviews.data.js"></script>
 <script src="../plugins/review-carousel/review-carousel.js" defer></script>
 </head>
@@ -119,14 +122,7 @@
       </dl-stack>
     </dl-reveal>
     <dl-reveal>
-      <dl-terminal title="Today" tone="glass" stream lines='[
-        {"time":"08:10","text":"site assessment booked · Durbanville"},
-        {"time":"09:32","text":"design approved · 8.2 kW + 13.5 kWh"},
-        {"time":"11:05","text":"SSEG application submitted · City of Cape Town"},
-        {"time":"13:40","text":"install complete · system commissioned"},
-        {"time":"14:02","text":"certificate of compliance issued"},
-        {"time":"15:18","text":"handover walkthrough · [reference placeholder pending]"}
-      ]'></dl-terminal>
+      <plugin-day-feed title="Today" tone="glass"></plugin-day-feed>
     </dl-reveal>
   </dl-grid>
 </dl-section>
