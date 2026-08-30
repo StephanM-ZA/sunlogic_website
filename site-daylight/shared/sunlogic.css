@@ -110,6 +110,7 @@
   --dur-base: 400ms;
   --dur-slow: 700ms;
 
+  --z-base-fixed: 20;
   --z-sticky: 40;
   --z-drawer: 60;
   --z-dialog: 80;
@@ -863,9 +864,16 @@ dl-subnav { position: sticky; top: 72px; z-index: 30; }
 
 /* Dock — the persistent action pill. Not a second nav: the phone
    number and the quote, within reach on a long page. */
+/* Belt-and-suspenders on top of the z-index fix above: dl-nav-bar itself
+   carries z-index:var(--z-sticky), which makes it a stacking-context root
+   — the open drawer's own higher z-index only wins comparisons against
+   other dl-nav-bar children, not against page-level fixed elements like
+   the dock. Explicitly hiding the dock while the drawer is open removes
+   any dependency on getting that stacking-context nuance right. */
+.sl-drawer-open .sl-dock, .sl-drawer-open [data-sl-check-badge] { display: none; }
 .sl-dock {
   position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-  z-index: var(--z-sticky);
+  z-index: var(--z-base-fixed);
   display: flex; align-items: center; gap: 4px;
   padding: 5px;
   /* A hint darker than the footer it usually floats over (--color-navy),

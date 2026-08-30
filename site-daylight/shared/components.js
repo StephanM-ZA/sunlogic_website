@@ -684,8 +684,8 @@ class DlNavBar extends SLElement {
 
     const toggle = this.querySelector('[data-sl-toggle]');
     const drawer = this.querySelector('[data-sl-drawer]');
-    const open = () => { drawer.hidden = false; toggle.setAttribute('aria-expanded', 'true'); drawer.querySelector('a').focus(); };
-    const close = () => { drawer.hidden = true; toggle.setAttribute('aria-expanded', 'false'); toggle.focus(); };
+    const open = () => { drawer.hidden = false; document.body.classList.add('sl-drawer-open'); toggle.setAttribute('aria-expanded', 'true'); drawer.querySelector('a').focus(); };
+    const close = () => { drawer.hidden = true; document.body.classList.remove('sl-drawer-open'); toggle.setAttribute('aria-expanded', 'false'); toggle.focus(); };
     toggle.addEventListener('click', open);
     this.querySelector('[data-sl-close]').addEventListener('click', close);
     drawer.querySelectorAll('a').forEach((a) => a.addEventListener('click', close));
