@@ -520,6 +520,8 @@ dl-nav-bar { position: sticky; top: 0; z-index: var(--z-sticky); }
 .sl-drawer__link:hover { color: var(--color-orange); opacity: 1; }
 .sl-drawer__link--navy:hover { color: var(--color-beige); opacity: 1; }
 .sl-drawer__link--navy svg { color: var(--color-beige); }
+.sl-drawer__link[aria-current="page"] { color: var(--color-orange); }
+.sl-drawer__link--navy[aria-current="page"] { color: var(--color-beige); }
 .sl-drawer__cta { margin-top: auto; }
 
 /* ---- Hero — five layers, all five required ----------------- */
@@ -567,6 +569,7 @@ dl-nav-bar { position: sticky; top: 0; z-index: var(--z-sticky); }
 }
 @media (min-width: 768px) { .sl-hero__inner { padding: 120px var(--gutter) 64px; } }
 .sl-hero__col { flex: 0 0 300px; display: flex; flex-direction: column; gap: 16px; }
+.sl-hero__col-note { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.05em; color: currentColor; opacity: 0.55; }
 .sl-hero__text { flex: 1 1 480px; max-width: 640px; }
 .sl-creds-band { padding: 0 var(--gutter) 48px; }
 .sl-form { display: grid; gap: 16px; max-width: 500px; }

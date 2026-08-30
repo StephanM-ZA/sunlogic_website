@@ -662,7 +662,8 @@ class DlNavBar extends SLElement {
       (l.accent === 'navy' ? ' sl-nav__link--navy' : '') + '" href="' + l.href + '"' +
       (l.key === active ? ' aria-current="page"' : '') + '>' + l.label + '</a>').join('');
     const drawerLinks = links.map((l) => '<a class="sl-drawer__link' +
-      (l.accent === 'navy' ? ' sl-drawer__link--navy' : '') + '" href="' + l.href + '">' +
+      (l.accent === 'navy' ? ' sl-drawer__link--navy' : '') + '" href="' + l.href + '"' +
+      (l.key === active ? ' aria-current="page"' : '') + '>' +
       l.label + SL_ICON('arrow-right', 18) + '</a>').join('');
 
     this.innerHTML =
