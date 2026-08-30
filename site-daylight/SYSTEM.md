@@ -8,10 +8,10 @@ here, it isn't in the system — ask, don't invent.
 ## Setup
 
 ```html
-<link rel="stylesheet" href="shared/sunlogic.css"/>
-<script src="shared/icons.js" defer></script>
-<script src="shared/components.js" defer></script>
-<script src="shared/sunlogic-check.js" defer></script>  <!-- dev only -->
+<link rel="stylesheet" href="shared/sunlogic.css?v=1"/>
+<script src="shared/icons.js?v=1" defer></script>
+<script src="shared/components.js?v=1" defer></script>
+<script src="shared/sunlogic-check.js?v=1" defer></script>  <!-- dev only -->
 ```
 
 `sunlogic.css` owns colour, type, geometry and motion. `components.js` owns
@@ -102,8 +102,8 @@ with their own markup. **Theme them, never fork them.**
 Load it after `sunlogic.css` on any page carrying a plugin:
 
 ```html
-<link rel="stylesheet" href="shared/sunlogic.css"/>
-<link rel="stylesheet" href="shared/plugins.css"/>
+<link rel="stylesheet" href="shared/sunlogic.css?v=1"/>
+<link rel="stylesheet" href="shared/plugins.css?v=1"/>
 ```
 
 Both plugins inject a `<style>` into `<head>` at runtime, which lands after

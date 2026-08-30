@@ -6,11 +6,15 @@ type, motion, copy rules, limits. Everything below is the short version.
 ## Setup
 
 ```html
-<link rel="stylesheet" href="shared/sunlogic.css"/>
-<script src="shared/icons.js" defer></script>
-<script src="shared/components.js" defer></script>
-<script src="shared/sunlogic-check.js" defer></script>  <!-- dev only -->
+<link rel="stylesheet" href="shared/sunlogic.css?v=1"/>
+<script src="shared/icons.js?v=1" defer></script>
+<script src="shared/components.js?v=1" defer></script>
+<script src="shared/sunlogic-check.js?v=1" defer></script>  <!-- dev only -->
 ```
+
+Bump every `?v=` when you change a file in `shared/` or in a plugin. There is
+no build step, so nothing fingerprints these — a browser serves the cached
+copy and the page runs old code with no error to show for it.
 
 ## The rule
 
