@@ -20,10 +20,10 @@
 <meta name="twitter:description" content="Get in touch with Sunlogic SA for solar and electrical work in Cape Town and the Western Cape."/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;700;800;900&amp;family=Jetbrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
-<script src="shared/tokens.js"></script>
-<script src="shared/icons.js"></script>
-<script src="shared/components.js" defer></script>
-<script src="shared/forms.js" defer></script>
+<script src="shared/tokens.js?v=2"></script>
+<script src="shared/icons.js?v=2"></script>
+<script src="shared/components.js?v=2" defer></script>
+<script src="shared/forms.js?v=2" defer></script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -53,10 +53,11 @@
 <sl-nav-bar active="contact"></sl-nav-bar>
 
 <!-- Page Hero -->
-<section class="relative pb-section-gap-mobile md:pb-section-gap-desktop px-margin-mobile md:px-gutter min-h-[400px] flex items-center bg-primary-container pt-40">
+<section class="relative pb-section-gap-mobile md:pb-section-gap-desktop px-margin-mobile md:px-gutter min-h-[400px] flex items-center bg-primary-container pt-40 overflow-hidden">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-[36rem] h-[36rem] bg-secondary-container/10 rounded-full blur-3xl -mt-64 pointer-events-none"></div>
 <div class="relative z-10 mx-auto max-w-6xl text-on-primary text-center">
-<h1 class="font-display-lg text-display-lg max-md:font-headline-lg-mobile max-md:text-headline-lg-mobile leading-[1.1] mb-6">Get in Touch</h1>
-<p class="font-body-lg text-body-lg text-inverse-primary max-w-2xl mx-auto opacity-90">Tell us a bit about your property and what you need, and we'll come back to you [response-time commitment — placeholder pending].</p>
+<h1 class="font-display-lg text-display-lg max-md:font-headline-lg-mobile max-md:text-headline-lg-mobile leading-[1.1] mb-6">Tell Us What You Need</h1>
+<p class="font-body-lg text-body-lg text-inverse-primary max-w-2xl mx-auto opacity-90">A site visit costs nothing and ends with a straight answer. Send us a message, or phone if it's urgent.</p>
 </div>
 </section>
 
@@ -75,17 +76,19 @@
 <sl-field label="Name*" type="text" placeholder="Your full name" field-id="contact-name" required></sl-field>
 <sl-field label="Email address*" type="email" placeholder="you@example.com" field-id="contact-email" required></sl-field>
 <sl-field label="Phone number*" type="tel" placeholder="012 345 6789" field-id="contact-phone" required></sl-field>
+<sl-field label="Suburb*" type="text" placeholder="e.g. Claremont" field-id="contact-suburb" required></sl-field>
 <sl-field label="What you need*" type="select" field-id="contact-need" required>
   <option value="" disabled selected>Select an option</option>
   <option>Solar</option>
   <option>Electrical</option>
+  <option>Energy Management</option>
   <option>Not sure yet</option>
 </sl-field>
 <sl-field label="Property type*" type="select" field-id="contact-property-type" required>
   <option value="" disabled selected>Select an option</option>
-  <option>Residential</option>
-  <option>Small Business</option>
-  <option>Commercial</option>
+  <option>Home</option>
+  <option>Small business</option>
+  <option>Larger site</option>
 </sl-field>
 <div class="md:col-span-2">
 <sl-field label="Message*" type="textarea" placeholder="Tell us about your property and what you need" field-id="contact-message" rows="4" required></sl-field>
@@ -103,8 +106,9 @@
 </div>
 
 <!-- Right: Contact Info -->
+<!-- NOTE for Stephan (copy/Sunlogic_Site_Copy.md): Office and Support currently show the same number — if that isn't intentional, worth fixing rather than carrying over. -->
 <div class="lg:col-span-5 flex flex-col gap-8">
-<div class="bg-surface-container-lowest p-8 rounded-2xl shadow-card border border-surface-variant/50">
+<div class="bg-surface-container-lowest p-8 rounded-2xl shadow-card sl-glow-card border-x border-b border-x-surface-variant/50 border-b-surface-variant/50">
 <h3 class="font-headline-sm text-headline-sm text-primary-container mb-6">Contact Details</h3>
 <div class="flex flex-col gap-5">
 <a class="flex items-start gap-4 group" href="tel:+27826555371">
@@ -149,7 +153,7 @@
 </div>
 <div>
 <p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Hours</p>
-<p class="font-body-md text-body-md text-on-surface">[Business hours — placeholder pending]</p>
+<p class="font-body-md text-body-md text-on-surface">[not published anywhere on your current site]</p>
 </div>
 </div>
 </div>
@@ -172,21 +176,21 @@
 <!-- Meet the Team -->
 <sl-section bg="surface-container" id="meet-the-team">
 <div class="mx-auto max-w-6xl">
-<sl-section-header eyebrow="Our People" heading="Meet the Team" subtext="The people who'll actually be on site or on the phone — not a call centre." gap="lg"></sl-section-header>
+<sl-section-header eyebrow="Meet the Team" heading="The People Who Will Be at Your Property" subtext="Not a call centre. The person who quotes the job is usually the one you see again." gap="lg"></sl-section-header>
 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-<div class="bg-surface-container-lowest p-8 rounded-2xl shadow-card text-center">
+<div class="bg-surface-container-lowest p-8 rounded-2xl shadow-card sl-glow-card text-center">
 <div class="w-24 h-24 mx-auto rounded-full bg-surface-container mb-5"></div>
 <h3 class="font-headline-sm text-headline-sm text-primary-container mb-1">[Name — pending]</h3>
 <p class="font-label-md text-label-md text-secondary-container uppercase tracking-wider mb-3">[Role — pending]</p>
 <p class="font-body-md text-body-md text-on-surface-variant">[Short bio and certification — pending, nothing invented]</p>
 </div>
-<div class="bg-surface-container-lowest p-8 rounded-2xl shadow-card text-center">
+<div class="bg-surface-container-lowest p-8 rounded-2xl shadow-card sl-glow-card text-center">
 <div class="w-24 h-24 mx-auto rounded-full bg-surface-container mb-5"></div>
 <h3 class="font-headline-sm text-headline-sm text-primary-container mb-1">[Name — pending]</h3>
 <p class="font-label-md text-label-md text-secondary-container uppercase tracking-wider mb-3">[Role — pending]</p>
 <p class="font-body-md text-body-md text-on-surface-variant">[Short bio and certification — pending, nothing invented]</p>
 </div>
-<div class="bg-surface-container-lowest p-8 rounded-2xl shadow-card text-center">
+<div class="bg-surface-container-lowest p-8 rounded-2xl shadow-card sl-glow-card text-center">
 <div class="w-24 h-24 mx-auto rounded-full bg-surface-container mb-5"></div>
 <h3 class="font-headline-sm text-headline-sm text-primary-container mb-1">[Name — pending]</h3>
 <p class="font-label-md text-label-md text-secondary-container uppercase tracking-wider mb-3">[Role — pending]</p>

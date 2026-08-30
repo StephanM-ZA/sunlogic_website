@@ -2,7 +2,7 @@
 
 **Status:** Living reference — update whenever `site/shared/tokens.js` changes.
 **Single source of truth:** `site/shared/tokens.js` (this document describes it; it never overrides it — if the two disagree, the file is correct and this doc is stale).
-**Related:** [[component-library.md]] (how these tokens get consumed by the `<sl-*>` components), [[../docs/superpowers/specs/2026-08-28-component-library-design.md]] (original architecture decision).
+**Related:** [[component-library.md]] (how these tokens get consumed by the `<sl-*>` components), [[../docs/superpowers/specs/2026-08-28-component-library-design.md]] (original architecture decision), [[../design-system/index.html]] (the visual, printable CI guide generated live from this same source — includes brand mark, voice/tone, copy style guide, and social media guidelines beyond what this file covers; PDF export sits alongside it at `design-system/sunlogic-design-system.pdf`).
 
 ## Typography
 
@@ -73,7 +73,7 @@ Full palette lives in `tokens.js` as flat Tailwind color names (`bg-primary-cont
 
 | Token | Hex | Role |
 |---|---|---|
-| `error` | `#ba1a1a` | *(defined, not currently used — no error states built yet)* |
+| `error` | `#ba1a1a` | Form validation error state (borders, inline messages) — see `shared/forms.js` |
 | `error-container` | `#ffdad6` | *(defined, not currently used)* |
 
 ## Border Radius
@@ -115,7 +115,7 @@ The nav bar's shadow is **not** a token — it's a one-off arbitrary value combi
 
 Not a Tailwind token, but part of the same "one definition, every consumer" system: `site/shared/icons.js` holds a hand-picked subset of [Heroicons](https://heroicons.com) (outline, 24px, MIT license) as inline SVG path data, exposed via `slIcon(name, classes)`. No icon font, no external request at runtime — every icon a component needs is in that one file.
 
-Current registry (19): `bolt`, `sun`, `arrow-right`, `clipboard-document-check`, `archive-box`, `wrench-screwdriver`, `wrench`, `chart-bar`, `check-circle`, `shield-check`, `map-pin`, `cog-6-tooth`, `scale`, `bars-3`, `x-mark`, `share`, `chat-bubble-left-right`, `pencil-square`, `lifebuoy`.
+Current registry (23): `bolt`, `sun`, `arrow-right`, `clipboard-document-check`, `archive-box`, `wrench-screwdriver`, `wrench`, `chart-bar`, `check-circle`, `shield-check`, `map-pin`, `cog-6-tooth`, `scale`, `bars-3`, `x-mark`, `chevron-down`, `share`, `chat-bubble-left-right`, `pencil-square`, `lifebuoy`, `envelope`, `phone`, `clock`. For the live, always-current list rendered visually, see [[../design-system/index.html]] — it reads `ICON_PATHS` directly rather than duplicating the list as prose.
 
 Sizing convention (width/height classes, since SVGs don't scale off `font-size` the way the old icon font did):
 

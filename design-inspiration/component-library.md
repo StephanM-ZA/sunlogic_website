@@ -118,6 +118,16 @@ Includes a working mobile menu (no separate attribute — always present, shown 
 
 No attributes — content (support links, recent posts, contact CTA) is currently hardcoded inside the component itself, not attribute-driven, since there's only one footer on the whole site. Centers all content on mobile, left-aligns on desktop (`text-center md:text-left` on the grid, plus explicit `justify-center md:justify-start` on the two flex rows — brand logo and share-icon row — where text-align alone doesn't affect flex-item position).
 
+## `<sl-callout>`
+
+| Attribute | Values | Default |
+|---|---|---|
+| `icon` | any name from `icons.js` | `check-circle` |
+
+Inline note box for flowing body copy — a left accent bar plus an icon chip, meant to make one fact stand out from surrounding paragraphs without the weight of a full `sl-card`. Deliberately a different treatment from `.sl-glow-card` (left bar, not a top bar + corner glow) since it sits inline between paragraphs rather than as a standalone card.
+
+Content is slotted via `innerHTML` (same approach as `sl-faq-item`), so callers can include inline markup like `<strong>`/`<a>` inside the note, not just plain text.
+
 ## What's intentionally still page-specific (not componentized)
 
 Per the original design spec, page *content* was always meant to stay out of components — headlines, body copy, image URLs. Beyond that, three things remain hand-written in `index.html` because each is genuinely one-off, not a repeated pattern:

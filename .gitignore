@@ -15,3 +15,13 @@ Thumbs.db
 
 # Subagent-driven-development scratch workspace (ledgers, briefs, reports)
 .superpowers/
+
+# Node deps (playwright, used for local screenshot checks only)
+node_modules/
+
+# Design reference bundles — kept on disk under design-inspiration/, out of
+# git. Tens of MB of screenshots and PDFs; none of it governs the live site
+# (site-daylight/SYSTEM.md does). These were untracked before the tidy-up.
+design-inspiration/godaylight-design/
+design-inspiration/design_handoff_sunlogic_blend/
+design-inspiration/design-system/

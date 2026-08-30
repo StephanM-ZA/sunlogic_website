@@ -9,7 +9,7 @@
 // indirection. See the hero assessment form in index.html for the pattern.
 const slBaseStyle = document.createElement('style');
 slBaseStyle.textContent = `
-  sl-button, sl-section-header, sl-card, sl-field, sl-nav-bar, sl-footer, sl-panel, sl-step, sl-section, sl-audience-row, sl-faq-item {
+  sl-button, sl-section-header, sl-card, sl-field, sl-nav-bar, sl-footer, sl-panel, sl-step, sl-section, sl-audience-row, sl-faq-item, sl-callout {
     display: contents;
   }
   /* Shared hover-lift treatment: one reusable primitive instead of a class
@@ -20,6 +20,31 @@ slBaseStyle.textContent = `
   }
   .sl-lift:hover {
     transform: translateY(-0.25rem);
+  }
+  /* Shared "glow card" treatment: an orange top accent bar plus a soft
+     orange glow in the top-right corner. One reusable primitive instead of
+     duplicating the bar + glow div in every card-like element — apply the
+     class alone, no extra markup needed. The glow is a ::before pseudo
+     element (not a real child) so it drops onto any element, including
+     ones with no room for an extra div. Uses the raw secondary-container
+     hex (#ff8000) since this stylesheet runs before Tailwind's CDN JIT
+     compiles token-based utility classes for a ::before selector. */
+  .sl-glow-card {
+    position: relative;
+    overflow: hidden;
+    border-top: 4px solid #ff8000;
+  }
+  .sl-glow-card::before {
+    content: '';
+    position: absolute;
+    top: -3rem;
+    right: -3rem;
+    width: 8rem;
+    height: 8rem;
+    background: rgba(255, 128, 0, 0.12);
+    border-radius: 0.75rem;
+    filter: blur(40px);
+    pointer-events: none;
   }
 `;
 document.head.appendChild(slBaseStyle);
@@ -118,7 +143,7 @@ class SlCard extends HTMLElement {
         </li>
       `).join('');
       this.innerHTML = `
-        <div class="bg-surface-container-lowest p-10 rounded-2xl shadow-card hover:shadow-ambient sl-lift group border-t-4 border-transparent hover:border-secondary-container">
+        <div class="bg-surface-container-lowest p-10 rounded-2xl shadow-card hover:shadow-ambient sl-lift sl-glow-card group">
           <div class="w-14 h-14 rounded-xl bg-solar-sky flex items-center justify-center mb-8 group-hover:bg-secondary-container group-hover:scale-110 transition-all duration-300 shadow-sm">
             ${slIcon(icon, 'w-8 h-8 text-primary-container group-hover:text-on-primary transition-colors')}
           </div>
@@ -129,7 +154,7 @@ class SlCard extends HTMLElement {
       `;
     } else {
       this.innerHTML = `
-        <div class="bg-surface-container-lowest p-8 rounded-2xl shadow-card hover:shadow-ambient sl-lift border border-surface-variant/50">
+        <div class="bg-surface-container-lowest p-8 rounded-2xl shadow-card hover:shadow-ambient sl-lift sl-glow-card border-x border-b border-x-surface-variant/50 border-b-surface-variant/50">
           <div class="w-14 h-14 rounded-[0.5rem] bg-secondary-container/20 flex items-center justify-center mb-6 shadow-sm border border-secondary-container/30">
             ${slIcon(icon, 'w-8 h-8 text-secondary-container')}
           </div>
@@ -202,8 +227,7 @@ class SlPanel extends HTMLElement {
     this._rendered = true;
     const originalChildren = [...this.childNodes];
     this.innerHTML = `
-      <div class="bg-surface/95 dark:bg-surface-dim/95 backdrop-blur-2xl p-10 rounded-2xl shadow-ambient border-t-4 border-t-secondary-container relative overflow-hidden group sl-lift">
-        <div class="absolute top-0 right-0 w-40 h-40 bg-secondary-container/10 rounded-[0.75rem] blur-3xl -mr-20 -mt-20"></div>
+      <div class="bg-surface/95 dark:bg-surface-dim/95 backdrop-blur-2xl p-10 rounded-2xl shadow-ambient group sl-lift sl-glow-card">
         <div class="relative z-10 sl-panel-slot"></div>
       </div>
     `;
@@ -303,6 +327,30 @@ class SlFaqItem extends HTMLElement {
 }
 customElements.define('sl-faq-item', SlFaqItem);
 
+// Inline note box — drops into flowing body copy to make one fact stand out
+// (e.g. a compliance note, a quick tip) without the weight of a full card.
+// Left accent bar + icon chip, not the top-bar treatment sl-glow-card uses,
+// since this sits inline between paragraphs rather than as a standalone
+// card. `icon` defaults to check-circle; content is slotted (via innerHTML,
+// like sl-faq-item) so callers can bold/link text inside the note.
+class SlCallout extends HTMLElement {
+  connectedCallback() {
+    if (this._rendered) return;
+    this._rendered = true;
+    const icon = this.getAttribute('icon') || 'check-circle';
+    const body = this.innerHTML;
+    this.innerHTML = `
+      <div class="flex items-start gap-4 bg-secondary-container/5 border border-secondary-container/20 border-l-4 border-l-secondary-container rounded-xl p-5">
+        <div class="w-9 h-9 shrink-0 rounded-[0.75rem] bg-secondary-container/10 flex items-center justify-center text-secondary-container">
+          ${slIcon(icon, 'w-5 h-5')}
+        </div>
+        <div class="font-body-md text-body-md text-on-surface-variant leading-relaxed">${body}</div>
+      </div>
+    `;
+  }
+}
+customElements.define('sl-callout', SlCallout);
+
 // Standard page-section wrapper: enforces the same vertical/horizontal rhythm
 // everywhere (section-gap-mobile/desktop, margin-mobile/gutter) instead of
 // each section repeating and risking drift. `bg` takes a color token name
@@ -328,10 +376,17 @@ class SlSection extends HTMLElement {
 }
 customElements.define('sl-section', SlSection);
 
-function slBrand(extraClasses, href) {
+// variant 'horizontal' (default) = sl_logo_white.svg, used in the nav bar.
+// variant 'vertical' = sl_logo_verticle.svg, used in the footer. Both are
+// real brand SVGs (white wordmark + orange sun icon) designed for the dark
+// primary-container background both the nav and footer sit on.
+function slBrand(extraClasses, href, variant) {
   const tag = href ? 'a' : 'div';
   const hrefAttr = href ? ` href="${href}"` : '';
-  return `<${tag} class="font-headline-sm text-headline-sm text-on-primary flex items-center justify-center md:justify-start gap-2 ${extraClasses}"${hrefAttr}>${slIcon('sun', 'w-7 h-7 text-secondary-container')}Sunlogic</${tag}>`;
+  const isVertical = variant === 'vertical';
+  const src = isVertical ? 'images/sl_logo_verticle.svg' : 'images/sl_logo_white.svg';
+  const sizeClass = isVertical ? 'h-20 w-auto' : 'h-12 w-auto';
+  return `<${tag} class="flex items-center justify-center md:justify-start ${extraClasses}"${hrefAttr}><img src="${src}" alt="Sunlogic" class="${sizeClass}"/></${tag}>`;
 }
 
 function slLinkList(items) {
@@ -405,7 +460,7 @@ class SlFooter extends HTMLElement {
       <footer class="bg-primary-container w-full border-t border-on-primary/10">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-12 px-margin-mobile md:px-gutter py-section-gap-mobile md:py-section-gap-desktop mx-auto max-w-6xl text-center md:text-left">
           <div class="col-span-1 md:col-span-1">
-            ${slBrand('mb-6')}
+            ${slBrand('mb-6', null, 'vertical')}
             <p class="font-body-md text-body-md mb-8 leading-relaxed text-on-primary">Providing leading Solar and Electrical services across all industries.</p>
             <div class="flex justify-center md:justify-start gap-4">
               <div aria-label="Share this page" class="w-10 h-10 rounded-[0.75rem] bg-surface/10 flex items-center justify-center hover:bg-secondary-container hover:text-on-primary cursor-pointer transition-colors text-on-primary/80">
@@ -417,7 +472,7 @@ class SlFooter extends HTMLElement {
             <h5 class="font-label-md text-label-md text-secondary-container font-bold mb-6 uppercase tracking-widest">Support</h5>
             <ul class="space-y-4">${slLinkList([
               { label: 'Privacy Policy', href: 'legal.html#privacy-policy' },
-              { label: 'Terms of Service', href: 'legal.html#terms-and-conditions' },
+              { label: 'Terms of Service', href: 'legal.html#terms-of-service' },
               { label: 'Warranty', href: 'legal.html#warranty-statement' },
               { label: 'Safety Certification', href: '#' },
               { label: 'Maintenance Portal', href: '#' },
@@ -444,7 +499,7 @@ class SlFooter extends HTMLElement {
             </p>
             <div aria-label="Share this page" class="flex gap-6">
               <a class="text-on-primary/60 hover:text-secondary-container transition-colors text-sm" href="legal.html#privacy-policy">Privacy</a>
-              <a class="text-on-primary/60 hover:text-secondary-container transition-colors text-sm" href="legal.html#terms-and-conditions">Terms</a>
+              <a class="text-on-primary/60 hover:text-secondary-container transition-colors text-sm" href="legal.html#terms-of-service">Terms</a>
             </div>
           </div>
         </div>
