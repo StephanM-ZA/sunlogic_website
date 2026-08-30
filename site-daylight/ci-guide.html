@@ -645,6 +645,8 @@
       <p>Theme a plugin in <code>shared/plugins.css</code>, at <code>:root</code> specificity so it beats the style block the plugin injects at runtime.</p></div>
     <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Don't</span>
       <p>Edit the plugin's JavaScript to restyle it. The next version overwrites you, and the plugin stops tracking the system.</p></div>
+    <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do</span>
+      <p>Bump the <code>?v=</code> on every <code>&lt;script&gt;</code> that loads a plugin you have just changed. There is no build step, so a browser will serve a cached copy of the old file and the page runs stale code without erroring.</p></div>
   </div>
 </section>
 

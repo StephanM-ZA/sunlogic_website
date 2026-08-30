@@ -14,10 +14,17 @@ Three files, in this order — the data and the generator must both be
 present before the component runs.
 
 ```html
-<script src="path/to/schedule.data.js"></script>
-<script src="path/to/day-feed-schedule.js"></script>
-<script src="path/to/day-feed.js" defer></script>
+<script src="path/to/schedule.data.js?v=1"></script>
+<script src="path/to/day-feed-schedule.js?v=1"></script>
+<script src="path/to/day-feed.js?v=1" defer></script>
 ```
+
+Each `src` carries a `?v=` query. There is no build step here, so nothing
+fingerprints these files automatically — a browser will happily serve a
+cached copy of an edited plugin, and the page then runs old code with no
+error to show for it. **Bump the number in every page that loads this plugin
+whenever you change one of these files.**
+
 
 Then place the element anywhere in your page:
 

@@ -8,10 +8,17 @@ dependency on any host project's Tailwind config or design tokens.
 Drop all three script files into your project (keep them together), then add:
 
 ```html
-<script src="path/to/assumptions.js"></script>
-<script src="path/to/calculator-math.js"></script>
-<script src="path/to/calculator.js" defer></script>
+<script src="path/to/assumptions.js?v=1"></script>
+<script src="path/to/calculator-math.js?v=1"></script>
+<script src="path/to/calculator.js?v=1" defer></script>
 ```
+
+Each `src` carries a `?v=` query. There is no build step here, so nothing
+fingerprints these files automatically — a browser will happily serve a
+cached copy of an edited plugin, and the page then runs old code with no
+error to show for it. **Bump the number in every page that loads this plugin
+whenever you change one of these files.**
+
 
 Then place the element anywhere in your page:
 
