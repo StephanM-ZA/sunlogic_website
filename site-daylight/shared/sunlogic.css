@@ -146,6 +146,16 @@ body {
   text-wrap: pretty;
 }
 a { color: var(--color-orange); text-decoration: none; transition: opacity var(--dur-hover) ease-out; }
+/* Off-screen until keyboard-focused, then jumps into view top-left —
+   the first tab stop on every page, letting a keyboard/screen-reader
+   user skip the nav and land straight in <main>. */
+.sl-skip-link {
+  position: absolute; left: -9999px; top: 0; z-index: var(--z-dialog);
+  background: var(--color-orange); color: var(--color-navy-deep);
+  padding: 12px 20px; font-family: var(--font-mono); font-size: 14px; font-weight: 700;
+  letter-spacing: 0.05em; text-transform: uppercase; text-decoration: none;
+}
+.sl-skip-link:focus { left: 0; opacity: 1; }
 /* Text links dim on hover. Anything that is a BUTTON or a CARD must not —
    it has its own hover, and 0.7 opacity washes the accent out. */
 a:hover { opacity: 0.7; }

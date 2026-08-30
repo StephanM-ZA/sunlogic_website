@@ -556,7 +556,7 @@ class DlMediaBg extends SLElement {
     const ratio = this.getAttribute('ratio');
     if (ratio) this.style.aspectRatio = ratio;
     this.innerHTML = src
-      ? '<img class="sl-media" src="' + src + '" alt="' + alt + '" />'
+      ? '<img class="sl-media" src="' + src + '" alt="' + alt + '" loading="lazy" decoding="async" />'
       : '<div class="sl-placeholder' + inv + ' sl-media">' + alt + '</div>';
   }
 }
@@ -575,7 +575,7 @@ class DlHero extends SLElement {
     const alt = SL_ATTR(this, 'alt', '[Hero photography pending]');
     const fit = this.getAttribute('fit') === 'contain' ? ' sl-hero__image--contain' : '';
     const media = photo
-      ? '<img class="sl-hero__image' + fit + '" src="' + photo + '" alt="' + alt + '" />'
+      ? '<img class="sl-hero__image' + fit + '" src="' + photo + '" alt="' + alt + '" fetchpriority="high" decoding="async" />'
       : '<div class="sl-placeholder sl-placeholder--inverse sl-hero__empty">' + alt + '</div>';
     this.innerHTML =
       '<section class="sl-hero">' + media +
