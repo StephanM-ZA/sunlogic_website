@@ -1,0 +1,941 @@
+/* ============================================================
+   SUNLOGIC — SHIPPABLE STYLESHEET  v1.0
+   This file IS the implementation. Do not retype these values
+   into Tailwind classes, inline styles, or a second stylesheet.
+   Import it, use the classes.
+   Self-contained: no Tailwind, no build step. Fonts in ./fonts/.
+   ============================================================ */
+
+/* ---- Fonts ------------------------------------------------- */
+/* Hanken Grotesk + JetBrains Mono, SIL OFL 1.1, self-hosted.
+   Copy the 16 .woff2 files from the design bundle's assets/fonts/.
+   Do NOT use Feature Deck, Aeonik Pro or Social Mono — those are
+   licensed faces belonging to a different brand. */
+@font-face { font-family: "Hanken Grotesk"; font-weight: 400; font-display: swap; src: url("./fonts/HankenGrotesk-400-latin.woff2") format("woff2"); }
+@font-face { font-family: "Hanken Grotesk"; font-weight: 500; font-display: swap; src: url("./fonts/HankenGrotesk-500-latin.woff2") format("woff2"); }
+@font-face { font-family: "Hanken Grotesk"; font-weight: 700; font-display: swap; src: url("./fonts/HankenGrotesk-700-latin.woff2") format("woff2"); }
+@font-face { font-family: "Hanken Grotesk"; font-weight: 800; font-display: swap; src: url("./fonts/HankenGrotesk-800-latin.woff2") format("woff2"); }
+@font-face { font-family: "Hanken Grotesk"; font-weight: 900; font-display: swap; src: url("./fonts/HankenGrotesk-900-latin.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-weight: 400; font-display: swap; src: url("./fonts/JetBrainsMono-400-latin.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-weight: 500; font-display: swap; src: url("./fonts/JetBrainsMono-500-latin.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-weight: 700; font-display: swap; src: url("./fonts/JetBrainsMono-700-latin.woff2") format("woff2"); }
+/* latin-ext subsets also shipped in ./fonts/ — add matching rules if you
+   need Afrikaans diacritics beyond latin-1. */
+
+/* ---- Tokens ------------------------------------------------ */
+:root {
+  --color-orange: #F66F00;
+  --color-navy: #0D2028;
+  --color-navy-deep: #081619;
+  --color-beige: #FFF7E9;
+  --color-beige-1: #F7EED9;
+  --color-beige-2: #F0E5CF;
+  --color-dark-beige: #DACAB6;
+  --color-white: #FFFFFF;
+  --color-grey: #A09B93;
+  --color-grey-strong: #676057;
+  --color-error: #BA1A1A;
+  --color-error-container: #FFDAD6;
+
+  /* Creative contexts ONLY — collateral, banners. Never core UI. */
+  --color-yellow: #FCCC3C;
+  --color-brown: #4C2806;
+  --color-purple: #C8B0FF;
+  --color-dark-purple: #321F61;
+  --color-light-blue: #BED5FF;
+  --color-dark-blue: #1D3E86;
+
+  --surface-page: var(--color-beige);
+  --surface-page-alt: var(--color-beige-1);
+  --surface-card: var(--color-white);
+  --surface-card-warm: var(--color-beige-1);
+  --surface-sunk: var(--color-beige-2);
+  --surface-inverse: var(--color-navy);
+  --surface-accent: var(--color-orange);
+
+  --text-primary: var(--color-navy);
+  --text-secondary: var(--color-grey-strong);
+  --text-disabled: var(--color-grey);
+  --text-inverse: var(--color-white);
+  --text-accent: var(--color-orange);
+
+  --border-hairline: rgba(13, 32, 40, 0.12);
+  --border-warm: var(--color-dark-beige);
+  --border-inverse: rgba(255, 255, 255, 0.18);
+
+  --gradient-daylight: linear-gradient(96deg, #F66F00 0%, #FCCC3C 26%, #FFF7E9 46%, #C8B0FF 70%, #0D2028 100%);
+  --gradient-dawn: linear-gradient(96deg, #4C2806 0%, #F66F00 45%, #FCCC3C 100%);
+  --gradient-dusk: linear-gradient(96deg, #F66F00 0%, #C880FF 55%, #321F61 100%);
+  --gradient-night: linear-gradient(96deg, #321F61 0%, #0D2028 55%, #BED5FF 100%);
+  --scrim-bottom: linear-gradient(to top, rgba(13,32,40,0.74) 0%, rgba(13,32,40,0) 100%);
+
+  --font-display: "Hanken Grotesk", "Helvetica Neue", sans-serif;
+  --font-body: "Hanken Grotesk", "Helvetica Neue", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --type-hero-size: clamp(32px, 5.4vw, 72px);
+  --type-section-size: clamp(32px, 3.6vw, 48px);
+  --type-section-lh: 1.166;
+  --type-section-ls: -0.01em;
+  --type-hero-ls: -0.02em;
+
+  --unit: 8px;
+  --section-gap-desktop: 120px;
+  --section-gap-mobile: 64px;
+  --gutter-desktop: 24px;
+  --gutter-mobile: 16px;
+  --container-used: 1152px;
+  --section-pad-y: var(--section-gap-mobile);
+  --gutter: var(--gutter-mobile);
+  --grid-gap: 24px;
+
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-12: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  --shadow-float: 0 8px 32px rgba(13,32,40,0.10);
+  --shadow-sheet: 0 -8px 40px rgba(13,32,40,0.14);
+  --glass-bg: rgba(255,247,233,0.10);
+  --glass-border: rgba(255,255,255,0.22);
+  --glass-blur: blur(24px) saturate(1.1);
+  --focus-ring: 0 0 0 2px var(--color-beige), 0 0 0 4px var(--color-orange);
+
+  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-expo-out: cubic-bezier(0.16, 1.08, 0.38, 0.98);
+  --dur-hover: 100ms;
+  --dur-fast: 200ms;
+  --dur-base: 400ms;
+  --dur-slow: 700ms;
+
+  --z-sticky: 40;
+  --z-drawer: 60;
+  --z-dialog: 80;
+  --z-toast: 90;
+}
+
+@media (min-width: 768px) {
+  :root { --section-pad-y: var(--section-gap-desktop); --gutter: var(--gutter-desktop); }
+}
+@media (max-width: 767px) {
+  :root { --type-section-ls: normal; --type-section-lh: 1.25; --type-hero-ls: -0.01em; }
+}
+
+/* ---- Base -------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+/* Anchor clearance. Any in-page link has to land its target below the sticky
+   chrome, so this tracks the real chrome height: 72px header alone, or
+   72 + 57 where a section nav is present. If you add sticky chrome later,
+   update these two numbers or in-page links silently break. */
+[id] { scroll-margin-top: 88px; }
+body:has(dl-subnav) [id] { scroll-margin-top: 145px; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0;
+  background: var(--surface-page);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-wrap: pretty;
+}
+a { color: var(--color-orange); text-decoration: none; transition: opacity var(--dur-hover) ease-out; }
+/* Text links dim on hover. Anything that is a BUTTON or a CARD must not —
+   it has its own hover, and 0.7 opacity washes the accent out. */
+a:hover { opacity: 0.7; }
+a.sl-btn:hover, a.sl-card:hover, a.sl-contact:hover,
+.sl-dock a:hover, .sl-subnav a:hover, .sl-nav a:hover,
+.sl-drawer a:hover, .sl-footer a:hover, .sl-faq a:hover { opacity: 1; }
+/* Form controls otherwise inherit the browser's own black and system font —
+   including hidden ones like a honeypot, which are still in the tree. */
+input, textarea, select, button { font: inherit; color: var(--text-primary); }
+:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+/* ---- Type roles -------------------------------------------- */
+/* The signature device: a heading's LAST phrase in orange.
+   <h1 class="sl-hero-heading">Solar sized to <em>what you actually use</em></h1>
+   Once per heading. Never mid-sentence. */
+.sl-hero-heading em,
+.sl-section-heading em { font-style: normal; color: var(--color-orange); }
+
+.sl-hero-heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--type-hero-size);
+  font-weight: 900;
+  line-height: 1.111;
+  letter-spacing: var(--type-hero-ls);
+}
+.sl-section-heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--type-section-size);
+  font-weight: 800;
+  line-height: var(--type-section-lh);
+  letter-spacing: var(--type-section-ls);
+}
+.sl-title { margin: 0; font-family: var(--font-display); font-size: 24px; font-weight: 700; line-height: 1.333; }
+.sl-body { margin: 0; font-size: 16px; font-weight: 400; line-height: 1.5; color: var(--text-secondary); }
+.sl-body--lg { font-size: 18px; line-height: 1.555; }
+.sl-body--tight { max-width: 560px; }
+
+/* Eyebrow: uppercase mono with an 18×1px leading rule. */
+.sl-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.428;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.sl-eyebrow::before { content: ""; width: 18px; height: 1px; background: currentColor; opacity: 0.5; }
+.sl-eyebrow--inverse { color: rgba(255,255,255,0.7); }
+/* Any eyebrow on a dark surface, with or without the attribute. #676057 is
+   the AA-passing secondary on WARM surfaces only — on navy it drops to 2.7:1.
+   This override stops that recurring every time an eyebrow lands in a navy
+   section. Same for body copy in an inverse section. */
+.sl-section--inverse .sl-eyebrow,
+.sl-card--inverse .sl-eyebrow,
+.sl-hero .sl-eyebrow { color: rgba(255,255,255,0.7); }
+.sl-section--inverse .sl-body,
+.sl-card--inverse .sl-body { color: rgba(255,255,255,0.78); }
+.sl-section--inverse .sl-section-heading,
+.sl-section--inverse .sl-title { color: var(--text-inverse); }
+
+/* The canonical section stack: eyebrow → heading → body → slot. */
+.sl-stack { display: flex; flex-direction: column; gap: 16px; }
+.sl-stack--inverse .sl-section-heading,
+.sl-stack--inverse .sl-hero-heading { color: var(--text-inverse); }
+.sl-stack--inverse .sl-body { color: rgba(255,255,255,0.78); }
+
+/* ---- Layout ------------------------------------------------ */
+.sl-section { padding: var(--section-pad-y) var(--gutter); }
+.sl-section--alt { background: var(--surface-page-alt); }
+.sl-section--inverse { background: var(--surface-inverse); color: var(--text-inverse); }
+.sl-container { max-width: var(--container-used); margin-inline: auto; }
+/* Section rhythm: every top-level block inside a section is 40px from the
+   next. This is why a heading stack never butts up against the grid below
+   it, and why nobody has to remember a margin. */
+.sl-section > .sl-container { display: grid; gap: 40px; align-content: start; }
+@media (max-width: 767px) { .sl-section > .sl-container { gap: 32px; } }
+
+.sl-grid-3 { display: grid; grid-template-columns: 1fr; gap: 20px; align-items: stretch; }
+@media (min-width: 768px)  { .sl-grid-3 { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .sl-grid-3 { grid-template-columns: repeat(3, 1fr); } }
+
+.sl-grid-2 { display: grid; grid-template-columns: 1fr; gap: 20px; align-items: stretch; }
+@media (min-width: 768px) { .sl-grid-2 { grid-template-columns: repeat(2, 1fr); } }
+
+/* Cards in a grid are always the same height as their tallest sibling. */
+.sl-grid-3 > *, .sl-grid-2 > * { min-width: 0; }
+.sl-grid-3 > * > .sl-card, .sl-grid-2 > * > .sl-card,
+.sl-grid-3 > .sl-card, .sl-grid-2 > .sl-card { height: 100%; }
+
+.sl-cols { display: grid; grid-template-columns: 1fr; gap: 32px; align-items: center; }
+@media (min-width: 768px) { .sl-cols { grid-template-columns: 1fr 1fr; gap: 56px; } }
+
+.sl-split { display: grid; grid-template-columns: 1fr; }
+@media (min-width: 768px) { .sl-split { grid-template-columns: 1.05fr 1fr; } }
+@media (max-width: 767px) { .sl-split > .sl-split__panel { display: none; } }
+
+.sl-hide-mobile { display: none; }
+@media (min-width: 768px) { .sl-hide-mobile { display: block; } .sl-only-mobile { display: none; } }
+
+/* ---- Button ------------------------------------------------ */
+/* 50px tall, 4px radius, Hanken 700/14. Press is translateY(1px).
+   NEVER scale on hover. Max ONE .sl-btn--emphasis in view.
+
+   Every button carries the signature hover: a fill wiping
+   bottom-to-top, 240ms expo-out. It is on the base class, not on a
+   variant, so any button anywhere gets it — that is the whole point
+   of having one button component. --btn-wipe sets the colour it
+   wipes to, --btn-wipe-ink the text colour once it has. */
+.sl-btn {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 50px;
+  padding: 0 24px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background-clip: padding-box;   /* so the wipe covers edge to edge */
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  white-space: nowrap;
+  --btn-wipe: var(--color-orange);
+  --btn-wipe-ink: var(--color-white);
+  transition: color var(--dur-hover) ease-out,
+              border-color var(--dur-hover) ease-out,
+              transform var(--dur-hover) ease-out,
+              opacity var(--dur-hover) ease-out;
+}
+.sl-btn::before {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 0;
+  background: var(--btn-wipe);
+  transition: height 240ms var(--ease-expo-out);
+  z-index: 0;
+  border-radius: inherit;
+}
+.sl-btn:hover:not(:disabled)::before { height: 100%; }
+.sl-btn:hover:not(:disabled) { color: var(--btn-wipe-ink); opacity: 1; }
+/* Ghost is the one variant that dims rather than filling — but only over
+   photography, where a fill would fight the image. */
+.sl-btn--ghost:not(.sl-on-dark):hover:not(:disabled) { opacity: 1; }
+.sl-btn > span, .sl-btn > svg { position: relative; z-index: 1; }
+.sl-btn:active { transform: translateY(1px); }
+.sl-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.sl-btn:disabled::before { height: 0; }
+.sl-btn--sm { height: 38px; padding: 0 16px; }
+.sl-btn--full { width: 100%; }
+
+.sl-btn--primary   { background: var(--color-navy); color: var(--color-white); }
+.sl-btn--secondary { background: var(--color-beige); color: var(--color-navy); }
+.sl-btn--outline   { background: transparent; color: var(--text-primary); border-color: var(--border-warm); }
+.sl-btn--outline:hover:not(:disabled) { border-color: var(--color-orange); }
+/* Emphasis is already orange, so it wipes to navy instead. */
+.sl-btn--emphasis  { background: var(--color-orange); color: var(--color-white); --btn-wipe: var(--color-navy); }
+.sl-btn--ghost     { background: transparent; color: inherit; }
+/* Ghost over photography or navy: a visible edge, and a restrained
+   wipe so it never outshouts the emphasis button beside it. */
+.sl-btn--ghost.sl-on-dark {
+  border-color: rgba(255,255,255,0.35);
+  color: var(--color-white);
+  --btn-wipe: rgba(255,255,255,0.16);
+  --btn-wipe-ink: var(--color-white);
+}
+.sl-btn--ghost.sl-on-dark:hover:not(:disabled) { border-color: rgba(255,255,255,0.6); }
+/* Wipe overrides. Any variant can be told which colour to fill with — used
+   where two buttons sit side by side and each should read as its own thing
+   (Solar fills orange, Electrical fills navy). */
+.sl-btn--wipe-orange { --btn-wipe: var(--color-orange); --btn-wipe-ink: var(--color-white); }
+.sl-btn--wipe-navy   { --btn-wipe: var(--color-navy);   --btn-wipe-ink: var(--color-white); }
+.sl-btn--wipe-navy:hover:not(:disabled) { border-color: var(--color-navy); }
+
+.sl-icon-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px;
+  border: none; background: transparent; color: inherit;
+  border-radius: var(--radius-sm); cursor: pointer;
+  transition: background-color var(--dur-hover) ease-out;
+}
+.sl-icon-btn:hover { background: rgba(13,32,40,0.06); }
+
+/* ---- Card — flat. No shadows, ever. ------------------------ */
+.sl-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-md);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: border-color var(--dur-hover) ease-out;
+}
+/* Hover is the hairline alone — the border warms, nothing else moves.
+   No fill change, no lift, no shadow, no scale. A card that is itself a
+   link takes the accent edge instead. */
+.sl-card:hover { border-color: var(--border-warm); }
+.sl-card--warm:hover, .sl-card--sunk:hover { border-color: var(--color-grey); }
+.sl-card--inverse:hover, .sl-card--glass:hover { border-color: rgba(255,255,255,0.34); }
+a.sl-card:hover, .sl-card:has(> a:hover) { border-color: var(--color-orange); }
+.sl-card--warm    { background: var(--surface-card-warm); border-color: var(--border-warm); }
+.sl-card--sunk    { background: var(--surface-sunk); border-color: var(--border-warm); }
+.sl-card--inverse { background: var(--surface-inverse); border-color: var(--border-inverse); color: var(--text-inverse); }
+.sl-card--glass   { background: var(--glass-bg); border-color: var(--glass-border); backdrop-filter: var(--glass-blur); color: var(--text-inverse); }
+.sl-card__icon { color: var(--color-orange); width: 28px; height: 28px; }
+
+/* ---- Badge / Tag ------------------------------------------- */
+.sl-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 24px; padding: 0 8px;
+  border-radius: var(--radius-xs);
+  background: var(--surface-sunk);
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+  letter-spacing: 0.05em; text-transform: uppercase;
+}
+.sl-badge--live::before {
+  content: ""; width: 6px; height: 6px; border-radius: var(--radius-pill);
+  background: var(--color-orange); animation: daylight-pulse 1.6s infinite;
+}
+/* Tag renders bracketed: [ golden hour ] */
+.sl-tag {
+  display: inline-flex; align-items: center;
+  height: 26px; padding: 0 10px;
+  border: 1px solid var(--border-warm); border-radius: var(--radius-pill);
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.05em;
+}
+.sl-tag::before { content: "[ "; }
+.sl-tag::after  { content: " ]"; }
+
+/* ---- StatTile ---------------------------------------------- */
+/* 40px/900 value slot — for numerals and SHORT values only.
+   For long word values use .sl-cred-row instead. */
+.sl-stat { padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-hairline);
+  transition: background-color var(--dur-hover) ease-out, border-color var(--dur-hover) ease-out; }
+.sl-stat:hover { border-color: var(--border-warm); }
+.sl-stat--glass { background: var(--glass-bg); border-color: var(--glass-border); backdrop-filter: var(--glass-blur); color: var(--text-inverse); }
+.sl-stat--inverse { background: var(--surface-inverse); border-color: var(--border-inverse); color: var(--text-inverse); }
+.sl-stat__label { font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; opacity: 0.7; }
+.sl-stat__value { font-family: var(--font-display); font-size: 40px; font-weight: 900; line-height: 1.05; letter-spacing: -0.02em; margin-top: 8px; }
+.sl-stat__sub   { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; opacity: 0.55; margin-top: 4px; }
+
+/* Mobile restatement of the same facts — lower density, no card. */
+.sl-creds { display: grid; grid-template-columns: 1fr; border-top: 1px solid var(--border-inverse); border-bottom: 1px solid var(--border-inverse); }
+.sl-cred-row { padding: 20px 24px; display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid var(--border-inverse); }
+.sl-cred-row:last-child { border-bottom: none; }
+.sl-cred-row__label { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+.sl-cred-row__value { font-size: 18px; font-weight: 700; color: var(--color-white); }
+@media (min-width: 480px) {
+  .sl-creds { grid-template-columns: repeat(2, 1fr); }
+  .sl-cred-row { border-bottom: none; border-right: 1px solid var(--border-inverse); }
+  .sl-cred-row:last-child { border-right: none; }
+}
+@media (min-width: 1024px) { .sl-creds { grid-template-columns: repeat(4, 1fr); } }
+
+/* ---- Forms ------------------------------------------------- */
+.sl-field { display: flex; flex-direction: column; gap: 8px; }
+.sl-label { font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-secondary); }
+.sl-input, .sl-select {
+  height: 50px; padding: 0 16px; width: 100%;
+  background: var(--color-white);
+  border: 1px solid var(--border-warm);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body); font-size: 16px; color: var(--text-primary);
+  transition: border-color var(--dur-fast) var(--ease-default);
+}
+.sl-input:focus, .sl-select:focus { outline: none; border-color: var(--color-navy); box-shadow: var(--focus-ring); }
+.sl-input[aria-invalid="true"] { border-color: var(--color-orange); }
+.sl-hint { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-secondary); }
+.sl-hint--error { color: var(--color-error); }
+.sl-textarea { min-height: 120px; padding: 14px 16px; height: auto; }
+
+.sl-checkbox { display: inline-flex; align-items: flex-start; gap: 12px; cursor: pointer; }
+.sl-checkbox input { appearance: none; width: 20px; height: 20px; flex: 0 0 20px; margin: 2px 0 0; background: var(--color-white); border: 1px solid var(--border-warm); border-radius: var(--radius-xs); cursor: pointer; }
+.sl-checkbox input:checked { background: var(--color-orange); border-color: var(--color-orange); position: relative; }
+.sl-checkbox input:checked::after {
+  content: ""; position: absolute; left: 6px; top: 2px; width: 5px; height: 10px;
+  border-right: 1.5px solid #fff; border-bottom: 1.5px solid #fff; transform: rotate(45deg);
+}
+.sl-switch { position: relative; width: 46px; height: 28px; flex: 0 0 46px; }
+.sl-switch input { appearance: none; width: 100%; height: 100%; margin: 0; background: var(--color-dark-beige); border-radius: var(--radius-pill); cursor: pointer; transition: background-color 160ms var(--ease-default); }
+.sl-switch input:checked { background: var(--color-orange); }
+.sl-switch input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; background: #fff; border-radius: var(--radius-pill); transition: transform 160ms var(--ease-default); }
+.sl-switch input:checked::after { transform: translateX(18px); }
+
+/* ---- NavBar ------------------------------------------------ */
+/* The sticky lives on the HOST element, not the inner bar. A sticky box
+   can only travel within its containing block's content box, and the
+   host is shrink-wrapped to the bar's own height — so sticky on the
+   inner element gives exactly 0px of travel. Same trap for any future
+   sticky component wrapped in a dl-* element. */
+dl-nav-bar { position: sticky; top: 0; z-index: var(--z-sticky); }
+.sl-nav {
+  height: 72px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 var(--gutter);
+  background: rgba(255,247,233,0.86);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-hairline);
+}
+.sl-nav--dark { background: rgba(13,32,40,0.86); border-bottom-color: var(--border-inverse); color: var(--text-inverse); }
+.sl-nav__links { display: none; gap: 32px; align-items: center; }
+@media (min-width: 768px) { .sl-nav__links { display: flex; } .sl-nav__toggle { display: none; } }
+.sl-nav__link {
+  font-family: var(--font-mono); font-size: 14px; font-weight: 600;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  color: inherit; transition: color var(--dur-hover) ease-out, opacity var(--dur-hover) ease-out;
+}
+/* Nav links take the accent on hover and when current — orange, except
+   Electrical, which takes navy. Same pairing as the Solar/Electrical
+   buttons, so the two trades read consistently across the site. */
+.sl-nav__link:hover,
+.sl-nav__link[aria-current="page"] { color: var(--color-orange); opacity: 1; }
+.sl-nav__link--navy:hover,
+.sl-nav__link--navy[aria-current="page"] { color: var(--color-navy); opacity: 1; }
+.sl-nav--dark .sl-nav__link--navy:hover,
+.sl-nav--dark .sl-nav__link--navy[aria-current="page"] { color: var(--color-beige); }
+.sl-nav__links[data-has-active="true"] .sl-nav__link:not([aria-current="page"]) { opacity: 0.55; }
+.sl-nav__links[data-has-active="true"] .sl-nav__link:not([aria-current="page"]):hover { opacity: 1; }
+.sl-nav__toggle { width: 48px; height: 48px; }
+
+.sl-drawer {
+  position: fixed; inset: 0; z-index: var(--z-drawer);
+  background: var(--surface-inverse); color: var(--text-inverse);
+  display: flex; flex-direction: column;
+  padding: 0 var(--gutter) 24px;
+  animation: daylight-fade-up 240ms var(--ease-expo-out);
+}
+.sl-drawer__top { height: 52px; display: flex; align-items: center; justify-content: space-between; }
+.sl-drawer__link {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 56px; color: var(--text-inverse);
+  border-bottom: 1px solid var(--border-inverse);
+  font-family: var(--font-mono); font-size: 14px; font-weight: 600;
+  letter-spacing: 0.05em; text-transform: uppercase;
+}
+.sl-drawer__link svg { color: var(--color-orange); }
+.sl-drawer__link:hover { color: var(--color-orange); opacity: 1; }
+.sl-drawer__link--navy:hover { color: var(--color-beige); opacity: 1; }
+.sl-drawer__link--navy svg { color: var(--color-beige); }
+.sl-drawer__cta { margin-top: auto; }
+
+/* ---- Hero — five layers, all five required ----------------- */
+.sl-hero {
+  position: relative; overflow: hidden;
+  min-height: 560px;
+  display: flex; align-items: flex-end;
+  background: var(--color-navy);
+  color: var(--text-inverse);
+}
+@media (min-width: 768px) { .sl-hero { min-height: 78vh; } }
+.sl-hero__layer { position: absolute; inset: 0; pointer-events: none; }
+.sl-hero__image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* 2 — 14s gradient drift */
+.sl-hero__gradient {
+  background: var(--gradient-dawn);
+  background-size: 300% 100%;
+  animation: daylight-gradient-drift 14s linear infinite;
+  opacity: 0.62;
+  mix-blend-mode: overlay;
+}
+/* 3 — 9s light sweep. NOT optional: the 14s drift alone reads static. */
+.sl-hero__sweep {
+  background: linear-gradient(105deg, rgba(255,255,255,0) 34%, rgba(255,247,233,0.20) 50%, rgba(255,255,255,0) 66%);
+  background-size: 260% 100%;
+  animation: daylight-gradient-drift 9s linear infinite;
+  mix-blend-mode: screen;
+}
+/* 4 — side scrim. A bottom-only scrim loses contrast on a bright photo. */
+.sl-hero__scrim-side { background: linear-gradient(100deg, rgba(13,32,40,.88) 0%, rgba(13,32,40,.62) 38%, rgba(13,32,40,.12) 72%, rgba(13,32,40,0) 100%); }
+/* 5 — bottom scrim */
+.sl-hero__scrim-bottom { background: var(--scrim-bottom); }
+
+.sl-hero__inner {
+  position: relative; z-index: 1;
+  width: 100%; max-width: var(--container-used); margin-inline: auto;
+  padding: 96px var(--gutter) 48px;
+  display: flex; flex-wrap: wrap; gap: 40px;
+  align-items: flex-end; justify-content: space-between;
+}
+@media (min-width: 768px) { .sl-hero__inner { padding: 120px var(--gutter) 64px; } }
+.sl-hero__col { flex: 0 0 300px; display: flex; flex-direction: column; gap: 16px; }
+.sl-hero__text { flex: 1 1 480px; max-width: 640px; }
+.sl-creds-band { padding: 0 var(--gutter) 48px; }
+.sl-form { display: grid; gap: 16px; max-width: 500px; }
+.sl-hero__actions { display: flex; flex-wrap: wrap; gap: 16px; }
+@media (max-width: 479px) { .sl-hero__actions { flex-direction: column; } .sl-hero__actions .sl-btn { width: 100%; } }
+
+/* ---- Terminal ---------------------------------------------- */
+.sl-terminal {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-warm);
+  background: var(--surface-card-warm);
+  height: 320px; display: flex; flex-direction: column; overflow: hidden;
+}
+.sl-terminal--glass { background: var(--glass-bg); border-color: var(--glass-border); backdrop-filter: var(--glass-blur); color: var(--text-inverse); }
+.sl-terminal__head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; border-bottom: 1px solid var(--border-warm);
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+  letter-spacing: 0.05em; text-transform: uppercase;
+}
+.sl-terminal__body { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: flex-end; padding: 12px 16px; overflow: hidden; }
+.sl-terminal__row {
+  display: flex; gap: 12px; padding: 5px 0;
+  font-family: var(--font-mono); font-size: 12px;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  animation: daylight-fade-up var(--dur-base) var(--ease-expo-out);
+}
+.sl-terminal__time { flex: 0 0 44px; color: var(--text-disabled); }
+
+/* ---- CTABlock — the only centred type in the system -------- */
+.sl-cta-wrap { padding: var(--section-pad-y) var(--gutter); }
+.sl-cta {
+  position: relative; overflow: hidden;
+  max-width: var(--container-used); margin-inline: auto;
+  background: var(--surface-inverse); color: var(--text-inverse);
+  border-radius: var(--radius-lg);
+  padding: 56px 24px 96px;
+  display: flex; flex-direction: column; align-items: center; gap: 20px;
+  text-align: center;
+}
+.sl-cta::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: var(--gradient-dawn); background-size: 300% 100%;
+  animation: daylight-gradient-drift 14s linear infinite;
+  opacity: 0.38;
+}
+.sl-cta > * { position: relative; z-index: 1; }
+.sl-cta__heading { font-family: var(--font-display); font-size: clamp(32px, 4.4vw, 56px); font-weight: 900; line-height: 1.1; letter-spacing: -0.02em; margin: 0; }
+
+/* ---- Footer ------------------------------------------------ */
+.sl-footer { background: var(--surface-inverse); color: var(--text-inverse); padding: 64px var(--gutter) 40px; }
+.sl-footer__groups { max-width: var(--container-used); margin-inline: auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 48px; }
+.sl-footer__link { display: block; color: rgba(255,255,255,0.7); font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; padding: 4px 0; }
+.sl-footer__link::before { content: "["; margin-right: 4px; }
+.sl-footer__link::after  { content: "]"; margin-left: 4px; }
+.sl-footer__plain { display: block; color: rgba(255,255,255,0.85); font-size: 15px; padding: 2px 0; }
+.sl-footer__plain:hover { color: var(--color-orange); opacity: 1; }
+.sl-footer__rule { max-width: var(--container-used); margin: 48px auto 0; border-top: 1px solid var(--border-inverse); padding-top: 20px; }
+.sl-footer__strapline { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: rgba(255,255,255,0.4); }
+
+/* ---- Placeholder — labelled empty state, never stock ------- */
+.sl-placeholder {
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface-sunk);
+  border: 1px dashed var(--border-warm);
+  border-radius: var(--radius-lg);
+  padding: 24px; text-align: center;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.05em;
+  text-transform: uppercase; color: var(--text-secondary);
+}
+.sl-placeholder--inverse { background: rgba(255,255,255,0.06); border-color: var(--border-inverse); color: rgba(255,255,255,0.6); }
+
+.sl-wordmark { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.01em; }
+/* A wordmark that is a link still has to be a 44px tap target. */
+.sl-nav a, .sl-drawer__top .sl-wordmark { display: inline-flex; align-items: center; min-height: 44px; }
+.sl-stack__slot { margin-top: 8px; }
+.sl-actions { display: flex; flex-wrap: wrap; gap: 16px; }
+@media (max-width: 479px) { .sl-actions { flex-direction: column; } .sl-actions .sl-btn { width: 100%; } }
+.sl-card__stack { display: flex; flex-direction: column; gap: 12px; }
+.sl-card__icon { display: inline-flex; }
+.sl-callout { display: flex; gap: 16px; align-items: flex-start; }
+.sl-media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-lg); }
+.sl-hero__empty { position: absolute; inset: 0; border-radius: 0; align-items: flex-start; justify-content: flex-end; padding: 24px; }
+.sl-badge--bare { background: transparent; padding: 0; }
+.sl-eyebrow--accent { color: var(--color-orange); }
+.sl-eyebrow--centred { justify-content: center; }
+.sl-footer__col { display: grid; gap: 4px; align-content: start; }
+.sl-footer__brand { max-width: 280px; display: grid; gap: 12px; align-content: start; }
+
+/* Step card — numbered process step. */
+.sl-step { gap: 12px; }
+.sl-step__num {
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+  letter-spacing: 0.05em; color: var(--color-orange);
+}
+
+/* Checklist — orange tick, 16px text, 12px gap. */
+.sl-checklist { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.sl-checklist__row { display: flex; gap: 12px; align-items: flex-start; }
+.sl-checklist__tick { color: var(--color-orange); flex: 0 0 20px; display: inline-flex; margin-top: 2px; }
+
+/* Prose — long-form editorial column. */
+.sl-prose { display: grid; gap: 16px; max-width: 640px; }
+.sl-prose--wide { max-width: 780px; }
+.sl-prose p { margin: 0; font-size: 16px; line-height: 1.5; color: var(--text-secondary); }
+.sl-prose p strong { color: var(--text-primary); font-weight: 700; }
+.sl-prose h3 { margin: 16px 0 0; font-family: var(--font-display); font-size: 24px; font-weight: 700; line-height: 1.333; color: var(--text-primary); }
+.sl-prose h3:first-child { margin-top: 0; }
+.sl-section--inverse .sl-prose p { color: rgba(255,255,255,0.78); }
+.sl-section--inverse .sl-prose p strong,
+.sl-section--inverse .sl-prose h3 { color: var(--text-inverse); }
+
+/* List — orange dot, bold lead-in. */
+.sl-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; max-width: 640px; }
+.sl-list__row { display: flex; gap: 12px; align-items: flex-start; font-size: 16px; line-height: 1.5; color: var(--text-secondary); }
+.sl-list__row strong { color: var(--text-primary); font-weight: 700; }
+.sl-list__dot { flex: 0 0 6px; width: 6px; height: 6px; margin-top: 9px; border-radius: var(--radius-pill); background: var(--color-orange); }
+.sl-section--inverse .sl-list__row { color: rgba(255,255,255,0.78); }
+.sl-section--inverse .sl-list__row strong { color: var(--text-inverse); }
+
+/* Contact row — orange icon, mono label, plain value. */
+.sl-contact { display: flex; gap: 16px; align-items: flex-start; color: inherit; padding: 4px 0; }
+a.sl-contact:hover { opacity: 1; }
+a.sl-contact:hover .sl-contact__value { color: var(--color-orange); }
+.sl-contact__icon { flex: 0 0 22px; color: var(--color-orange); display: inline-flex; margin-top: 2px; }
+.sl-contact__body { display: grid; gap: 4px; }
+.sl-contact__label { font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-secondary); }
+.sl-contact__value { font-size: 16px; color: var(--text-primary); transition: color var(--dur-hover) ease-out; }
+.sl-card--inverse .sl-contact__value, .sl-card--glass .sl-contact__value { color: var(--text-inverse); }
+
+/* Person card. */
+.sl-person { display: grid; gap: 8px; justify-items: start; }
+.sl-person__avatar { width: 64px; height: 64px; border-radius: var(--radius-pill);
+  background: var(--surface-sunk); border: 1px solid var(--border-warm);
+  display: grid; place-items: center; margin-bottom: 8px;
+  font-family: var(--font-mono); font-size: 14px; letter-spacing: 0.05em; color: var(--text-secondary); }
+.sl-person__role { margin: 0; font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+  letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-orange); }
+
+/* Legal page — quick links and company details. */
+.sl-quicklinks { background: var(--surface-page-alt); border-top: 1px solid var(--border-warm); border-bottom: 1px solid var(--border-warm); }
+.sl-quicklinks__inner { max-width: var(--container-used); margin-inline: auto; padding: 20px var(--gutter);
+  display: flex; flex-wrap: wrap; gap: 8px 24px; }
+.sl-quicklink { display: inline-flex; align-items: center; min-height: 44px;
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: 0.05em;
+  text-transform: uppercase; color: var(--text-secondary); }
+.sl-quicklink:hover { color: var(--color-orange); opacity: 1; }
+.sl-details { display: grid; gap: 20px; grid-template-columns: 1fr; font-size: 16px; color: var(--text-secondary); }
+@media (min-width: 768px) { .sl-details { grid-template-columns: 1fr 1fr; } }
+.sl-details p { margin: 0; }
+.sl-details__label { display: block; margin-bottom: 4px; font-weight: 700; color: var(--text-primary); }
+
+/* Trust strip — one row of checkable facts under the hero. */
+.sl-trust { background: var(--surface-page-alt); border-bottom: 1px solid var(--border-warm); }
+.sl-trust__inner {
+  max-width: var(--container-used); margin-inline: auto;
+  padding: 20px var(--gutter);
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 8px 0;
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+  letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-secondary);
+  text-align: center;
+}
+.sl-trust__inner > span + span::before {
+  content: "·"; color: var(--color-orange); margin: 0 16px;
+}
+
+/* Split copy — a card carrying two labelled halves. */
+.sl-split-copy { display: grid; gap: 8px; }
+.sl-split-copy__label {
+  margin: 8px 0 0;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-orange);
+}
+.sl-split-copy__label:first-child { margin-top: 0; }
+.sl-split-copy .sl-body { margin: 0; }
+
+.sl-cta__phone {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 8px;
+  font-family: var(--font-mono); font-size: 14px; font-weight: 600;
+  letter-spacing: 0.05em; color: rgba(255,255,255,0.7);
+}
+.sl-cta__phone:hover { color: var(--color-orange); opacity: 1; }
+
+/* Statement — one large line breaking up long-form copy. */
+.sl-statement {
+  padding: var(--section-pad-y) var(--gutter);
+  background: var(--surface-inverse); color: var(--text-inverse);
+  position: relative; overflow: hidden;
+}
+.sl-statement--warm { background: var(--surface-page-alt); color: var(--text-primary); }
+.sl-statement__grad {
+  position: absolute; inset: 0; pointer-events: none;
+  background: var(--gradient-dawn); background-size: 300% 100%;
+  animation: daylight-gradient-drift 14s linear infinite;
+  opacity: 0.28;
+}
+.sl-statement__inner {
+  position: relative; max-width: var(--container-used); margin-inline: auto;
+  display: grid; gap: 20px;
+}
+.sl-statement__text {
+  margin: 0; max-width: 900px;
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3.2vw, 44px);
+  font-weight: 800; line-height: 1.2; letter-spacing: -0.01em;
+}
+.sl-statement__text em { font-style: normal; color: var(--color-orange); }
+.sl-statement--warm .sl-statement__grad { opacity: 0.14; }
+/* Copy inside a navy statement takes the inverse treatment automatically,
+   so nobody has to remember an inline colour. */
+.sl-statement:not(.sl-statement--warm) .sl-body { color: rgba(255,255,255,0.78); }
+.sl-statement:not(.sl-statement--warm) .sl-body strong { color: var(--text-inverse); }
+
+/* Section nav — sticky anchor row for the long service pages.
+   Sticky on the host, for the same reason as the header. */
+dl-subnav { position: sticky; top: 72px; z-index: 30; }
+.sl-subnav {
+  background: rgba(255,247,233,0.92); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-hairline);
+}
+.sl-subnav__inner {
+  max-width: var(--container-used); margin-inline: auto;
+  padding: 0 var(--gutter);
+  display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none;
+}
+.sl-subnav__inner::-webkit-scrollbar { display: none; }
+.sl-subnav__link {
+  flex: 0 0 auto;
+  display: inline-flex; align-items: center; height: 56px; padding: 0 16px;
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--text-secondary); border-bottom: 2px solid transparent;
+  transition: color var(--dur-hover) ease-out, border-color var(--dur-hover) ease-out;
+}
+.sl-subnav__link:hover { color: var(--text-primary); opacity: 1; }
+.sl-subnav__link.is-current { color: var(--text-primary); border-bottom-color: var(--color-orange); }
+
+/* FAQ — accordion. Quieter than a grid of cards for six questions. */
+.sl-faq { display: grid; border-top: 1px solid var(--border-warm); }
+.sl-faq__item { border-bottom: 1px solid var(--border-warm); }
+.sl-faq__q {
+  width: 100%; background: none; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  padding: 24px 0; text-align: left;
+  font-family: var(--font-display); font-size: 18px; font-weight: 700;
+  color: var(--text-primary);
+  transition: color var(--dur-hover) ease-out;
+}
+.sl-faq__q:hover { color: var(--color-orange); }
+.sl-faq__sign {
+  flex: 0 0 20px; position: relative; height: 20px; color: var(--color-orange);
+}
+.sl-faq__sign::before, .sl-faq__sign::after {
+  content: ""; position: absolute; background: currentColor;
+  transition: transform var(--dur-fast) var(--ease-default);
+}
+.sl-faq__sign::before { top: 9px; left: 0; width: 20px; height: 2px; }
+.sl-faq__sign::after  { top: 0; left: 9px; width: 2px; height: 20px; }
+.sl-faq__item[open] .sl-faq__sign::after { transform: rotate(90deg); }
+.sl-faq__a { padding: 0 0 24px; max-width: 720px; }
+.sl-faq__a p { margin: 0; font-size: 16px; line-height: 1.5; color: var(--text-secondary); }
+.sl-section--inverse .sl-faq__q { color: var(--text-inverse); }
+.sl-section--inverse .sl-faq__a p { color: rgba(255,255,255,0.78); }
+.sl-section--inverse .sl-faq, .sl-section--inverse .sl-faq__item { border-color: var(--border-inverse); }
+
+/* Figures — a row of numbers on a band. */
+.sl-figures { display: grid; gap: 1px; background: var(--border-inverse); grid-template-columns: 1fr; }
+@media (min-width: 640px) { .sl-figures { grid-template-columns: repeat(3, 1fr); } }
+.sl-figure { background: var(--surface-inverse); padding: 28px 24px; display: grid; gap: 8px; }
+.sl-figure__value {
+  font-family: var(--font-display); font-size: 40px; font-weight: 900;
+  line-height: 1.05; letter-spacing: -0.02em; color: var(--color-orange);
+}
+.sl-figure__label {
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+  letter-spacing: 0.05em; text-transform: uppercase; color: rgba(255,255,255,0.6);
+}
+
+/* Dock — the persistent action pill. Not a second nav: the phone
+   number and the quote, within reach on a long page. */
+.sl-dock {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  z-index: var(--z-toast);
+  display: flex; align-items: center; gap: 4px;
+  padding: 5px;
+  background: rgba(13,32,40,0.88);
+  border: 1px solid var(--border-inverse);
+  border-radius: var(--radius-sm);
+  backdrop-filter: var(--glass-blur);
+  max-width: calc(100vw - 24px);
+}
+.sl-dock__phone {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 44px; padding: 0 16px 0 18px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono); font-size: 13px; font-weight: 600;
+  letter-spacing: 0.05em; color: rgba(255,255,255,0.82);
+  white-space: nowrap;
+  transition: color var(--dur-hover) ease-out, background-color var(--dur-hover) ease-out;
+}
+.sl-dock__phone svg { color: var(--color-orange); }
+.sl-dock__phone:hover { color: var(--color-white); background: rgba(255,255,255,0.10); opacity: 1; }
+/* The dock's button is a real button: same 4px corner, same wipe. */
+.sl-dock__cta {
+  position: relative; overflow: hidden;
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 44px; padding: 0 20px;
+  border-radius: var(--radius-sm);
+  background: var(--color-orange); color: var(--color-white);
+  font-family: var(--font-body); font-size: 14px; font-weight: 700;
+  white-space: nowrap;
+  transition: color var(--dur-hover) ease-out, transform var(--dur-hover) ease-out;
+}
+.sl-dock__cta::before {
+  content: ""; position: absolute; inset: auto 0 0 0; height: 0;
+  background: var(--color-beige);
+  transition: height 240ms var(--ease-expo-out);
+  z-index: 0;
+}
+.sl-dock__cta:hover::before { height: 100%; }
+/* Wipes to beige, not navy — the dock itself is navy, so a navy wipe would
+   dissolve the button into its own container. */
+.sl-dock__cta:hover { color: var(--color-navy); opacity: 1; }
+.sl-dock__cta:active { transform: translateY(1px); }
+.sl-dock__cta > span, .sl-dock__cta > svg { position: relative; z-index: 1; }
+/* On a narrow phone the number collapses to the icon alone. */
+@media (max-width: 420px) { .sl-dock__phone span { display: none; } .sl-dock__phone { padding: 0 14px; } }
+/* Dock clearance goes on the footer, so the navy runs to the bottom of
+   the document rather than leaving a beige strip under it. */
+.sl-footer { padding-bottom: 120px; }
+@media print { .sl-dock { display: none; } .sl-footer { padding-bottom: 40px; } }
+
+/* ---- Custom-element display defaults ----------------------- */
+/* Unregistered/inline custom elements otherwise collapse or wrap. */
+dl-section, dl-card, dl-hero, dl-footer, dl-callout, dl-cta,
+dl-media-bg, dl-media, dl-eyebrow, dl-stat, dl-field, dl-stack, dl-grid,
+dl-step, dl-checklist, dl-creds, dl-terminal, dl-heading, dl-text,
+dl-actions, dl-wordmark, dl-prose, dl-list, dl-contact-row, dl-person,
+dl-statement, dl-faq, dl-figures { display: block; }
+/* Sticky hosts keep display:block AND their position — declared above. */
+dl-nav-bar, dl-subnav { display: block; }
+/* Card-like elements fill their grid cell so a row is always level. */
+dl-card, dl-step, dl-person { display: flex; flex-direction: column; }
+dl-card > .sl-card, dl-step > .sl-card, dl-person > .sl-card { flex: 1; }
+dl-button, dl-badge, dl-tag, dl-icon { display: inline-block; }
+/* Media slots fill their sized wrapper. With a ratio attribute they
+   size themselves instead. */
+dl-media, dl-media-bg { position: relative; height: 100%; }
+dl-media[ratio], dl-media-bg[ratio] { height: auto; }
+.sl-btn svg { width: 18px; height: 18px; flex: 0 0 18px; }
+.sl-icon-btn svg { width: 24px; height: 24px; }
+.sl-drawer__link svg { width: 18px; height: 18px; }
+.sl-eyebrow, .sl-body, .sl-title { margin: 0; }
+
+/* ---- Motion ------------------------------------------------ */
+@keyframes daylight-gradient-drift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes daylight-fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes daylight-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.35; }
+}
+
+/* Scroll reveals — fade + 16px rise, 700ms expo-out. No parallax.
+   Content is VISIBLE by default and only "armed" by JS when it loads
+   below the fold. If the script fails, the page still reads — a reveal
+   must never be able to hide content. */
+dl-reveal, dl-reveal-lines { display: block; }
+dl-reveal.is-armed, dl-reveal-lines.is-armed {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity var(--dur-slow) var(--ease-expo-out),
+              transform var(--dur-slow) var(--ease-expo-out);
+}
+dl-reveal.is-armed.is-visible,
+dl-reveal-lines.is-armed.is-visible { opacity: 1; transform: none; }
+
+/* Retired: the particle canvas. The motion system is gradient drift,
+   light sweep, fade-up and pulse. Nothing else. */
+.dl-particles { display: none !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  dl-reveal, dl-reveal-lines { opacity: 1 !important; transform: none !important; }
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+  .sl-hero__gradient, .sl-hero__sweep, .sl-cta::before {
+    background-position: 50% 50% !important;
+    background-size: 100% 100% !important;
+  }
+  .sl-badge--live::before { opacity: 1 !important; }
+}

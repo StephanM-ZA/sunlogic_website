@@ -3,277 +3,241 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Solar &amp; Electrical Contractor Cape Town | Sunlogic SA</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="shared/tailwind-config.js"></script>
-<link rel="stylesheet" href="shared/tokens.css"/>
-<link rel="stylesheet" href="shared/plugin-theme.css"/>
+<title>Solar Power &amp; Certified Electrical Contracting | Sunlogic SA, Cape Town</title>
+<link rel="stylesheet" href="shared/sunlogic.css"/>
+<link rel="stylesheet" href="shared/plugins.css"/>
 <script src="shared/icons.js" defer></script>
 <script src="shared/components.js" defer></script>
-<script src="shared/motion.js" defer></script>
 <script src="shared/forms.js" defer></script>
+<script src="shared/sunlogic-check.js" defer></script>
 <script src="../plugins/review-carousel/reviews.data.js"></script>
-<script src="../plugins/review-carousel/review-carousel.js"></script>
+<script src="../plugins/review-carousel/review-carousel.js" defer></script>
 </head>
-<body class="bg-background text-text-primary font-body antialiased overflow-x-hidden">
+<body>
 <dl-nav-bar active="home"></dl-nav-bar>
 
-<!-- Hero -->
-<section class="relative min-h-screen flex items-center overflow-hidden py-32">
-  <dl-media-bg class="absolute inset-0 w-full h-full" alt="[PLACEHOLDER: real hero photo needed]"></dl-media-bg>
-  <canvas class="dl-particles absolute inset-0 w-full h-full pointer-events-none"></canvas>
-  <div class="absolute inset-0 bg-background opacity-60"></div>
-  <div class="relative z-10 px-6 max-w-[1000px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-    <div class="lg:col-span-7">
-      <dl-reveal>
-        <dl-badge>For Office or Home</dl-badge>
-      </dl-reveal>
-      <dl-reveal-lines>
-        <h1 class="font-display font-bold leading-[1.2] text-[clamp(2rem,4.5vw,4.5rem)] mt-3">Solar Power &amp; Certified Electrical Contracting</h1>
-      </dl-reveal-lines>
-      <dl-reveal>
-        <p class="font-body text-base leading-[1.5] text-text-muted mt-6 max-w-2xl">Solar and electrical from one team, for homes and businesses.</p>
-      </dl-reveal>
-      <dl-reveal>
-        <div class="flex flex-wrap gap-4">
-          <dl-button variant="primary" icon="arrow-right" href="#assessment">Book a Free Site Assessment</dl-button>
-          <dl-button variant="ghost" href="contact.html">Talk to Us</dl-button>
-        </div>
-      </dl-reveal>
-    </div>
-    <dl-card class="lg:col-span-5">
-      <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)] mb-2">Free Onsite Assessment</h3>
-      <p class="font-body text-base leading-[1.5] text-text-muted mb-6">Complete the form below to schedule your consultation.</p>
-      <form data-dl-form data-webhook="PENDING_BACKEND" id="assessment" class="flex flex-col gap-5">
-        <div class="grid grid-cols-2 gap-5">
-          <dl-field label="Name*" type="text" name="name" required></dl-field>
-          <dl-field label="Surname*" type="text" name="surname" required></dl-field>
-        </div>
-        <dl-field label="Email address*" type="email" name="email" required></dl-field>
-        <dl-field label="Contact number*" type="tel" name="tel" required></dl-field>
-        <div>
-          <label for="dl-assessment-service" class="block font-mono text-[11px] uppercase tracking-[0.08em] text-text-muted mb-2">Service Required*</label>
-          <select id="dl-assessment-service" required name="service" class="w-full bg-background border border-border rounded-lg px-3 py-2 text-text-primary text-sm focus:outline-none focus:border-accent">
-            <option value="" disabled selected>Select a service</option>
-            <option>Full Solar system</option>
-            <option>Update to an existing system</option>
-            <option>Electrical servicing</option>
-            <option>Electrical installation</option>
-          </select>
-        </div>
-        <label for="dl-assessment-website" class="absolute -left-[9999px]">Website</label>
-        <input id="dl-assessment-website" type="text" name="website" tabindex="-1" autocomplete="off" class="absolute -left-[9999px]" aria-hidden="true"/>
-        <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-body font-medium transition-opacity duration-150 bg-accent text-text-primary hover:opacity-90 w-full justify-center">Submit Enquiry</button>
-      </form>
-    </dl-card>
+<dl-hero alt="[Hero photography pending — installation in progress]">
+  <div class="sl-hero__text">
+    <dl-reveal>
+      <dl-stack level="hero" eyebrow="Solar and electrical"
+        heading="Solar Power &amp; Certified |Electrical Contracting"
+        body="Solar and electrical from one team, for homes and businesses.">
+        <dl-actions>
+          <dl-button variant="emphasis" icon="arrow-right" href="contact.html">Book a Free Site Assessment</dl-button>
+          <dl-button variant="ghost" on-dark href="contact.html">Talk to Us</dl-button>
+        </dl-actions>
+      </dl-stack>
+    </dl-reveal>
   </div>
-</section>
+  <div class="sl-hero__col sl-hide-mobile">
+    <dl-stat tone="glass" label="Registration" value="[pending]" sub="Number to be confirmed"></dl-stat>
+    <dl-stat tone="glass" label="Install teams" value="In-house" sub="No subcontractors"></dl-stat>
+  </div>
+</dl-hero>
 
-<!-- NOTE for Stephan: registration number and install count are still open per copy/Sunlogic_Site_Copy.md — don't launch this strip with the [X] placeholder still in it. -->
-<!-- Trust Strip -->
-<div class="bg-surface border-y border-border px-6 py-6">
-  <dl-reveal>
-    <p class="font-body text-sm leading-[1.5] text-text-muted text-center max-w-[1000px] mx-auto">
-      Registered electrical contractor <span class="text-accent mx-2">&middot;</span> Compliance certificate on every job <span class="text-accent mx-2">&middot;</span> Council registration handled for you <span class="text-accent mx-2">&middot;</span> [X] systems installed
-    </p>
-  </dl-reveal>
+<!-- Trust strip. Do not launch with the [X] placeholder still in it. -->
+<div class="sl-trust">
+  <div class="sl-trust__inner">
+    <span>Registered electrical contractor</span>
+    <span>Compliance certificate on every job</span>
+    <span>Council registration handled for you</span>
+    <span>[X] systems installed</span>
+  </div>
 </div>
 
-<!-- Section: What We Do -->
-<dl-section bg="background">
+<!-- Section: What we do -->
+<dl-section bg="page" id="what-we-do">
   <dl-reveal>
-    <dl-badge>What We Do</dl-badge>
+    <dl-stack eyebrow="What we do" heading="Two trades, |one contractor"></dl-stack>
   </dl-reveal>
-  <dl-reveal-lines>
-    <h2 class="font-display font-bold leading-[1.2] text-[clamp(1.5rem,2.5vw,2.5rem)] mt-3">What We Do</h2>
-  </dl-reveal-lines>
   <dl-reveal>
-    <div class="flex flex-col gap-6 mt-10">
-      <dl-card>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-          <div class="aspect-[4/3] relative">
-            <dl-media-bg class="absolute inset-0 w-full h-full" alt="[PLACEHOLDER: real residential installation photo needed]"></dl-media-bg>
-          </div>
-          <div>
-            <dl-badge>At Home</dl-badge>
-            <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)] mt-3 mb-2">At Home</h3>
-            <p class="font-body text-base leading-[1.5] text-text-muted mb-4">A smaller electricity bill, and far less of it outside your control. Rewiring, tripping circuits, plug points, surge protection, EV chargers and compliance certificates.</p>
-            <div class="flex gap-3">
-              <dl-button variant="primary" href="solar.html#at-home">Solar</dl-button>
-              <dl-button variant="ghost" href="electrical.html#at-home">Electrical</dl-button>
-            </div>
-          </div>
+    <dl-grid cols="3">
+      <dl-card icon="sun" heading="At Home">
+        <div class="sl-split-copy">
+          <p class="sl-split-copy__label">Solar</p>
+          <p class="sl-body">A smaller electricity bill, and far less of it outside your control.</p>
+          <p class="sl-split-copy__label">Electrical</p>
+          <p class="sl-body">Rewiring, tripping circuits, plug points, surge protection, EV chargers and compliance certificates.</p>
         </div>
+        <dl-actions>
+          <dl-button variant="outline" wipe="orange" href="solar.html#at-home">Solar</dl-button>
+          <dl-button variant="outline" wipe="navy" href="electrical.html#at-home">Electrical</dl-button>
+        </dl-actions>
       </dl-card>
-      <dl-card>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-          <div class="aspect-[4/3] relative md:order-2">
-            <dl-media-bg class="absolute inset-0 w-full h-full" alt="[PLACEHOLDER: real small business installation photo needed]"></dl-media-bg>
-          </div>
-          <div class="md:order-1">
-            <dl-badge>For Small Business</dl-badge>
-            <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)] mt-3 mb-2">For Small Business</h3>
-            <p class="font-body text-base leading-[1.5] text-text-muted mb-4">Your business runs during the day, which is exactly when solar produces. That usually makes the numbers work well. Shopfits, new equipment, lighting and compliance, scheduled around your trading hours.</p>
-            <div class="flex gap-3">
-              <dl-button variant="primary" href="solar.html#small-business">Solar</dl-button>
-              <dl-button variant="ghost" href="electrical.html#small-business">Electrical</dl-button>
-            </div>
-          </div>
+      <dl-card icon="wrench-screwdriver" heading="For Small Business">
+        <div class="sl-split-copy">
+          <p class="sl-split-copy__label">Solar</p>
+          <p class="sl-body">Your business runs during the day, which is exactly when solar produces. That usually makes the numbers work well.</p>
+          <p class="sl-split-copy__label">Electrical</p>
+          <p class="sl-body">Shopfits, new equipment, lighting and compliance, scheduled around your trading hours.</p>
         </div>
+        <dl-actions>
+          <dl-button variant="outline" wipe="orange" href="solar.html#small-business">Solar</dl-button>
+          <dl-button variant="outline" wipe="navy" href="electrical.html#small-business">Electrical</dl-button>
+        </dl-actions>
       </dl-card>
-      <dl-card>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-          <div class="aspect-[4/3] relative">
-            <dl-media-bg class="absolute inset-0 w-full h-full" alt="[PLACEHOLDER: real larger site installation photo needed]"></dl-media-bg>
-          </div>
-          <div>
-            <dl-badge>For Larger Sites</dl-badge>
-            <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)] mt-3 mb-2">For Larger Sites</h3>
-            <p class="font-body text-base leading-[1.5] text-text-muted mb-4">Sized properly on what your site actually uses, with the savings worked out honestly. Maintenance, backup power, emergency lighting and compliance across one site or many.</p>
-            <div class="flex gap-3">
-              <dl-button variant="primary" href="solar.html#larger-sites">Solar</dl-button>
-              <dl-button variant="ghost" href="electrical.html#larger-sites">Electrical</dl-button>
-            </div>
-          </div>
+      <dl-card icon="chart-bar" heading="For Larger Sites">
+        <div class="sl-split-copy">
+          <p class="sl-split-copy__label">Solar</p>
+          <p class="sl-body">Sized properly on what your site actually uses, with the savings worked out honestly.</p>
+          <p class="sl-split-copy__label">Electrical</p>
+          <p class="sl-body">Maintenance, backup power, emergency lighting and compliance across one site or many.</p>
         </div>
+        <dl-actions>
+          <dl-button variant="outline" wipe="orange" href="solar.html#larger-sites">Solar</dl-button>
+          <dl-button variant="outline" wipe="navy" href="electrical.html#larger-sites">Electrical</dl-button>
+        </dl-actions>
       </dl-card>
-    </div>
+    </dl-grid>
   </dl-reveal>
 </dl-section>
 
 <!-- Section: Why Sunlogic -->
-<dl-section bg="surface">
+<dl-section bg="alt" id="why-sunlogic">
   <dl-reveal>
-    <dl-badge>Why Sunlogic</dl-badge>
+    <dl-stack eyebrow="Why Sunlogic" heading="Straight numbers, and |someone to call"></dl-stack>
   </dl-reveal>
-  <dl-reveal-lines>
-    <h2 class="font-display font-bold leading-[1.2] text-[clamp(1.5rem,2.5vw,2.5rem)] mt-3">Why Sunlogic</h2>
-  </dl-reveal-lines>
   <dl-reveal>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-10">
-      <dl-card>
-        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)] mb-2">One Team, Both Jobs</h3>
-        <p class="font-body text-base leading-[1.5] text-text-muted">A solar system is an electrical installation, so the two belong together. We do both, which means one company designs it, installs it and certifies it.</p>
-      </dl-card>
-      <dl-card>
-        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)] mb-2">Straight Numbers</h3>
-        <p class="font-body text-base leading-[1.5] text-text-muted">We work out what you'll actually save from your real bills, and show you how we got there. If solar isn't worth it for your property yet, we'll say so.</p>
-      </dl-card>
-      <dl-card>
-        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)] mb-2">We Stay in Touch Afterwards</h3>
-        <p class="font-body text-base leading-[1.5] text-text-muted">Monitoring, cleaning, check-ups and someone to call when something isn't right.</p>
-      </dl-card>
-    </div>
+    <dl-grid cols="3">
+      <dl-card tone="white" heading="One Team, Both Jobs"
+        body="A solar system is an electrical installation, so the two belong together. We do both, which means one company designs it, installs it and certifies it."></dl-card>
+      <dl-card tone="white" heading="Straight Numbers"
+        body="We work out what you'll actually save from your real bills, and show you how we got there. If solar isn't worth it for your property yet, we'll say so."></dl-card>
+      <dl-card tone="white" heading="We Stay in Touch Afterwards"
+        body="Monitoring, cleaning, check-ups and someone to call when something isn't right."></dl-card>
+    </dl-grid>
   </dl-reveal>
 </dl-section>
 
-<!-- Section: How It Works -->
-<dl-section bg="background">
+<!-- Section: Compliance — the day's job feed -->
+<dl-section bg="inverse">
+  <dl-grid cols="split">
+    <dl-reveal>
+      <dl-stack eyebrow="Compliance" heading="Paperwork Is Part of |the Job"
+        body="Council registration, the Certificate of Compliance and the commissioning record are ours to handle, not yours to chase.">
+        <dl-checklist items="SSEG application submitted on your behalf|Certificate of Compliance issued on every installation|Commissioning record handed over with the system"></dl-checklist>
+      </dl-stack>
+    </dl-reveal>
+    <dl-reveal>
+      <dl-terminal title="Today" tone="glass" stream lines='[
+        {"time":"08:10","text":"site assessment booked · Durbanville"},
+        {"time":"09:32","text":"design approved · 8.2 kW + 13.5 kWh"},
+        {"time":"11:05","text":"SSEG application submitted · City of Cape Town"},
+        {"time":"13:40","text":"install complete · system commissioned"},
+        {"time":"14:02","text":"certificate of compliance issued"},
+        {"time":"15:18","text":"handover walkthrough · [reference placeholder pending]"}
+      ]'></dl-terminal>
+    </dl-reveal>
+  </dl-grid>
+</dl-section>
+
+<!-- Section: How it works -->
+<dl-section bg="page" id="how-it-works">
   <dl-reveal>
-    <dl-badge>How It Works</dl-badge>
+    <dl-stack eyebrow="How it works" heading="Four Steps, |No Surprises"></dl-stack>
   </dl-reveal>
-  <dl-reveal-lines>
-    <h2 class="font-display font-bold leading-[1.2] text-[clamp(1.5rem,2.5vw,2.5rem)] mt-3">How It Works</h2>
-  </dl-reveal-lines>
   <dl-reveal>
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8 mt-10">
-      <dl-card>
-        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)] mb-2">We Come and Look</h3>
-        <p class="font-body text-base leading-[1.5] text-text-muted">A proper site visit and a look at your recent bills.</p>
-      </dl-card>
-      <dl-card>
-        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)] mb-2">We Design and Quote</h3>
-        <p class="font-body text-base leading-[1.5] text-text-muted">One quote, everything included, with the savings explained.</p>
-      </dl-card>
-      <dl-card>
-        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)] mb-2">We Install and Certify</h3>
-        <p class="font-body text-base leading-[1.5] text-text-muted">Fitted, tested, and handed over with the paperwork done, including the council registration.</p>
-      </dl-card>
-      <dl-card>
-        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)] mb-2">We Keep an Eye on It</h3>
-        <p class="font-body text-base leading-[1.5] text-text-muted">Monitoring and scheduled check-ups so small problems stay small.</p>
-      </dl-card>
-    </div>
+    <dl-grid cols="2">
+      <dl-step step="01" heading="We Come and Look"
+        body="A proper site visit and a look at your recent bills."></dl-step>
+      <dl-step step="02" heading="We Design and Quote"
+        body="One quote, everything included, with the savings explained."></dl-step>
+      <dl-step step="03" heading="We Install and Certify"
+        body="Fitted, tested, and handed over with the paperwork done, including the council registration."></dl-step>
+      <dl-step step="04" heading="We Keep an Eye on It" tone="inverse"
+        body="Monitoring and scheduled check-ups so small problems stay small."></dl-step>
+    </dl-grid>
   </dl-reveal>
 </dl-section>
 
-<!-- Section: Proof -->
-<dl-section bg="surface">
+<!-- Section: Proof.
+     The single most valuable section on this page, and the one every
+     competitor is weakest on. Three real jobs, each with a photograph and
+     one real number. The photographs already exist. -->
+<dl-section bg="alt" id="proof">
   <dl-reveal>
-    <dl-badge>Proof</dl-badge>
-  </dl-reveal>
-  <dl-reveal-lines>
-    <h2 class="font-display font-bold leading-[1.2] text-[clamp(1.5rem,2.5vw,2.5rem)] mt-3">Proof</h2>
-  </dl-reveal-lines>
-  <dl-reveal>
-    <p class="font-body text-base leading-[1.5] text-text-muted mt-4">Three recent jobs, each with a photo and one real number.</p>
+    <dl-stack eyebrow="Proof" heading="Three Recent |Jobs"
+      body="Each with a photograph and one real number, so you can judge the work rather than the claim."></dl-stack>
   </dl-reveal>
   <dl-reveal>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-10">
-      <dl-card>
-        <div class="aspect-[4/3] relative">
-          <dl-media-bg class="absolute inset-0 w-full h-full" alt="[Photo pending]"></dl-media-bg>
+    <dl-grid cols="3">
+      <dl-card tone="white">
+        <div style="position:relative;aspect-ratio:4/3">
+          <dl-media alt="[Project photography pending]"></dl-media>
         </div>
-        <p class="font-body text-base leading-[1.5] text-text-muted mt-4">For example: a home in [suburb], [size] system, bill down from R[x] to R[y] a month.</p>
-      </dl-card>
-      <dl-card>
-        <div class="aspect-[4/3] relative">
-          <dl-media-bg class="absolute inset-0 w-full h-full" alt="[Photo pending]"></dl-media-bg>
+        <div class="sl-card__stack">
+          <h3 class="sl-title">[Suburb — pending]</h3>
+          <p class="sl-body">[System size and monthly bill before and after — pending]</p>
         </div>
-        <p class="font-body text-base leading-[1.5] text-text-muted mt-4">For example: a home in [suburb], [size] system, bill down from R[x] to R[y] a month.</p>
       </dl-card>
-      <dl-card>
-        <div class="aspect-[4/3] relative">
-          <dl-media-bg class="absolute inset-0 w-full h-full" alt="[Photo pending]"></dl-media-bg>
+      <dl-card tone="white">
+        <div style="position:relative;aspect-ratio:4/3">
+          <dl-media alt="[Project photography pending]"></dl-media>
         </div>
-        <p class="font-body text-base leading-[1.5] text-text-muted mt-4">For example: a home in [suburb], [size] system, bill down from R[x] to R[y] a month.</p>
+        <div class="sl-card__stack">
+          <h3 class="sl-title">[Suburb — pending]</h3>
+          <p class="sl-body">[System size and monthly bill before and after — pending]</p>
+        </div>
       </dl-card>
-    </div>
-  </dl-reveal>
-  <dl-reveal>
-    <p class="font-body text-base leading-[1.5] text-text-muted text-center mt-10">[Real projects needed. You photograph every installation already, so the material exists.]</p>
-  </dl-reveal>
-</dl-section>
-
-<!-- Section: From the Blog -->
-<dl-section bg="background">
-  <dl-reveal>
-    <dl-badge>From the Blog</dl-badge>
-  </dl-reveal>
-  <dl-reveal-lines>
-    <h2 class="font-display font-bold leading-[1.2] text-[clamp(1.5rem,2.5vw,2.5rem)] mt-3">Worth Knowing</h2>
-  </dl-reveal-lines>
-  <dl-reveal>
-    <p class="font-body text-base leading-[1.5] text-text-muted mt-4">Straight answers on what solar costs, what changed on your bill, and what a compliance certificate actually covers.</p>
-  </dl-reveal>
-  <dl-reveal>
-    <div class="text-center py-12 border-2 border-dashed border-border rounded-lg mt-10">
-      <p class="font-body text-base leading-[1.5] text-text-muted">[Three most recent posts.]</p>
-    </div>
+      <dl-card tone="white">
+        <div style="position:relative;aspect-ratio:4/3">
+          <dl-media alt="[Project photography pending]"></dl-media>
+        </div>
+        <div class="sl-card__stack">
+          <h3 class="sl-title">[Suburb — pending]</h3>
+          <p class="sl-body">[System size and monthly bill before and after — pending]</p>
+        </div>
+      </dl-card>
+    </dl-grid>
   </dl-reveal>
 </dl-section>
 
-<!-- Section: Reviews (restores plugin-review-carousel wiring per commit 3b0515d, dropped by the later full-copy rewrite) -->
-<dl-section bg="surface">
-  <plugin-review-carousel></plugin-review-carousel>
+<!-- Section: From the blog -->
+<dl-section bg="page" id="from-the-blog">
+  <dl-reveal>
+    <dl-stack eyebrow="From the blog" heading="Worth |Knowing"
+      body="Straight answers on what solar costs, what changed on your bill, and what a compliance certificate actually covers.">
+      <dl-button variant="outline" href="blog.html">Read all posts</dl-button>
+    </dl-stack>
+  </dl-reveal>
+  <dl-reveal>
+    <dl-grid cols="3">
+      <dl-card heading="Why Your Bill Went Up"
+        body="Even though you used less. The fixed monthly charge has been rising faster than the rate per unit."></dl-card>
+      <dl-card heading="Should You Get a Battery?"
+        body="The simple way to work it out, without being sold one."></dl-card>
+      <dl-card heading="Tripping Every Morning"
+        body="Why it happens, why it is almost always the geyser, and how it gets found."></dl-card>
+    </dl-grid>
+  </dl-reveal>
 </dl-section>
 
-<!-- Final CTA -->
-<dl-section bg="background" class="text-center">
-  <dl-reveal-lines>
-    <h2 class="font-display font-bold leading-[1.2] text-[clamp(1.5rem,2.5vw,2.5rem)]">Find out what your property actually needs</h2>
-  </dl-reveal-lines>
+<!-- Section: Reviews.
+     WARNING — plugins/review-carousel/reviews.data.js currently holds
+     DEVELOPMENT FIXTURE reviews with invented names. This section must not go
+     to production until that file is replaced with real Google reviews. -->
+<dl-section bg="alt" id="reviews">
   <dl-reveal>
-    <p class="font-body text-base leading-[1.5] text-text-muted mt-6 max-w-2xl mx-auto">A site visit costs you nothing and ends with a straight answer: what it would take, what it would cost, and what it would save.</p>
+    <dl-stack eyebrow="Reviews" heading="What Customers |Say"
+      body="Real reviews from Google, not curated testimonials."></dl-stack>
   </dl-reveal>
   <dl-reveal>
-    <div class="flex flex-wrap items-center justify-center gap-6 mt-10">
-      <dl-button variant="primary" href="#assessment">Book a Free Site Assessment</dl-button>
-      <a class="font-body text-base text-accent hover:opacity-80 transition-opacity duration-150" href="tel:+27826555371">(082) 655-5371</a>
-    </div>
+    <plugin-review-carousel></plugin-review-carousel>
   </dl-reveal>
 </dl-section>
+
+<!-- Final call to action -->
+<dl-reveal>
+  <dl-cta eyebrow="Book a visit"
+    heading="Find Out What Your Property |Actually Needs"
+    body="A site visit costs you nothing and ends with a straight answer: what it would take, what it would cost, and what it would save."
+    action="Book a Free Site Assessment"
+    href="contact.html"
+    phone="(082) 655-5371"
+    phone-href="tel:+27826555371"></dl-cta>
+</dl-reveal>
 
 <dl-footer></dl-footer>
+<dl-dock></dl-dock>
 </body>
 </html>

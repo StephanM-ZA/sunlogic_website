@@ -1,283 +1,586 @@
-# Sunlogic SA — Site Copy
+# Sunlogic SA: Website Copy
 
-**Home, Solar, Electrical, Energy Management, Blog, Contact, Legal & Policies**
-
-*Knowledgeable, comfortable, professional — not technical · South African English · 28 August 2026*
+*Home · Solar · Electrical · Energy Management · Blog · Contact · Legal*
 
 ---
 
-> **This is a simpler site than BRIEF.md and architecture.md described**
+> **How to read this**
 >
-> This now runs seven pages: Home, Solar, Electrical, Energy Management, Blog, Contact (with the team folded in), and Legal & Policies. Solar and Electrical are each one page with three sections inside — Residential, Small Business, Commercial — rather than separate pages per segment. Blog is back in; Energy Management and Legal & Policies are newly added, both rewritten or extracted from pages already live on sunlogic.co.za.
+> Everything from here to the appendix is website copy, written to be read by a customer. Plain language, short sections, no jargon, no standards numbers. Where a section needs a heading, a sub-heading or a highlighted box, that's marked so a designer knows what to build.
 >
-> That still leaves Projects/Portfolio, a standalone About Us, and a separate Get a Quote page out of this draft. If any of those belong in the final site too, say so and I'll add them back — I haven't assumed they're cancelled, just that this draft matches what you've described so far.
+> Prices, savings figures and payback periods have deliberately been kept out of the copy, since the calculators will own those. Where a customer would naturally ask what something costs, the copy takes them to a calculator instead. Two calculator placements are marked, on the Solar page. The only prices left anywhere in the page copy are the HotBot and SolarBot subscription figures, which are fixed product prices rather than estimates, so they can be stated plainly.
 >
-> The homepage's "what we do" section is also restructured from the earlier drafts: it now reads audience-first (Residential, Small Business, Commercial), each split into Solar and Electrical, rather than service-first. The sentence-level copy is carried over and re-tuned to this structure and to the tone you asked for.
+> The technical detail and the sourced figures behind the copy have been moved to an appendix at the back. That's reference material for you and your developer, not page content. It's worth keeping, because it's also where the blog posts come from.
 >
-> Two images from the live Energy Management page (the HotBot/SolarBot hero graphic and the bot-composition image) couldn't be pulled into this document — this sandbox's network restrictions blocked the direct download, from both my side and a shell on your Mac. The direct file URLs are noted on the Energy Management page below so you (or whoever builds the site) can grab them straight from your own WordPress media library, where they already exist.
-
-## Tone note
-
-Aiming for knowledgeable rather than technical: plain language, no jargon dumped on the reader, but written like someone who actually knows the trade rather than a friendly stranger. Fewer casual asides than the earlier drafts, still no stiffness or hype.
+> The copy is deliberately not tied to a province or a city. It reads the same whether you're quoting in Claremont or somewhere three hours away, which means it won't need rewriting if you widen your service area. Where you do want to state where you work, the footer and the contact page are the right places, rather than weaving it through every page.
+>
+> Anything still in [square brackets] is a fact only you can supply. Nothing has been invented to fill a gap.
 
 ---
 
-## HOMEPAGE
+# HOMEPAGE
 
-### Hero
+*Short and benefit-led. The job of this page is to say what you do, who it's for, and give someone a reason to click through or call.*
+
+## Hero
 
 - **H1:** Solar Power & Certified Electrical Contracting
-- **Subhead:** Solar installers and electricians working with homes, small businesses and commercial sites across the Western Cape.
-- **Primary CTA:** Get a Free Assessment
-- **Secondary CTA:** Get in Touch
+- **Subhead:** Solar and electrical from one team, for homes and businesses.
+- **Primary button:** Book a Free Site Assessment
+- **Secondary button:** Talk to Us
 
-> *NOTE: H1 confirmed. Close to the wording already live on sunlogic.co.za today, which resolves the mismatch flagged earlier against BRIEF.md's recorded H1 ("Leaders in Solar and Electrical") — this is now the one to build from. Subhead trimmed slightly so it doesn't repeat "certified," which the H1 already covers.*
+## Trust strip (a single row under the hero)
 
-### What we do
+**Suggested:** Registered electrical contractor · Compliance certificate on every job · Council registration handled for you · [X] systems installed
 
-Organised by who it's for, each split into Solar and Electrical, matching how you described the homepage. Each line links through to its section on the Solar or Electrical page.
+> *NOTE: Short and checkable. Registration number and install count are still open, so don't launch this strip with a placeholder in it.*
 
-**RESIDENTIAL**
-- **Solar:** Solar sized for your home — a clear answer on what it costs, what it saves, and how long it takes to pay for itself.
-- **Electrical:** Licensed electrical work for your home, from a single repair to a full rewire, finished with a proper Certificate of Compliance.
+## Section: What we do
 
-**SMALL BUSINESS**
-- **Solar:** Solar sized to your actual electricity bill, not trimmed down from a bigger commercial job.
-- **Electrical:** Fair pricing and a technician who arrives when arranged — electrical work sized right for a small business.
+Three blocks, each split into Solar and Electrical, with one plain sentence each and a link through.
 
-**COMMERCIAL**
-- **Solar:** Solar sized to your site's load profile, with the tax position worked through properly.
-- **Electrical:** Planned maintenance and a fast response, so small electrical issues stay small.
+**AT HOME**
+- **Solar:** A smaller electricity bill, and far less of it outside your control.
+- **Electrical:** Rewiring, tripping circuits, plug points, surge protection, EV chargers and compliance certificates.
 
-### How we work
+**FOR SMALL BUSINESS**
+- **Solar:** Your business runs during the day, which is exactly when solar produces. That usually makes the numbers work well.
+- **Electrical:** Shopfits, new equipment, lighting and compliance, scheduled around your trading hours.
 
-Rewritten from the "SERVICES / WHAT WE OFFER" section already live on sunlogic.co.za — same four stages, in full sentences rather than the sub-headings that currently trail off into nothing on the site.
+**FOR LARGER SITES**
+- **Solar:** Sized properly on what your site actually uses, with the savings worked out honestly.
+- **Electrical:** Maintenance, backup power, emergency lighting and compliance across one site or many.
 
-1. **Planning & Assessment** — A proper site visit, not a guess. We look at your current electrical setup and how much energy you actually use, work out what's realistic for solar on the property, and design a solution suited to your site — costed and explained before anything is finalised.
-2. **Product Supply** — Sourcing the right panels, inverters, batteries and electrical components is handled for you. Our install teams know the equipment they're fitting, and you deal with one supplier for the whole job rather than chasing parts yourself.
-3. **Installation & Compliance** — Installation is carried out by our own in-house teams, not subcontracted out — the people wiring your system are the same people who stand behind it. Every job is tested and calibrated before handover, and finishes with the compliance certification your system needs, permissions and applications included.
-4. **Monitoring & Maintenance** — A system is only as good as its upkeep. We check in on your solar and backup power regularly, keep panels clean so they keep performing, and monitor your system remotely to catch issues before they become failures — with regular reports, not silence until something breaks.
+## Section: Why Sunlogic
 
-> *NOTE: In-house installation teams and ongoing monitoring/maintenance are both stated on the live site, so treated as confirmed here rather than bracketed. Specific numbers — response times, warranty length — still aren't, and stay open below.*
+- **One team, both jobs:** A solar system is an electrical installation, so the two belong together. We do both, which means one company designs it, installs it and certifies it.
+- **Straight numbers:** We work out what you'll actually save from your real bills, and show you how we got there. If solar isn't worth it for your property yet, we'll say so.
+- **We stay in touch afterwards:** Monitoring, cleaning, check-ups and someone to call when something isn't right.
 
-### Why Sunlogic
+## Section: How it works
 
-A few things worth checking rather than taking on trust:
-- [X] years registered as an electrical contractor in the Western Cape.
-- In-house electricians — the person who signs your Certificate of Compliance works for Sunlogic.
-- SSEG registration handled from start to finish, at no extra charge.
+1. **We come and look:** A proper site visit and a look at your recent bills.
+2. **We design and quote:** One quote, everything included, with the savings explained.
+3. **We install and certify:** Fitted, tested, and handed over with the paperwork done, including the council registration.
+4. **We keep an eye on it:** Monitoring and scheduled check-ups so small problems stay small.
 
-> *NOTE: All bracketed figures open per BRIEF.md §2.2 and §12 #3 — can't publish with placeholders still in it.*
+## Section: Proof
 
-### From the blog
+Three recent jobs, each with a photo and one real number. For example: a home in [suburb], [size] system, bill down from R[x] to R[y] a month.
 
-- **Section label:** From the Blog
-- **Intro line:** Notes on solar costs, electrical compliance, and getting it right the first time.
-- [Three latest posts — title, excerpt, featured image — pulled through automatically once posts exist.]
+[Real projects needed. You photograph every installation already, so the material exists.]
 
-> *NOTE: Back in per your note. Links through to the Blog page.*
+> *NOTE: This is the single most valuable section you can add and the one every competitor is weakest on.*
 
-### Final CTA
+## Section: From the blog
 
-- **Headline:** Ready to Talk?
-- **Body:** Tell us about your property and what you need, and we'll get back to you [response-time commitment open — BRIEF.md §12 #10].
-- **CTA:** Get in Touch
+- **Heading:** Worth Knowing
+- **Intro:** Straight answers on what solar costs, what changed on your bill, and what a compliance certificate actually covers.
+- [Three most recent posts.]
+
+## Final call to action
+
+- **Headline:** Find out what your property actually needs
+- **Body:** A site visit costs you nothing and ends with a straight answer: what it would take, what it would cost, and what it would save.
+- **Button:** Book a Free Site Assessment
 - **Phone:** (082) 655-5371
 
 ---
 
-## SOLAR
+# SOLAR
 
-### Hero
+## Hero
 
-- **H1:** Solar, Sized to How You Actually Use Electricity
-- **Subhead:** For homes, small businesses and commercial sites — one team, from design through to compliance sign-off.
-- **CTA:** Get a Free Quote
+- **H1:** Solar That Pays For Itself
+- **Subhead:** Designed around what your property actually uses, installed and certified by one team.
+- **Primary button:** Book a Free Site Assessment
+- **Secondary button:** See what it costs
 
-A solar system is only worth having if it's sized to what a property actually uses, so that's where every quote starts. Rising electricity tariffs, not blackouts, are the reason most people are looking at solar now — the pricing and payback are explained plainly before anything is signed. Every installation carries a proper Certificate of Compliance, and SSEG registration with the municipality is handled as part of the job, not left for the customer to sort out afterwards.
+## Why now
 
-**FOR YOUR HOME — Residential Solar**
-A residential system is designed around how your household uses electricity — panels, an inverter, and battery storage if you want it, sized and quoted honestly rather than sold as a standard package. What it costs, what it saves, and roughly when it pays for itself are all set out before you commit to anything. Planning an EV charger too? It's worth speccing at the same time as your solar — see Residential Electrical below for the installation side. [Workmanship warranty length — BRIEF.md §12 #5, currently 3 months against competitors' 3–10 years, worth resolving before this goes live.]
+Solar used to be about keeping the lights on. Not any more. We've gone more than a year without load shedding, and the reason people are installing solar today is simply that electricity keeps getting more expensive.
 
-**FOR SMALL BUSINESS — Small Business Solar**
-Small business premises often get offered a scaled-down version of a commercial package, or told to come back with a bigger budget. A better starting point is the actual electricity bill and a straight answer on whether solar makes sense yet, and what it would cost to do properly. Where it does, the system is sized to the premises and the cash flow, not trimmed from a larger job.
+There's a part of that most people miss. It isn't only the rate per unit going up. The fixed monthly charge on your bill has been rising faster than the rate itself, which means your bill can go up in a month where you actually used less.
 
-**FOR COMMERCIAL SITES — Commercial Solar**
-For a commercial site, solar is a cost-control decision, sized to the actual load profile rather than a generic package. The payback is worked through properly, including the Section 12B first-year tax deduction, which still applies to commercial PV up to 1MW. [Whether the electrical work is fully in-house or includes subcontractors needs confirming — BRIEF.md §2.2 — before stating "one team throughout" as fact.]
+Solar won't change what your municipality charges. What it does is take the largest part of your bill and put it back under your control.
 
-### How it works
-
-1. **Planning & Assessment** — A site visit to look at your roof, your usage, and what's realistic for solar on your property, with a costed plan before anything is signed.
-2. **Product Supply** — Panels, inverter and battery sourced and matched to your design — one supplier for the whole job.
-3. **Installation & Compliance** — Fitted by our own in-house team, tested, and finished with a Certificate of Compliance and SSEG registration.
-4. **Monitoring & Maintenance** — Regular check-ups, panel cleaning, and remote monitoring, with reports rather than silence.
-
-> *NOTE: Solar-specific version of the four-stage process on the homepage (itself rewritten from sunlogic.co.za's live "What We Offer" section) — no longer a generic guess.*
-
-### Support after installation
-
-- **Headline:** Support After Installation
-- **Body:** Monitoring and maintenance are part of the service, not an add-on — see "Monitoring & Maintenance" above. [Still open: exact response time for faults, and whether monitoring is included in the price or a paid extra.]
-
-> *NOTE: Workmanship warranty length is also open — BRIEF.md §12 #5, currently 3 months against competitors' 3–10 years.*
-
-### CTA
-
-- **Headline:** Ready to talk about solar for your property?
-- **CTA:** Get in Touch
+> ### CALL-OUT · WORTH KNOWING
+> **This changes how a system should be sized.**
+>
+> A system built for backup is sized around what you can't afford to lose. A system built to cut your bill is sized around what you actually use, and when you use it.
+>
+> They're different systems. We build the second kind, unless you tell us you want the first.
 
 ---
 
-## ELECTRICAL
+## Solar for your home
 
-### Hero
+A smaller, steadier electricity bill, and a system built around your household rather than pulled off a price list.
 
-- **H1:** Electrical Work, Done Properly
-- **Subhead:** Licensed electrical work for homes, small businesses and commercial sites, signed off with a proper Certificate of Compliance every time.
-- **CTA:** Get a Free Quote
+### What will it actually save me?
 
-Electrical work covers the full range — new installations, rewiring, distribution board upgrades, fault-finding, and the compliance certificate that has to go with all of it. Any electrical installation in South Africa, solar included, has to be signed off by a registered electrical contractor, so that part isn't a selling point, it's simply how the work is done properly. [BRIEF.md §2.2: what's actually worth stating here is the specific, checkable version — the licence category and number, whether the person signing is on staff, and how long a Certificate of Compliance takes.]
+That depends on how much electricity you use and when you use it, so we work it out from your last twelve months of bills rather than guessing from your roof.
 
-**FOR YOUR HOME — Residential Electrical**
-From a tripping circuit to a full rewire, the work is completed properly and finished with a valid Certificate of Compliance — the document your insurer, and your home's next buyer, will ask for. That includes EV charger installation: wired, certified, and — if you've got solar — connected up so you can charge from your own system rather than the grid (see Residential Solar above). [Wireman's licence number / DoEL registration] and [X] years working on homes across Cape Town back that up.
+What we can tell you before we arrive is that the saving comes from using your own power rather than buying it. Which brings up the question everyone asks.
 
-**FOR SMALL BUSINESS — Small Business Electrical**
-A small business doesn't need an account manager or a service contract to get a shopfront rewired or a distribution board sorted — just someone reliable, who quotes fairly and arrives when arranged. That's the standard for call-outs and planned work alike across [service area].
+### Do I need a battery?
 
-**FOR COMMERCIAL SITES — Commercial Electrical**
-Downtime costs more than the repair itself, so work is scheduled around operating hours where possible and responded to quickly where it isn't. Distribution board work, power factor correction, and compliance audits across multiple sites are handled by a team that works with commercial systems as a matter of course.
+Usually, yes, and it's worth knowing why rather than just being sold one.
 
-### How it works
+Your house uses most of its electricity early in the morning and again in the evening. Your panels produce in the middle of the day, when the house is often empty. Without somewhere to put that daytime power, you sell it back to the grid for a fraction of what you pay to buy it back at supper time.
 
-1. **Planning & Assessment** — Fault-finding for a call-out, or a full site assessment for planned or larger work, with a clear quote before anything starts.
-2. **Product Supply** — Distribution boards, cabling and fittings sourced and matched to the job — no chasing parts yourself.
-3. **Installation & Compliance** — Work completed to SANS 10142-1 by our own in-house team, finished with a valid Certificate of Compliance.
-4. **Monitoring & Maintenance** — Ongoing checks for anything installed as part of a larger system, such as backup power or solar-linked circuits.
+A unit of electricity you use yourself is worth considerably more than one you sell back, because it's bought from you for a great deal less than it's sold to you. A battery is simply what lets you keep it.
 
-> *NOTE: Electrical-specific version of the same four-stage process used on the homepage and the Solar page, rewritten from sunlogic.co.za's live "What We Offer" section rather than invented from scratch.*
+> ### CALL-OUT · THE BIT NOBODY MENTIONS
+> **Selling power back can put you on a tariff that costs you more.**
+>
+> To sell surplus power back you generally have to move onto a different tariff, and that tariff carries a much higher fixed monthly charge in exchange for a cheaper rate per unit.
+>
+> The better your solar works, the less that trade is worth. For some households the right answer is a slightly smaller system and no tariff change at all. We check before we quote.
 
-### Ongoing support
+### Will it fit on my roof?
 
-- **Headline:** Ongoing Support
-- **Body:** [Open — whether there's an after-hours or emergency call-out line, and what's offered for commercial clients who want a standing maintenance arrangement rather than one-off call-outs. Two competitors researched (W.G Dixon, Voltec) lead with 24-hour emergency availability as a headline claim — if Sunlogic offers the same, worth stating plainly; if not, better to give the real response time than imply something that isn't true.]
+For most homes, comfortably. Panels take up less room than people expect, and a household system uses a manageable stretch of roof.
 
-> *NOTE: Unlike solar, sunlogic.co.za's live content doesn't describe ongoing electrical support specifically — this one's still a genuine gap, not just an unconfirmed placeholder.*
+What matters as much as space is which way the roof faces, how steep it's, whether trees or a neighbouring building shade it during the day, and what condition the roof covering is in. Wind matters too, so how the panels are fixed down isn't a detail we rush. We look at all of this on site rather than off a satellite photo.
 
-### CTA
+### One thing about winter
 
-- **Headline:** Need electrical work done properly?
-- **CTA:** Get in Touch
+There's a great deal more sun in midsummer than there is in midwinter, and every system has to live with that.
+
+Build for winter and you have an expensive system that's oversized for most of the year. Build for the annual average and you'll be buying more in winter, exactly when you're heating water and running lights for longer. There's a real judgement call in there, and it's one we'd rather make with you than for you.
+
+### What does it cost?
+
+There are three things that move the price: how much electricity you use, how much of it you want covered when the sun is down, and how straightforward your roof is. Two houses on the same street can need quite different systems.
+
+Rather than guess, work it out. Our calculator gives you a realistic range in a couple of minutes, and a site visit turns that into an actual figure.
+
+**CALCULATOR BLOCK:** sits here, inline. Headline: What would solar cost at your house? Sub-line: Answer a few questions about your home and your bill. Button: Work out my system.
+
+> *NOTE: Placed at the point in the page where the customer is already asking the question, which is where a calculator converts best. Whatever range the calculator returns should be the only pricing anywhere on the site, so the two never contradict each other.*
+
+### Paying for it
+
+Not everyone wants to put the full amount down at once. Bank finance, solar-specific loans, rent-to-own arrangements and monthly subscription options all exist in South Africa.
+
+They aren't all equal, and the cancellation terms in particular are worth reading properly before you sign anything. We'll talk you through what suits you. [Confirm which of these Sunlogic offers or has partners for.]
+
+### What happens when something wears out?
+
+Panels are the least of your worries. They lose a small fraction of their output each year in a predictable way, and good ones carry very long guarantees. Inverters and batteries carry shorter ones, which is normal and not a red flag.
+
+One question worth asking any installer, including us: what does the battery guarantee actually promise? Some are satisfied if the battery still holds a good deal less than it started with, which sounds like a technicality until the day you need it. We'll show you exactly what yours says rather than leaving you to find out later.
+
+### Common questions
+
+**Will I still get a bill?**
+Almost certainly yes, unless you go fully off-grid. You stay connected for evenings, winter and cloudy spells. The bill gets much smaller, and far less of it's outside your control.
+
+**How long does the installation take?**
+Most home installations take a few days. We'll tell you the expected days on the quote, and how long the power needs to be off.
+
+**Do I have to register it?**
+Yes, if it stays connected to the grid, and we handle that with your municipality as part of the job. At the moment there's no registration or connection fee, though that's due to change at the end of September 2026.
+
+**Is there a rebate for homeowners?**
+No. There was one for a short window a few years ago and it has expired. If anyone tells you otherwise, they're working off old information. Businesses are treated differently.
+
+**Can it charge my car?**
+Yes, and it's worth planning both at the same time rather than adding the charger later. See the Electrical page.
+
+**What if I sell the house?**
+A well-documented system is a selling point, and the paperwork transfers with the property. We'll make sure you have everything you need.
 
 ---
 
-## ENERGY MANAGEMENT
+## Solar for your business
 
-### Hero
+For shops, offices, workshops, guesthouses and anyone tired of watching electricity eat into a month's takings.
 
-- **H1:** Smart Energy Management for Your Home
-- **Subhead:** Two small devices that make a solar system or geyser easier to run and cheaper to use — without you having to think about it.
-- **CTA:** Get Started
+> ### CALL-OUT · GOOD NEWS, IF YOU RUN A BUSINESS
+> **Your business uses power during the day, which is exactly when solar makes it.**
+>
+> That's a genuine advantage over a household. A home has to buy a battery to store daytime power for the evening. A business is usually open and using it as it's produced.
+>
+> Batteries are the single most expensive part of a system, so needing less of one often means a business gets a better return on a cheaper system.
 
-> *NOTE: Rewritten from sunlogic.co.za/energy-management/, which currently sells two specific products — HotBot and SolarBot — rather than a general energy-management consulting service. The copy below reflects that rather than a broader offering.*
+### What it costs
 
-Both products are made by Plentify, sold and set up through Sunlogic. HotBot manages a geyser, SolarBot manages a solar and battery system, and both are controlled from the Plentify app. [Worth confirming: whether Sunlogic supplies and installs these as part of a new solar installation, as an add-on to an existing system, or both — the live page doesn't say, and the copy below doesn't assume either way.]
+It depends almost entirely on whether you need storage. A rooftop system without a battery costs considerably less than the same system with one, and for most daytime businesses that's exactly the right trade.
 
-**GEYSER CONTROL — HotBot — R849 once-off + R149/month**
-HotBot is an intelligent geyser controller. It learns your household's hot water pattern so the geyser heats when you're actually likely to need hot water, rather than running on a fixed timer, and it alerts you to a leak before it becomes a burst geyser and a repair bill. It works with electric geysers and thermosyphon solar geysers, and a home with more than one geyser needs a HotBot for each one.
+We quote from your actual consumption rather than your floor area, so the first thing we ask for is twelve months of bills.
 
-**SOLAR & BATTERY CONTROL — SolarBot — R849 once-off + R149/month**
-SolarBot is a controller for an existing solar and battery system, compatible with Sunsynk, Sungrow and Deye inverters. It works out when to charge and discharge the battery, favours solar power over grid power where it can, links the geyser into that same solar supply, and has additional settings for avoiding time-of-use tariff peaks.
+**CALCULATOR BLOCK:** Headline: What could solar do for your business? Sub-line: Tell us roughly what you spend on electricity a month. Button: Work out my savings.
+
+> *NOTE: A business calculator can be simpler than the home one, since a business owner usually knows their monthly spend off the top of their head.*
+
+### One thing to check early
+
+If your premises is on a standard single-phase supply, there's a ceiling on how much solar you're permitted to feed back. Going beyond it means upgrading the supply, which is a council charge and a council waiting period, not something an installer controls.
+
+It's far better to find that out during the first site visit than after you have paid a deposit, so it's one of the first things we look at.
+
+### Ways to pay
+
+- **Buy it outright:** Best long-term return, and your business can usually write the full cost off against tax in the year it's installed. Worth confirming with your accountant.
+- **Finance it:** Bank and asset finance are widely available, typically over five to ten years. Repayments are fixed whether the sun shines or not.
+- **Rent to own:** Available in the South African market with no deposit, with the system becoming yours at the end of the term.
+- **Let someone else own it:** A power purchase arrangement means no capital outlay: a provider owns the system and sells you the power at a discount to the grid. Suits larger users staying put for a long time.
+
+> *NOTE: [Confirm which of these Sunlogic actually offers or has finance partners for. Advertising one you can't deliver costs the enquiry.]*
+
+### Common questions
+
+**Will it interrupt trading?**
+We schedule around your hours wherever the work allows. There are short periods where the power has to be off for connection and testing, and we agree those with you in advance.
+
+**How long until it pays for itself?**
+For a daytime business without a big battery, it's one of the faster paybacks around. We calculate it from your bills and show the working rather than quoting a headline figure.
+
+**We rent the building. Can we still do it?**
+Often yes, though your lease length and your landlord's consent come into it. If there are fewer years left on the lease than the system takes to pay back, that changes the answer, and we'd say so.
+
+**Can we claim it back on tax?**
+A business that owns the system and uses it in its trade can generally write the full cost off in the first year. Your accountant should confirm the current position.
+
+---
+
+## Solar for larger sites
+
+Factories, warehouses, farms, retail centres and multi-site operations, where electricity is one of the biggest line items on the account.
+
+### Sized on your load, not your roof
+
+At this scale the roof sets the ceiling, but your consumption pattern sets the target. We work from your metered data so the system is built around how the site genuinely runs, including the shifts and seasons that make it lumpy.
+
+> ### CALL-OUT · HOW COMMERCIAL SOLAR GETS OVERSOLD
+> **Be careful of a proposal promising to pay for itself almost immediately.**
+>
+> A large electricity bill has several different charges on it, and solar only reduces one of them. Some proposals quietly value every unit of solar at the most expensive rate on the account, which makes the payback look dramatically better than it really is.
+>
+> A well-built commercial system is a genuinely good investment. It's just not an overnight one, and anyone telling you otherwise has done something to the arithmetic.
+>
+> We'll show you which rate we have applied and why.
+
+### What solar will and won't fix
+
+- **It will reduce:** The units you buy during daylight hours, which on most sites is the biggest single component of the bill.
+- **It will barely touch:** The demand charge, which is based on your highest peak in the month. On most sites that peak happens on a winter evening, when there's no sun. Reducing it takes storage or changes to how the site runs, which is a separate conversation and not always worth having.
+
+### Roofs, carports and open ground
+
+Panels and their framework add real weight, and wind loading is significant, so the structure gets checked properly before anything is designed. Where roof space is short, carports and ground-mounted arrays are both options, though both need groundwork and proper foundations rather than a quick installation.
+
+### Tax
+
+A business that owns a solar system and uses it in its trade can generally deduct the full cost in the year it's brought into use. An enhanced allowance that ran a few years ago has now ended, so treat any proposal still advertising it as out of date. Confirm the current position with your accountant.
+
+### Common questions
+
+**Can you work across several sites?**
+Yes. The practical benefit is consistency: the same standard and the same paperwork everywhere, rather than a different contractor at each branch.
+
+**Can we sell surplus power back?**
+Yes, subject to registration, though the rate you're paid is well below the rate you buy at. That's why a sensible design prioritises using your own power over exporting it.
+
+**What if our consumption changes?**
+Tell us about planned expansion, new equipment or a vehicle fleet at the assessment stage. Allowing for it now costs far less than retrofitting later.
+
+### Closing call to action
+
+- **Headline:** Start with the numbers
+- **Body:** A free site visit gives you a design, a price and an honest saving figure. If solar isn't worth it for your property yet, we'll tell you that instead.
+- **Button:** Book a Free Site Assessment
+
+---
+
+# ELECTRICAL
+
+## Hero
+
+- **H1:** Electrical Work, Done Properly and Certified
+- **Subhead:** For homes and businesses. From a tripping circuit to a full rewire.
+- **Primary button:** Request a Quote
+- **Secondary button:** Book a Compliance Inspection
+
+## What we do
+
+- **At home:** Fault-finding, tripping circuits, rewiring, distribution boards, plug points and lighting, surge protection, EV chargers, and compliance certificates for selling or transferring a property.
+- **For small business:** Shopfits and refits, new equipment connections, lighting upgrades, refrigeration and kitchen circuits, signage, and compliance inspections.
+- **For larger sites:** Scheduled maintenance, backup power, emergency lighting, electrical surveys and compliance across one site or many.
+
+---
+
+## Electrical at home
+
+### The circuit that keeps tripping
+
+This is the call we get most, and it's rarely a mystery once you know where to look.
+
+The usual culprit is the geyser. As the element ages it starts leaking a small amount of current, which is enough to trip the switch. The giveaway is the timing: it goes early in the morning, right when the geyser timer kicks in.
+
+After that, close to the coast, it's moisture in outdoor light fittings, pool pump boxes and irrigation controllers. Salt air gets into everything eventually. Then older wiring that has become brittle, a faulty appliance, or a pool or borehole pump on its way out.
+
+Finding it's a method rather than guesswork. We isolate the circuit, then test properly to catch the intermittent faults that switching things on and off will never reveal. Most of the time we know what it's within the hour.
+
+> ### CALL-OUT · IF YOUR HOUSE HAS CHANGED, THE SWITCH MIGHT BE THE PROBLEM
+> **Sometimes it isn't a fault at all.**
+>
+> Protective switches were designed for the appliances of their day. A house that has since gained an inverter, an induction hob and modern electronics can trip a switch fitted in the nineties simply because that switch can't read the newer equipment properly.
+>
+> In that case the answer is replacing the switch with the right type, not tearing up circuits looking for a fault that isn't there. It's worth having someone check which situation you're in.
+
+### Old distribution boards
+
+If your house still has screw-in fuses, or no earth leakage protection at all, it's running on an arrangement that was normal decades ago and isn't considered safe now.
+
+A modern board protects each circuit properly, cuts the power fast if something leaks to earth, and is labelled so you know what's what. Replacing one is a day's work, and the cost comes down to how many circuits you have.
+
+### Rewiring an older house
+
+Homes wired forty-odd years ago and never touched since almost always need some rewiring. Older suburbs and small-town centres are where we see it most. What we find is cloth and rubber insulated cable gone hard and brittle.
+
+It doesn't all have to happen at once, and it's worth knowing that before you brace for the whole cost. We usually start with a report on what you have, then do the urgent circuits, then the rest as it suits you. A full house rewire takes a week or two, done room by room so the house stays livable throughout.
+
+### Surge protection
+
+Surge damage has become one of the fastest-growing insurance claims in the country. Claims have risen sharply in recent years, and insurers have responded by adding excesses that apply specifically to surge damage.
+
+Insurers don't usually insist on a particular product, but they do tend to want proof that protection was properly installed. That's the part a plug-in strip from a hardware shop can't give you and a proper installation can. It's inexpensive relative to what one lightning strike can do to a house full of electronics.
+
+### EV chargers
+
+More South Africans are charging at home every year, and it isn't only fully electric cars. Plug-in hybrids now outsell battery-electric cars locally by a wide margin, and they need charging just the same.
+
+A home charger isn't a plug point. It needs its own circuit from the board, the right protective equipment, and an enclosure that will survive being outdoors, which near the coast matters more than it does inland.
+
+The main thing that changes the cost is speed. A standard home charger works off an ordinary supply. Faster charging needs a three-phase supply, which not every home has, so that's the first thing we check. If you have solar, or are thinking about it, it's well worth planning the two together.
+
+### Compliance certificates, explained plainly
+
+There's a widespread belief that these expire every two years. They don't. A certificate stays valid for as long as the installation is unchanged.
+
+Two situations actually require one. When you sell a property, the certificate may not be older than two years. And any time the installation is altered, whether that's solar, a generator, a car charger or a new circuit, a further certificate is needed for that work.
+
+If you aren't sure where you stand, an inspection is quick and inexpensive, and it's far better to find out before a sale than during one.
+
+### Common questions
+
+**My power trips every morning. What's it?**
+Nine times out of ten it's the geyser element. The timer switches on early and the fault shows up with it. We can normally confirm it within the hour.
+
+**Do I need a new certificate every two years?**
+No. It doesn't expire. You need one no older than two years when you sell, and a further one whenever the installation is altered.
+
+**Will my insurer pay out without one?**
+Insurers can and do ask for it when assessing a claim, particularly for fire or surge damage. It's worth having, and worth having done properly.
+
+**Can you install a car charger in a complex?**
+Yes, though the body corporate has to approve it and we need to check the supply can carry it. We'll handle the technical side and tell you what the trustees will want to see.
+
+**Do you do small jobs?**
+Yes. Plug points, light fittings, geyser elements and fault-finding are ordinary work for us, and usually how people meet us in the first place. Nobody gets turned away for a small job.
+
+---
+
+## Electrical for small business
+
+For a business, an electrical problem stops the day, not just the comfort.
+
+> ### CALL-OUT · IF YOU HAVE ALTERED ANYTHING, THIS ONE IS ON YOU
+> **The compliance certificate for a shopfit is usually the tenant's responsibility, not the landlord's.**
+>
+> Your landlord has to hold a certificate for the building as it was. But the moment you add a circuit for kitchen equipment, put in air conditioning, wire up signage or refit the space, that work becomes yours to certify unless your lease says otherwise.
+>
+> Most business owners don't know this until it comes up at a lease renewal or an insurance claim. We can inspect what you inherited, tell you where you actually stand, and certify what you have had done.
+
+### What businesses call us for
+
+- **Shopfits and refits:** New layouts, new circuits, boards moved, and the certification that follows, timed around your opening hours.
+- **New equipment:** Ovens, compressors, refrigeration and workshop machinery, including checking whether your supply can carry it before you buy it.
+- **Lighting upgrades:** Usually the quickest win available, see below.
+- **Refrigeration and kitchen circuits:** Where a failure costs you stock, not just inconvenience.
+- **Signage and outdoor work:** Including the weatherproofing that coastal premises need.
+- **Compliance inspections:** For a lease renewal, an insurer, or simply to know what you have taken on.
+
+### Lighting is usually the fastest saving
+
+Swapping old halogen downlights for modern equivalents cuts the electricity those lights use dramatically. In a shop running lights all day, it's one of the quickest things you can do that pays for itself.
+
+The saving people forget is the labour. Modern fittings last many times longer, so if your lights are high up and need scaffolding or a lift to reach, not replacing them for years is often worth more than the electricity.
+
+### Three-phase supply
+
+Larger equipment needs a three-phase supply, and if your premises doesn't have one, that's a council upgrade rather than a wiring job. It carries a substantial council charge and a waiting period, so it belongs in the budget from the start rather than as a surprise later.
+
+### Common questions
+
+**Can you work outside our trading hours?**
+Yes, and for most shops and restaurants that's the normal arrangement. After-hours work costs more per hour, and it goes on the quote rather than appearing afterwards.
+
+**We're taking over premises. Should we get an inspection?**
+Yes, ideally before you sign. You inherit the installation and, in practice, the argument about who pays to put it right.
+
+**Our lease asks for a compliance certificate. Who sorts that?**
+The landlord covers the building as it was. Anything you have altered is yours. We can work out which is which.
+
+---
+
+## Electrical for larger sites
+
+Maintenance, compliance and reducing what the site costs to run.
+
+### You may be paying for power you never use
+
+Larger accounts are billed on the total electrical load a site draws, not just the useful part of it. Motors, older equipment and certain kinds of machinery cause a site to draw more than it actually uses, and you pay for the difference every month.
+
+Correcting it is well-established work, the equipment pays for itself quickly, and on an affected site it takes a meaningful slice off the monthly bill. A survey tells you quickly whether your site is affected. Plenty aren't, and that's a fine answer too.
+
+### Scheduled maintenance
+
+A maintenance agreement should be built around the things you're actually obliged to keep up, rather than a vague monthly retainer. Typically that means:
+
+- Compliance certification kept valid, with a further certificate raised whenever something is altered.
+- Emergency lighting tested regularly and batteries replaced before they fail.
+- Fire detection inspected and serviced.
+- Generators serviced and, importantly, load tested. A generator that has never been tested under load is an assumption rather than a backup plan.
+- Boards checked, connections tightened, and loads balanced across phases.
+
+> *NOTE: [Sunlogic's response times, callout arrangements and whether after-hours cover is offered are still open. Two competitors lead on 24-hour availability. If you can match it, say so plainly. If not, a real response time beats implying one you can't hold.]*
+
+### Electrical surveys
+
+An infrared survey looks at your boards while they're running and finds what the eye can't: loose connections heating up, cable working too hard, and loads unevenly spread. It catches the sort of fault that becomes a fire or an unplanned shutdown. Insurers increasingly ask about these, so it's worth checking what your policy expects.
+
+### Backup power
+
+Generator installations have to be properly connected and certified, and the switching between grid and generator is where the safety risk sits, so it isn't a job for a general handyman. Cost depends on the capacity you need and whether you want the changeover to happen automatically.
+
+Servicing matters more than people expect, including running the unit under real load rather than just starting it up.
+
+### Emergency lighting
+
+Escape lighting is a legal requirement, not an optional extra, and a surprising amount of what's installed doesn't actually meet the standard. It needs to come on fast, stay on long enough for a building to empty, and be tested regularly with a record kept. Cheap fittings frequently fall short on all three.
+
+### Billing tenants for electricity
+
+If you're a landlord or a body corporate reselling electricity to tenants through sub-meters, the rules are stricter than most people expect. You may charge what the tenant would have paid the municipality, and you may not add a margin or recover your billing and administration costs from them.
+
+Sub-metering gets sold to landlords as a way to make money. Legally it's a way to allocate cost fairly. Getting the metering and the paperwork right is what keeps you out of a dispute.
+
+### Common questions
+
+**Can you take over an installation someone else put in?**
+Yes, starting with an inspection so we both know what we're taking on. We'll document what we find rather than quietly working around it.
+
+**How quickly can you get to a breakdown?**
+[Open. Publish the real number here.]
+
+**Can you reduce our bill without solar?**
+Often yes. Lighting, load balancing, correcting how much power the site draws and reviewing your supply agreement can all move the number, sometimes faster than generation would.
+
+### Closing call to action
+
+- **Headline:** Get it done, and get it certified
+- **Body:** Whether it's a fault, a refit, an inspection or a maintenance agreement, you're dealing with a registered electrical contractor.
+- **Button:** Request a Quote
+- **Phone:** (082) 655-5371
+
+---
+
+# ENERGY MANAGEMENT
+
+## Hero
+
+- **H1:** Smart Control For Your Geyser and Solar
+- **Subhead:** Two small devices that quietly make your home cheaper to run.
+- **Button:** Get Started
+
+Your geyser is the single biggest user of electricity in most homes. It heats water on a timer whether you're going to use it or not, and it carries on doing that all year.
+
+These two controllers fix that, and they're managed from one app on your phone.
+
+**HOT WATER: HotBot, R849 once off plus R149 a month**
+
+HotBot learns when your household actually uses hot water and heats the geyser to suit, instead of running to a fixed schedule. It also picks up a leak early, which is the difference between a plumber and a new ceiling.
+
+It works with electric and solar geysers. A home with two geysers needs one for each.
+
+**SOLAR AND BATTERY: SolarBot, R849 once off plus R149 a month**
+
+If you already have solar, SolarBot decides when to charge and when to draw on the battery, leans on your own power rather than the grid wherever it can, and can heat your water off your solar instead of buying electricity to do it.
+
+Since a unit you use yourself is worth considerably more than one you sell back, anything that shifts more of your usage onto your own power is working on the right problem.
 
 ### How the subscription works
 
-- R849 buys the device; R149 a month covers the app, monitoring and support. The live site describes the offer as "cancel anytime," with a fee charged after 60 days. [That line is a little ambiguous as written — worth checking with Sunlogic or Plentify exactly what triggers the fee before this goes on the new site, so it isn't copied over unclear.]
-- Full terms and conditions apply, per the live page — worth linking to or reproducing those in full on the new site rather than summarising them.
+- R849 buys the device. R149 a month covers the app, the monitoring and support.
+- [Your website and your terms and conditions currently describe different cancellation rules. One says cancel anytime with a fee after 60 days; the other describes a 24 month initial period with a R750 per device cancellation fee. These need to be reconciled before this page goes live, and then stated in one plain sentence here.]
 
-> *NOTE: Pricing and terms taken directly from sunlogic.co.za/energy-management/ on 28 August 2026 — confirm nothing's changed before this goes live, subscription pricing is the kind of thing that moves.*
+> *NOTE: This is a live contradiction between two of your existing pages, not a drafting question.*
 
-### Why bother
-
-- **Control:** Monitor and control your solar system or geyser from your phone, instead of it being a black box in the garage.
-- **Savings:** Shift usage to solar hours and cut back on wasted geyser heating, which shows up as a lower monthly electricity bill.
-
-> *NOTE: From the live page's "Why Choose Smart Energy Solutions" section — kept general rather than quoting a specific savings percentage, since none is stated on the live page.*
-
-### Images
-
-Two graphics on the live page are worth carrying over: a hero composition image and a HotBot/SolarBot product graphic.
+### Images to carry over
 
 - **File 1:** https://sunlogic.co.za/wp-content/uploads/2025/11/Group-133-1200x1153-1-1024x984.png
 - **File 2:** https://sunlogic.co.za/wp-content/uploads/2025/11/bot-composition-400x251-1.png
 
-**ACTION NEEDED:** Please provide copies of these two image files — they couldn't be downloaded from this side (see the flag at the top of this brief), so they'll need to come from you before this page can be built.
-
-> *NOTE: Both URLs are live and load directly in a browser; they're also sitting in your own WordPress media library already, so grabbing them should just mean saving the files from there.*
-
-### CTA
-
-- **Headline:** Ready to take control of your energy use?
-- **CTA:** Get Started
+**ACTION NEEDED:** please supply these two files. They couldn't be downloaded from this side, and both already sit in your WordPress media library.
 
 ---
 
-## BLOG
+# BLOG
 
-### Hero
+## Hero
 
-- **H1:** From the Blog
-- **Subhead:** Straight answers on solar costs, electrical compliance, and what's actually changed in the Western Cape market.
+- **H1:** Worth Knowing
+- **Subhead:** Straight answers on what solar costs, what changed on your bill, and what a compliance certificate actually covers.
 
-Written for people trying to make a decision, not for search engines — what a system actually costs, what a Certificate of Compliance covers, what's changed in the rules this year. If a post doesn't answer a real question someone would ask before hiring an installer or an electrician, it doesn't go up.
+Written for people trying to make a decision. Short, plain, and useful enough to be worth sharing.
+
+### First posts to write, in order
+
+1. Why your electricity bill went up even though you used less.
+2. Should you get a battery? The simple way to work it out.
+3. Your power keeps tripping in the morning. Here's why.
+4. The two year certificate myth, and when you actually need one.
+5. What a home solar system really costs.
+6. Thinking about an electric car? Read this before you buy the charger.
+7. How to read a solar quote without getting caught out.
+
+> *NOTE: All seven come straight out of the reference material in the appendix, so writing them is drafting rather than fresh research.*
 
 ### Categories
 
-Solar Energy Basics · Residential Solar · Commercial Solar · Electrical Safety & Compliance · Industry News · Case Studies · Tips & Guides.
+Saving on your bill · Solar at home · Solar for business · Electrical safety · What changed this year · Our projects
 
-> *NOTE: Categories as listed in BRIEF.md §7 — unchanged, they still fit a five-page site.*
+### How often
 
-### Suggested opening posts
-
-- How to Choose the Right Solar Installer for Your Home
-- Understanding Electrical Compliance Certificates (COCs)
-- The Ultimate Guide to Going Solar in the Western Cape
-- The Benefits of Solar Energy for Businesses
-- [A real case study, once a project exists to write about]
-
-> *NOTE: BRIEF.md §7 recommends weighting the opening set toward compliance and installer-selection topics — people searching those terms are closer to hiring someone than people reading generic "benefits of solar" content, which is also already well covered by competitors. Titles only — none of these are written yet.*
-
-### Single post template
-
-Featured image; title, date, category, reading time; content; sticky CTA sidebar (quote button); related posts; social share buttons.
-
-> *NOTE: From architecture.md §2.4 — carried over unchanged.*
-
-### Cadence
-
-[Weekly is roughly 3–4 hours of someone's time, indefinitely. BRIEF.md §12 #11: if there's no clear owner for that, a fortnightly cadence holds up better than a weekly commitment that lapses after a month.]
+[Weekly is roughly three to four hours of someone's time, every week, indefinitely. If nobody owns that, fortnightly that actually happens beats weekly that stops after a month.]
 
 ---
 
-## CONTACT (incl. Meet the Team)
+# CONTACT
 
 ### Get in touch
 
-- **Headline:** Get in Touch
-- **Intro:** Tell us a bit about your property and what you need, and we'll come back to you [response-time commitment — BRIEF.md §12 #10].
+- **Headline:** Tell us what you need
+- **Intro:** A site visit costs nothing and ends with a straight answer. Send us a message, or phone if it's urgent.
 
-### Contact form
+### Form fields
 
-- **Fields:** Name, Email, Phone, What you need (Solar / Electrical / Not sure yet), Property type (Residential / Small Business / Commercial), Message.
+Name, email, phone, suburb, what you need (Solar / Electrical / Energy Management / Not sure yet), property type (Home / Small business / Larger site), message.
 
-> *NOTE: Trimmed from architecture.md's longer Get a Quote form (§2.7) since that page no longer exists separately in this structure — this form now carries that job.*
+> *NOTE: Suburb is worth adding: it lets you sort by service area straight away.*
 
-### Contact details
+### Details
 
 - **Office:** (082) 655-5371 · sales@sunlogic.co.za
 - **Support:** (082) 655-5371 · support@sunlogic.co.za
 - **Address:** 9 Chesham Road, Claremont, Cape Town, 7708
-- **Hours:** [business hours — not shown anywhere on the current site]
+- **Hours:** [not published anywhere on your current site]
 
-> *NOTE: Phone numbers and emails pulled from sunlogic.co.za/contact/; registered address pulled from sunlogic.co.za/policy-terms-warranty/ (see Legal & Policies below) — both genuine, not guessed, as of 28 August 2026. Office and Support currently show the same phone number; if that's not intentional, worth fixing on the new site rather than carrying it over. Worth double-checking the registered address is also the right one to publish as a public contact address, rather than just a company registration address.*
+> *NOTE: Office and Support currently show the same number. If that isn't intentional, worth fixing rather than carrying over.*
 
 ### Social
 
@@ -285,160 +588,190 @@ Featured image; title, date, category, reading time; content; sticky CTA sidebar
 - **Facebook:** facebook.com/sunlogicsa
 - **Instagram:** instagram.com/sunlogic_sa
 
-> *NOTE: Links as they currently appear on sunlogic.co.za/contact/.*
-
 ### Meet the team
 
-- **Headline:** Meet the Team
-- **Intro:** The people who'll actually be on site or on the phone — not a call centre.
-- [Real names, roles, short bios and photos needed here — nothing invented. Per BRIEF.md's recommendation, worth including each person's certification where they hold one, since that's part of the credential-led positioning.]
-
-> *NOTE: Folded into the Contact page as you suggested. Easy to split into its own page later if the team grows or you'd rather give it more room.*
+- **Headline:** The people who will be at your property
+- **Intro:** Not a call centre. The person who quotes the job is usually the one you see again.
+- [Names, roles, photographs and qualifications needed.]
 
 ---
 
-## LEGAL & POLICIES
+# LEGAL & POLICIES
 
-Extracted from the page already live at sunlogic.co.za/policy-terms-warranty/, which currently holds eight sections across three tab groups: Terms (Terms and Conditions, Terms of Service, Energy Management Terms), Policies (Privacy Policy, Cookie Policy, Email Policy, Video and Photography Release), and a Warranty Statement. This is legal and liability content, not marketing copy, so it's carried over as close to verbatim as possible rather than rewritten — six of the eight sections are reproduced in full below; the two large contract documents are flagged for direct copy-paste rather than retyping.
+Your existing legal page carries eight sections: three sets of terms, four policies, and a warranty statement. All of it should move across as it's, since it's liability wording rather than marketing copy. The two long contract documents are best exported straight from WordPress rather than retyped.
 
-### Two documents to copy directly, not retype
+### Three things worth fixing while it moves
 
-- **Terms of Service:** The general "Website Usage Terms and Conditions" — roughly 4,000 words covering definitions, liability limits, and use of the website. Runs to about 21,600 characters; best exported directly from the WordPress editor rather than retyped through this brief, to avoid any risk of a transcription error in liability language.
-- **Energy Management Terms:** The HotBot/SolarBot device subscription agreement — roughly 3,600 words covering the Free Trial, Initial Term, Cancellation Fee, and related definitions. Same recommendation: copy directly rather than retype. Key facts pulled out below.
+1. The Privacy Policy is issued in another company's name, Automated Publishing Services (Pty) Ltd, not Sunlogic. It reads as a template that was never finished.
+2. The Energy Management cancellation terms contradict what the Energy Management page says.
+3. Your published workmanship guarantee is three months. Competitors publish three to ten years. Expect customers to compare it, particularly now that the site sells on doing the job properly.
 
-> *NOTE: Both confirmed live on this page's "Terms" tab group on 28 August 2026.*
-
-### A discrepancy worth reconciling
-
-- The Energy Management Terms document says: no fee if you cancel after the Initial Term (24 months from when the Free Trial ends); a R750-per-device Cancellation Fee if you cancel during those first 24 months; you can cancel at any time on 20 business days' notice sent to support@sunlogic.co.za.
-- The Energy Management landing page (see that page's "How the subscription works" section above) instead says "cancel anytime," with a fee charged after 60 days. The two live pages currently describe different terms — worth reconciling on the existing site regardless of what happens with the rebuild.
-
-### Company details confirmed here
+### Company details confirmed from that page
 
 - **Registered name:** Sunlogic SA (Pty) Ltd
 - **Registration number:** 2022/651654/07
 - **Registered address:** 9 Chesham Road, Claremont, Cape Town, 7708
-- **Deposit terms:** 80% deposit before installation begins, balance on completion; full payment upfront for equipment-only orders.
-- **Workmanship guarantee:** Three (3) months, excluding malicious damage, vandalism, interference by another installer, misuse of the product, or acts of God.
-
-> *NOTE: Address now used on the Contact page above. The three-month workmanship guarantee confirms the figure already flagged in Open Items as a competitive weak point (BRIEF.md §12 #5) — this is the real, sourced number, not a placeholder.*
-
-### One naming mismatch worth fixing
-
-The Information Privacy Statement on this page (reproduced in full below) is issued "on behalf of Automated Publishing Services (Pty) Ltd" — not Sunlogic SA (Pty) Ltd, which is the name used everywhere else on this page. Reads like a template that wasn't fully customised for Sunlogic. Worth fixing regardless of what happens with the rest of the site.
-
-### Terms and Conditions (reproduced in full)
-
-NOTICE: On acceptance of any quote, pro forma invoice, invoice or statement from Sunlogic SA (Pty) Ltd, or by paying the required deposit, you accept all terms and conditions as set out below.
-
-Although every effort is made for quotes to be accurate, there could be cases where we will need to amend the quote to allow for additional requirements that could include but not limited to specialist engineering or other professional services. Should we require a final inspection or any of these services, Sunlogic SA (Pty) Ltd will pass this cost on the client.
-
-A 80% deposit is required before commencement of any installation and the balance on completion of the job. Should it be purely equipment purchases, we require full payment before shipping. No payment may be withheld at any stage, for any reason. Support workmanship guarantees on the system will only be applied once full and final payment is received.
-
-All Workmanship has a three (3) month guarantee excluding malicious damage, vandalism, interference by another installer, misuse of the product or acts of God.
-
-All Equipment remains the property of Sunlogic (Pty) Ltd until full and final payment of the invoice. Should final payment not be made, Sunlogic SA (Pty) Ltd will reserve the right to collect the equipment and the cost of such removal will be for the customers account.
-
-All Availability Quoted is at the time of quoting and product availability on an order can not be guaranteed.
-
-Pricing is linked to the rate of exchange and our selling price is directly affected by this. Should this rate vary by more than 2%, Sunlogic SA (Pty) Ltd reserves the right to amend the pricing accordingly. Our prices are only valid for 7 days from quoting. Should an order be placed at the initial value, Sunlogic SA (Pty) Ltd will reserve the right to request the change to be applied before delivery is made for invoicing purposes. Sunlogic SA (Pty) Ltd will do everything possible to ensure availability, but should the order come in and the quoted stock is not available, Sunlogic SA (Pty) Ltd reserves the right to offer the client an equivalent product that may be priced differently.
-
-All products carry the manufacturers warrantees and these warrantees will only be valid if the installs are done by an accredited installer. If you choose to use your own installer, these installers will have to familiarise themselves with the product warrantees and the conditions of warrantee. All warrantee's will be subject to product inspection and system analysis which could result in additional costs. Sunlogic SA (Pty) Ltd will not be held liable for warrantee claims with non-accredited installs. Should Sunlogic SA (Pty) Ltd be commissioned to do the install, the warrantee's will only remain in place if all additional work is done by Sunlogic SA (Pty) Ltd or approval is obtained from Sunlogic SA (Pty) Ltd in writing to allow an accredited installer do do the changes. Should this not be followed, any additional work as well as repairs or replacements will be for the customers account.
-
-Installs of our systems require highly trained technicians and errors that might occur after the install of such product, not relating to the products itself but pre-existing defaults, might require additional costing to be provided in order to rectify existing issues. Sunlogic SA (Pty) Ltd will not be held liable should clients use of the system not meet the system criteria or should these install bring to light existing issues within the environment.
-
-In the event where the system or parts of the system, that is non-critical to the core operation of the system, that requires access to a network or the internet, will remain the responsibility of the customer and is not the responsibility of Sunlogic SA (Pty) Ltd.
-
-In the event that a supplementary CoC is required, the initial CoC (Certificate of Compliance) must be on site at the time of the inspection. Should the initial CoC (Certificate of Compliance) not be available, as per legislation an inspection of the entire building then becomes mandatory. If that is not possible, Sunlogic SA (Pty) Ltd will not be able to submit the "Supplementary" CoC.
-
-For SSEG applications, Sunlogic SA (Pty) Ltd contracts to a 3rd party company with certified engineers. With the assistance of this team, we submit all requirements to the City of Cape Town. On occasion, requirements may vary. Because the process is not within our control, no payment may be withheld in the waiting on the completion of this application.
-
-> *NOTE: Verbatim from the "Terms and Conditions" tab, sunlogic.co.za/policy-terms-warranty/, 28 August 2026 — typos ("warrantee", "A 80%", "do do") reproduced as they appear live; worth a copy-edit pass whenever this gets moved to the new site.*
-
-### Privacy Policy (reproduced in full)
-
-**Information Privacy Statement**
-
-We are committed to respecting and protecting the privacy rights of all clients, customers, business partners and associates of this organisation in terms of the provisions of the Protection of Personal Information Act of 2013 ('POPIA' or 'the Act').
-
-The purpose of this privacy statement is to give an outline of our policy in respect of the processing of your personal information as a 'data subject' in terms of the Act. In this statement we inform you why we require personal information about you, how we will collect that information, for what purposes we will store or use the information and how we will protect your personal information. It also informs you about your rights.
-
-This statement is issued on behalf of Automated Publishing Services (PTY) Ltd and, where applicable, it's associates.
-
-**What personal information do we collect about you and how do we collect it?** We collect information when initially engaging with you and in the course of doing business with you, as a consequence of which you are considered to be a data subject in terms of the Act. As a general rule information is collected voluntarily and directly from a data subject, or from and authorised representative of the data subject. In some cases, personal information may be collected from our associates, from the public domain or from other sources, provided that it is collected in a lawful manner and for lawful purposes as envisaged by the Act. The information may be collected manually or electronically, telephonically, via email, online portals or via other electronic platforms.
-
-The information that we collect includes information envisaged by the definition of 'personal information' in the Act, but we try to limit the amount of information we collect so that it is relevant and adequate for the purposes for which it is collected. We do not collect 'special personal information' as defined in the Act in the normal course of our business, but may do so where authorisation has been obtained, or if it is required or permitted by law.
-
-**Why do we need this information?** The information you provide will only be used for the purposes pertaining to the services or products provided by us and our associates, or for other lawful purposes as prescribed or permitted by the Act. We will not use your personal information for any other purpose.
-
-**How do we ensure that your information remains secure?** We have measures in place to ensure the maintenance of security surrounding the storage and disclosure of personal information, as required by the Act. Whenever any external party is appointed to operate our data storage systems, we seek a written undertaking from such an external party that the integrity and confidentiality of the personal information will be protected.
-
-**Data in other locations.** Given the nature of our business, the personal information that we collect about you may be transferred to, and stored electronically in locations other than the business's premises, including in other countries. In such cases, the business will take appropriate steps to ensure that there is an adequate level of data protection in the country of the recipient as required in terms of the Act. If the external party is unable to ensure an adequate level of data protection, we will inform you accordingly and your personal information will not be transferred to any such location without your consent.
-
-**For how long is the information retained?** The personal information collected from you will only be kept for as long as it is reasonably necessary to serve the purpose for which it was collected. We shall review the need to keep particular records from time to time. However, you may contact the information officer at any time if you would want any record of your personal information to be removed.
-
-**Your rights and obligations under the POPIA.** We have appointed and registered an Information Officer with the Information Regulator to ensure that the provisions of the Act are complied with and to facilitate communication with subscribers, clients, business partners, associates and the Information Regulator. You have the right to object to the processing of your personal information in certain circumstances (Section 11(3) of the Act). You also have the right to access personal information we hold about you and to request for it to be corrected, or to be destroyed or deleted in certain circumstances (Section 24 of the Act). You may address your requests to the Information Officer via the e-mail address mentioned below.
-
-**Changes to this Statement.** Some of the points in this statement may also be referred to or elaborated on in a service or other agreement we have with you. While we reserve the right to update this statement from time to time, it will not affect any agreement we have with you.
-
-**Complaints or queries.** If you have a complaint, you may contact the Information Regulator at complaints.IR@justice.gov.za. However, we would encourage you to first contact the Information Officer in order to address any concern or query that you may have.
-
-> *NOTE: Verbatim from the "Privacy Policy" tab, sunlogic.co.za/policy-terms-warranty/, 28 August 2026 — including the "Automated Publishing Services" naming mismatch flagged above.*
-
-### Cookie Policy (reproduced in full)
-
-We may place small text files on your device when you visit our website that allow us to provide you with a personalised experience by associating your personal information with your device. They let us remember your preferences, allow third parties to provide services to you, and otherwise serve useful purposes for you. Your internet browser generally accepts them automatically, but you can often change this setting or delete them manually by amending your browser settings. However, we won't be able to provide you with access to certain aspects of our website where cookies are necessary if you do so, we have no access to or control over any cookies that our business partners use on our website and they have their own privacy polices that govern them.
-
-> *NOTE: Verbatim from the "Cookie Policy" tab, sunlogic.co.za/policy-terms-warranty/, 28 August 2026.*
-
-### Email Policy (reproduced in full)
-
-Under the Protection of Personal Information Act, 04 of 2013 ("POPIA"), we have a general legal duty to protect information we process. Sunlogic is committed to ensuring the security and protection of the personal information processed by the organisation, and to provide a compliant and consistent approach to data protection. The information contained in this email and any attachments thereto may be privileged or confidential and are only intended for the exclusive use and attention of the addressed recipient. If you have received this email by mistake, please delete same and advise the sender immediately. Should you have any questions related to our POPIA compliance, please contact support@sunlogic.co.za or you may refer to the Sunlogic policy, terms and warranty.
-
-> *NOTE: Verbatim from the "Email policy" tab, sunlogic.co.za/policy-terms-warranty/, 28 August 2026 — presumably the standard footer disclaimer on outgoing staff email.*
-
-### Video and Photography Release (reproduced in full)
-
-Sunlogic SA (Pty) Ltd takes photo's and / or video at every install. These photographs and videos are used, first and foremost for applications to authorities where necessary and to assist us in managing and assessing quality of the install.
-
-These photos and videos may be used in marketing material, be it printed or other media channels including but not limited to social media.
-
-Sunlogic SA (Pty) Ltd will ensure that no personal information or other sensitive details be used in any marketing related material.
-
-> *NOTE: Verbatim from the "Video and Photography release" tab, sunlogic.co.za/policy-terms-warranty/, 28 August 2026.*
-
-### Warranty Statement (reproduced in full)
-
-Sunlogic SA (Pty) Ltd warrants that their products, imported from the manufacturer or procured from a local importer / distributor, when used in accordance with the instructions for use and the manufacturers use policies, shall be free from defects in workmanship and materials and will perform in accordance with manufacturers official published product specifications for a period as stipulated in the manufacturing product documentation from the date of purchase by the customer.
-
-Sunlogic SA (Pty) Ltd, as agent for the manufacturer / distributor, serves as support to the warranty issued by the manufacturer and does not have the right to directly issue or change the terms or period of the manufacturer's warranty unless approved in writing by the manufacturer.
-
-This warranty does not cover damage caused by: accident; misuse or abuse; modification; failure to follow instructions for use; use of the product in a manner contrary to applicable laws or not within Sunlogic SA (Pty) Ltd's reasonable contemplation; unsuitable physical or operating environment; failure caused by a product not supplied or installed by Sunlogic SA (Pty) Ltd; other defects not related to materials or workmanship; failure to use original parts; use of an unauthorised supplier to maintain or fix the system.
-
-Warranty claims must be accompanied by proof of purchase (i.e. sales receipt / invoice). If a product you have purchased does not meet this warranty, Sunlogic SA (Pty) Ltd will, to the extent permitted by law, at its option, replace or service the product or the defective material or part. If Sunlogic SA (Pty) Ltd replaces or services any product or part, the warranty period for any product or part replaced does not extend beyond the original warranty period. Sunlogic SA (Pty) Ltd reserves the right, at its sole discretion, to give you a refund of the purchase price instead of a replacement of the product.
-
-Sunlogic SA (Pty) Ltd excludes all express or implied conditions and warranties and, to the extent permitted by law, any implied condition or warranty that may not be excluded by law is limited in duration to the period of this warranty. The maximum liability of Sunlogic SA (Pty) Ltd to you in connection with any product will not exceed the amount paid by you for the product. To the fullest extent permitted by law, Sunlogic SA (Pty) Ltd disclaims all liability for special, incidental, indirect or consequential loss or damage of any kind and for any loss of profit, revenue, savings, business or goodwill arising out of the sale or use of this product.
-
-This warranty does not exclude or limit the application of any provision of any law where to do so would contravene that law or cause any part of this warranty to be void. Any illegality, unenforceability or invalidity of a provision of this Warranty Statement does not affect the legality, enforceability or validity of the remaining provisions. This Warranty Statement is governed by and interpreted in accordance with the laws of South Africa. Both parties submit to the non-exclusive jurisdiction of the courts of South Africa in relation to any dispute connected with this Product Warranty.
-
-> *NOTE: Verbatim from the "Warranty" tab, sunlogic.co.za/policy-terms-warranty/, 28 August 2026 — this is the manufacturer-warranty statement, separate from the three-month workmanship guarantee in the Terms and Conditions above; worth keeping the distinction clear on the new site since they're easy to conflate.*
+- **Deposit terms:** 80% before installation, balance on completion
+- **Workmanship guarantee:** three months
 
 ---
 
-## Open items
+# APPENDIX: THE NUMBERS BEHIND THE COPY
 
-- DoEL licence category and number, ECSA registration, and PV GreenCard status for "Why Sunlogic" (BRIEF.md §12 #3) — years registered is now answerable from the company registration number (2022/651654/07, see Legal & Policies) if you want to state it as "registered since 2022" rather than a specific year count.
-- Response-time commitment (BRIEF.md §12 #10) — workmanship guarantee length is now resolved (three months, see Legal & Policies).
-- Service areas, for the small business electrical copy (BRIEF.md §12 #8).
-- Real team names, roles, bios and photos for the Meet the Team section — nothing here can be invented.
-- Business hours for the Contact page — not shown anywhere on the current site, so still open.
-- Whether the same phone number is meant to serve both Office and Support, or whether that's a live-site oversight worth fixing.
-- Whether there's an after-hours/emergency electrical line and what commercial maintenance support looks like; two competitors researched (W.G Dixon, Voltec) lead with 24-hour availability, worth knowing whether Sunlogic can match or shouldn't claim it.
-- Energy Management: whether HotBot/SolarBot are sold as an add-on to an existing system, bundled with a new solar install, or both. The subscription cancellation terms are also now a live discrepancy rather than an unknown — the landing page and the legal Energy Management Terms describe different fee structures (see Legal & Policies) and need reconciling.
-- The Privacy Policy is issued in the name of "Automated Publishing Services (Pty) Ltd" rather than Sunlogic SA — worth fixing on the live site regardless of the rebuild (see Legal & Policies).
-- Terms of Service and Energy Management Terms are large legal documents that still need moving across to the new site — best exported directly from the WordPress editor rather than retyped (see Legal & Policies).
-- EV charger installation is now mentioned on both the Residential Solar and Residential Electrical segments, cross-referencing each other — confirm this is a service Sunlogic already installs (and roughly how many, if that's worth stating), since nothing on the live site currently mentions it and this brief hasn't invented a track record.
-- Who writes the blog, and on what cadence (BRIEF.md §12 #11) — blocks whether weekly or fortnightly is realistic.
-- Confirm Projects, a standalone About page, and a separate Get a Quote page are genuinely out of scope, not just left off this draft by mistake.
+*Not website content. This is the sourced material the copy was written from, kept so you can check any claim, brief a developer, or draft the blog posts without repeating the research.*
 
-*What after-installation support looks like for solar, the phone/email/social details on the Contact page, the registered address, and the workmanship guarantee length are now resolved above — pulled from what's live on sunlogic.co.za rather than left as placeholders. Send through changes on anything else and I'll fold them in.*
+## Why the pitch changed
+
+**Load shedding and tariffs**
+
+- **Load shedding:** South Africa passed 455 consecutive days without load shedding by August 2026. Load reduction has been eliminated in the Western Cape.
+- **Cape Town increase:** 8.55% on residential energy charges from 1 July 2026.
+- **The real story:** Eskom's Homepower fixed charge rose roughly 142% over two years, from R221.70 to R535.80 a month. Fixed charges are consumption-independent, so bills rise even when usage falls.
+- **Market shift:** Residential solar declined an estimated 65% to 80% from its 2023 peak, while commercial and industrial grew. The backup argument is spent; the price argument is not.
+
+*Source: Eskom system data via The Citizen and MyBroadband, 2026; City of Cape Town 2026/27 budget; SAPVIA and pv magazine market data.*
+
+## Cape Town electricity prices, 2026/27
+
+**What a unit costs and what it earns**
+
+- **Domestic, first 600 kWh:** 413.79 c/kWh incl VAT
+- **Domestic, above 600 kWh:** 493.90 c/kWh incl VAT
+- **Home User energy rate:** 355.95 c/kWh, rising to 469.06 above 600 kWh
+- **Home User fixed charge:** R424.30 per month
+- **Residential export rate:** 107.98 c/kWh plus 25 c incentive, roughly 133 c total
+- **The ratio:** Self-consumption is worth about 2.7 to 3.5 times export. This is the whole basis for the battery argument on the Solar page.
+- **Small business tariffs:** Small Power User 1 fixed charge about R4,204/month with a cheap energy rate; Small Power User 2 about R307/month with a much higher rate. Crossover near 1,300 kWh/month.
+
+*Source: City of Cape Town, cost of electricity page and Electricity Consumptive Tariffs schedule 2026/27.*
+
+## Residential solar sizing and cost
+
+**Yield, roof and price**
+
+- **Cape Town yield:** About 4.5 kWh per kWp per day annually, roughly 1,640 kWh/kWp per year. Summer 8.98, winter 3.56, a 2.5x seasonal swing.
+- **Roof area:** Around 4.4 m2 per kWp after setbacks. A 585 W panel is 2.28 m x 1.13 m and about 32 kg.
+- **Structure:** Panels and racking add 15 to 25 kg/m2. Wind governs, not weight: SANS 10160-3 was revised in 2019 with the safety factor raised from 1.3 to 1.6.
+- **Real installed example:** 3.2 kWp array, 5 kW inverter, 5.12 kWh battery, about R74,000; second battery R18,500.
+- **Market average:** Medium residential systems average just over R200,000.
+- **Off-grid:** R164,325 at 450 kWh/month; R192,061 at 656 kWh/month; R310,925 at 1,000 kWh/month. Needs roughly 5 kWh storage per kWp.
+- **Rental:** R999 to R1,699 a month; cancellation fees R15,500 to R35,400; escalations 5% to 7.5%.
+
+*Source: World Bank Global Solar Atlas and NASA POWER; MyBroadband pricing surveys May and August 2026; ooba solar finance data; JA Solar panel specifications.*
+
+**Warranties**
+
+- **PERC panels:** 2 to 2.5% loss year one, 0.45 to 0.60% a year after, ending around 83 to 85%.
+- **TOPCon panels:** about 1% year one, 0.35 to 0.40% a year, ending around 87 to 89%.
+- **Inverters:** 5 years standard, extendable to 10 for a fee.
+- **Batteries:** 10 years or 6,000 cycles, commonly satisfied at 65% retained capacity.
+- **Sunlogic:** workmanship guarantee currently 3 months, against competitors at 3 to 10 years.
+
+*Source: JA Solar module warranty version A/13, February 2026; Sunsynk and Volta published warranty terms; Sunlogic published Terms and Conditions.*
+
+## Business and commercial solar
+
+**Why the economics differ**
+
+- **Self-consumption:** Commercial rooftop achieves about 90% with no battery. Residential reaches about 85% only with one.
+- **Commercial cost:** About R11,000 per kWp for a 500 kWp array without storage. With heavy storage, R21,000 to R44,000 per kWp.
+- **Ongoing cost:** A published minimum of R88,500 a year in maintenance and insurance on a 200 kWp reference system.
+- **Export ceiling:** Single-phase supply caps export at 4.6 kVA. Shared feeder limits export to 25% of installed capacity; dedicated feeder 75%.
+- **Finance:** Rent-to-own 36 to 84 months, no deposit, prime to prime plus 8%. Bank finance 5 to 10 years. Power purchase agreements quoted at a discount to grid.
+
+*Source: Terawatt Energy 2026 modelling; Haultron published installed prices; ESI-Africa finance analysis; NRS 097-2-3:2023; Sinetech published terms.*
+
+**The peak-rate error, and tax**
+
+- **Eskom Megaflex, high season:** Peak 720.19 c/kWh, standard 180.05 c/kWh, off-peak 120.03 c/kWh.
+- **The error:** A north-facing array produces almost entirely inside the standard period. Valuing output at peak overstates savings roughly fourfold: honest payback about 3.7 years versus an inflated 12 months.
+- **Three charge types:** Energy responds to solar. Demand (R/kVA/month) barely does. Capacity has no on-site fix.
+- **Section 12B:** Still in force. 100% deduction in year one for solar PV under 1 MW.
+- **Section 12BA:** The enhanced 125% allowance expired 28 February 2025 and has not been renewed.
+- **Residential:** Section 6C expired 29 February 2024. No homeowner incentive currently exists.
+
+*Source: Eskom Schedule of Standard Prices 2026/27; Terawatt Energy payback analysis; SARS; Forvis Mazars and Cliffe Dekker Hofmeyr.*
+
+## Electrical: residential
+
+**Earth leakage and boards**
+
+- **Leading cause:** Failing geyser element. Corrosion leaks current through water to the casing; trips early morning when the timer fires.
+- **Coastal second:** Salt-laden moisture in outdoor fittings, pool pump boxes and irrigation controllers.
+- **Device selection:** Type AC for resistive loads, A for single-phase electronics and EV chargers, F for variable speed drives, B for inverters and solar where DC fault current exceeds 6 mA. An old Type AC unit in a modernised house is a selection problem, not a fault.
+- **Board requirement:** 30 mA earth leakage on socket circuits; since January 2018 every socket point in a new installation needs at least one SANS 164-2 socket.
+- **Board cost:** Replacement R5,000 to R15,000; adding earth leakage R2,500 to R4,500.
+- **Rewiring:** Two-bed R35,000 to R60,000; three-bed R45,000 to R90,000; large R80,000 to R140,000. Per point R450 to R950.
+
+*Source: Sparks Electrical News; Schneider Electric SA; SAFEhouse sockets guide; Completo, ServiceLink SA, Kandua and Fonster cost guides 2025/2026.*
+
+**Surge and EV charging**
+
+- **Surge claims:** Santam recorded a 50% rise in twelve months and 200% over three years, adding a R2,500 personal excess and 10% of claim, minimum R5,000, on commercial.
+- **What insurers want:** Protection with at least a five year warranty plus an installation certificate.
+- **Common defect:** Conductor run from terminal to earth bar must not exceed 0.5 m, and protection must cover live and neutral to earth, not live alone.
+- **EV market:** First half 2026: 4,623 plug-in hybrids against 1,903 battery electric. PHEV owners outnumber BEV owners more than two to one.
+- **Requirements:** Dedicated circuit, Type A or B earth leakage, surge protection, IP65 for coastal exposure.
+- **Cost installed:** 7 kW single-phase R14,000 to R26,000; 11 kW R19,000 to R30,000; 22 kW R24,000 to R40,000. Circuit only R7,000 to R15,000.
+
+*Source: Moonstone and Daily Maverick on Santam; Sparks Electrical News; naamsa data August 2026; ChargePoint SA and Fonster.*
+
+**Compliance certificates**
+
+- **The myth:** A certificate does not expire every two years. It stays valid for the life of the installation unless altered.
+- **What the law says:** Ownership may not change on a certificate older than two years. Any addition or alteration requires a further certificate.
+- **Who may issue:** Only a registered person, and only where the work was carried out under their general control.
+
+*Source: Electrical Installation Regulations 2009 regulation 7 and 9; ECA(SA) technical guidance.*
+
+## Electrical: business and commercial
+
+**Tenants, lighting and larger sites**
+
+- **Tenant obligation:** The landlord holds the certificate for the base building. Any tenant alteration becomes the tenant's obligation unless the lease says otherwise.
+- **Employer penalties:** R50,000 or one year; R100,000 or two years where negligence causes injury.
+- **LED retrofit:** 15 halogen downlights at 50 W to 7 W LED, six hours a day: 1,642 kWh a year down to 230 kWh. About R4,518 saved a year at R3.20/kWh, roughly a twelve month payback. Lamp life 25,000 hours against 1,000.
+- **Power factor:** 800 kW drawn at 0.8 power factor is billed as 1,000 kVA. Eskom reactive charge 31.71 c/kVArh above 0.96 in high season. Correction typically saves 10% to 20%, payback 6 to 18 months.
+- **Generators:** 3 to 5 kVA R7,000 to R12,000 installed; 9 to 12 kVA R19,000 to R32,000; 15 to 20 kVA R32,000 to R55,000. Automatic transfer switch R7,000 to R12,500. Service every 100 to 150 hours, minimum annually, with load test.
+- **Emergency lighting:** 0.3 lux on escape routes, 15 second response, minimum one hour duration, tested quarterly, colour rendering minimum 40 which excludes single-colour LEDs.
+- **Sub-metering:** Resellers must charge the same tariff the tenant would have paid the municipality, and may not recover metering, billing or admin costs from tenants.
+
+*Source: GoLegal; OHS Act section 38; LEDs.co.za; Eskom Tariffs and Charges Booklet; Alpha Power Solutions and Red Metal; ServiceLink SA; SANS 10114-2 via published guidance; NERSA Guidelines on Electricity Resale.*
+
+---
+
+# WHAT I STILL NEED FROM YOU
+
+## Blocks launch
+
+- Your electrical contractor registration number.
+- Years trading and number of installations, for the trust strip.
+- Three real projects with a photo and one real number each. This is the biggest single gap between this site and one that converts.
+- Team names, roles and photographs.
+- Your response time, and whether after-hours callout is offered.
+- Business hours, and confirmation that the Claremont address should be shown publicly.
+
+## Decisions to take
+
+- The three month workmanship guarantee, against competitors at three to ten years.
+- Whether Office and Support should share one number.
+- Which payment and finance options you genuinely offer or have partners for.
+- Whether the ballpark solar pricing in the copy matches what you actually charge.
+- Whether EV charger installation is already an active service line.
+- Whether you supply and fit the HotBot and SolarBot devices, or only sell them.
+
+## Fix on the live site, regardless of the rebuild
+
+- The Energy Management cancellation terms contradict your own legal terms.
+- The Privacy Policy is in another company's name.
+- The homepage title tag has no brand and no location, and the Energy Management page reuses it word for word. That page also has four H1 headings.
+- The Planning and Assessment section on the homepage has headings that end in colons with nothing after them.
+
+## Verify before publishing
+
+- The Cape Town export rate. Three sources give three different figures and the City's own pages disagree with each other.
+- The current Cape Town three-phase upgrade charge.
+- Whether the enhanced business solar tax allowance changed in the latest Budget.
+- The current edition of the emergency lighting standard.
+
+*Send these through and I will fold them in.*

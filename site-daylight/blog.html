@@ -3,106 +3,78 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Worth Knowing | Sunlogic SA Blog</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="shared/tailwind-config.js"></script>
-<link rel="stylesheet" href="shared/tokens.css"/>
-<link rel="stylesheet" href="shared/plugin-theme.css"/>
+<title>Worth Knowing | Sunlogic SA</title>
+<link rel="stylesheet" href="shared/sunlogic.css"/>
 <script src="shared/icons.js" defer></script>
 <script src="shared/components.js" defer></script>
-<script src="shared/motion.js" defer></script>
+<script src="shared/sunlogic-check.js" defer></script>
 </head>
-<body class="bg-background text-text-primary font-body antialiased overflow-x-hidden">
+<body>
 <dl-nav-bar active="blog"></dl-nav-bar>
 
-<!-- Hero -->
-<dl-section bg="background" class="text-center">
-  <dl-reveal-lines>
-    <h1 class="font-display font-bold leading-[1.2] text-[clamp(2rem,4.5vw,4.5rem)]">Worth Knowing</h1>
-  </dl-reveal-lines>
+<dl-section bg="page">
   <dl-reveal>
-    <p class="font-body text-base leading-[1.5] text-text-muted mt-6 max-w-2xl mx-auto">Straight answers on what solar costs, what changed on your bill, and what a compliance certificate actually covers.</p>
+    <dl-stack level="hero" eyebrow="Worth knowing"
+      heading="Worth |Knowing"
+      body="Straight answers on what solar costs, what changed on your bill, and what a compliance certificate actually covers. Written for people trying to make a decision — short, plain, and useful enough to be worth sharing."></dl-stack>
+  </dl-reveal>
+  <dl-reveal>
+    <div style="display:flex;flex-wrap:wrap;gap:12px">
+      <dl-tag>saving on your bill</dl-tag>
+      <dl-tag>solar at home</dl-tag>
+      <dl-tag>solar for business</dl-tag>
+      <dl-tag>electrical safety</dl-tag>
+      <dl-tag>what changed this year</dl-tag>
+      <dl-tag>our projects</dl-tag>
+    </div>
   </dl-reveal>
 </dl-section>
 
-<!-- Intro + Categories -->
-<dl-section bg="surface">
-  <div class="flex flex-col gap-8 max-w-3xl mx-auto text-center">
-    <dl-reveal>
-      <p class="font-body text-base leading-[1.5] text-text-muted">Written for people trying to make a decision. Short, plain, and useful enough to be worth sharing.</p>
-    </dl-reveal>
-    <dl-reveal>
-      <div class="flex flex-wrap items-center justify-center gap-3">
-        <dl-badge>Saving on Your Bill</dl-badge>
-        <dl-badge>Solar at Home</dl-badge>
-        <dl-badge>Solar for Business</dl-badge>
-        <dl-badge>Electrical Safety</dl-badge>
-        <dl-badge>What Changed This Year</dl-badge>
-        <dl-badge>Our Projects</dl-badge>
-      </div>
-    </dl-reveal>
-  </div>
+<!-- Posting cadence is still open. Fortnightly that actually happens beats
+     weekly that stops after a month. -->
+<dl-section bg="alt" id="posts">
+  <dl-reveal>
+    <dl-stack eyebrow="First posts to write" heading="Seven, |In Order"
+      body="All seven come straight out of existing reference material, so writing them is drafting rather than fresh research."></dl-stack>
+  </dl-reveal>
+  <dl-reveal>
+    <dl-grid cols="2">
+      <dl-step step="01" heading="Why Your Electricity Bill Went Up"
+        body="Even though you used less. The fixed monthly charge has been rising faster than the rate per unit."></dl-step>
+      <dl-step step="02" heading="Should You Get a Battery?"
+        body="The simple way to work it out, without being sold one."></dl-step>
+      <dl-step step="03" heading="Your Power Keeps Tripping in the Morning"
+        body="Here's why, why it is almost always the geyser, and how it gets found."></dl-step>
+      <dl-step step="04" heading="The Two Year Certificate Myth"
+        body="A Certificate of Compliance does not expire. Here is when you actually need one."></dl-step>
+      <dl-step step="05" heading="What a Home Solar System Really Costs"
+        body="The three things that move the price, and why two houses on one street differ."></dl-step>
+      <dl-step step="06" heading="Thinking About an Electric Car?"
+        body="Read this before you buy the charger, and plan it alongside the solar."></dl-step>
+    </dl-grid>
+  </dl-reveal>
+  <dl-reveal>
+    <dl-step step="07" heading="How to Read a Solar Quote Without Getting Caught Out"
+      body="Which rate a proposal values your solar at, and why that one choice can make a payback figure look four times better than it is." tone="inverse"></dl-step>
+  </dl-reveal>
 </dl-section>
 
-<!-- Coming Soon: First Posts -->
-<!-- NOTE for Stephan (copy/Sunlogic_Site_Copy.md): all seven come straight out of the reference material in the appendix, so writing them is drafting rather than fresh research. Posting cadence is still open — weekly is roughly 3-4 hours of someone's time every week, indefinitely; if nobody owns that, a fortnightly cadence that actually happens beats a weekly one that stops after a month. -->
-<dl-section bg="background" id="posts">
-  <div class="max-w-3xl mx-auto">
-    <dl-reveal>
-      <dl-badge>Blog</dl-badge>
-    </dl-reveal>
-    <dl-reveal-lines>
-      <h2 class="font-display font-bold leading-[1.2] text-[clamp(1.5rem,2.5vw,2.5rem)] mt-3">First Posts to Write</h2>
-    </dl-reveal-lines>
-    <dl-reveal>
-      <div class="flex flex-col gap-4 mt-10">
-        <dl-card>
-          <div class="flex items-center gap-5">
-            <span class="font-display font-bold text-[clamp(1.25rem,2vw,1.75rem)] text-accent shrink-0 w-8">1</span>
-            <p class="font-body text-base leading-[1.5] text-text-muted">Why your electricity bill went up even though you used less.</p>
-          </div>
-        </dl-card>
-        <dl-card>
-          <div class="flex items-center gap-5">
-            <span class="font-display font-bold text-[clamp(1.25rem,2vw,1.75rem)] text-accent shrink-0 w-8">2</span>
-            <p class="font-body text-base leading-[1.5] text-text-muted">Should you get a battery? The simple way to work it out.</p>
-          </div>
-        </dl-card>
-        <dl-card>
-          <div class="flex items-center gap-5">
-            <span class="font-display font-bold text-[clamp(1.25rem,2vw,1.75rem)] text-accent shrink-0 w-8">3</span>
-            <p class="font-body text-base leading-[1.5] text-text-muted">Your power keeps tripping in the morning. Here's why.</p>
-          </div>
-        </dl-card>
-        <dl-card>
-          <div class="flex items-center gap-5">
-            <span class="font-display font-bold text-[clamp(1.25rem,2vw,1.75rem)] text-accent shrink-0 w-8">4</span>
-            <p class="font-body text-base leading-[1.5] text-text-muted">The two year certificate myth, and when you actually need one.</p>
-          </div>
-        </dl-card>
-        <dl-card>
-          <div class="flex items-center gap-5">
-            <span class="font-display font-bold text-[clamp(1.25rem,2vw,1.75rem)] text-accent shrink-0 w-8">5</span>
-            <p class="font-body text-base leading-[1.5] text-text-muted">What a home solar system really costs.</p>
-          </div>
-        </dl-card>
-        <dl-card>
-          <div class="flex items-center gap-5">
-            <span class="font-display font-bold text-[clamp(1.25rem,2vw,1.75rem)] text-accent shrink-0 w-8">6</span>
-            <p class="font-body text-base leading-[1.5] text-text-muted">Thinking about an electric car? Read this before you buy the charger.</p>
-          </div>
-        </dl-card>
-        <dl-card>
-          <div class="flex items-center gap-5">
-            <span class="font-display font-bold text-[clamp(1.25rem,2vw,1.75rem)] text-accent shrink-0 w-8">7</span>
-            <p class="font-body text-base leading-[1.5] text-text-muted">How to read a solar quote without getting caught out.</p>
-          </div>
-        </dl-card>
-      </div>
-    </dl-reveal>
-  </div>
-</dl-section>
+<dl-reveal>
+  <dl-statement eyebrow="How often"
+    text="A fortnightly cadence that actually happens beats a weekly one |that stops after a month">
+    <p class="sl-body sl-body--lg" style="max-width:640px">Weekly is roughly three to four hours of someone's time, every week, indefinitely. [Cadence — placeholder pending a decision on who owns it.]</p>
+  </dl-statement>
+</dl-reveal>
+
+<dl-reveal>
+  <dl-cta eyebrow="Rather ask directly?"
+    heading="A Site Visit Ends With |a Straight Answer"
+    body="What it would take, what it would cost, and what it would save."
+    action="Book a Free Site Assessment"
+    href="contact.html"></dl-cta>
+</dl-reveal>
 
 <dl-footer></dl-footer>
+<dl-dock></dl-dock>
 </body>
 </html>

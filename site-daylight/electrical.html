@@ -3,392 +3,262 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Electrical Contractor for Homes &amp; Business | Sunlogic SA</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="shared/tailwind-config.js"></script>
-<link rel="stylesheet" href="shared/tokens.css"/>
-<link rel="stylesheet" href="shared/plugin-theme.css"/>
+<title>Electrical Work, Done Properly and Certified | Sunlogic SA, Cape Town</title>
+<link rel="stylesheet" href="shared/sunlogic.css"/>
 <script src="shared/icons.js" defer></script>
 <script src="shared/components.js" defer></script>
-<script src="shared/motion.js" defer></script>
+<script src="shared/sunlogic-check.js" defer></script>
 </head>
-<body class="bg-background text-text-primary font-body antialiased overflow-x-hidden">
+<body>
 <dl-nav-bar active="electrical"></dl-nav-bar>
 
-<!-- Hero -->
-<section class="relative min-h-screen flex items-center overflow-hidden py-32">
-  <dl-media-bg class="absolute inset-0 w-full h-full" alt="[PLACEHOLDER: real hero photo needed]"></dl-media-bg>
-  <canvas class="dl-particles absolute inset-0 w-full h-full pointer-events-none"></canvas>
-  <div class="absolute inset-0 bg-background opacity-60"></div>
-  <div class="relative z-10 px-6 max-w-[1000px] mx-auto">
-    <dl-reveal-lines>
-      <h1 class="font-display font-bold leading-[1.2] text-[clamp(2rem,4.5vw,4.5rem)]">Electrical Work, Done Properly and Certified</h1>
-    </dl-reveal-lines>
+<dl-hero alt="[Hero photography pending — distribution board work]">
+  <div class="sl-hero__text">
     <dl-reveal>
-      <p class="font-body text-base leading-[1.5] text-text-muted mt-6 max-w-2xl">For homes and businesses. From a tripping circuit to a full rewire.</p>
-    </dl-reveal>
-    <dl-reveal>
-      <div class="flex flex-wrap gap-4 mt-8">
-        <dl-button variant="primary" icon="arrow-right" href="contact.html">Request a Quote</dl-button>
-        <dl-button variant="ghost" href="contact.html">Book a Compliance Inspection</dl-button>
-      </div>
+      <dl-stack level="hero" eyebrow="Electrical"
+        heading="Electrical Work, Done Properly |and Certified"
+        body="For homes and businesses. From a tripping circuit to a full rewire.">
+        <dl-actions>
+          <dl-button variant="emphasis" icon="arrow-right" href="contact.html">Request a Quote</dl-button>
+          <dl-button variant="ghost" on-dark href="contact.html">Book a Compliance Inspection</dl-button>
+        </dl-actions>
+      </dl-stack>
     </dl-reveal>
   </div>
-</section>
+</dl-hero>
 
-<!-- What We Do -->
-<dl-section bg="surface">
+<dl-subnav items="What we do=#what-we-do|At home=#at-home|Business=#small-business|Larger sites=#larger-sites"></dl-subnav>
+
+<!-- What we do -->
+<dl-section bg="page" id="what-we-do">
   <dl-reveal>
-    <dl-badge>What We Do</dl-badge>
+    <dl-stack eyebrow="What we do" heading="Three Kinds |of Work"></dl-stack>
   </dl-reveal>
-  <dl-reveal-lines>
-    <h2 class="font-display font-bold leading-[1.2] text-[clamp(1.5rem,2.5vw,2.5rem)] mt-3">What We Do</h2>
-  </dl-reveal-lines>
   <dl-reveal>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-10">
-      <dl-card>
-        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)] mb-2">At Home</h3>
-        <p class="font-body text-base leading-[1.5] text-text-muted">Fault-finding, tripping circuits, rewiring, distribution boards, plug points and lighting, surge protection, EV chargers, and compliance certificates for selling or transferring a property.</p>
-      </dl-card>
-      <dl-card>
-        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)] mb-2">For Small Business</h3>
-        <p class="font-body text-base leading-[1.5] text-text-muted">Shopfits and refits, new equipment connections, lighting upgrades, refrigeration and kitchen circuits, signage, and compliance inspections.</p>
-      </dl-card>
-      <dl-card>
-        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)] mb-2">For Larger Sites</h3>
-        <p class="font-body text-base leading-[1.5] text-text-muted">Scheduled maintenance, backup power, emergency lighting, electrical surveys and compliance across one site or many.</p>
-      </dl-card>
-    </div>
+    <dl-grid cols="3">
+      <dl-card icon="bolt" heading="At Home"
+        body="Fault-finding, tripping circuits, rewiring, distribution boards, plug points and lighting, surge protection, EV chargers, and compliance certificates for selling or transferring a property."></dl-card>
+      <dl-card icon="wrench-screwdriver" heading="For Small Business"
+        body="Shopfits and refits, new equipment connections, lighting upgrades, refrigeration and kitchen circuits, signage, and compliance inspections."></dl-card>
+      <dl-card icon="cog-6-tooth" heading="For Larger Sites"
+        body="Scheduled maintenance, backup power, emergency lighting, electrical surveys and compliance across one site or many."></dl-card>
+    </dl-grid>
   </dl-reveal>
 </dl-section>
 
-<!-- Electrical at Home -->
-<dl-section bg="background" id="at-home">
-  <div class="flex flex-col gap-10">
-    <div>
-      <dl-reveal-lines>
-        <h2 class="font-display font-bold leading-[1.2] text-[clamp(1.5rem,2.5vw,2.5rem)] mt-3">Electrical at Home</h2>
-      </dl-reveal-lines>
-    </div>
+<!-- At home -->
+<dl-section bg="alt" id="at-home">
+  <dl-reveal>
+    <dl-stack eyebrow="At home" heading="Electrical |at Home"></dl-stack>
+  </dl-reveal>
 
-    <div class="flex flex-col gap-4">
-      <dl-reveal>
-        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">The circuit that keeps tripping</h3>
-      </dl-reveal>
-      <dl-reveal>
-        <p class="font-body text-base leading-[1.5] text-text-muted">This is the call we get most, and it's rarely a mystery once you know where to look.</p>
-      </dl-reveal>
-      <dl-reveal>
-        <p class="font-body text-base leading-[1.5] text-text-muted">The usual culprit is the geyser. As the element ages it starts leaking a small amount of current, which is enough to trip the switch. The giveaway is the timing: it goes early in the morning, right when the geyser timer kicks in.</p>
-      </dl-reveal>
-      <dl-reveal>
-        <p class="font-body text-base leading-[1.5] text-text-muted">After that, close to the coast, it's moisture in outdoor light fittings, pool pump boxes and irrigation controllers. Salt air gets into everything eventually. Then older wiring that has become brittle, a faulty appliance, or a pool or borehole pump on its way out.</p>
-      </dl-reveal>
-      <dl-reveal>
-        <p class="font-body text-base leading-[1.5] text-text-muted">Finding it's a method rather than guesswork. We isolate the circuit, then test properly to catch the intermittent faults that switching things on and off will never reveal. Most of the time we know what it's within the hour.</p>
-      </dl-reveal>
-      <dl-reveal>
-        <dl-callout icon="shield-check">
-          <strong>If your house has changed, the switch might be the problem — sometimes it isn't a fault at all.</strong><br/>
-          Protective switches were designed for the appliances of their day. A house that has since gained an inverter, an induction hob and modern electronics can trip a switch fitted in the nineties simply because that switch can't read the newer equipment properly.
-          <br/><br/>
-          In that case the answer is replacing the switch with the right type, not tearing up circuits looking for a fault that isn't there. It's worth having someone check which situation you're in.
-        </dl-callout>
-      </dl-reveal>
-    </div>
-
+  <dl-grid cols="split">
     <dl-reveal>
-      <div class="flex flex-col gap-4">
-        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">Old distribution boards</h3>
-        <p class="font-body text-base leading-[1.5] text-text-muted">If your house still has screw-in fuses, or no earth leakage protection at all, it's running on an arrangement that was normal decades ago and isn't considered safe now.</p>
-        <p class="font-body text-base leading-[1.5] text-text-muted">A modern board protects each circuit properly, cuts the power fast if something leaks to earth, and is labelled so you know what's what. Replacing one is a day's work, and the cost comes down to how many circuits you have.</p>
-      </div>
+      <dl-prose>
+        <h3>The circuit that keeps tripping</h3>
+        <p>This is the call we get most, and it's rarely a mystery once you know where to look.</p>
+        <p>The usual culprit is the geyser. As the element ages it starts leaking a small amount of current, which is enough to trip the switch. The giveaway is the timing — it goes early in the morning, right when the geyser timer kicks in.</p>
+        <p>After that, close to the coast, it's moisture in outdoor light fittings, pool pump boxes and irrigation controllers. Salt air gets into everything eventually. Then older wiring that has become brittle, a faulty appliance, or a pool or borehole pump on its way out.</p>
+        <p>Finding it is a method rather than guesswork. We isolate the circuit, then test properly to catch the intermittent faults that switching things on and off will never reveal. Most of the time we know what it is within the hour.</p>
+      </dl-prose>
     </dl-reveal>
-
     <dl-reveal>
-      <div class="flex flex-col gap-4">
-        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">Rewiring an older house</h3>
-        <p class="font-body text-base leading-[1.5] text-text-muted">Homes wired forty-odd years ago and never touched since almost always need some rewiring. Older suburbs and small-town centres are where we see it most. What we find is cloth and rubber insulated cable gone hard and brittle.</p>
-        <p class="font-body text-base leading-[1.5] text-text-muted">It doesn't all have to happen at once, and it's worth knowing that before you brace for the whole cost. We usually start with a report on what you have, then do the urgent circuits, then the rest as it suits you. A full house rewire takes a week or two, done room by room so the house stays livable throughout.</p>
-      </div>
-    </dl-reveal>
-
-    <dl-reveal>
-      <div class="flex flex-col gap-4">
-        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">Surge protection</h3>
-        <p class="font-body text-base leading-[1.5] text-text-muted">Surge damage has become one of the fastest-growing insurance claims in the country. Claims have risen sharply in recent years, and insurers have responded by adding excesses that apply specifically to surge damage.</p>
-        <p class="font-body text-base leading-[1.5] text-text-muted">Insurers don't usually insist on a particular product, but they do tend to want proof that protection was properly installed. That's the part a plug-in strip from a hardware shop can't give you and a proper installation can. It's inexpensive relative to what one lightning strike can do to a house full of electronics.</p>
-      </div>
-    </dl-reveal>
-
-    <dl-reveal>
-      <div class="flex flex-col gap-4">
-        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">EV chargers</h3>
-        <p class="font-body text-base leading-[1.5] text-text-muted">More South Africans are charging at home every year, and it isn't only fully electric cars. Plug-in hybrids now outsell battery-electric cars locally by a wide margin, and they need charging just the same.</p>
-        <p class="font-body text-base leading-[1.5] text-text-muted">A home charger isn't a plug point. It needs its own circuit from the board, the right protective equipment, and an enclosure that will survive being outdoors, which near the coast matters more than it does inland.</p>
-        <p class="font-body text-base leading-[1.5] text-text-muted">The main thing that changes the cost is speed. A standard home charger works off an ordinary supply. Faster charging needs a three-phase supply, which not every home has, so that's the first thing we check. If you have solar, or are thinking about it, it's well worth planning the two together.</p>
-      </div>
-    </dl-reveal>
-
-    <dl-reveal>
-      <div class="flex flex-col gap-4">
-        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">Compliance certificates, explained plainly</h3>
-        <p class="font-body text-base leading-[1.5] text-text-muted">There's a widespread belief that these expire every two years. They don't. A certificate stays valid for as long as the installation is unchanged.</p>
-        <p class="font-body text-base leading-[1.5] text-text-muted">Two situations actually require one. When you sell a property, the certificate may not be older than two years. And any time the installation is altered, whether that's solar, a generator, a car charger or a new circuit, a further certificate is needed for that work.</p>
-        <p class="font-body text-base leading-[1.5] text-text-muted">If you aren't sure where you stand, an inspection is quick and inexpensive, and it's far better to find out before a sale than during one.</p>
-      </div>
-    </dl-reveal>
-
-    <div>
-      <dl-reveal>
-        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)] mb-2">Common Questions</h3>
-      </dl-reveal>
-      <dl-reveal>
-        <div class="flex flex-col gap-4 mt-4">
-          <dl-card>
-            <h4 class="font-display font-bold leading-[1.2] text-[clamp(1.1rem,1.6vw,1.35rem)]">My power trips every morning. What's it?</h4>
-            <p class="font-body text-base leading-[1.5] text-text-muted mt-2">Nine times out of ten it's the geyser element. The timer switches on early and the fault shows up with it. We can normally confirm it within the hour.</p>
-          </dl-card>
-          <dl-card>
-            <h4 class="font-display font-bold leading-[1.2] text-[clamp(1.1rem,1.6vw,1.35rem)]">Do I need a new certificate every two years?</h4>
-            <p class="font-body text-base leading-[1.5] text-text-muted mt-2">No. It doesn't expire. You need one no older than two years when you sell, and a further one whenever the installation is altered.</p>
-          </dl-card>
-          <dl-card>
-            <h4 class="font-display font-bold leading-[1.2] text-[clamp(1.1rem,1.6vw,1.35rem)]">Will my insurer pay out without one?</h4>
-            <p class="font-body text-base leading-[1.5] text-text-muted mt-2">Insurers can and do ask for it when assessing a claim, particularly for fire or surge damage. It's worth having, and worth having done properly.</p>
-          </dl-card>
-          <dl-card>
-            <h4 class="font-display font-bold leading-[1.2] text-[clamp(1.1rem,1.6vw,1.35rem)]">Can you install a car charger in a complex?</h4>
-            <p class="font-body text-base leading-[1.5] text-text-muted mt-2">Yes, though the body corporate has to approve it and we need to check the supply can carry it. We'll handle the technical side and tell you what the trustees will want to see.</p>
-          </dl-card>
-          <dl-card>
-            <h4 class="font-display font-bold leading-[1.2] text-[clamp(1.1rem,1.6vw,1.35rem)]">Do you do small jobs?</h4>
-            <p class="font-body text-base leading-[1.5] text-text-muted mt-2">Yes. Plug points, light fittings, geyser elements and fault-finding are ordinary work for us, and usually how people meet us in the first place. Nobody gets turned away for a small job.</p>
-          </dl-card>
-        </div>
-      </dl-reveal>
-    </div>
-  </div>
-</dl-section>
-
-<!-- Electrical for Small Business -->
-<dl-section bg="surface" id="small-business">
-  <div class="flex flex-col gap-10">
-    <div>
-      <dl-reveal-lines>
-        <h2 class="font-display font-bold leading-[1.2] text-[clamp(1.5rem,2.5vw,2.5rem)] mt-3">Electrical for Small Business</h2>
-      </dl-reveal-lines>
-      <dl-reveal>
-        <p class="font-body text-base leading-[1.5] text-text-muted mt-4">For a business, an electrical problem stops the day, not just the comfort.</p>
-      </dl-reveal>
-    </div>
-
-    <dl-reveal>
-      <dl-callout icon="check-circle">
-        <strong>If you have altered anything, this one is on you — the compliance certificate for a shopfit is usually the tenant's responsibility, not the landlord's.</strong><br/>
-        Your landlord has to hold a certificate for the building as it was. But the moment you add a circuit for kitchen equipment, put in air conditioning, wire up signage or refit the space, that work becomes yours to certify unless your lease says otherwise.
-        <br/><br/>
-        Most business owners don't know this until it comes up at a lease renewal or an insurance claim. We can inspect what you inherited, tell you where you actually stand, and certify what you have had done.
+      <dl-callout icon="shield-check">
+        <strong>Sometimes it isn't a fault at all.</strong>
+        Protective switches were designed for the appliances of their day. A house that has since gained an inverter, an induction hob and modern electronics can trip a switch fitted in the nineties simply because that switch can't read the newer equipment properly. In that case the answer is replacing the switch with the right type, not tearing up circuits looking for a fault that isn't there. It's worth having someone check which situation you're in.
       </dl-callout>
     </dl-reveal>
+  </dl-grid>
 
-    <div class="flex flex-col gap-4">
-      <dl-reveal>
-        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">What businesses call us for</h3>
-      </dl-reveal>
-      <dl-reveal>
-        <ul class="flex flex-col gap-4">
-          <li class="flex items-start gap-3">
-            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span>
-            <p class="font-body text-base leading-[1.5] text-text-muted"><strong class="text-text-primary">Shopfits and refits:</strong> New layouts, new circuits, boards moved, and the certification that follows, timed around your opening hours.</p>
-          </li>
-          <li class="flex items-start gap-3">
-            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span>
-            <p class="font-body text-base leading-[1.5] text-text-muted"><strong class="text-text-primary">New equipment:</strong> Ovens, compressors, refrigeration and workshop machinery, including checking whether your supply can carry it before you buy it.</p>
-          </li>
-          <li class="flex items-start gap-3">
-            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span>
-            <p class="font-body text-base leading-[1.5] text-text-muted"><strong class="text-text-primary">Lighting upgrades:</strong> Usually the quickest win available, see below.</p>
-          </li>
-          <li class="flex items-start gap-3">
-            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span>
-            <p class="font-body text-base leading-[1.5] text-text-muted"><strong class="text-text-primary">Refrigeration and kitchen circuits:</strong> Where a failure costs you stock, not just inconvenience.</p>
-          </li>
-          <li class="flex items-start gap-3">
-            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span>
-            <p class="font-body text-base leading-[1.5] text-text-muted"><strong class="text-text-primary">Signage and outdoor work:</strong> Including the weatherproofing that coastal premises need.</p>
-          </li>
-          <li class="flex items-start gap-3">
-            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span>
-            <p class="font-body text-base leading-[1.5] text-text-muted"><strong class="text-text-primary">Compliance inspections:</strong> For a lease renewal, an insurer, or simply to know what you have taken on.</p>
-          </li>
-        </ul>
-      </dl-reveal>
-    </div>
-
-    <dl-reveal>
-      <div class="flex flex-col gap-4">
-        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">Lighting is usually the fastest saving</h3>
-        <p class="font-body text-base leading-[1.5] text-text-muted">Swapping old halogen downlights for modern equivalents cuts the electricity those lights use dramatically. In a shop running lights all day, it's one of the quickest things you can do that pays for itself.</p>
-        <p class="font-body text-base leading-[1.5] text-text-muted">The saving people forget is the labour. Modern fittings last many times longer, so if your lights are high up and need scaffolding or a lift to reach, not replacing them for years is often worth more than the electricity.</p>
-      </div>
-    </dl-reveal>
-
-    <dl-reveal>
-      <div class="flex flex-col gap-4">
-        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">Three-phase supply</h3>
-        <p class="font-body text-base leading-[1.5] text-text-muted">Larger equipment needs a three-phase supply, and if your premises doesn't have one, that's a council upgrade rather than a wiring job. It carries a substantial council charge and a waiting period, so it belongs in the budget from the start rather than as a surprise later.</p>
-      </div>
-    </dl-reveal>
-
-    <div>
-      <dl-reveal>
-        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)] mb-2">Common Questions</h3>
-      </dl-reveal>
-      <dl-reveal>
-        <div class="flex flex-col gap-4 mt-4">
-          <dl-card>
-            <h4 class="font-display font-bold leading-[1.2] text-[clamp(1.1rem,1.6vw,1.35rem)]">Can you work outside our trading hours?</h4>
-            <p class="font-body text-base leading-[1.5] text-text-muted mt-2">Yes, and for most shops and restaurants that's the normal arrangement. After-hours work costs more per hour, and it goes on the quote rather than appearing afterwards.</p>
-          </dl-card>
-          <dl-card>
-            <h4 class="font-display font-bold leading-[1.2] text-[clamp(1.1rem,1.6vw,1.35rem)]">We're taking over premises. Should we get an inspection?</h4>
-            <p class="font-body text-base leading-[1.5] text-text-muted mt-2">Yes, ideally before you sign. You inherit the installation and, in practice, the argument about who pays to put it right.</p>
-          </dl-card>
-          <dl-card>
-            <h4 class="font-display font-bold leading-[1.2] text-[clamp(1.1rem,1.6vw,1.35rem)]">Our lease asks for a compliance certificate. Who sorts that?</h4>
-            <p class="font-body text-base leading-[1.5] text-text-muted mt-2">The landlord covers the building as it was. Anything you have altered is yours. We can work out which is which.</p>
-          </dl-card>
-        </div>
-      </dl-reveal>
-    </div>
-  </div>
-</dl-section>
-
-<!-- Electrical for Larger Sites -->
-<dl-section bg="background" id="larger-sites">
-  <div class="flex flex-col gap-10">
-    <div>
-      <dl-reveal-lines>
-        <h2 class="font-display font-bold leading-[1.2] text-[clamp(1.5rem,2.5vw,2.5rem)] mt-3">Electrical for Larger Sites</h2>
-      </dl-reveal-lines>
-      <dl-reveal>
-        <p class="font-body text-base leading-[1.5] text-text-muted mt-4">Maintenance, compliance and reducing what the site costs to run.</p>
-      </dl-reveal>
-    </div>
-
-    <dl-reveal>
-      <div class="flex flex-col gap-4">
-        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">You may be paying for power you never use</h3>
-        <p class="font-body text-base leading-[1.5] text-text-muted">Larger accounts are billed on the total electrical load a site draws, not just the useful part of it. Motors, older equipment and certain kinds of machinery cause a site to draw more than it actually uses, and you pay for the difference every month.</p>
-        <p class="font-body text-base leading-[1.5] text-text-muted">Correcting it is well-established work, the equipment pays for itself quickly, and on an affected site it takes a meaningful slice off the monthly bill. A survey tells you quickly whether your site is affected. Plenty aren't, and that's a fine answer too.</p>
-      </div>
-    </dl-reveal>
-
-    <div class="flex flex-col gap-4">
-      <dl-reveal>
-        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">Scheduled maintenance</h3>
-      </dl-reveal>
-      <dl-reveal>
-        <p class="font-body text-base leading-[1.5] text-text-muted">A maintenance agreement should be built around the things you're actually obliged to keep up, rather than a vague monthly retainer. Typically that means:</p>
-      </dl-reveal>
-      <dl-reveal>
-        <ul class="flex flex-col gap-3">
-          <li class="flex items-start gap-3">
-            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span>
-            <p class="font-body text-base leading-[1.5] text-text-muted">Compliance certification kept valid, with a further certificate raised whenever something is altered.</p>
-          </li>
-          <li class="flex items-start gap-3">
-            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span>
-            <p class="font-body text-base leading-[1.5] text-text-muted">Emergency lighting tested regularly and batteries replaced before they fail.</p>
-          </li>
-          <li class="flex items-start gap-3">
-            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span>
-            <p class="font-body text-base leading-[1.5] text-text-muted">Fire detection inspected and serviced.</p>
-          </li>
-          <li class="flex items-start gap-3">
-            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span>
-            <p class="font-body text-base leading-[1.5] text-text-muted">Generators serviced and, importantly, load tested. A generator that has never been tested under load is an assumption rather than a backup plan.</p>
-          </li>
-          <li class="flex items-start gap-3">
-            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span>
-            <p class="font-body text-base leading-[1.5] text-text-muted">Boards checked, connections tightened, and loads balanced across phases.</p>
-          </li>
-        </ul>
-        <!-- NOTE for Stephan (copy/Sunlogic_Site_Copy.md): response times, callout arrangements and after-hours cover are still open. Two competitors lead on 24-hour availability — if Sunlogic can match it, say so plainly; if not, a real response time beats implying one that isn't true. -->
-      </dl-reveal>
-    </div>
-
-    <dl-reveal>
-      <div class="flex flex-col gap-4">
-        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">Electrical surveys</h3>
-        <p class="font-body text-base leading-[1.5] text-text-muted">An infrared survey looks at your boards while they're running and finds what the eye can't: loose connections heating up, cable working too hard, and loads unevenly spread. It catches the sort of fault that becomes a fire or an unplanned shutdown. Insurers increasingly ask about these, so it's worth checking what your policy expects.</p>
-      </div>
-    </dl-reveal>
-
-    <dl-reveal>
-      <div class="flex flex-col gap-4">
-        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">Backup power</h3>
-        <p class="font-body text-base leading-[1.5] text-text-muted">Generator installations have to be properly connected and certified, and the switching between grid and generator is where the safety risk sits, so it isn't a job for a general handyman. Cost depends on the capacity you need and whether you want the changeover to happen automatically.</p>
-        <p class="font-body text-base leading-[1.5] text-text-muted">Servicing matters more than people expect, including running the unit under real load rather than just starting it up.</p>
-      </div>
-    </dl-reveal>
-
-    <dl-reveal>
-      <div class="flex flex-col gap-4">
-        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">Emergency lighting</h3>
-        <p class="font-body text-base leading-[1.5] text-text-muted">Escape lighting is a legal requirement, not an optional extra, and a surprising amount of what's installed doesn't actually meet the standard. It needs to come on fast, stay on long enough for a building to empty, and be tested regularly with a record kept. Cheap fittings frequently fall short on all three.</p>
-      </div>
-    </dl-reveal>
-
-    <dl-reveal>
-      <div class="flex flex-col gap-4">
-        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)]">Billing tenants for electricity</h3>
-        <p class="font-body text-base leading-[1.5] text-text-muted">If you're a landlord or a body corporate reselling electricity to tenants through sub-meters, the rules are stricter than most people expect. You may charge what the tenant would have paid the municipality, and you may not add a margin or recover your billing and administration costs from them.</p>
-        <p class="font-body text-base leading-[1.5] text-text-muted">Sub-metering gets sold to landlords as a way to make money. Legally it's a way to allocate cost fairly. Getting the metering and the paperwork right is what keeps you out of a dispute.</p>
-      </div>
-    </dl-reveal>
-
-    <div>
-      <dl-reveal>
-        <h3 class="font-display font-bold leading-[1.2] text-[clamp(1.25rem,2vw,1.75rem)] mb-2">Common Questions</h3>
-      </dl-reveal>
-      <dl-reveal>
-        <div class="flex flex-col gap-4 mt-4">
-          <dl-card>
-            <h4 class="font-display font-bold leading-[1.2] text-[clamp(1.1rem,1.6vw,1.35rem)]">Can you take over an installation someone else put in?</h4>
-            <p class="font-body text-base leading-[1.5] text-text-muted mt-2">Yes, starting with an inspection so we both know what we're taking on. We'll document what we find rather than quietly working around it.</p>
-          </dl-card>
-          <dl-card>
-            <h4 class="font-display font-bold leading-[1.2] text-[clamp(1.1rem,1.6vw,1.35rem)]">How quickly can you get to a breakdown?</h4>
-            <p class="font-body text-base leading-[1.5] text-text-muted mt-2">[Open. Publish the real number here.]</p>
-          </dl-card>
-          <dl-card>
-            <h4 class="font-display font-bold leading-[1.2] text-[clamp(1.1rem,1.6vw,1.35rem)]">Can you reduce our bill without solar?</h4>
-            <p class="font-body text-base leading-[1.5] text-text-muted mt-2">Often yes. Lighting, load balancing, correcting how much power the site draws and reviewing your supply agreement can all move the number, sometimes faster than generation would.</p>
-          </dl-card>
-        </div>
-      </dl-reveal>
-    </div>
-  </div>
-</dl-section>
-
-<!-- Closing CTA -->
-<dl-section bg="surface" class="text-center">
-  <dl-reveal-lines>
-    <h2 class="font-display font-bold leading-[1.2] text-[clamp(1.5rem,2.5vw,2.5rem)]">Get it done, and get it certified</h2>
-  </dl-reveal-lines>
   <dl-reveal>
-    <p class="font-body text-base leading-[1.5] text-text-muted mt-6 max-w-2xl mx-auto">Whether it's a fault, a refit, an inspection or a maintenance agreement, you're dealing with a registered electrical contractor.</p>
-  </dl-reveal>
-  <dl-reveal>
-    <div class="flex flex-wrap items-center justify-center gap-6 mt-10">
-      <dl-button variant="primary" href="contact.html">Request a Quote</dl-button>
-      <a class="font-body text-base leading-[1.5] text-text-primary hover:text-accent transition-colors" href="tel:+27826555371">(082) 655-5371</a>
-    </div>
+    <dl-grid cols="2">
+      <dl-card tone="white" heading="Old Distribution Boards">
+        <p class="sl-body">If your house still has screw-in fuses, or no earth leakage protection at all, it's running on an arrangement that was normal decades ago and isn't considered safe now.</p>
+        <p class="sl-body">A modern board protects each circuit properly, cuts the power fast if something leaks to earth, and is labelled so you know what's what. Replacing one is a day's work, and the cost comes down to how many circuits you have.</p>
+      </dl-card>
+      <dl-card tone="white" heading="Rewiring an Older House">
+        <p class="sl-body">Homes wired forty-odd years ago and never touched since almost always need some rewiring. Older suburbs and small-town centres are where we see it most. What we find is cloth and rubber insulated cable gone hard and brittle.</p>
+        <p class="sl-body">It doesn't all have to happen at once. We usually start with a report on what you have, then do the urgent circuits, then the rest as it suits you. A full house rewire takes a week or two, done room by room so the house stays livable throughout.</p>
+      </dl-card>
+    </dl-grid>
   </dl-reveal>
 </dl-section>
+
+<dl-reveal>
+  <dl-statement eyebrow="Compliance certificates, explained plainly"
+    text="There is a widespread belief that these expire every two years. |They do not">
+    <div style="display:grid;gap:16px;max-width:720px">
+      <p class="sl-body sl-body--lg">A certificate stays valid for as long as the installation is unchanged. Two situations actually require one: when you sell a property, the certificate may not be older than two years — and any time the installation is altered, whether that's solar, a generator, a car charger or a new circuit, a further certificate is needed for that work.</p>
+      <p class="sl-body sl-body--lg">If you aren't sure where you stand, an inspection is quick and inexpensive, and it's far better to find out before a sale than during one.</p>
+    </div>
+  </dl-statement>
+</dl-reveal>
+
+<dl-section bg="page">
+  <dl-reveal>
+    <dl-grid cols="2">
+      <dl-card tone="warm" icon="shield-check" heading="Surge Protection">
+        <p class="sl-body">Surge damage has become one of the fastest-growing insurance claims in the country. Claims have risen sharply in recent years, and insurers have responded by adding excesses that apply specifically to surge damage.</p>
+        <p class="sl-body">Insurers don't usually insist on a particular product, but they do tend to want proof that protection was properly installed. That's the part a plug-in strip from a hardware shop can't give you and a proper installation can. It's inexpensive relative to what one lightning strike can do to a house full of electronics.</p>
+      </dl-card>
+      <dl-card tone="warm" icon="bolt" heading="EV Chargers">
+        <p class="sl-body">More South Africans are charging at home every year, and it isn't only fully electric cars. Plug-in hybrids now outsell battery-electric cars locally by a wide margin, and they need charging just the same.</p>
+        <p class="sl-body">A home charger isn't a plug point. It needs its own circuit from the board, the right protective equipment, and an enclosure that will survive being outdoors, which near the coast matters more than it does inland.</p>
+        <p class="sl-body">The main thing that changes the cost is speed. Faster charging needs a three-phase supply, which not every home has, so that's the first thing we check. If you have solar, or are thinking about it, it's well worth planning the two together.</p>
+      </dl-card>
+    </dl-grid>
+  </dl-reveal>
+</dl-section>
+
+<dl-section bg="alt">
+  <dl-reveal>
+    <dl-stack eyebrow="Common questions" heading="Homeowners |Usually Ask"></dl-stack>
+  </dl-reveal>
+  <dl-reveal>
+    <dl-faq items="My power trips every morning. What is it?=Nine times out of ten it's the geyser element. The timer switches on early and the fault shows up with it. We can normally confirm it within the hour.|Do I need a new certificate every two years?=No. It doesn't expire. You need one no older than two years when you sell, and a further one whenever the installation is altered.|Will my insurer pay out without one?=Insurers can and do ask for it when assessing a claim, particularly for fire or surge damage. It's worth having, and worth having done properly.|Can you install a car charger in a complex?=Yes, though the body corporate has to approve it and we need to check the supply can carry it. We'll handle the technical side and tell you what the trustees will want to see.|Do you do small jobs?=Yes. Plug points, light fittings, geyser elements and fault-finding are ordinary work for us, and usually how people meet us in the first place. Nobody gets turned away for a small job."></dl-faq>
+  </dl-reveal>
+</dl-section>
+
+<!-- Small business -->
+<dl-reveal>
+  <dl-statement eyebrow="If you have altered anything, this one is on you"
+    text="The compliance certificate for a shopfit is usually the tenant's responsibility, |not the landlord's">
+    <div style="display:grid;gap:16px;max-width:720px">
+      <p class="sl-body sl-body--lg">Your landlord has to hold a certificate for the building as it was. But the moment you add a circuit for kitchen equipment, put in air conditioning, wire up signage or refit the space, that work becomes yours to certify unless your lease says otherwise.</p>
+      <p class="sl-body sl-body--lg">Most business owners don't know this until it comes up at a lease renewal or an insurance claim. We can inspect what you inherited, tell you where you actually stand, and certify what you have had done.</p>
+    </div>
+  </dl-statement>
+</dl-reveal>
+
+<dl-section bg="page" id="small-business">
+  <dl-reveal>
+    <dl-stack eyebrow="For small business" heading="An Electrical Problem Stops |the Day"
+      body="Not just the comfort. We schedule around your trading hours and certify what we change."></dl-stack>
+  </dl-reveal>
+
+  <dl-grid cols="split">
+    <dl-reveal>
+      <dl-stack eyebrow="What businesses call us for" heading="Six Jobs, |Most Weeks" level="section"></dl-stack>
+    </dl-reveal>
+    <dl-reveal>
+      <dl-list>
+        <li><strong>Shopfits and refits:</strong> New layouts, new circuits, boards moved, and the certification that follows, timed around your opening hours.</li>
+        <li><strong>New equipment:</strong> Ovens, compressors, refrigeration and workshop machinery, including checking whether your supply can carry it before you buy it.</li>
+        <li><strong>Lighting upgrades:</strong> Usually the quickest win available.</li>
+        <li><strong>Refrigeration and kitchen circuits:</strong> Where a failure costs you stock, not just inconvenience.</li>
+        <li><strong>Signage and outdoor work:</strong> Including the weatherproofing that coastal premises need.</li>
+        <li><strong>Compliance inspections:</strong> For a lease renewal, an insurer, or simply to know what you have taken on.</li>
+      </dl-list>
+    </dl-reveal>
+  </dl-grid>
+
+  <dl-reveal>
+    <dl-grid cols="2">
+      <dl-card heading="Lighting Is Usually the Fastest Saving">
+        <p class="sl-body">Swapping old halogen downlights for modern equivalents cuts the electricity those lights use dramatically. In a shop running lights all day, it's one of the quickest things you can do that pays for itself.</p>
+        <p class="sl-body">The saving people forget is the labour. Modern fittings last many times longer, so if your lights are high up and need scaffolding or a lift to reach, not replacing them for years is often worth more than the electricity.</p>
+      </dl-card>
+      <dl-card heading="Three-Phase Supply">
+        <p class="sl-body">Larger equipment needs a three-phase supply, and if your premises doesn't have one, that's a council upgrade rather than a wiring job. It carries a substantial council charge and a waiting period, so it belongs in the budget from the start rather than as a surprise later.</p>
+      </dl-card>
+    </dl-grid>
+  </dl-reveal>
+</dl-section>
+
+<dl-section bg="alt">
+  <dl-reveal>
+    <dl-stack eyebrow="Common questions" heading="Business Owners |Usually Ask"></dl-stack>
+  </dl-reveal>
+  <dl-reveal>
+    <dl-faq items="Can you work outside our trading hours?=Yes, and for most shops and restaurants that's the normal arrangement. After-hours work costs more per hour, and it goes on the quote rather than appearing afterwards.|We are taking over premises. Should we get an inspection?=Yes, ideally before you sign. You inherit the installation and, in practice, the argument about who pays to put it right.|Our lease asks for a compliance certificate. Who sorts that?=The landlord covers the building as it was. Anything you have altered is yours. We can work out which is which."></dl-faq>
+  </dl-reveal>
+</dl-section>
+
+<!-- Larger sites -->
+<dl-section bg="page" id="larger-sites">
+  <dl-reveal>
+    <dl-stack eyebrow="For larger sites" heading="Maintenance, Compliance, and |What the Site Costs to Run"></dl-stack>
+  </dl-reveal>
+
+  <dl-grid cols="split">
+    <dl-reveal>
+      <dl-prose>
+        <h3>You may be paying for power you never use</h3>
+        <p>Larger accounts are billed on the total electrical load a site draws, not just the useful part of it. Motors, older equipment and certain kinds of machinery cause a site to draw more than it actually uses, and you pay for the difference every month.</p>
+        <p>Correcting it is well-established work, the equipment pays for itself quickly, and on an affected site it takes a meaningful slice off the monthly bill. A survey tells you quickly whether your site is affected. Plenty aren't, and that's a fine answer too.</p>
+      </dl-prose>
+    </dl-reveal>
+    <dl-reveal>
+      <dl-callout icon="chart-bar">
+        <strong>A survey answers it in a morning.</strong>
+        We measure what the site draws against what it uses, and tell you plainly whether correction is worth doing. If it isn't, that is the finding — we don't sell equipment a site doesn't need.
+      </dl-callout>
+    </dl-reveal>
+  </dl-grid>
+
+  <dl-reveal>
+    <dl-stack eyebrow="Scheduled maintenance" heading="Built Around What You Are |Obliged to Keep Up"
+      body="Rather than a vague monthly retainer. Typically that means:"></dl-stack>
+  </dl-reveal>
+  <dl-reveal>
+    <dl-list>
+      <li>Compliance certification kept valid, with a further certificate raised whenever something is altered.</li>
+      <li>Emergency lighting tested regularly and batteries replaced before they fail.</li>
+      <li>Fire detection inspected and serviced.</li>
+      <li>Generators serviced and, importantly, load tested. A generator that has never been tested under load is an assumption rather than a backup plan.</li>
+      <li>Boards checked, connections tightened, and loads balanced across phases.</li>
+    </dl-list>
+  </dl-reveal>
+  <!-- Response times, callout arrangements and after-hours cover are still
+       open. Two competitors lead on 24-hour availability — if Sunlogic can
+       match it, say so plainly; a real response time beats implying one. -->
+  <dl-reveal>
+    <p class="sl-hint">[Response time and after-hours cover — placeholder pending]</p>
+  </dl-reveal>
+</dl-section>
+
+<dl-section bg="alt">
+  <dl-reveal>
+    <dl-stack eyebrow="Also on larger sites" heading="Four Things Worth |Getting Right"></dl-stack>
+  </dl-reveal>
+  <dl-reveal>
+    <dl-grid cols="2">
+      <dl-card tone="white" icon="chart-bar" heading="Electrical Surveys"
+        body="An infrared survey looks at your boards while they're running and finds what the eye can't — loose connections heating up, cable working too hard, and loads unevenly spread. It catches the sort of fault that becomes a fire or an unplanned shutdown. Insurers increasingly ask about these."></dl-card>
+      <dl-card tone="white" icon="bolt" heading="Backup Power">
+        <p class="sl-body">Generator installations have to be properly connected and certified, and the switching between grid and generator is where the safety risk sits, so it isn't a job for a general handyman. Cost depends on the capacity you need and whether you want the changeover to happen automatically.</p>
+        <p class="sl-body">Servicing matters more than people expect, including running the unit under real load rather than just starting it up.</p>
+      </dl-card>
+      <dl-card tone="white" icon="lifebuoy" heading="Emergency Lighting"
+        body="Escape lighting is a legal requirement, not an optional extra, and a surprising amount of what's installed doesn't actually meet the standard. It needs to come on fast, stay on long enough for a building to empty, and be tested regularly with a record kept. Cheap fittings frequently fall short on all three."></dl-card>
+      <dl-card tone="white" icon="scale" heading="Billing Tenants for Electricity">
+        <p class="sl-body">If you're a landlord or a body corporate reselling electricity to tenants through sub-meters, the rules are stricter than most people expect. You may charge what the tenant would have paid the municipality, and you may not add a margin or recover your billing and administration costs from them.</p>
+        <p class="sl-body">Sub-metering gets sold to landlords as a way to make money. Legally it's a way to allocate cost fairly. Getting the metering and the paperwork right is what keeps you out of a dispute.</p>
+      </dl-card>
+    </dl-grid>
+  </dl-reveal>
+</dl-section>
+
+<dl-section bg="page">
+  <dl-reveal>
+    <dl-stack eyebrow="Common questions" heading="Larger Sites |Usually Ask"></dl-stack>
+  </dl-reveal>
+  <dl-reveal>
+    <dl-faq items="Can you take over an installation someone else put in?=Yes, starting with an inspection so we both know what we're taking on. We'll document what we find rather than quietly working around it.|How quickly can you get to a breakdown?=[Response time — placeholder pending]|Can you reduce our bill without solar?=Often yes. Lighting, load balancing, correcting how much power the site draws and reviewing your supply agreement can all move the number, sometimes faster than generation would."></dl-faq>
+  </dl-reveal>
+</dl-section>
+
+<dl-reveal>
+  <dl-cta eyebrow="Request a quote"
+    heading="Get It Done, and |Get It Certified"
+    body="Whether it's a fault, a refit, an inspection or a maintenance agreement, you're dealing with a registered electrical contractor."
+    action="Request a Quote"
+    href="contact.html"
+    phone="(082) 655-5371"
+    phone-href="tel:+27826555371"></dl-cta>
+</dl-reveal>
 
 <dl-footer></dl-footer>
+<dl-dock></dl-dock>
 </body>
 </html>

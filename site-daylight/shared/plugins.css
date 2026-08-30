@@ -1,0 +1,252 @@
+/* ============================================================
+   SUNLOGIC — PLUGIN THEME
+   Maps plugin-calculator and plugin-review-carousel onto the
+   system. Load AFTER sunlogic.css:
+
+     <link rel="stylesheet" href="shared/sunlogic.css"/>
+     <link rel="stylesheet" href="shared/plugins.css"/>
+
+   Both plugins inject their own <style> into <head> at runtime,
+   which lands after this file. Every rule here is therefore
+   written at :root specificity (0,2,0) so it wins cleanly
+   without !important.
+
+   Do not edit the plugin JS to restyle it. Theme it here, and
+   the plugins move with the system.
+   ============================================================ */
+
+/* ---- Calculator -------------------------------------------- */
+
+:root {
+  --plugin-calc-accent: var(--color-orange);
+  --plugin-calc-bg: var(--color-white);
+  --plugin-calc-text-color: var(--text-primary);
+  --plugin-calc-text-muted: var(--text-secondary);
+  --plugin-calc-radius: var(--radius-md);
+  --plugin-calc-font: var(--font-body);
+
+  --plugin-review-accent: var(--color-orange);
+  --plugin-review-card-bg: var(--color-white);
+  --plugin-review-text-color: var(--text-primary);
+  --plugin-review-text-muted: var(--text-secondary);
+  --plugin-review-radius: var(--radius-md);
+  --plugin-review-gap: 20px;
+  --plugin-review-font: var(--font-body);
+  --plugin-review-card-height: 260px;
+  --plugin-review-card-width: 320px;
+  --plugin-review-card-width-mobile: 260px;
+}
+
+/* The calculator is always placed inside a <dl-card>, so its own
+   card chrome would double up. Strip it back to a bare block. */
+:root .plugin-calc-card {
+  max-width: none;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  font-family: var(--font-body);
+  color: var(--text-primary);
+}
+
+:root .plugin-calc-input-group { margin-bottom: 20px; }
+
+:root .plugin-calc-input-group label,
+:root .plugin-calc-gate label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+:root .plugin-calc-slider-row { gap: 16px; }
+
+:root .plugin-calc-range {
+  accent-color: var(--color-orange);
+  height: 44px;                 /* touch target, not track height */
+  color: var(--text-primary);   /* otherwise inherits the UA default black */
+}
+
+/* The honeypot is off-screen but still in the tree, so it needs system
+   colours like anything else. */
+:root .plugin-calc-hp,
+:root .plugin-calc-honeypot { color: var(--text-primary); background: var(--color-white); }
+
+:root .plugin-calc-number,
+:root .plugin-calc-email {
+  height: 50px;
+  padding: 0 16px;
+  background: var(--color-white);
+  border: 1px solid var(--border-warm);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: var(--text-primary);
+  transition: border-color var(--dur-fast) var(--ease-default);
+}
+:root .plugin-calc-number { width: 120px; }
+:root .plugin-calc-number:focus,
+:root .plugin-calc-email:focus {
+  outline: none;
+  border-color: var(--color-navy);
+  box-shadow: var(--focus-ring);
+}
+
+/* The result panel is a sunk surface, flat, hairline edge. */
+:root .plugin-calc-headline {
+  background: var(--surface-sunk);
+  border: 1px solid var(--border-warm);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  margin-top: 20px;
+}
+:root .plugin-calc-headline-row { gap: 24px; }
+:root .plugin-calc-headline-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+/* Same slot as StatTile: 40px, weight 900, tight. */
+:root .plugin-calc-headline-figure {
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--color-orange);
+}
+:root .plugin-calc-pivot-fallback {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--text-primary);
+  margin: 12px 0 0;
+}
+
+:root .plugin-calc-disclaimer {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: none;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin-top: 16px;
+}
+
+:root .plugin-calc-gate { margin-top: 24px; }
+:root .plugin-calc-gate-row { gap: 12px; flex-wrap: wrap; }
+:root .plugin-calc-email { flex: 1 1 200px; }
+
+/* The unlock button is a system button, wipe and all. */
+:root .plugin-calc-submit {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  padding: 0 24px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: var(--color-navy);
+  color: var(--color-white);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: color var(--dur-hover) ease-out, transform var(--dur-hover) ease-out;
+}
+:root .plugin-calc-submit::before {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 0;
+  background: var(--color-orange);
+  transition: height 240ms var(--ease-expo-out);
+  z-index: 0;
+}
+:root .plugin-calc-submit:hover::before { height: 100%; }
+/* The label sits above the wipe. */
+:root .plugin-calc-submit { z-index: 0; }
+:root .plugin-calc-submit:active { transform: translateY(1px); }
+
+:root .plugin-calc-detail {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-warm);
+}
+/* The plugin prints the disclaimer again inside the detail panel. Once per
+   view is enough — the first one is still above it and still visible. */
+:root .plugin-calc-detail .plugin-calc-disclaimer { display: none; }
+:root .plugin-calc-detail-grid { gap: 20px; margin-bottom: 20px; }
+:root .plugin-calc-detail-grid > div > div:last-child {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* ---- Review carousel --------------------------------------- */
+
+/* Flat. The plugin ships a drop shadow; the system does not have one. */
+:root .plugin-review-card {
+  box-shadow: none;
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  background: var(--color-white);
+  transition: background-color var(--dur-hover) ease-out;
+}
+:root .plugin-review-card:hover { background: var(--surface-page-alt); }
+
+:root .plugin-review-avatar,
+:root .plugin-review-avatar-initials {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-pill);
+}
+:root .plugin-review-avatar-initials {
+  background: var(--surface-sunk);
+  border: 1px solid var(--border-warm);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+:root .plugin-review-header { gap: 12px; margin-bottom: 16px; }
+:root .plugin-review-name {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+:root .plugin-review-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  gap: 6px;
+}
+:root .plugin-review-stars { gap: 3px; margin-bottom: 12px; }
+:root .plugin-review-star { width: 15px; height: 15px; }
+:root .plugin-review-text {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+/* Carousel motion is slow and continuous, in keeping with the
+   gradient drift. It pauses on hover and focus (plugin default),
+   and reduced-motion turns it into a scrollable row. */
+:root { --plugin-review-speed: 60s; }
