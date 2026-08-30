@@ -1,0 +1,21 @@
+{
+  "reviews": [{
+    "reviewer": {
+      "displayName": "Clare Hendry"
+    },
+    "starRating": "FIVE",
+    "comment": "Such fast and efficient service, has made a massive difference to our lives!",
+    "createTime": "2023-02-17T10:11:14.496728Z",
+    "updateTime": "2023-02-17T10:11:14.496728Z",
+    "name": "accounts/105562642131711282373/locations/13947336145699233678/reviews/ChZDSUhNMG9nS0VJQ0FnSUNoLWVhelNnEAE"
+  }, {
+    "reviewer": {
+      "displayName": "Carole Hambleton"
+    },
+    "starRating": "FIVE",
+    "comment": "I have only superlatives for Sunlogic. They started by meeting a very short deadline I had to install an inverter and battery for my solar system when I explained to them why it was urgent. Their work was of the highest quality, and Stephan, head of installations, and Craig, head of sales, are a formidable team. They are truly customer and service oriented and provide generous follow-up service when needed. Highly recommended !!",
+    "createTime": "2023-02-15T13:00:17.149296Z",
+    "updateTime": "2023-02-15T13:00:17.149296Z",
+    "name": "accounts/105562642131711282373/locations/13947336145699233678/reviews/ChdDSUhNMG9nS0VJQ0FnSUNoMGRHTzVnRRAB"
+  }]
+}

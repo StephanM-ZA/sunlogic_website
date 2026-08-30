@@ -1,0 +1,259 @@
+{
+  "name": "locations/13947336145699233678",
+  "languageCode": "en",
+  "storeCode": "01961157842066883649",
+  "title": "Sunlogic SA",
+  "phoneNumbers": {
+    "primaryPhone": "082 655 5371"
+  },
+  "categories": {
+    "primaryCategory": {
+      "name": "categories/gcid:electrical_installation_service",
+      "displayName": "Electrical installation service",
+      "serviceTypes": [{
+        "serviceTypeId": "job_type_id:electric_car_charger",
+        "displayName": "Electric car charger installation"
+      }, {
+        "serviceTypeId": "job_type_id:electrician_remodeling",
+        "displayName": "Remodeling"
+      }, {
+        "serviceTypeId": "job_type_id:install_fan",
+        "displayName": "Fan installation"
+      }, {
+        "serviceTypeId": "job_type_id:install_ground_wire",
+        "displayName": "Ground wire installation"
+      }, {
+        "serviceTypeId": "job_type_id:install_light_fixtures",
+        "displayName": "Light fixture installation"
+      }, {
+        "serviceTypeId": "job_type_id:install_outdoor_lighting",
+        "displayName": "Outdoor lighting installation"
+      }, {
+        "serviceTypeId": "job_type_id:install_outlets_switches",
+        "displayName": "Electrical outlet \u0026 switch installation"
+      }, {
+        "serviceTypeId": "job_type_id:install_security_system",
+        "displayName": "Security system installation"
+      }, {
+        "serviceTypeId": "job_type_id:relocate_outlets_switches",
+        "displayName": "Electrical outlet \u0026 switch relocation"
+      }, {
+        "serviceTypeId": "job_type_id:repair_fan",
+        "displayName": "Fan repair"
+      }, {
+        "serviceTypeId": "job_type_id:repair_light_fixtures",
+        "displayName": "Light fixture repair"
+      }, {
+        "serviceTypeId": "job_type_id:repair_outlets_switches",
+        "displayName": "Electrical outlet \u0026 switch repair"
+      }, {
+        "serviceTypeId": "job_type_id:repair_panel",
+        "displayName": "Electrical panel repair"
+      }, {
+        "serviceTypeId": "job_type_id:replace_upgrade_panel",
+        "displayName": "Electrical panel replacement or upgrading"
+      }, {
+        "serviceTypeId": "job_type_id:restore_power",
+        "displayName": "Electrical power restoration"
+      }],
+      "moreHoursTypes": [{
+        "hoursTypeId": "ACCESS",
+        "displayName": "Access",
+        "localizedDisplayName": "Access"
+      }, {
+        "hoursTypeId": "BREAKFAST",
+        "displayName": "Breakfast",
+        "localizedDisplayName": "Breakfast"
+      }, {
+        "hoursTypeId": "BRUNCH",
+        "displayName": "Brunch",
+        "localizedDisplayName": "Brunch"
+      }, {
+        "hoursTypeId": "DELIVERY",
+        "displayName": "Delivery",
+        "localizedDisplayName": "Delivery"
+      }, {
+        "hoursTypeId": "DINNER",
+        "displayName": "Dinner",
+        "localizedDisplayName": "Dinner"
+      }, {
+        "hoursTypeId": "DRIVE_THROUGH",
+        "displayName": "Drive through",
+        "localizedDisplayName": "Drive through"
+      }, {
+        "hoursTypeId": "HAPPY_HOUR",
+        "displayName": "Happy hours",
+        "localizedDisplayName": "Happy hours"
+      }, {
+        "hoursTypeId": "KITCHEN",
+        "displayName": "Kitchen",
+        "localizedDisplayName": "Kitchen"
+      }, {
+        "hoursTypeId": "LUNCH",
+        "displayName": "Lunch",
+        "localizedDisplayName": "Lunch"
+      }, {
+        "hoursTypeId": "ONLINE_SERVICE_HOURS",
+        "displayName": "Online service hours",
+        "localizedDisplayName": "Online service hours"
+      }, {
+        "hoursTypeId": "PICKUP",
+        "displayName": "Pickup",
+        "localizedDisplayName": "Pickup"
+      }, {
+        "hoursTypeId": "TAKEOUT",
+        "displayName": "Takeout",
+        "localizedDisplayName": "Takeout"
+      }, {
+        "hoursTypeId": "SENIOR_HOURS",
+        "displayName": "Senior hours",
+        "localizedDisplayName": "Senior hours"
+      }]
+    }
+  },
+  "storefrontAddress": {
+    "regionCode": "ZA",
+    "languageCode": "en",
+    "postalCode": "7708",
+    "locality": "Cape Town",
+    "sublocality": "Claremont",
+    "addressLines": ["9 Chesham road"]
+  },
+  "websiteUri": "http://sunlogic.co.za/",
+  "regularHours": {
+    "periods": [{
+      "openDay": "MONDAY",
+      "openTime": {
+        "hours": 8
+      },
+      "closeDay": "MONDAY",
+      "closeTime": {
+        "hours": 17
+      }
+    }, {
+      "openDay": "TUESDAY",
+      "openTime": {
+        "hours": 8
+      },
+      "closeDay": "TUESDAY",
+      "closeTime": {
+        "hours": 17
+      }
+    }, {
+      "openDay": "WEDNESDAY",
+      "openTime": {
+        "hours": 8
+      },
+      "closeDay": "WEDNESDAY",
+      "closeTime": {
+        "hours": 17
+      }
+    }, {
+      "openDay": "THURSDAY",
+      "openTime": {
+        "hours": 8
+      },
+      "closeDay": "THURSDAY",
+      "closeTime": {
+        "hours": 17
+      }
+    }, {
+      "openDay": "FRIDAY",
+      "openTime": {
+        "hours": 8
+      },
+      "closeDay": "FRIDAY",
+      "closeTime": {
+        "hours": 17
+      }
+    }, {
+      "openDay": "SATURDAY",
+      "openTime": {
+        "hours": 9
+      },
+      "closeDay": "SATURDAY",
+      "closeTime": {
+        "hours": 12
+      }
+    }]
+  },
+  "specialHours": {
+  },
+  "serviceArea": {
+    "businessType": "CUSTOMER_AND_BUSINESS_LOCATION",
+    "places": {
+      "placeInfos": [{
+        "placeName": "Gauteng, South Africa",
+        "placeId": "ChIJn3cRVJUSlR4R4jhUy8fnnm0"
+      }, {
+        "placeName": "Limpopo, South Africa",
+        "placeId": "ChIJwTDNNhTJxh4RStzIZh49iWI"
+      }, {
+        "placeName": "Free State, South Africa",
+        "placeId": "ChIJGRTWM2HFjx4RRwqiTVWK9e0"
+      }, {
+        "placeName": "Mpumalanga, South Africa",
+        "placeId": "ChIJPSAvTvpg6h4RhGvk9A3foGQ"
+      }, {
+        "placeName": "North West, South Africa",
+        "placeId": "ChIJ612A6EIKmB4R_5BkMf6qLUc"
+      }, {
+        "placeName": "Eastern Cape, South Africa",
+        "placeId": "ChIJu5znKjRWYh4RkqxyqdKUajo"
+      }, {
+        "placeName": "Western Cape, South Africa",
+        "placeId": "ChIJ841peohdzB0Ri6I2IY95juk"
+      }, {
+        "placeName": "KwaZulu-Natal, South Africa",
+        "placeId": "ChIJVQ7iWQ4Q8R4Rjdnka6d4YYI"
+      }, {
+        "placeName": "Northern Cape, South Africa",
+        "placeId": "ChIJbUtwf_UhJBwRkEyPkNb4AAM"
+      }]
+    },
+    "regionCode": "ZA"
+  },
+  "adWordsLocationExtensions": {
+  },
+  "latlng": {
+  },
+  "openInfo": {
+    "status": "OPEN",
+    "canReopen": true
+  },
+  "metadata": {
+    "placeId": "ChIJc7XXIg8wkgoR1rRGjSDBY0w"
+  },
+  "profile": {
+    "description": "Sunlogic SA is a premier solar and electrical installation company committed to delivering high-quality, reliable, and energy-efficient solutions. Serving both residential and commercial sectors, we specialize in providing cutting-edge electrical and solar services designed to meet the diverse needs of our clients. With a team of skilled professionals and a dedication to sustainability, Sunlogic SA is your trusted partner in powering homes and businesses with innovative energy solutions."
+  },
+  "relationshipData": {
+    "parentLocation": {
+    }
+  },
+  "serviceItems": [{
+    "structuredServiceItem": {
+      "serviceTypeId": "job_type_id:replace_upgrade_panel"
+    }
+  }, {
+    "structuredServiceItem": {
+      "serviceTypeId": "job_type_id:install_outlets_switches"
+    }
+  }, {
+    "structuredServiceItem": {
+      "serviceTypeId": "job_type_id:relocate_outlets_switches"
+    }
+  }, {
+    "structuredServiceItem": {
+      "serviceTypeId": "job_type_id:repair_outlets_switches"
+    }
+  }, {
+    "structuredServiceItem": {
+      "serviceTypeId": "job_type_id:install_light_fixtures"
+    }
+  }, {
+    "structuredServiceItem": {
+      "serviceTypeId": "job_type_id:install_outdoor_lighting"
+    }
+  }]
+}

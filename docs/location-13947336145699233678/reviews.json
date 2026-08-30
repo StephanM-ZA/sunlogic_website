@@ -1,0 +1,195 @@
+{
+  "reviews": [{
+    "reviewer": {
+      "displayName": "Neil Harrower"
+    },
+    "starRating": "FIVE",
+    "comment": "Great knowledge, great service.",
+    "createTime": "2026-04-28T06:57:37.425736Z",
+    "updateTime": "2026-04-28T06:57:37.425736Z",
+    "name": "accounts/105562642131711282373/locations/13947336145699233678/reviews/Ci9DQUlRQUNvZENodHljRjlvT25nNFZ6bFllWFJzUldGb2RFTTBXSE10T0ZOR05FRRAB"
+  }, {
+    "reviewer": {
+      "displayName": "Jon Minster"
+    },
+    "starRating": "FIVE",
+    "comment": "Great service from Stephan and his team. Each house and each install is different, and there will inevitably be some hiccups along the way, but Stephan was always available to problem-solve and make sure everything was working perfectly.",
+    "createTime": "2026-03-13T10:38:25.119768Z",
+    "updateTime": "2026-03-13T10:38:25.119768Z",
+    "reviewReply": {
+      "comment": "Thank you John. Hope that you are happy and can see the benefits!",
+      "updateTime": "2026-03-17T09:32:49.335048Z"
+    },
+    "name": "accounts/105562642131711282373/locations/13947336145699233678/reviews/Ci9DQUlRQUNvZENodHljRjlvT2tZMVQwTlpha0UzTFcxSWFUSmZUelZCTmtWUk9FRRAB"
+  }, {
+    "reviewer": {
+      "displayName": "James Alt"
+    },
+    "starRating": "FIVE",
+    "comment": "We are very happy with our new solar system.  The team at Sunlogic advised us on our options, installed all the equipment expertly and explained how the hardware and software work.  We have seen a big drop off in our electricity costs and the system has worked very well.",
+    "createTime": "2026-03-13T07:10:43.503453Z",
+    "updateTime": "2026-03-13T07:10:43.503453Z",
+    "reviewReply": {
+      "comment": "Thank you James. It was a pleasure",
+      "updateTime": "2026-03-17T09:33:06.929563Z"
+    },
+    "name": "accounts/105562642131711282373/locations/13947336145699233678/reviews/Ci9DQUlRQUNvZENodHljRjlvT2xOamVURTJhalUwTVRGUlNFVjBWa0owT0dkNFEwRRAB"
+  }, {
+    "reviewer": {
+      "displayName": "Johan Cronje"
+    },
+    "starRating": "FIVE",
+    "comment": "Absolute pleasure working with Craig and the team. Always helpful and really went the extra mile with our house. I would Highly recommend them.",
+    "createTime": "2025-12-01T07:43:07.988912Z",
+    "updateTime": "2025-12-01T07:43:07.988912Z",
+    "name": "accounts/105562642131711282373/locations/13947336145699233678/reviews/Ci9DQUlRQUNvZENodHljRjlvT2poNVptbGlXRFJJVUVGWlprRndkRmRHYURKRGJrRRAB"
+  }, {
+    "reviewer": {
+      "displayName": "Christof Sander"
+    },
+    "starRating": "FIVE",
+    "comment": "Stephan and his team have done a fantastic job: Excellent consulting, fast communication and the construction team installed and commissioned everything perfectly within 2 days. The team worked very professionally and cleanly and I can only give an unreserved 5 stars as a rating! Highly recommended.",
+    "createTime": "2025-03-18T18:30:05.219530Z",
+    "updateTime": "2025-03-18T18:30:05.219530Z",
+    "name": "accounts/105562642131711282373/locations/13947336145699233678/reviews/ChdDSUhNMG9nS0VJQ0FnTUN3dHNER3pBRRAB"
+  }, {
+    "reviewer": {
+      "displayName": "Leentjie Strydom"
+    },
+    "starRating": "FIVE",
+    "comment": "Thank you to Stephan and his team for the speedy and very professional installation.  The team worked tirelessly to complete the Solar installation within the committed timeframe.  Stephan went out of his way to guide us through the setup and customize to our needs.",
+    "createTime": "2023-08-25T07:06:47.958626Z",
+    "updateTime": "2023-08-25T12:32:01.377745Z",
+    "name": "accounts/105562642131711282373/locations/13947336145699233678/reviews/ChdDSUhNMG9nS0VJQ0FnSURwdWRHOW5BRRAB"
+  }, {
+    "reviewer": {
+      "displayName": "Dave Barron"
+    },
+    "starRating": "FIVE",
+    "comment": "Great service from Stephan and the Sunlogic team. They were highly responsive, extremally informative and patient as I pestered them with tons of questions. We had an install that had to go outside and Stephan arranged to have a cabinet installed with the inverter to protect against elements.\nWould highly recommend them for the installation",
+    "createTime": "2023-07-18T12:07:36.224660Z",
+    "updateTime": "2023-07-18T12:07:36.224660Z",
+    "reviewReply": {
+      "comment": "Thank you Dave. It is always a pleasure and we are available when you need us!",
+      "updateTime": "2023-07-19T12:36:25.774823Z"
+    },
+    "name": "accounts/105562642131711282373/locations/13947336145699233678/reviews/ChdDSUhNMG9nS0VJQ0FnSURKd2ItMjR3RRAB"
+  }, {
+    "reviewer": {
+      "displayName": "Stephen Naude"
+    },
+    "starRating": "FIVE",
+    "comment": "Clear and transparent quote with good understanding of my requirements. Installation team went above and beyond to finish, working late into the night. The outcome a super clean, professional and tidy installation. So far the system has worked flawlessly.",
+    "createTime": "2023-05-23T09:10:18.452499Z",
+    "updateTime": "2023-05-23T09:10:18.452499Z",
+    "name": "accounts/105562642131711282373/locations/13947336145699233678/reviews/ChdDSUhNMG9nS0VJQ0FnSUN4emFUVzBRRRAB"
+  }, {
+    "reviewer": {
+      "displayName": "Shenton Wood"
+    },
+    "starRating": "FIVE",
+    "comment": "Great team with fantastic service before and after purchase.",
+    "createTime": "2023-05-08T04:25:00.443244Z",
+    "updateTime": "2023-05-08T04:25:00.443244Z",
+    "name": "accounts/105562642131711282373/locations/13947336145699233678/reviews/ChZDSUhNMG9nS0VJQ0FnSUN4d09tZVRBEAE"
+  }, {
+    "reviewer": {
+      "displayName": "Kitesh Moodley"
+    },
+    "starRating": "FIVE",
+    "comment": "Was looking at various solar options but until Sunlogic was recommended to me by friends I hadn\u0027t found the perfect fit. Right from the get go both Stephan and Craig have been fully involved discussing options and tailoring a package to suit our needs.\nInstallation was seamless and we\u0027ve no issues since coming online.\nAfterhours services has been terrific with availability and responsiveness.\nHighly recommend this team to all friends and family 🙏",
+    "createTime": "2023-05-02T03:06:45.273090Z",
+    "updateTime": "2023-05-02T03:06:45.273090Z",
+    "name": "accounts/105562642131711282373/locations/13947336145699233678/reviews/ChZDSUhNMG9nS0VJQ0FnSURSdmYyb1dnEAE"
+  }, {
+    "reviewer": {
+      "displayName": "Demented Drew"
+    },
+    "starRating": "FIVE",
+    "comment": "I was introduced to Craig and Stephan by my Sales Manager, who had used Sun Logic for several installations for our customers. After making a few calls and receiving nothing but positive feedback, I decided to call Craig for a quote for my home. Craig was at my house a few days later and spec’d a system suitable for our requirements. The installation was no small task, but each project stage was handled efficiently and professionally. Stephan and his Team kept me up to date at all times. I was never left wondering where we were on the project. I could not be happier with the result, neat installation and working better than expected. If you are going to make this investment, I highly recommend Sun Logic to get you the best equipment, professionally installed. My system comprises a Deye 8kva Inverter, 9kva Battery, and 12 Solar Panels.",
+    "createTime": "2023-04-25T17:52:58.234690Z",
+    "updateTime": "2023-04-25T17:52:58.234690Z",
+    "name": "accounts/105562642131711282373/locations/13947336145699233678/reviews/ChZDSUhNMG9nS0VJQ0FnSURSN29hOGF3EAE"
+  }, {
+    "reviewer": {
+      "displayName": "Laurelle Sham"
+    },
+    "starRating": "FIVE",
+    "comment": "I have had a such a wonderful experience with the Sunlogic team. Craig and Stephan have gone out of their way to help me with installing an inverter and helping me with a subject I have little knowledge about. Their service has been beyond my expectation and I am very grateful to them for all their help.",
+    "createTime": "2023-04-25T16:58:27.877081Z",
+    "updateTime": "2023-04-25T16:58:27.877081Z",
+    "name": "accounts/105562642131711282373/locations/13947336145699233678/reviews/ChZDSUhNMG9nS0VJQ0FnSURScnJmUkJBEAE"
+  }, {
+    "reviewer": {
+      "displayName": "John Henshilwood"
+    },
+    "starRating": "FIVE",
+    "comment": "Craig and Steph from Sun Logic have been fantastic! From quoting, to booking my install, arranging CoC the whole team did a great job. I would highly recommend them!",
+    "createTime": "2023-04-25T16:51:11.356658Z",
+    "updateTime": "2023-04-25T16:51:11.356658Z",
+    "name": "accounts/105562642131711282373/locations/13947336145699233678/reviews/ChdDSUhNMG9nS0VJQ0FnSURScnR2SHl3RRAB"
+  }, {
+    "reviewer": {
+      "displayName": "Dave Lehr"
+    },
+    "starRating": "FIVE",
+    "comment": "Very happy with the power solution professionally installed by SunLogic in our office building. Great service and highly recommended.",
+    "createTime": "2023-04-25T12:46:20.094174Z",
+    "updateTime": "2023-04-25T12:46:20.094174Z",
+    "name": "accounts/105562642131711282373/locations/13947336145699233678/reviews/ChdDSUhNMG9nS0VJQ0FnSURSenZHcW9RRRAB"
+  }, {
+    "reviewer": {
+      "displayName": "Brendon Shaw"
+    },
+    "starRating": "FIVE",
+    "comment": "Dealing with Stephan, McDonald and team was an absolute pleasure.\n\nPerfect mix of honest feedback, explanation and assessment of our needs, quality components, cost effective and very neat installation.\n\nDespite weather delays, the team worked late into the night to ensure we got off grid asap, much appreciated 👍",
+    "createTime": "2023-04-25T09:41:57.054229Z",
+    "updateTime": "2023-04-25T09:41:57.054229Z",
+    "name": "accounts/105562642131711282373/locations/13947336145699233678/reviews/ChdDSUhNMG9nS0VJQ0FnSURSanFXeHBBRRAB"
+  }, {
+    "reviewer": {
+      "displayName": "Andrew Henderson"
+    },
+    "starRating": "FIVE",
+    "comment": "When loadshedding increased towards the end of last year I decided to get an inverter and battery installed. I got quotes from a number of companies, getting further than a quote proved challenging with all except Sunlogic. They quickly came out to do a site inspection and responded rapidly to any questions I had. Once I\u0027d decided to go with them they scheduled an installation date and kept me in the loop. Actually ended up being installed earlier than originally planned! The installation was smooth and the work is very neat and I haven\u0027t had an issues. Post installation they even came out to check the battery firmware. When I decide to take the next step and install solar panels I will definitely be going with Sunlogic.",
+    "createTime": "2023-03-15T11:53:12.888365Z",
+    "updateTime": "2023-03-15T11:53:54.113971Z",
+    "name": "accounts/105562642131711282373/locations/13947336145699233678/reviews/ChZDSUhNMG9nS0VJQ0FnSURobmM2YUp3EAE"
+  }, {
+    "reviewer": {
+      "displayName": "James Mason"
+    },
+    "starRating": "FIVE",
+    "comment": "Very happy!",
+    "createTime": "2023-03-07T05:54:20.090852Z",
+    "updateTime": "2023-03-07T05:54:20.090852Z",
+    "name": "accounts/105562642131711282373/locations/13947336145699233678/reviews/ChdDSUhNMG9nS0VJQ0FnSURoLXZXVTN3RRAB"
+  }, {
+    "reviewer": {
+      "displayName": "Esther Musikanth"
+    },
+    "starRating": "FIVE",
+    "comment": "Last year December, I tried phoning 4 solar/inverter companies, 3 never came back to me, except for Craig from Sunlogic SA.  He came to assess the same day what I needed, sent a quote to me the same day and 2 weeks later his team installed our inverter.  Their after-sales service is also very good as we struggled to get our app to work but nothing was an issue for Stephan or Craig, they were obliging, honest and certainly out to please the Customer.  I have no hesitation in recommending them and know if they continue to offer the service I got, they will continue to do well!",
+    "createTime": "2023-02-28T08:03:05.303Z",
+    "updateTime": "2023-02-28T08:03:05.303Z",
+    "name": "accounts/105562642131711282373/locations/13947336145699233678/reviews/ChZDSUhNMG9nS0VJQ0FnSURoeUp1dEh3EAE"
+  }, {
+    "reviewer": {
+      "displayName": "Nathan SCOTT"
+    },
+    "starRating": "FIVE",
+    "comment": "The Sunlogic team are consumate professionals who are clearly committed to service excellence. My experience with everyone at Sunlogic has been memorable and I have not one regret in having entrusted my solar installation to this great company.",
+    "createTime": "2023-02-24T09:19:34.205798Z",
+    "updateTime": "2023-02-24T09:20:31.480958Z",
+    "name": "accounts/105562642131711282373/locations/13947336145699233678/reviews/ChZDSUhNMG9nS0VJQ0FnSUNobDk2bmZnEAE"
+  }, {
+    "reviewer": {
+      "displayName": "Denver Keswell"
+    },
+    "starRating": "FIVE",
+    "comment": "“Fantastic Service” Stephan and Craig were professional from our first meeting until everything was running smoothly. Talked me through the entire installation and dealt with any teething issues immediately even if their team had to turn around in traffic after hours. Wasn’t just the installation that I was impressed with as their after sales service has been top notch. Highly recommend  them which I don’t often do. Thanks gents and look forward to adding to my plant in future.",
+    "createTime": "2023-02-24T07:48:27.879747Z",
+    "updateTime": "2023-02-24T07:48:27.879747Z",
+    "name": "accounts/105562642131711282373/locations/13947336145699233678/reviews/ChdDSUhNMG9nS0VJQ0FnSUNobDlTOV93RRAB"
+  }]
+}

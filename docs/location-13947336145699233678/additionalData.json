@@ -1,0 +1,580 @@
+{
+  "attributes": [{
+    "id": {
+      "attributeType": "LISTING_NAME"
+    },
+    "values": [{
+      "datum": {
+        "listingName": {
+          "text": "Sunlogic SA"
+        }
+      }
+    }]
+  }, {
+    "id": {
+      "attributeType": "PHONE_NUMBER"
+    },
+    "values": [{
+      "datum": {
+        "phoneNumber": {
+          "phoneNumber": "082 655 5371",
+          "metadata": {
+            "isPreferred": true
+          },
+          "phoneType": "VOICE",
+          "phoneNumberRfc3966": "tel:+27-82-655-5371"
+        }
+      }
+    }]
+  }, {
+    "id": {
+      "attributeType": "ADDRESS"
+    },
+    "values": [{
+      "datum": {
+        "address": {
+          "postalAddress": {
+            "regionCode": "ZA",
+            "languageCode": "en",
+            "postalCode": "7708",
+            "locality": "Cape Town",
+            "sublocality": "Claremont",
+            "addressLines": ["9 Chesham road"]
+          }
+        }
+      }
+    }]
+  }, {
+    "id": {
+      "attributeType": "POINT"
+    },
+    "values": [{
+      "datum": {
+        "point": {
+          "latE7": -339778993,
+          "lngE7": 184856919,
+          "wasInferredFromTheGeocodedAddress": true
+        }
+      }
+    }]
+  }, {
+    "id": {
+      "attributeType": "SERVICE_AREA"
+    },
+    "values": [{
+      "datum": {
+        "serviceArea": {
+          "namedPlace": {
+            "placeId": "ChIJn3cRVJUSlR4R4jhUy8fnnm0",
+            "placeName": "Gauteng, South Africa"
+          }
+        }
+      }
+    }, {
+      "datum": {
+        "serviceArea": {
+          "namedPlace": {
+            "placeId": "ChIJwTDNNhTJxh4RStzIZh49iWI",
+            "placeName": "Limpopo, South Africa"
+          }
+        }
+      }
+    }, {
+      "datum": {
+        "serviceArea": {
+          "namedPlace": {
+            "placeId": "ChIJGRTWM2HFjx4RRwqiTVWK9e0",
+            "placeName": "Free State, South Africa"
+          }
+        }
+      }
+    }, {
+      "datum": {
+        "serviceArea": {
+          "namedPlace": {
+            "placeId": "ChIJPSAvTvpg6h4RhGvk9A3foGQ",
+            "placeName": "Mpumalanga, South Africa"
+          }
+        }
+      }
+    }, {
+      "datum": {
+        "serviceArea": {
+          "namedPlace": {
+            "placeId": "ChIJ612A6EIKmB4R_5BkMf6qLUc",
+            "placeName": "North West, South Africa"
+          }
+        }
+      }
+    }, {
+      "datum": {
+        "serviceArea": {
+          "namedPlace": {
+            "placeId": "ChIJu5znKjRWYh4RkqxyqdKUajo",
+            "placeName": "Eastern Cape, South Africa"
+          }
+        }
+      }
+    }, {
+      "datum": {
+        "serviceArea": {
+          "namedPlace": {
+            "placeId": "ChIJ841peohdzB0Ri6I2IY95juk",
+            "placeName": "Western Cape, South Africa"
+          }
+        }
+      }
+    }, {
+      "datum": {
+        "serviceArea": {
+          "namedPlace": {
+            "placeId": "ChIJVQ7iWQ4Q8R4Rjdnka6d4YYI",
+            "placeName": "KwaZulu-Natal, South Africa"
+          }
+        }
+      }
+    }, {
+      "datum": {
+        "serviceArea": {
+          "namedPlace": {
+            "placeId": "ChIJbUtwf_UhJBwRkEyPkNb4AAM",
+            "placeName": "Northern Cape, South Africa"
+          }
+        }
+      }
+    }]
+  }, {
+    "id": {
+      "attributeType": "SIGNUP_REGION"
+    },
+    "values": [{
+      "datum": {
+        "signupRegion": {
+          "regionCode": "ZA"
+        }
+      }
+    }]
+  }, {
+    "id": {
+      "attributeType": "CATEGORY"
+    },
+    "values": [{
+      "datum": {
+        "category": {
+          "gcid": "gcid:electrical_installation_service",
+          "metadata": {
+            "isPrimary": true
+          },
+          "localizedName": "Electrical installation service"
+        }
+      }
+    }]
+  }, {
+    "id": {
+      "attributeType": "WEBSITE"
+    },
+    "values": [{
+      "datum": {
+        "website": {
+          "text": "http://sunlogic.co.za/"
+        }
+      }
+    }]
+  }, {
+    "id": {
+      "attributeType": "OPENING_DATE"
+    }
+  }, {
+    "id": {
+      "attributeType": "BUSINESS_EXISTENCE"
+    },
+    "values": [{
+      "datum": {
+        "businessExistence": {
+          "businessState": "OPEN"
+        }
+      }
+    }]
+  }, {
+    "id": {
+      "attributeType": "CLOSURE"
+    },
+    "values": [{
+      "datum": {
+        "closure": {
+          "type": "NOT_CLOSED"
+        }
+      }
+    }]
+  }, {
+    "id": {
+      "attributeType": "REGULAR_HOURS"
+    },
+    "values": [{
+      "datum": {
+        "regularHours": {
+          "periods": [{
+            "startDay": "MONDAY",
+            "openTime": {
+              "hours": 8
+            },
+            "endDay": "MONDAY",
+            "closeTime": {
+              "hours": 17
+            }
+          }, {
+            "startDay": "TUESDAY",
+            "openTime": {
+              "hours": 8
+            },
+            "endDay": "TUESDAY",
+            "closeTime": {
+              "hours": 17
+            }
+          }, {
+            "startDay": "WEDNESDAY",
+            "openTime": {
+              "hours": 8
+            },
+            "endDay": "WEDNESDAY",
+            "closeTime": {
+              "hours": 17
+            }
+          }, {
+            "startDay": "THURSDAY",
+            "openTime": {
+              "hours": 8
+            },
+            "endDay": "THURSDAY",
+            "closeTime": {
+              "hours": 17
+            }
+          }, {
+            "startDay": "FRIDAY",
+            "openTime": {
+              "hours": 8
+            },
+            "endDay": "FRIDAY",
+            "closeTime": {
+              "hours": 17
+            }
+          }, {
+            "startDay": "SATURDAY",
+            "openTime": {
+              "hours": 9
+            },
+            "endDay": "SATURDAY",
+            "closeTime": {
+              "hours": 12
+            }
+          }]
+        }
+      }
+    }]
+  }, {
+    "id": {
+      "attributeType": "EXCEPTIONAL_HOURS"
+    }
+  }, {
+    "id": {
+      "attributeType": "MERCHANT_DESCRIPTION"
+    },
+    "values": [{
+      "datum": {
+        "merchantDescription": {
+          "text": "Sunlogic SA is a premier solar and electrical installation company committed to delivering high-quality, reliable, and energy-efficient solutions. Serving both residential and commercial sectors, we specialize in providing cutting-edge electrical and solar services designed to meet the diverse needs of our clients. With a team of skilled professionals and a dedication to sustainability, Sunlogic SA is your trusted partner in powering homes and businesses with innovative energy solutions."
+        }
+      }
+    }]
+  }, {
+    "id": {
+      "attributeType": "SCALABLE_DEEP_LINK",
+      "scalableAttributeExternalId": "url_instagram"
+    },
+    "values": [{
+      "datum": {
+        "scalableDeepLink": {
+          "uri": "https://www.instagram.com/sunlogic_sa/"
+        }
+      }
+    }]
+  }, {
+    "id": {
+      "attributeType": "SCALABLE_DEEP_LINK",
+      "scalableAttributeExternalId": "url_linkedin"
+    },
+    "values": [{
+      "datum": {
+        "scalableDeepLink": {
+          "uri": "https://www.linkedin.com/company/82163630"
+        }
+      }
+    }]
+  }, {
+    "id": {
+      "attributeType": "SCALABLE_DEEP_LINK",
+      "scalableAttributeExternalId": "url_facebook"
+    },
+    "values": [{
+      "datum": {
+        "scalableDeepLink": {
+          "uri": "https://www.facebook.com/profile.php?id=100095165686174\u0026mibextid=LQQJ4d"
+        }
+      }
+    }]
+  }, {
+    "id": {
+      "attributeType": "SCALABLE_DEEP_LINK_OR_PLACE_ACTION",
+      "scalableAttributeExternalId": "url_instagram"
+    },
+    "values": [{
+      "datum": {
+        "scalableDeepLinkOrPlaceAction": {
+          "url": "https://www.instagram.com/sunlogic_sa/"
+        }
+      }
+    }]
+  }, {
+    "id": {
+      "attributeType": "SCALABLE_DEEP_LINK_OR_PLACE_ACTION",
+      "scalableAttributeExternalId": "url_linkedin"
+    },
+    "values": [{
+      "datum": {
+        "scalableDeepLinkOrPlaceAction": {
+          "url": "https://www.linkedin.com/company/82163630"
+        }
+      }
+    }]
+  }, {
+    "id": {
+      "attributeType": "SCALABLE_DEEP_LINK_OR_PLACE_ACTION",
+      "scalableAttributeExternalId": "url_facebook"
+    },
+    "values": [{
+      "datum": {
+        "scalableDeepLinkOrPlaceAction": {
+          "url": "https://www.facebook.com/profile.php?id=100095165686174\u0026mibextid=LQQJ4d"
+        }
+      }
+    }]
+  }, {
+    "id": {
+      "attributeType": "GEOSTORE_PRICE_INFO"
+    },
+    "values": [{
+      "datum": {
+        "geostorePriceInfo": {
+          "priceInfoProto": {
+            "@type": "type.googleapis.com/geostore.PriceInfoProto",
+            "priceList": [{
+              "nameInfo": [{
+                "name": "Jobs",
+                "id": "65b03a63-5932-487a-a370-a057cafa45ed"
+              }],
+              "section": [{
+                "nameInfo": [{
+                  "name": "Jobs",
+                  "id": "beac97f0-e074-4557-b118-4b48421b4af7"
+                }],
+                "itemType": ["TYPE_JOB"],
+                "item": [{
+                  "nameInfo": [{
+                    "name": "Electrical panel replacement or upgrading",
+                    "id": "607dfc04-2276-4be5-8ce9-0d81be2d2679"
+                  }],
+                  "offered": "OFFERED",
+                  "jobMetadata": {
+                    "jobTypeId": "job_type_id:replace_upgrade_panel",
+                    "jobRelatedCategories": [{
+                      "name": "Electrical installation service",
+                      "language": "en",
+                      "gcid": "gcid:electrical_installation_service"
+                    }],
+                    "jobTypeMid": "/g/11hdq9w5vp"
+                  }
+                }, {
+                  "nameInfo": [{
+                    "name": "Electrical outlet \u0026 switch installation",
+                    "id": "f589d598-53c9-4821-9c96-f401f169adb5"
+                  }],
+                  "offered": "OFFERED",
+                  "jobMetadata": {
+                    "jobTypeId": "job_type_id:install_outlets_switches",
+                    "jobRelatedCategories": [{
+                      "name": "Electrical installation service",
+                      "language": "en",
+                      "gcid": "gcid:electrical_installation_service"
+                    }],
+                    "jobTypeMid": "/g/11hdq9w29y"
+                  }
+                }, {
+                  "nameInfo": [{
+                    "name": "Electrical outlet \u0026 switch relocation",
+                    "id": "6aebd4bc-85e6-4905-8bca-8a932d795937"
+                  }],
+                  "offered": "OFFERED",
+                  "jobMetadata": {
+                    "jobTypeId": "job_type_id:relocate_outlets_switches",
+                    "jobRelatedCategories": [{
+                      "name": "Electrical installation service",
+                      "language": "en",
+                      "gcid": "gcid:electrical_installation_service"
+                    }],
+                    "jobTypeMid": "/g/11hdq9vm8z"
+                  }
+                }, {
+                  "nameInfo": [{
+                    "name": "Electrical outlet \u0026 switch repair",
+                    "id": "b04e721c-52f0-41a7-aa00-4abfc1277fef"
+                  }],
+                  "offered": "OFFERED",
+                  "jobMetadata": {
+                    "jobTypeId": "job_type_id:repair_outlets_switches",
+                    "jobRelatedCategories": [{
+                      "name": "Electrical installation service",
+                      "language": "en",
+                      "gcid": "gcid:electrical_installation_service"
+                    }],
+                    "jobTypeMid": "/g/11hzzxl2mj"
+                  }
+                }, {
+                  "nameInfo": [{
+                    "name": "Light fixture installation",
+                    "id": "5e00f4ce-5cf2-40c0-8030-d6f584675f1d"
+                  }],
+                  "offered": "OFFERED",
+                  "jobMetadata": {
+                    "jobTypeId": "job_type_id:install_light_fixtures",
+                    "jobRelatedCategories": [{
+                      "name": "Electrical installation service",
+                      "language": "en",
+                      "gcid": "gcid:electrical_installation_service"
+                    }],
+                    "jobTypeMid": "/g/11hdq9w1gl"
+                  }
+                }, {
+                  "nameInfo": [{
+                    "name": "Outdoor lighting installation",
+                    "id": "5b8109f8-9e09-4024-a0a9-f941cfb9ed31"
+                  }],
+                  "offered": "OFFERED",
+                  "jobMetadata": {
+                    "jobTypeId": "job_type_id:install_outdoor_lighting",
+                    "jobRelatedCategories": [{
+                      "name": "Electrical installation service",
+                      "language": "en",
+                      "gcid": "gcid:electrical_installation_service"
+                    }],
+                    "jobTypeMid": "/g/11hdq9w30x"
+                  }
+                }]
+              }]
+            }],
+            "status": {
+              "isVerified": true
+            }
+          }
+        }
+      }
+    }]
+  }, {
+    "id": {
+      "attributeType": "VANITY_DATA"
+    }
+  }, {
+    "id": {
+      "attributeType": "FOOD_ORDERING_MERCHANT_PREFERENCE"
+    }
+  }, {
+    "id": {
+      "attributeType": "LABEL"
+    }
+  }, {
+    "id": {
+      "attributeType": "STORE_CODE"
+    },
+    "values": [{
+      "datum": {
+        "storeCode": {
+          "text": "01961157842066883649"
+        }
+      }
+    }]
+  }, {
+    "id": {
+      "attributeType": "GOOGLE_ADS_EXTENSION"
+    }
+  }, {
+    "id": {
+      "attributeType": "ASSISTANT_CALLS_SETTING"
+    }
+  }, {
+    "id": {
+      "attributeType": "CHAIN_SELF_IDENTIFICATION"
+    }
+  }, {
+    "id": {
+      "attributeType": "BUSINESS_AGENT_CONFIG_LISTING_OVERRIDE"
+    }
+  }, {
+    "id": {
+      "attributeType": "ACCEPTS_QUOTE_REQUESTS"
+    }
+  }, {
+    "id": {
+      "attributeType": "DISALLOW_PHONE_NUMBER_EDITS"
+    },
+    "values": [{
+      "datum": {
+        "kgProperty": {
+          "valueProto": {
+            "@type": "type.googleapis.com/freebase.Value",
+            "type": "TYPE_BOOL",
+            "boolValue": false
+          },
+          "value": {
+            "type": "TYPE_BOOL",
+            "boolValue": false
+          }
+        }
+      }
+    }]
+  }, {
+    "id": {
+      "attributeType": "CALL_TRACKING"
+    }
+  }, {
+    "id": {
+      "attributeType": "ACCEPTS_SERVICE_REQUESTS"
+    }
+  }, {
+    "id": {
+      "attributeType": "QBC_PRODUCT_TYPE"
+    }
+  }, {
+    "id": {
+      "attributeType": "ADMIN_ROLE_CLAIM"
+    }
+  }, {
+    "id": {
+      "attributeType": "MESSAGING_METADATA"
+    },
+    "values": [{
+      "datum": {
+        "annotation": {
+          "payload": {
+          }
+        }
+      }
+    }]
+  }, {
+    "id": {
+      "attributeType": "GLS_ACCOUNT_STATE"
+    }
+  }, {
+    "id": {
+      "attributeType": "NOREN_QR_CODE_ORDER"
+    }
+  }]
+}
