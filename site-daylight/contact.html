@@ -41,8 +41,8 @@
           <dl-field label="Phone number*" type="tel" name="phone" required></dl-field>
           <dl-field label="Suburb*" type="text" name="suburb" required></dl-field>
           <div>
-            <label class="block font-mono text-[11px] uppercase tracking-[0.08em] text-text-muted mb-2">What you need*</label>
-            <select required name="need" class="w-full bg-background border border-border rounded-lg px-3 py-2 text-text-primary text-sm focus:outline-none focus:border-accent">
+            <label for="dl-contact-need" class="block font-mono text-[11px] uppercase tracking-[0.08em] text-text-muted mb-2">What you need*</label>
+            <select id="dl-contact-need" required name="need" class="w-full bg-background border border-border rounded-lg px-3 py-2 text-text-primary text-sm focus:outline-none focus:border-accent">
               <option value="" disabled selected>Select an option</option>
               <option>Solar</option>
               <option>Electrical</option>
@@ -51,8 +51,8 @@
             </select>
           </div>
           <div>
-            <label class="block font-mono text-[11px] uppercase tracking-[0.08em] text-text-muted mb-2">Property type*</label>
-            <select required name="property-type" class="w-full bg-background border border-border rounded-lg px-3 py-2 text-text-primary text-sm focus:outline-none focus:border-accent">
+            <label for="dl-contact-property-type" class="block font-mono text-[11px] uppercase tracking-[0.08em] text-text-muted mb-2">Property type*</label>
+            <select id="dl-contact-property-type" required name="property-type" class="w-full bg-background border border-border rounded-lg px-3 py-2 text-text-primary text-sm focus:outline-none focus:border-accent">
               <option value="" disabled selected>Select an option</option>
               <option>Home</option>
               <option>Small business</option>
@@ -60,8 +60,8 @@
             </select>
           </div>
           <div>
-            <label class="block font-mono text-[11px] uppercase tracking-[0.08em] text-text-muted mb-2">Message*</label>
-            <textarea name="message" rows="4" required placeholder="Tell us about your property and what you need" class="w-full bg-background border border-border rounded-lg px-3 py-2 text-text-primary text-sm focus:outline-none focus:border-accent"></textarea>
+            <label for="dl-contact-message" class="block font-mono text-[11px] uppercase tracking-[0.08em] text-text-muted mb-2">Message*</label>
+            <textarea id="dl-contact-message" name="message" rows="4" required placeholder="Tell us about your property and what you need" class="w-full bg-background border border-border rounded-lg px-3 py-2 text-text-primary text-sm focus:outline-none focus:border-accent"></textarea>
           </div>
           <label for="dl-contact-website" class="absolute -left-[9999px]">Website</label>
           <input id="dl-contact-website" type="text" name="website" tabindex="-1" autocomplete="off" class="absolute -left-[9999px]" aria-hidden="true"/>

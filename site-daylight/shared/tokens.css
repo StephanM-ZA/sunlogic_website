@@ -13,7 +13,7 @@
 @font-face {
   font-family: 'featureDeck';
   src: url('../fonts/featureDeck-Regular.woff2') format('woff2');
-  font-weight: 400;
+  font-weight: 100 900;
   font-display: swap;
 }
 @font-face {
@@ -46,6 +46,10 @@
 
   --dl-space-section-mobile: 64px;
   --dl-space-section-desktop: 128px;
+}
+
+[id] {
+  scroll-margin-top: 80px;
 }
 
 body {

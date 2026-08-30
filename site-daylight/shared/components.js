@@ -80,16 +80,51 @@ class DlNavBar extends HTMLElement {
       { href: 'energy-management.html', key: 'energy', label: 'Energy Management' },
       { href: 'blog.html', key: 'blog', label: 'Worth Knowing' },
     ];
-    const linksHtml = links.map(function(l) {
-      const colorClass = l.key === active ? 'text-accent' : 'text-text-muted hover:text-text-primary';
-      return '<a href="' + l.href + '" class="nav-link px-3 py-2 rounded-lg font-body text-sm transition-colors duration-150 ' + colorClass + '">' + l.label + '</a>';
-    }).join('');
+    function renderLinks(extraClass) {
+      return links.map(function(l) {
+        const colorClass = l.key === active ? 'text-accent' : 'text-text-muted hover:text-text-primary';
+        return '<a href="' + l.href + '" class="nav-link px-3 py-2 rounded-lg font-body text-sm transition-colors duration-150 ' + colorClass + ' ' + extraClass + '">' + l.label + '</a>';
+      }).join('');
+    }
+    const barsIcon = (window.dlIcons && window.dlIcons['bars-3']) || '';
+    const closeIcon = (window.dlIcons && window.dlIcons['x-mark']) || '';
     this.innerHTML =
-      '<nav class="fixed top-0 left-0 right-0 z-[100] flex items-center gap-2 px-6 py-3 border-b border-border bg-background">' +
+      '<nav class="fixed top-0 left-0 right-0 z-[100] border-b border-border bg-background">' +
+      '<div class="flex items-center gap-2 px-6 py-3">' +
       '<a href="index.html" class="font-display text-text-primary text-lg mr-6">Sunlogic</a>' +
-      linksHtml +
-      '<dl-button variant="primary" href="contact.html" class="ml-auto">Get Started</dl-button>' +
+      '<div class="hidden md:flex md:items-center md:gap-2">' + renderLinks('') + '</div>' +
+      '<dl-button variant="primary" href="contact.html" class="ml-auto hidden md:block">Get Started</dl-button>' +
+      '<button type="button" data-dl-menu-toggle aria-label="Open menu" aria-expanded="false" class="ml-auto md:hidden p-2 rounded-lg text-text-primary">' + barsIcon + '</button>' +
+      '</div>' +
+      '<div data-dl-mobile-panel class="hidden md:hidden flex-col gap-2 px-6 pb-4 pt-2 border-t border-border bg-background">' +
+      renderLinks('block') +
+      '<dl-button variant="primary" href="contact.html" class="block mt-2">Get Started</dl-button>' +
+      '</div>' +
       '</nav>';
+
+    const toggle = this.querySelector('[data-dl-menu-toggle]');
+    const panel = this.querySelector('[data-dl-mobile-panel]');
+    function closePanel() {
+      panel.classList.remove('flex');
+      panel.classList.add('hidden');
+      toggle.innerHTML = barsIcon;
+      toggle.setAttribute('aria-label', 'Open menu');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+    toggle.addEventListener('click', function() {
+      if (panel.classList.contains('flex')) {
+        closePanel();
+      } else {
+        panel.classList.remove('hidden');
+        panel.classList.add('flex');
+        toggle.innerHTML = closeIcon;
+        toggle.setAttribute('aria-label', 'Close menu');
+        toggle.setAttribute('aria-expanded', 'true');
+      }
+    });
+    panel.querySelectorAll('a, dl-button').forEach(function(el) {
+      el.addEventListener('click', closePanel);
+    });
   }
 }
 customElements.define('dl-nav-bar', DlNavBar);
