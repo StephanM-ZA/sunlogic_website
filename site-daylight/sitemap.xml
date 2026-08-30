@@ -36,6 +36,41 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://sunlogic.co.za/blog-3-essential-checks.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://sunlogic.co.za/blog-rent-to-own.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://sunlogic.co.za/blog-off-grid-vs-grid-tied.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://sunlogic.co.za/blog-five-tips-load-shedding.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://sunlogic.co.za/blog-coc-two-year-myth.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://sunlogic.co.za/blog-why-your-bill-went-up.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://sunlogic.co.za/blog-ev-home-charging.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://sunlogic.co.za/legal.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>

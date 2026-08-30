@@ -4,19 +4,20 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Solar That Pays For Itself | Sunlogic SA, Cape Town</title>
-<link rel="stylesheet" href="shared/sunlogic.css?v=1"/>
-<link rel="stylesheet" href="shared/plugins.css?v=1"/>
-<script src="shared/icons.js?v=1" defer></script>
-<script src="shared/components.js?v=1" defer></script>
-<script src="shared/sunlogic-check.js?v=1" defer></script>
-<script src="../plugins/calculator/assumptions.js?v=1"></script>
-<script src="../plugins/calculator/calculator-math.js?v=1"></script>
-<script src="../plugins/calculator/calculator.js?v=1"></script>
+<link rel="icon" type="image/png" href="images/fav_icon.png"/>
+<link rel="stylesheet" href="shared/sunlogic.css?v=16"/>
+<link rel="stylesheet" href="shared/plugins.css?v=6"/>
+<script src="shared/icons.js?v=2" defer></script>
+<script src="shared/components.js?v=24" defer></script>
+<script src="shared/sunlogic-check.js?v=2" defer></script>
+<script src="../plugins/calculator/assumptions.js?v=2"></script>
+<script src="../plugins/calculator/calculator-math.js?v=2"></script>
+<script src="../plugins/calculator/calculator.js?v=4"></script>
 </head>
-<body>
+<body data-topic="Solar">
 <dl-nav-bar active="solar"></dl-nav-bar>
 
-<dl-hero alt="[Hero photography pending — rooftop array]">
+<dl-hero photo="images/solar-hero.jpg" alt="A rooftop solar array on a modern home">
   <div class="sl-hero__text">
     <dl-reveal>
       <dl-stack level="hero" eyebrow="Solar"
@@ -110,7 +111,7 @@
       </dl-stack>
     </dl-reveal>
     <dl-reveal>
-      <dl-card tone="white" heading="What Would Solar Cost at Your House?"
+      <dl-card id="calculator-home" tone="white" heading="What Would Solar Cost at Your House?"
         body="Answer a few questions about your home and your bill.">
         <plugin-calculator mode="residential" webhook="PENDING_BACKEND"></plugin-calculator>
       </dl-card>
@@ -169,7 +170,7 @@
       </dl-prose>
     </dl-reveal>
     <dl-reveal>
-      <dl-card tone="white" heading="What Could Solar Do For Your Business?"
+      <dl-card id="calculator-business" tone="white" heading="What Could Solar Do For Your Business?"
         body="Tell us roughly what you spend on electricity a month.">
         <plugin-calculator mode="sme" webhook="PENDING_BACKEND"></plugin-calculator>
       </dl-card>

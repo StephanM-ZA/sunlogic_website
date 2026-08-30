@@ -18,7 +18,17 @@
     const inverterKw = Math.ceil(panelKw);
     const systemCost = panelKw * A.COST_PER_KW_INSTALLED;
     const firstYearSavings = bill * 12 * A.RESIDENTIAL_OFFSET_FACTOR;
+    /* This model's cost and savings both scale linearly with the bill, so
+       the ratio between them — payback — comes out identical for every
+       bill amount under these assumptions. That is real, not a bug to
+       "fix" by fudging the ratio: a bigger system genuinely does cost and
+       save proportionally more here. What the single point estimate hides
+       is the site-specific variance (orientation, shading, exact install
+       cost) this simplified model has no way to represent, so it is shown
+       as a band around the estimate instead of false precision. */
     const paybackYears = systemCost / firstYearSavings;
+    const paybackYearsLow = paybackYears * (1 - A.PAYBACK_RANGE_SPREAD);
+    const paybackYearsHigh = paybackYears * (1 + A.PAYBACK_RANGE_SPREAD);
 
     const cumulativeByYear = [];
     for (let y = 1; y <= A.PROJECTION_YEARS; y++) {
@@ -35,6 +45,8 @@
       systemCost,
       firstYearSavings,
       paybackYears,
+      paybackYearsLow,
+      paybackYearsHigh,
       cumulativeByYear,
     };
   }

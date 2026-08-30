@@ -2,8 +2,17 @@
    https://github.com/tailwindlabs/heroicons — keep this attribution.
    Stroke 1.5, never filled, currentColor. Size is set by the component
    (<dl-icon size="24">), never baked into the path.
-   Do not add an icon that is not in this file without asking. */
+   Do not add an icon that is not in this file without asking.
+
+   facebook/instagram/linkedin are the one exception: original monoline
+   glyphs (not Heroicons) drawn to match the same stroke/viewBox/style,
+   since Heroicons has no brand icons and the user asked for outline —
+   not official filled brand marks — to stay consistent with the rest
+   of the set. */
 window.dlIcons = {
+  "facebook": "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" aria-hidden=\"true\" data-slot=\"icon\"> <rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"4\"></rect> <path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M14.5 8.25h-1a2 2 0 0 0-2 2V12H9v2.25h2.5V21h2.25v-6.75H16l.375-2.25h-2.625v-1.5c0-.414.336-.75.75-.75h1.875V8.25Z\"></path> </svg>",
+  "instagram": "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" aria-hidden=\"true\" data-slot=\"icon\"> <rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\"></rect> <circle cx=\"12\" cy=\"12\" r=\"4\"></circle> <path stroke-linecap=\"round\" d=\"M17.25 6.75h.008v.008h-.008V6.75Z\"></path> </svg>",
+  "linkedin": "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" aria-hidden=\"true\" data-slot=\"icon\"> <rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"4\"></rect> <path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M7.5 10.5V17M7.5 7.5h.008v.008H7.5V7.5Z\"></path> <path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M11.25 17v-4a2.25 2.25 0 0 1 4.5 0v4\"></path> </svg>",
   "archive-box": "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" aria-hidden=\"true\" data-slot=\"icon\"> <path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z\"></path> </svg>",
   "arrow-right": "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" aria-hidden=\"true\" data-slot=\"icon\"> <path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3\"></path> </svg>",
   "bars-3": "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" aria-hidden=\"true\" data-slot=\"icon\"> <path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5\"></path> </svg>",

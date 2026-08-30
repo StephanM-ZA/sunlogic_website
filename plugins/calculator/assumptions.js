@@ -16,4 +16,7 @@ window.PLUGIN_CALCULATOR_ASSUMPTIONS = {
   DAYLIGHT_HOURS_ASSUMPTION: 9,          // assumed daylight generation window, hours/day
   MIN_OVERLAP_FLOOR: 0.5,                // minimum offset-scaling floor for low-overlap businesses
   PROJECTION_YEARS: 20,
+  PAYBACK_RANGE_SPREAD: 0.2,             // ±20% band around the point estimate, standing in for
+                                          // site-specific variance (orientation, shading, exact
+                                          // installed cost) this simplified model can't capture — estimate
 };

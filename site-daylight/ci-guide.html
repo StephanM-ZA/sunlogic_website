@@ -4,9 +4,10 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Sunlogic — corporate identity and design system</title>
-<link rel="stylesheet" href="shared/sunlogic.css?v=1"/>
-<script src="shared/icons.js?v=1" defer></script>
-<script src="shared/components.js?v=1" defer></script>
+<link rel="icon" type="image/png" href="images/fav_icon.png"/>
+<link rel="stylesheet" href="shared/sunlogic.css?v=16"/>
+<script src="shared/icons.js?v=2" defer></script>
+<script src="shared/components.js?v=24" defer></script>
 <style>
   body { padding: 0; }
   .ci { max-width: 1152px; margin: 0 auto; padding: 0 var(--gutter); }
@@ -345,13 +346,24 @@
     applies. A heading can never butt up against the grid below it, and nobody has to remember a margin.</p>
 
   <h3 class="sl-title" style="margin-bottom:16px">Cards in a row are always level</h3>
-  <p class="ci-lede" style="margin-bottom:40px">Every card in a grid stretches to the height of its tallest
+  <p class="ci-lede" style="margin-bottom:20px">Every card in a grid stretches to the height of its tallest
     sibling, whatever the copy length. Ragged card bottoms are the most common way a grid stops looking
     designed, so it is enforced by the card rather than left to the page.</p>
+  <p class="ci-lede" style="margin-bottom:40px">Matching card heights isn't enough on its own — a card's
+    <code>dl-actions</code> row sits flush with the bottom edge too (<code>.sl-card &gt; dl-actions { margin-top:
+    auto }</code>), so buttons land level across the row instead of trailing wherever the copy above them
+    happens to end. Don't add a fixed height, a spacer, or per-card margin to force this by hand; the rule
+    already does it for any card with a button row.</p>
   <div class="ci-grid" style="margin-bottom:40px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
-    <dl-card heading="Short" body="One line."></dl-card>
-    <dl-card heading="Longer" body="Three or four lines of copy that would otherwise make this card taller than the one beside it, and leave the row ragged along the bottom edge."></dl-card>
-    <dl-card heading="Middling" body="Two lines of copy, roughly."></dl-card>
+    <dl-card heading="Short" body="One line.">
+      <dl-actions><dl-button variant="outline" size="sm">Button</dl-button></dl-actions>
+    </dl-card>
+    <dl-card heading="Longer" body="Three or four lines of copy that would otherwise make this card taller than the one beside it, and leave the row ragged along the bottom edge.">
+      <dl-actions><dl-button variant="outline" size="sm">Button</dl-button></dl-actions>
+    </dl-card>
+    <dl-card heading="Middling" body="Two lines of copy, roughly.">
+      <dl-actions><dl-button variant="outline" size="sm">Button</dl-button></dl-actions>
+    </dl-card>
   </div>
 
   <h3 class="sl-title" style="margin-bottom:16px">Radius</h3>
@@ -569,12 +581,14 @@
     Solar/Electrical buttons, so the two trades read consistently wherever they appear together. When one
     link is current the rest drop to 55% opacity and come back to full on hover.</p>
   <p class="ci-lede" style="margin-bottom:20px">The <strong>dock</strong> is not a second nav. Repeating the
-    header at the bottom of the page earns nothing. It carries the two things someone actually wants within
-    reach while reading a long page — the phone number and the quote — at 4px corners and with the same
-    hover wipe as every other button.</p>
+    header at the bottom of the page earns nothing. It carries the things someone actually wants within
+    reach while reading a long page — a way to reach us and the quote — at 4px corners and with the same
+    hover wipe as every other button. The contact slot rolls between both phone numbers and the email
+    address, one visible at a time, sliding up every 3 seconds (<code>&lt;dl-roll&gt;</code> — the same
+    component handles every rolling phone number on the site, not just the dock's).</p>
   <div class="ci-demo ci-demo--dark" style="margin-bottom:20px;justify-content:center">
     <div class="ci-dockdemo">
-      <span class="ci-dockdemo__phone">(082) 655-5371</span>
+      <span class="ci-dockdemo__phone">+27 (82) 655 5371</span>
       <span class="ci-dockdemo__cta">Get a quote</span>
     </div>
   </div>
@@ -647,6 +661,8 @@
       <p>Edit the plugin's JavaScript to restyle it. The next version overwrites you, and the plugin stops tracking the system.</p></div>
     <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do</span>
       <p>Bump the <code>?v=</code> on every tag that loads a file you have just changed &mdash; the plugins and everything in <code>shared/</code>. There is no build step, so a browser will serve a cached copy of the old file and the page runs stale code without erroring.</p></div>
+    <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Don't</span>
+      <p>Theme a plugin element that is an <code>&lt;a&gt;</code> tag without opting it out of the system's own link-dim rule. Plain text links dim to 70% opacity on hover (<code>a:hover</code>); every button and card is explicitly excepted (<code>a.sl-btn:hover, a.sl-card:hover, …</code>). A plugin card left off that list silently washes out on hover along with whatever hover state you did theme — a review card once dimmed exactly this way. Add <code>opacity: 1</code> to the plugin's own hover rule in <code>plugins.css</code>, not to the central exception list.</p></div>
   </div>
 </section>
 

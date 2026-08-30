@@ -174,8 +174,15 @@
   z-index: 0;
 }
 :root .plugin-calc-submit:hover::before { height: 100%; }
-/* The label sits above the wipe. */
-:root .plugin-calc-submit { z-index: 0; }
+/* The wipe is an absolutely-positioned, z-index:0 layer, which paints
+   above the button's own plain (non-positioned) text in normal stacking
+   order — setting z-index on the button itself does nothing about that,
+   it only affects the button's position among ITS OWN siblings. The label
+   needs its own stacking level to sit above the wipe, the same way
+   .sl-btn's real button promotes its child <span> — so the plugin's
+   button markup wraps its label in a <span> for exactly this rule to
+   grab. Before this, the label vanished under the wipe on hover/focus. */
+:root .plugin-calc-submit > span { position: relative; z-index: 1; }
 :root .plugin-calc-submit:active { transform: translateY(1px); }
 
 :root .plugin-calc-detail {
@@ -202,9 +209,18 @@
   border-radius: var(--radius-md);
   padding: 24px;
   background: var(--color-white);
-  transition: background-color var(--dur-hover) ease-out;
+  transition: border-color var(--dur-hover) ease-out;
 }
-:root .plugin-review-card:hover { background: var(--surface-page-alt); }
+/* Same hover as every other card in the system (a.sl-card:hover): the
+   border alone warms — to orange here, since this card is itself a link
+   — and nothing else moves. No fill change, so nothing to keep in sync
+   with the plugin's own bottom fade, and no risk of the card blending
+   into whatever section background (page or alt) it's dropped into. */
+/* The system dims plain text links to 0.7 opacity on hover by default,
+   with an explicit opt-out list for anything that's a button or a card
+   (a.sl-btn, a.sl-card, ...) — this card was never added to that list,
+   so its content was washing out on hover along with the border change. */
+:root .plugin-review-card:hover { border-color: var(--color-orange); opacity: 1; }
 
 :root .plugin-review-avatar,
 :root .plugin-review-avatar-initials {

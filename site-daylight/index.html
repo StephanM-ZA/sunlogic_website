@@ -4,22 +4,23 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Solar Power &amp; Certified Electrical Contracting | Sunlogic SA, Cape Town</title>
-<link rel="stylesheet" href="shared/sunlogic.css?v=1"/>
-<link rel="stylesheet" href="shared/plugins.css?v=1"/>
-<script src="shared/icons.js?v=1" defer></script>
-<script src="shared/components.js?v=1" defer></script>
-<script src="shared/forms.js?v=1" defer></script>
-<script src="shared/sunlogic-check.js?v=1" defer></script>
+<link rel="icon" type="image/png" href="images/fav_icon.png"/>
+<link rel="stylesheet" href="shared/sunlogic.css?v=16"/>
+<link rel="stylesheet" href="shared/plugins.css?v=6"/>
+<script src="shared/icons.js?v=2" defer></script>
+<script src="shared/components.js?v=24" defer></script>
+<script src="shared/forms.js?v=2" defer></script>
+<script src="shared/sunlogic-check.js?v=2" defer></script>
 <script src="../plugins/day-feed/schedule.data.js?v=1"></script>
 <script src="../plugins/day-feed/day-feed-schedule.js?v=1"></script>
 <script src="../plugins/day-feed/day-feed.js?v=1" defer></script>
-<script src="../plugins/review-carousel/reviews.data.js?v=1"></script>
-<script src="../plugins/review-carousel/review-carousel.js?v=1" defer></script>
+<script src="../plugins/review-carousel/reviews.data.js?v=4"></script>
+<script src="../plugins/review-carousel/review-carousel.js?v=3" defer></script>
 </head>
 <body>
 <dl-nav-bar active="home"></dl-nav-bar>
 
-<dl-hero alt="[Hero photography pending — installation in progress]">
+<dl-hero photo="images/hero.jpeg" alt="A home at dusk, lit from inside, with an electric vehicle charging in the carport">
   <div class="sl-hero__text">
     <dl-reveal>
       <dl-stack level="hero" eyebrow="Solar and electrical"
@@ -27,24 +28,29 @@
         body="Solar and electrical from one team, for homes and businesses.">
         <dl-actions>
           <dl-button variant="emphasis" icon="arrow-right" href="contact.html">Book a Free Site Assessment</dl-button>
-          <dl-button variant="ghost" on-dark href="contact.html">Talk to Us</dl-button>
+          <dl-button variant="ghost" on-dark href="tel:+27826555371">Talk to Us</dl-button>
         </dl-actions>
       </dl-stack>
     </dl-reveal>
   </div>
   <div class="sl-hero__col sl-hide-mobile">
-    <dl-stat tone="glass" label="Registration" value="[pending]" sub="Number to be confirmed"></dl-stat>
-    <dl-stat tone="glass" label="Install teams" value="In-house" sub="No subcontractors"></dl-stat>
+    <div style="display:flex;flex-wrap:wrap;gap:8px">
+      <dl-badge tone="glass" live>Deye</dl-badge>
+      <dl-badge tone="glass" live>Sunsynk</dl-badge>
+      <dl-badge tone="glass" live>Luxpower</dl-badge>
+      <dl-badge tone="glass" live>FoxESS</dl-badge>
+    </div>
+    <dl-stat tone="glass" label="Live PV output" value="—" sub="Live feed coming soon" data-live="pv" aria-live="polite"></dl-stat>
+    <dl-stat tone="glass" label="Battery SOC" value="—" sub="Live feed coming soon" data-live="soc" aria-live="polite"></dl-stat>
   </div>
 </dl-hero>
 
-<!-- Trust strip. Do not launch with the [X] placeholder still in it. -->
 <div class="sl-trust">
   <div class="sl-trust__inner">
     <span>Registered electrical contractor</span>
     <span>Compliance certificate on every job</span>
     <span>Council registration handled for you</span>
-    <span>[X] systems installed</span>
+    <span>300+ systems installed</span>
   </div>
 </div>
 
@@ -148,8 +154,11 @@
 
 <!-- Section: Proof.
      The single most valuable section on this page, and the one every
-     competitor is weakest on. Three real jobs, each with a photograph and
-     one real number. The photographs already exist. -->
+     competitor is weakest on. Photographs are real, pulled from the
+     Google Business Profile export (docs/location-13947336145699233678/).
+     Suburb and the real number per job are still pending — that data
+     doesn't exist anywhere accessible, so it's flagged rather than
+     invented. Needs the actual job details from whoever has them. -->
 <dl-section bg="alt" id="proof">
   <dl-reveal>
     <dl-stack eyebrow="Proof" heading="Three Recent |Jobs"
@@ -159,7 +168,7 @@
     <dl-grid cols="3">
       <dl-card tone="white">
         <div style="position:relative;aspect-ratio:4/3">
-          <dl-media alt="[Project photography pending]"></dl-media>
+          <dl-media src="images/proof/job-1-rooftop-install.jpeg" alt="A rooftop solar installation, with the Sunlogic van on site"></dl-media>
         </div>
         <div class="sl-card__stack">
           <h3 class="sl-title">[Suburb — pending]</h3>
@@ -168,7 +177,7 @@
       </dl-card>
       <dl-card tone="white">
         <div style="position:relative;aspect-ratio:4/3">
-          <dl-media alt="[Project photography pending]"></dl-media>
+          <dl-media src="images/proof/job-2-battery-bank.jpeg" alt="Three inverters and battery units installed in a plant room"></dl-media>
         </div>
         <div class="sl-card__stack">
           <h3 class="sl-title">[Suburb — pending]</h3>
@@ -177,7 +186,7 @@
       </dl-card>
       <dl-card tone="white">
         <div style="position:relative;aspect-ratio:4/3">
-          <dl-media alt="[Project photography pending]"></dl-media>
+          <dl-media src="images/proof/job-3-inverter-install.jpeg" alt="A wall-mounted inverter and battery installation with a combiner box"></dl-media>
         </div>
         <div class="sl-card__stack">
           <h3 class="sl-title">[Suburb — pending]</h3>
@@ -198,24 +207,38 @@
   </dl-reveal>
   <dl-reveal>
     <dl-grid cols="3">
-      <dl-card heading="Why Your Bill Went Up"
-        body="Even though you used less. The fixed monthly charge has been rising faster than the rate per unit."></dl-card>
-      <dl-card heading="Should You Get a Battery?"
-        body="The simple way to work it out, without being sold one."></dl-card>
-      <dl-card heading="Tripping Every Morning"
-        body="Why it happens, why it is almost always the geyser, and how it gets found."></dl-card>
+      <dl-card heading="Three Essential Electrical Checks"
+        body="Geyser timers, surge protection and backup power for your security system before you go away.">
+        <dl-actions>
+          <dl-button variant="outline" icon="arrow-right" href="blog-3-essential-checks.html">Read</dl-button>
+        </dl-actions>
+      </dl-card>
+      <dl-card heading="Rent-to-Own"
+        body="Solar tailored to your home or business, without a full upfront payment.">
+        <dl-actions>
+          <dl-button variant="outline" icon="arrow-right" href="blog-rent-to-own.html">Read</dl-button>
+        </dl-actions>
+      </dl-card>
+      <dl-card heading="Off the Grid vs. Grid-tied"
+        body="The costs and benefits of going fully off-grid versus staying connected.">
+        <dl-actions>
+          <dl-button variant="outline" icon="arrow-right" href="blog-off-grid-vs-grid-tied.html">Read</dl-button>
+        </dl-actions>
+      </dl-card>
     </dl-grid>
   </dl-reveal>
 </dl-section>
 
-<!-- Section: Reviews.
-     WARNING — plugins/review-carousel/reviews.data.js currently holds
-     DEVELOPMENT FIXTURE reviews with invented names. This section must not go
-     to production until that file is replaced with real Google reviews. -->
+<!-- Section: Reviews. reviews.data.js holds real reviews, exported from the
+     Sunlogic SA Google Business Profile. -->
 <dl-section bg="alt" id="reviews">
   <dl-reveal>
     <dl-stack eyebrow="Reviews" heading="What Customers |Say"
-      body="Real reviews from Google, not curated testimonials."></dl-stack>
+      body="Real reviews from Google, not curated testimonials.">
+      <dl-actions>
+        <dl-button variant="outline" icon="arrow-right" href="https://g.page/r/Cda0Ro0gwWNMEAI/review" target="_blank" rel="noopener">Leave a Review</dl-button>
+      </dl-actions>
+    </dl-stack>
   </dl-reveal>
   <dl-reveal>
     <plugin-review-carousel></plugin-review-carousel>
@@ -229,8 +252,7 @@
     body="A site visit costs you nothing and ends with a straight answer: what it would take, what it would cost, and what it would save."
     action="Book a Free Site Assessment"
     href="contact.html"
-    phone="(082) 655-5371"
-    phone-href="tel:+27826555371"></dl-cta>
+    phone></dl-cta>
 </dl-reveal>
 
 <dl-footer></dl-footer>

@@ -26,6 +26,12 @@
         overflow: hidden;
         width: 100%;
         font-family: var(--plugin-review-font);
+        /* Cards continuously enter and exit at both edges — a hard clip
+           there reads as cropping. Fading them out over the last ~10%
+           makes the same clip read as an edge the row scrolls under,
+           not a cut. */
+        -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+        mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
       }
 
       .plugin-review-track {
@@ -243,6 +249,19 @@
           </div>
         </div>
       `;
+
+      /* The track is two back-to-back copies of the cards, animating
+         translateX(0) to -50% — exactly one copy's width — so it loops
+         seamlessly. --plugin-review-speed is a fixed DURATION, so more
+         reviews (more distance to cover in the same time) scrolled
+         visibly faster with no change to the reviewer count's intent.
+         Deriving the duration from the actual rendered width instead
+         holds a constant px/s pace regardless of how many reviews exist.
+         52px/s matches the original 6-card set's tuned 40s duration. */
+      const track = this.querySelector('.plugin-review-track');
+      const PX_PER_SECOND = 52;
+      const oneCopyWidth = track.scrollWidth / 2;
+      track.style.setProperty('--plugin-review-speed', (oneCopyWidth / PX_PER_SECOND) + 's');
     }
   }
 

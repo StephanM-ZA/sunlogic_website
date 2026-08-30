@@ -4,11 +4,12 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Tell Us What You Need | Sunlogic SA, Cape Town</title>
-<link rel="stylesheet" href="shared/sunlogic.css?v=1"/>
-<script src="shared/icons.js?v=1" defer></script>
-<script src="shared/components.js?v=1" defer></script>
-<script src="shared/forms.js?v=1" defer></script>
-<script src="shared/sunlogic-check.js?v=1" defer></script>
+<link rel="icon" type="image/png" href="images/fav_icon.png"/>
+<link rel="stylesheet" href="shared/sunlogic.css?v=16"/>
+<script src="shared/icons.js?v=2" defer></script>
+<script src="shared/components.js?v=24" defer></script>
+<script src="shared/forms.js?v=2" defer></script>
+<script src="shared/sunlogic-check.js?v=2" defer></script>
 </head>
 <body>
 <dl-nav-bar active="contact"></dl-nav-bar>
@@ -59,18 +60,16 @@
             <h2 class="sl-title">Contact Details</h2>
           </div>
           <div style="display:grid;gap:16px">
-            <!-- Office and Support currently share one number. If that isn't
-                 intentional, worth fixing rather than carrying over. -->
-            <dl-contact-row icon="phone" label="Office" value="(082) 655-5371" href="tel:+27826555371"></dl-contact-row>
+            <dl-contact-row icon="phone" label="Office" items='[{"text":"+27 (82) 655 5371","href":"tel:+27826555371"},{"text":"+27 (82) 443 7799","href":"tel:+27824437799"}]'></dl-contact-row>
             <dl-contact-row icon="envelope" label="Sales" value="sales@sunlogic.co.za" href="mailto:sales@sunlogic.co.za"></dl-contact-row>
             <dl-contact-row icon="lifebuoy" label="Support" value="support@sunlogic.co.za" href="mailto:support@sunlogic.co.za"></dl-contact-row>
             <dl-contact-row icon="map-pin" label="Address" value="9 Chesham Road, Claremont, Cape Town, 7708"></dl-contact-row>
-            <dl-contact-row icon="clock" label="Hours" value="[Business hours — placeholder pending]"></dl-contact-row>
+            <dl-contact-row icon="clock" label="Hours" value="08:00 – 18:00, weekdays"></dl-contact-row>
           </div>
           <div style="display:flex;flex-wrap:wrap;gap:16px;padding-top:20px;border-top:1px solid var(--border-hairline)">
-            <a class="sl-quicklink" href="https://www.linkedin.com/company/sunlogic-sa" target="_blank" rel="noopener">LinkedIn</a>
-            <a class="sl-quicklink" href="https://www.facebook.com/sunlogicsa" target="_blank" rel="noopener">Facebook</a>
-            <a class="sl-quicklink" href="https://www.instagram.com/sunlogic_sa" target="_blank" rel="noopener">Instagram</a>
+            <a class="sl-quicklink" href="https://www.linkedin.com/company/sunlogic-sa" target="_blank" rel="noopener"><dl-icon name="linkedin" size="18"></dl-icon>LinkedIn</a>
+            <a class="sl-quicklink" href="https://www.facebook.com/sunlogicsa" target="_blank" rel="noopener"><dl-icon name="facebook" size="18"></dl-icon>Facebook</a>
+            <a class="sl-quicklink" href="https://www.instagram.com/sunlogic_sa" target="_blank" rel="noopener"><dl-icon name="instagram" size="18"></dl-icon>Instagram</a>
           </div>
         </dl-card>
 
@@ -96,13 +95,13 @@
   <dl-reveal>
     <dl-stack eyebrow="Meet the team"
       heading="The People Who Will Be |at Your Property"
-      body="Not a call centre. The person who quotes the job is usually the one you see again."></dl-stack>
+      body="Not a call centre. The person who quotes the job is usually the one you see again — backed by our in-house install team."></dl-stack>
   </dl-reveal>
   <dl-reveal>
     <dl-grid cols="3">
-      <dl-person name="[Name — pending]" role="[Role — pending]" bio="[Short bio and qualifications — pending]"></dl-person>
-      <dl-person name="[Name — pending]" role="[Role — pending]" bio="[Short bio and qualifications — pending]"></dl-person>
-      <dl-person name="[Name — pending]" role="[Role — pending]" bio="[Short bio and qualifications — pending]"></dl-person>
+      <dl-person photo="images/team/stephan_marais2b.jpg" name="Stephan Marais" role="Co-Owner" bio="Runs projects end to end, from the first site visit to the final sign-off." email="stephan@sunlogic.co.za"></dl-person>
+      <dl-person initials="CL" name="Craig Lewis" role="Co-Owner" bio="Handles quoting and installs, and stays the point of contact afterwards." email="craig@sunlogic.co.za"></dl-person>
+      <dl-person photo="images/team/accounts.jpg" name="Accounts" role="For any accounting queries" bio="Invoices, payments and account statements." email="accounts@sunlogic.co.za"></dl-person>
     </dl-grid>
   </dl-reveal>
 </dl-section>

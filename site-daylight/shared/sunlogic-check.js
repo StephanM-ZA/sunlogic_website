@@ -127,7 +127,7 @@
     const badge = document.createElement('div');
     badge.textContent = fails.length ? fails.length + ' system error' + (fails.length > 1 ? 's' : '')
       : warns.length ? warns.length + ' warning' + (warns.length > 1 ? 's' : '') : 'system ok';
-    badge.style.cssText = 'position:fixed;left:12px;bottom:12px;z-index:9999;padding:6px 10px;' +
+    badge.style.cssText = 'position:fixed;left:12px;bottom:12px;z-index:50;padding:6px 10px;' +
       'border-radius:4px;font:600 11px/1 ui-monospace,monospace;letter-spacing:.05em;' +
       'text-transform:uppercase;cursor:pointer;' +
       'background:' + (fails.length ? '#BA1A1A' : warns.length ? '#F66F00' : '#0D2028') + ';color:#fff';

@@ -23,6 +23,16 @@ const SL_ACCENT = (text) => {
   return i < 0 ? text : text.slice(0, i) + '<em>' + text.slice(i + 1) + '</em>';
 };
 
+/* The two ways to reach Sunlogic by phone, and the general email — the
+   single place these are ever written out. Every phone slot on the site
+   rolls between the two numbers via <dl-roll>; the dock also rolls the
+   email in behind them. Change a number here and every instance follows. */
+const SL_PHONE_1 = { text: '+27 (82) 655 5371', href: 'tel:+27826555371', icon: 'phone' };
+const SL_PHONE_2 = { text: '+27 (82) 443 7799', href: 'tel:+27824437799', icon: 'phone' };
+const SL_EMAIL = { text: 'sales@sunlogic.co.za', href: 'mailto:sales@sunlogic.co.za', icon: 'envelope' };
+const SL_PHONES = [SL_PHONE_1, SL_PHONE_2];
+const SL_CONTACTS = [SL_PHONE_1, SL_PHONE_2, SL_EMAIL];
+
 /* Base class: renders once, never on re-parent. */
 class SLElement extends HTMLElement {
   connectedCallback() {
@@ -46,6 +56,64 @@ class DlWordmark extends SLElement {
   }
 }
 customElements.define('dl-wordmark', DlWordmark);
+
+/* --- Roll ------------------------------------------------------
+   Rotates through a list of {text, href, icon} items, one visible at a
+   time, sliding up every `interval` ms (default 3000). Each rotation is
+   a real, separate <a> with its own href already on it — the link
+   target always matches exactly what's on screen, nothing to keep in
+   sync by hand as it rolls. `item-class` is applied to every rendered
+   <a>, so it can carry whatever button/pill/plain-link styling the
+   context needs (the roll itself contributes no visual language).
+     <dl-roll item-class="sl-dock__phone"
+       items='[{"text":"...","href":"tel:...","icon":"phone"}]'></dl-roll> */
+class DlRoll extends SLElement {
+  render() {
+    let items = [];
+    try { items = JSON.parse(this.getAttribute('items') || '[]'); } catch (e) { items = []; }
+    if (!items.length) return;
+    const itemClass = this.getAttribute('item-class') || '';
+    const row = (it) =>
+      '<a class="sl-roll__item' + (itemClass ? ' ' + itemClass : '') + '" href="' + it.href + '">' +
+      (it.icon ? SL_ICON(it.icon, 16) : '') + '<span>' + it.text + '</span></a>';
+    this.innerHTML = '<span class="sl-roll"><span class="sl-roll__track">' + items.map(row).join('') + '</span></span>';
+
+    const roll = this.querySelector('.sl-roll');
+    const track = this.querySelector('.sl-roll__track');
+    const itemHeight = track.children[0].getBoundingClientRect().height;
+    roll.style.height = itemHeight + 'px';
+
+    if (items.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const ms = parseInt(this.getAttribute('interval'), 10) || 3000;
+    const n = items.length;
+    let i = 0;
+    setInterval(() => {
+      i++;
+      /* translateY(-100%) is relative to the TRACK's own height (every
+         item stacked, n × itemHeight) — not one item's height, which is
+         what a step here actually needs — so this steps in measured
+         pixels instead. The final step slides past the real last item
+         onto a clone of the first, then snaps back to the real first
+         item with transitions off: an ordinary infinite-marquee loop,
+         rolling forever with only n real items ever on screen and no
+         runaway transform value — and never a gap between one item
+         sliding out and the next sliding in. */
+      if (i === n) track.appendChild(track.children[0].cloneNode(true));
+      track.style.transition = 'transform 420ms var(--ease-expo-out)';
+      track.style.transform = 'translateY(-' + (i * itemHeight) + 'px)';
+      if (i === n) {
+        setTimeout(() => {
+          track.style.transition = 'none';
+          void track.offsetHeight;
+          track.style.transform = 'translateY(0)';
+          track.removeChild(track.lastElementChild);
+          i = 0;
+        }, 440);
+      }
+    }, ms);
+  }
+}
+customElements.define('dl-roll', DlRoll);
 
 /* --- Icon ---------------------------------------------------- */
 class DlIcon extends SLElement {
@@ -164,7 +232,13 @@ class DlButton extends SLElement {
     const wipeAttr = this.getAttribute('wipe');
     const wipe = ['orange', 'navy'].includes(wipeAttr) ? ' sl-btn--wipe-' + wipeAttr : '';
     const tag = href ? 'a' : 'button';
-    const attrs = href ? ' href="' + href + '"' : ' type="' + SL_ATTR(this, 'type', 'button') + '"';
+    /* target/rel pass through only when the host actually sets them, so an
+       ordinary internal <dl-button href="contact.html"> is unaffected —
+       this only matters for a button that deliberately opens elsewhere
+       (an external booking flow, a Google review link). */
+    const target = href && this.getAttribute('target') ? ' target="' + this.getAttribute('target') + '"' : '';
+    const rel = href && this.getAttribute('rel') ? ' rel="' + this.getAttribute('rel') + '"' : '';
+    const attrs = href ? ' href="' + href + '"' + target + rel : ' type="' + SL_ATTR(this, 'type', 'button') + '"';
     this.innerHTML =
       '<' + tag + attrs + ' class="sl-btn sl-btn--' + v + size + full + dark + wipe + '">' +
       '<span>' + this.innerHTML + '</span>' + (icon ? SL_ICON(icon, 18) : '') + '</' + tag + '>';
@@ -234,7 +308,8 @@ customElements.define('dl-checklist', DlChecklist);
 class DlBadge extends SLElement {
   render() {
     const live = this.hasAttribute('live') ? ' sl-badge--live' : '';
-    this.innerHTML = '<span class="sl-badge' + live + '">' + this.innerHTML + '</span>';
+    const glass = this.getAttribute('tone') === 'glass' ? ' sl-badge--glass' : '';
+    this.innerHTML = '<span class="sl-badge' + live + glass + '">' + this.innerHTML + '</span>';
   }
 }
 customElements.define('dl-badge', DlBadge);
@@ -337,13 +412,23 @@ customElements.define('dl-list', DlList);
 class DlContactRow extends SLElement {
   render() {
     const href = this.getAttribute('href');
+    /* `items` (JSON, {text,href,icon}[]) rolls the value between several
+       contact options instead of showing one fixed value+href — used for
+       a row with more than one real number. The row itself can't be the
+       link in that case (the value already is one, per rotation), so it
+       renders as a plain div rather than the usual <a>. */
+    const itemsAttr = this.getAttribute('items');
+    const value = itemsAttr
+      ? '<dl-roll item-class="sl-contact__value" items=\'' + itemsAttr + '\'></dl-roll>'
+      : '<span class="sl-contact__value">' + SL_ATTR(this, 'value') + '</span>';
     const inner =
       '<span class="sl-contact__icon">' + SL_ICON(SL_ATTR(this, 'icon', 'map-pin'), 22) + '</span>' +
-      '<span class="sl-contact__body"><span class="sl-contact__label">' + SL_ATTR(this, 'label') + '</span>' +
-      '<span class="sl-contact__value">' + SL_ATTR(this, 'value') + '</span></span>';
-    this.innerHTML = href
-      ? '<a class="sl-contact" href="' + href + '">' + inner + '</a>'
-      : '<div class="sl-contact">' + inner + '</div>';
+      '<span class="sl-contact__body"><span class="sl-contact__label">' + SL_ATTR(this, 'label') + '</span>' + value + '</span>';
+    this.innerHTML = itemsAttr
+      ? '<div class="sl-contact">' + inner + '</div>'
+      : href
+        ? '<a class="sl-contact" href="' + href + '">' + inner + '</a>'
+        : '<div class="sl-contact">' + inner + '</div>';
   }
 }
 customElements.define('dl-contact-row', DlContactRow);
@@ -351,12 +436,19 @@ customElements.define('dl-contact-row', DlContactRow);
 /* --- Person card — avatar slot, name, role, bio -------------- */
 class DlPerson extends SLElement {
   render() {
+    const email = this.getAttribute('email');
+    const photo = this.getAttribute('photo');
+    const avatar = photo
+      ? '<img class="sl-person__avatar sl-person__avatar--photo" src="' + photo + '" alt="' + SL_ATTR(this, 'name') + '" />'
+      : '<div class="sl-person__avatar">' + SL_ATTR(this, 'initials', '—') + '</div>';
     this.innerHTML =
       '<div class="sl-card sl-person">' +
-      '<div class="sl-person__avatar">' + SL_ATTR(this, 'initials', '—') + '</div>' +
+      avatar +
       '<h3 class="sl-title">' + SL_ATTR(this, 'name') + '</h3>' +
       '<p class="sl-person__role">' + SL_ATTR(this, 'role') + '</p>' +
-      '<p class="sl-body">' + SL_ATTR(this, 'bio') + '</p></div>';
+      '<p class="sl-body">' + SL_ATTR(this, 'bio') + '</p>' +
+      (email ? '<a class="sl-contact__value" href="mailto:' + email + '">' + email + '</a>' : '') +
+      '</div>';
   }
 }
 customElements.define('dl-person', DlPerson);
@@ -444,13 +536,11 @@ customElements.define('dl-figures', DlFigures);
    number and the quote. Compact, one line, always on top. */
 class DlDock extends SLElement {
   render() {
-    const phone = SL_ATTR(this, 'phone', '(082) 655-5371');
-    const tel = SL_ATTR(this, 'phone-href', 'tel:+27826555371');
     const label = SL_ATTR(this, 'action', 'Get a quote');
     const href = SL_ATTR(this, 'href', 'contact.html');
     this.innerHTML =
       '<div class="sl-dock">' +
-      '<a class="sl-dock__phone" href="' + tel + '">' + SL_ICON('phone', 16) + '<span>' + phone + '</span></a>' +
+      '<dl-roll item-class="sl-dock__phone" items=\'' + JSON.stringify(SL_CONTACTS) + '\'></dl-roll>' +
       '<a class="sl-dock__cta" href="' + href + '"><span>' + label + '</span>' + SL_ICON('arrow-right', 16) + '</a>' +
       '</div>';
   }
@@ -483,8 +573,9 @@ class DlHero extends SLElement {
   render() {
     const photo = this.getAttribute('photo');
     const alt = SL_ATTR(this, 'alt', '[Hero photography pending]');
+    const fit = this.getAttribute('fit') === 'contain' ? ' sl-hero__image--contain' : '';
     const media = photo
-      ? '<img class="sl-hero__image" src="' + photo + '" alt="' + alt + '" />'
+      ? '<img class="sl-hero__image' + fit + '" src="' + photo + '" alt="' + alt + '" />'
       : '<div class="sl-placeholder sl-placeholder--inverse sl-hero__empty">' + alt + '</div>';
     this.innerHTML =
       '<section class="sl-hero">' + media +
@@ -509,15 +600,14 @@ class DlCta extends SLElement {
     const body = this.getAttribute('body');
     const label = SL_ATTR(this, 'action', 'Book a site assessment');
     const href = SL_ATTR(this, 'href', 'contact.html');
-    const phone = this.getAttribute('phone');
+    const showPhone = this.hasAttribute('phone');
     this.innerHTML =
       '<div class="sl-cta-wrap"><div class="sl-cta">' +
-      '<span class="sl-wordmark" style="font-size:20px;margin-bottom:12px">Sunlogic</span>' +
       (this.getAttribute('eyebrow') ? '<p class="sl-eyebrow sl-eyebrow--centred">' + this.getAttribute('eyebrow') + '</p>' : '') +
       '<h2 class="sl-cta__heading">' + SL_ACCENT(heading) + '</h2>' +
       (body ? '<p class="sl-body sl-body--lg" style="color:rgba(255,255,255,.78);max-width:560px">' + body + '</p>' : '') +
       '<dl-button variant="emphasis" icon="arrow-right" href="' + href + '">' + label + '</dl-button>' +
-      (phone ? '<a class="sl-cta__phone" href="' + SL_ATTR(this, 'phone-href', 'tel:' + phone) + '">' + phone + '</a>' : '') +
+      (showPhone ? '<dl-roll item-class="sl-cta__phone" items=\'' + JSON.stringify(SL_PHONES) + '\'></dl-roll>' : '') +
       '</div></div>';
   }
 }
@@ -577,13 +667,17 @@ class DlNavBar extends SLElement {
 
     this.innerHTML =
       '<header class="sl-nav' + (this.hasAttribute('dark') ? ' sl-nav--dark' : '') + '">' +
-      '<a href="index.html" style="color:inherit"><span class="sl-wordmark">Sunlogic</span></a>' +
+      /* The nav bar sits on light, near-white beige, where sl_logo_white's
+         white wordmark would vanish — sl_logo.svg is the same lockup with
+         the wordmark set in navy instead, for exactly this ground. Dark
+         grounds (the drawer, the CTA block, the footer) use the white one. */
+      '<a href="index.html" class="sl-wordmark-link"><img class="sl-wordmark-logo" src="images/sl_logo.svg" alt="Sunlogic" height="56"/></a>' +
       '<nav class="sl-nav__links" data-has-active="' + hasActive + '">' + navLinks +
       '<dl-button variant="primary" size="sm" href="contact.html">Get a quote</dl-button></nav>' +
       '<button class="sl-icon-btn sl-nav__toggle" type="button" aria-label="Open menu" aria-expanded="false" data-sl-toggle>' +
       SL_ICON('bars-3', 24) + '</button></header>' +
       '<div class="sl-drawer" hidden data-sl-drawer>' +
-      '<div class="sl-drawer__top"><span class="sl-wordmark">Sunlogic</span>' +
+      '<div class="sl-drawer__top"><img class="sl-wordmark-logo" src="images/sl_logo_white.svg" alt="Sunlogic" height="28"/>' +
       '<button class="sl-icon-btn" type="button" aria-label="Close menu" data-sl-close>' + SL_ICON('x-mark', 24) + '</button></div>' +
       drawerLinks +
       '<div class="sl-drawer__cta"><dl-button variant="emphasis" full href="contact.html">Get a quote</dl-button></div></div>';
@@ -607,16 +701,16 @@ class DlFooter extends SLElement {
       '<a class="sl-footer__link" href="' + l[1] + '">' + l[0] + '</a>').join('') + '</div>';
     this.innerHTML =
       '<footer class="sl-footer"><div class="sl-footer__groups">' +
-      '<div class="sl-footer__brand"><span class="sl-wordmark">Sunlogic</span>' +
+      '<div class="sl-footer__brand"><img class="sl-wordmark-logo" src="images/sl_logo_verticle.svg" alt="Sunlogic" height="64"/>' +
       '<p class="sl-footer__strapline">Solar and electrical, Western Cape</p>' +
       '<p class="sl-footer__strapline">Sunlogic SA (Pty) Ltd · Reg. 2022/651654/07</p></div>' +
       col([['Solar', 'solar.html'], ['Electrical', 'electrical.html'], ['Energy', 'energy-management.html'], ['Worth knowing', 'blog.html']]) +
       col([['Contact', 'contact.html'], ['Legal', 'legal.html']]) +
       '<div class="sl-footer__col"><p class="sl-eyebrow sl-eyebrow--accent">Get in touch</p>' +
-      '<a class="sl-footer__plain" href="tel:+27826555371">(082) 655-5371</a>' +
+      '<dl-roll item-class="sl-footer__plain" items=\'' + JSON.stringify(SL_PHONES) + '\'></dl-roll>' +
       '<a class="sl-footer__plain" href="mailto:sales@sunlogic.co.za">sales@sunlogic.co.za</a>' +
       '<p class="sl-footer__strapline">9 Chesham Road, Claremont, Cape Town</p>' +
-      '<p class="sl-footer__strapline">[Business hours — placeholder pending]</p></div>' +
+      '<p class="sl-footer__strapline">08:00 – 18:00, weekdays</p></div>' +
       '</div><div class="sl-footer__rule">' +
       '<p class="sl-footer__strapline">Registered electrical contractor · Certificate of Compliance on every installation</p></div></footer>';
   }
@@ -656,3 +750,117 @@ class DlRevealLines extends HTMLElement {
   connectedCallback() { slArm(this); }
 }
 customElements.define('dl-reveal-lines', DlRevealLines);
+
+/* Deep links into a rendered section.
+   ------------------------------------------------------------------
+   Every `<dl-*>` element renders its real content itself, in this
+   deferred script, well after the browser's own one-shot "scroll to
+   #fragment on load" has already run (or been skipped, since the
+   target has no layout yet at that point) — so a link like
+   `page.html#at-home` was silently landing at the top of the page.
+   This re-does that scroll once the components above have rendered,
+   which by this point in a deferred script they already have. */
+if (location.hash) {
+  const target = document.getElementById(location.hash.slice(1));
+  if (target) target.scrollIntoView({ block: 'start' });
+}
+
+/* Lead context — carries "what page are you on" into "what do you need".
+   ------------------------------------------------------------------
+   The solar/electrical/energy pages each set data-topic on <body>. Any
+   link this page renders toward contact.html picks that up as ?need=,
+   and any mailto: link gets a matching subject, so a visitor who has
+   already told us what they're after (by being on the solar page, say)
+   never has to answer the same question again on the contact form. */
+const SL_TOPIC = document.body.getAttribute('data-topic');
+if (SL_TOPIC) {
+  document.querySelectorAll('a[href]').forEach((a) => {
+    const href = a.getAttribute('href');
+    if (/^(?:[^/]*\/)?contact\.html(?:[#?]|$)/.test(href) && !/[?&]need=/.test(href)) {
+      const hashIndex = href.indexOf('#');
+      const path = hashIndex === -1 ? href : href.slice(0, hashIndex);
+      const hash = hashIndex === -1 ? '' : href.slice(hashIndex);
+      const sep = path.includes('?') ? '&' : '?';
+      a.setAttribute('href', path + sep + 'need=' + encodeURIComponent(SL_TOPIC) + hash);
+    } else if (href.indexOf('mailto:') === 0 && !/[?&]subject=/.test(href)) {
+      const sep = href.includes('?') ? '&' : '?';
+      a.setAttribute('href', href + sep + 'subject=' + encodeURIComponent(SL_TOPIC + ' enquiry'));
+    }
+  });
+}
+
+/* Live fleet stats — polls a small public JSON snapshot for the two
+   hero <dl-stat data-live="pv"|"soc"> cards, refreshed every 15 minutes.
+   ------------------------------------------------------------------
+   This reads a public, unauthenticated URL only — no API key lives
+   here, and none should ever be added to this file, since anything
+   here ships to every visitor's browser. VoltIQ's own API requires a
+   key on every route, so it cannot be called directly from here.
+   Instead this hits a small n8n webhook (n8n/voltiq-fleet-live-webhook.json
+   in the VoltIQ repo) that holds the key server-side, calls VoltIQ's
+   authenticated /report/{id}/fleet-live route, and returns just the
+   three public numbers with CORS open. That workflow exists but has
+   not been imported/activated in n8n yet, so until it is, or whenever
+   a fetch fails for any reason, the cards keep whatever fallback text
+   is in the page's own HTML. Never fabricate a number here if the
+   feed is unreachable.
+
+   Expected feed shape (adjust the parsing below if the real one differs):
+   { "updated_at": "2026-08-30T12:15:00Z", "pv_kw": 42.7,
+     "pv_kwh_today": 612.4, "battery_soc_pct": 63, "battery_discharging": true }
+
+   Battery SOC is always defined for a live plant — a battery always has
+   *some* state of charge — so that feed field should never be null;
+   the card only falls to its "coming soon" text while there's no feed
+   connection at all, never once one exists. SOC has no day/night mode —
+   it's just whatever the fleet's current SOC is, always.
+
+   PV is different: it's genuinely zero once the day's production is
+   done (or before it's started), and showing "0.0 kW" then reads as
+   broken rather than as "production's done for today". So once current
+   pv_kw is 0 (or missing), the card switches — both its label AND its
+   value — from "Live PV output" / kW to "Produced today" / kWh, using
+   pv_kwh_today (the fleet's running daily energy total, which VoltIQ
+   already tracks per system). Still a real, sourced number either way,
+   never invented, and it switches back to live kW the moment pv_kw is
+   positive again. */
+const SL_FLEET_LIVE_URL = 'https://n8n.digitaloperations.co.za/webhook/fleet-live'; // live once the n8n workflow below is imported + activated
+const SL_FLEET_POLL_MS = 15 * 60 * 1000;
+
+function slUpdateLiveStats(data) {
+  const pv = document.querySelector('[data-live="pv"]');
+  const soc = document.querySelector('[data-live="soc"]');
+  const ageMin = data && data.updated_at
+    ? Math.round((Date.now() - new Date(data.updated_at).getTime()) / 60000)
+    : null;
+  const freshness = ageMin === null ? 'Live' : ageMin <= 1 ? 'Updated just now' : 'Updated ' + ageMin + 'm ago';
+  const formatPower = (kw, unit) => kw >= 1000 ? (kw / 1000).toFixed(1) + ' M' + unit : kw.toFixed(1) + ' k' + unit;
+  if (pv && data) {
+    if (typeof data.pv_kw === 'number' && data.pv_kw > 0) {
+      pv.querySelector('.sl-stat__label').textContent = 'Live PV output';
+      pv.querySelector('.sl-stat__value').textContent = formatPower(data.pv_kw, 'W');
+      pv.querySelector('.sl-stat__sub').textContent = freshness;
+    } else if (typeof data.pv_kwh_today === 'number') {
+      pv.querySelector('.sl-stat__label').textContent = 'Produced today';
+      pv.querySelector('.sl-stat__value').textContent = formatPower(data.pv_kwh_today, 'Wh');
+      pv.querySelector('.sl-stat__sub').textContent = freshness;
+    }
+  }
+  if (soc && data && typeof data.battery_soc_pct === 'number') {
+    const state = typeof data.battery_discharging === 'boolean'
+      ? (data.battery_discharging ? 'Discharging' : 'Charging') + ' · ' + freshness
+      : freshness;
+    soc.querySelector('.sl-stat__value').textContent = Math.round(data.battery_soc_pct) + '%';
+    soc.querySelector('.sl-stat__sub').textContent = state;
+  }
+}
+
+function slPollFleetLive() {
+  if (!document.querySelector('[data-live="pv"], [data-live="soc"]')) return;
+  fetch(SL_FLEET_LIVE_URL, { cache: 'no-store' })
+    .then((r) => { if (!r.ok) throw new Error('fleet-live ' + r.status); return r.json(); })
+    .then(slUpdateLiveStats)
+    .catch(() => {}); // feed isn't live yet (or is down) — cards keep their fallback text
+}
+slPollFleetLive();
+setInterval(slPollFleetLive, SL_FLEET_POLL_MS);

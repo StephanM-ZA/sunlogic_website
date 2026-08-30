@@ -205,7 +205,15 @@ input, textarea, select, button { font: inherit; color: var(--text-primary); }
    section. Same for body copy in an inverse section. */
 .sl-section--inverse .sl-eyebrow,
 .sl-card--inverse .sl-eyebrow,
-.sl-hero .sl-eyebrow { color: rgba(255,255,255,0.7); }
+.sl-hero .sl-eyebrow,
+.sl-cta .sl-eyebrow { color: rgba(255,255,255,0.7); }
+/* Same trap, same fix, for body copy: .sl-body's default assumes a warm
+   surface too, and the intended dark-surface override lived on a variant
+   class (.sl-stack--inverse) nothing ever actually applies — so a hero's
+   own body line was rendering at the light-surface grey the whole time. */
+.sl-hero .sl-body,
+.sl-section--inverse .sl-body,
+.sl-card--inverse .sl-body { color: rgba(255,255,255,0.78); }
 .sl-section--inverse .sl-body,
 .sl-card--inverse .sl-body { color: rgba(255,255,255,0.78); }
 .sl-section--inverse .sl-section-heading,
@@ -226,6 +234,14 @@ input, textarea, select, button { font: inherit; color: var(--text-primary); }
    next. This is why a heading stack never butts up against the grid below
    it, and why nobody has to remember a margin. */
 .sl-section > .sl-container { display: grid; gap: 40px; align-content: start; }
+/* A grid item's default min-width is its content's max-content size, not
+   0 — so a descendant that is deliberately much wider than its clipped
+   viewport (an auto-scrolling carousel's track, say) inflates the whole
+   section's single grid column to match, dragging every other row
+   (headings included) out to that width. overflow:hidden on the
+   carousel clips paint, not this — intrinsic sizing looks straight
+   through it. min-width: 0 on the grid item is the standard fix. */
+.sl-section > .sl-container > dl-reveal { min-width: 0; }
 @media (max-width: 767px) { .sl-section > .sl-container { gap: 32px; } }
 
 .sl-grid-3 { display: grid; grid-template-columns: 1fr; gap: 20px; align-items: stretch; }
@@ -349,6 +365,14 @@ input, textarea, select, button { font: inherit; color: var(--text-primary); }
   gap: 16px;
   transition: border-color var(--dur-hover) ease-out;
 }
+/* A row of cards stretches every card to the tallest one's height
+   (dl-card > .sl-card { flex: 1 }, below), so a card with shorter copy
+   ends up with dead space below its button row instead of above it —
+   buttons across the row land at different heights. Pushing the actions
+   row to the bottom with the flex column's free space fixes that: every
+   card's buttons sit flush with the bottom edge, level with each other,
+   regardless of how much copy precedes them. */
+.sl-card > dl-actions { margin-top: auto; }
 /* Hover is the hairline alone — the border warms, nothing else moves.
    No fill change, no lift, no shadow, no scale. A card that is itself a
    link takes the accent edge instead. */
@@ -375,6 +399,7 @@ a.sl-card:hover, .sl-card:has(> a:hover) { border-color: var(--color-orange); }
   content: ""; width: 6px; height: 6px; border-radius: var(--radius-pill);
   background: var(--color-orange); animation: daylight-pulse 1.6s infinite;
 }
+.sl-badge--glass { background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: var(--glass-blur); color: var(--text-inverse); }
 /* Tag renders bracketed: [ golden hour ] */
 .sl-tag {
   display: inline-flex; align-items: center;
@@ -507,6 +532,11 @@ dl-nav-bar { position: sticky; top: 0; z-index: var(--z-sticky); }
 @media (min-width: 768px) { .sl-hero { min-height: 78vh; } }
 .sl-hero__layer { position: absolute; inset: 0; pointer-events: none; }
 .sl-hero__image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* A hero photo defaults to filling the frame, cropped — right for a
+   photograph, wrong for a diagram or product render, where cropping loses
+   the thing the image exists to show. <dl-hero fit="contain"> switches to
+   this instead. */
+.sl-hero__image--contain { object-fit: contain; background: var(--color-navy); }
 /* 2 — 14s gradient drift */
 .sl-hero__gradient {
   background: var(--gradient-dawn);
@@ -572,7 +602,7 @@ dl-nav-bar { position: sticky; top: 0; z-index: var(--z-sticky); }
   max-width: var(--container-used); margin-inline: auto;
   background: var(--surface-inverse); color: var(--text-inverse);
   border-radius: var(--radius-lg);
-  padding: 56px 24px 96px;
+  padding: 56px 40px 96px;
   display: flex; flex-direction: column; align-items: center; gap: 20px;
   text-align: center;
 }
@@ -588,9 +618,10 @@ dl-nav-bar { position: sticky; top: 0; z-index: var(--z-sticky); }
 /* ---- Footer ------------------------------------------------ */
 .sl-footer { background: var(--surface-inverse); color: var(--text-inverse); padding: 64px var(--gutter) 40px; }
 .sl-footer__groups { max-width: var(--container-used); margin-inline: auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 48px; }
-.sl-footer__link { display: block; color: rgba(255,255,255,0.7); font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; padding: 4px 0; }
+.sl-footer__link { display: block; color: rgba(255,255,255,0.7); font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; padding: 4px 0; transition: color var(--dur-hover) ease-out; }
 .sl-footer__link::before { content: "["; margin-right: 4px; }
 .sl-footer__link::after  { content: "]"; margin-left: 4px; }
+.sl-footer__link:hover { color: var(--color-orange); opacity: 1; }
 .sl-footer__plain { display: block; color: rgba(255,255,255,0.85); font-size: 15px; padding: 2px 0; }
 .sl-footer__plain:hover { color: var(--color-orange); opacity: 1; }
 .sl-footer__rule { max-width: var(--container-used); margin: 48px auto 0; border-top: 1px solid var(--border-inverse); padding-top: 20px; }
@@ -610,7 +641,21 @@ dl-nav-bar { position: sticky; top: 0; z-index: var(--z-sticky); }
 
 .sl-wordmark { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.01em; }
 /* A wordmark that is a link still has to be a 44px tap target. */
-.sl-nav a, .sl-drawer__top .sl-wordmark { display: inline-flex; align-items: center; min-height: 44px; }
+.sl-nav a, .sl-drawer__top .sl-wordmark-logo { display: inline-flex; align-items: center; min-height: 44px; }
+.sl-wordmark-logo { display: block; width: auto; }
+
+/* ---- Roll — rotating contact links --------------------------- */
+/* The clip window: dl-roll measures the first item's own rendered
+   height (whatever item-class gives it — a 50px button, a 44px pill,
+   a bare line of text) and sets it here, so this never needs a value
+   of its own per context. */
+.sl-roll { display: inline-flex; align-items: flex-start; overflow: hidden; vertical-align: middle; }
+/* Without these, .sl-roll's own flex cross-axis stretches the track down
+   to the roll's height, which then flex-shrinks every item to fit —
+   squeezing all of them into view at once instead of showing one. */
+.sl-roll__track { display: flex; flex-direction: column; flex-shrink: 0; }
+.sl-roll__item { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; flex-shrink: 0; }
+@media (prefers-reduced-motion: reduce) { .sl-roll__track { transition: none !important; } }
 .sl-stack__slot { margin-top: 8px; }
 .sl-actions { display: flex; flex-wrap: wrap; gap: 16px; }
 @media (max-width: 479px) { .sl-actions { flex-direction: column; } .sl-actions .sl-btn { width: 100%; } }
@@ -672,6 +717,7 @@ a.sl-contact:hover .sl-contact__value { color: var(--color-orange); }
   background: var(--surface-sunk); border: 1px solid var(--border-warm);
   display: grid; place-items: center; margin-bottom: 8px;
   font-family: var(--font-mono); font-size: 14px; letter-spacing: 0.05em; color: var(--text-secondary); }
+.sl-person__avatar--photo { object-fit: cover; }
 .sl-person__role { margin: 0; font-family: var(--font-mono); font-size: 12px; font-weight: 600;
   letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-orange); }
 
@@ -679,7 +725,7 @@ a.sl-contact:hover .sl-contact__value { color: var(--color-orange); }
 .sl-quicklinks { background: var(--surface-page-alt); border-top: 1px solid var(--border-warm); border-bottom: 1px solid var(--border-warm); }
 .sl-quicklinks__inner { max-width: var(--container-used); margin-inline: auto; padding: 20px var(--gutter);
   display: flex; flex-wrap: wrap; gap: 8px 24px; }
-.sl-quicklink { display: inline-flex; align-items: center; min-height: 44px;
+.sl-quicklink { display: inline-flex; align-items: center; gap: 8px; min-height: 44px;
   font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: 0.05em;
   text-transform: uppercase; color: var(--text-secondary); }
 .sl-quicklink:hover { color: var(--color-orange); opacity: 1; }
@@ -819,10 +865,13 @@ dl-subnav { position: sticky; top: 72px; z-index: 30; }
    number and the quote, within reach on a long page. */
 .sl-dock {
   position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-  z-index: var(--z-toast);
+  z-index: var(--z-sticky);
   display: flex; align-items: center; gap: 4px;
   padding: 5px;
-  background: rgba(13,32,40,0.88);
+  /* A hint darker than the footer it usually floats over (--color-navy),
+     so the dock still reads as its own surface rather than dissolving
+     into the footer behind it. */
+  background: rgba(8,22,25,0.92);
   border: 1px solid var(--border-inverse);
   border-radius: var(--radius-sm);
   backdrop-filter: var(--glass-blur);
@@ -881,7 +930,7 @@ dl-nav-bar, dl-subnav { display: block; }
 /* Card-like elements fill their grid cell so a row is always level. */
 dl-card, dl-step, dl-person { display: flex; flex-direction: column; }
 dl-card > .sl-card, dl-step > .sl-card, dl-person > .sl-card { flex: 1; }
-dl-button, dl-badge, dl-tag, dl-icon { display: inline-block; }
+dl-button, dl-badge, dl-tag, dl-icon, dl-roll { display: inline-block; }
 /* Media slots fill their sized wrapper. With a ratio attribute they
    size themselves instead. */
 dl-media, dl-media-bg { position: relative; height: 100%; }

@@ -4,10 +4,11 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Worth Knowing | Sunlogic SA</title>
-<link rel="stylesheet" href="shared/sunlogic.css?v=1"/>
-<script src="shared/icons.js?v=1" defer></script>
-<script src="shared/components.js?v=1" defer></script>
-<script src="shared/sunlogic-check.js?v=1" defer></script>
+<link rel="icon" type="image/png" href="images/fav_icon.png"/>
+<link rel="stylesheet" href="shared/sunlogic.css?v=16"/>
+<script src="shared/icons.js?v=2" defer></script>
+<script src="shared/components.js?v=24" defer></script>
+<script src="shared/sunlogic-check.js?v=2" defer></script>
 </head>
 <body>
 <dl-nav-bar active="blog"></dl-nav-bar>
@@ -30,41 +31,65 @@
   </dl-reveal>
 </dl-section>
 
-<!-- Posting cadence is still open. Fortnightly that actually happens beats
-     weekly that stops after a month. -->
-<dl-section bg="alt" id="posts">
+<dl-section bg="alt" id="published">
   <dl-reveal>
-    <dl-stack eyebrow="First posts to write" heading="Seven, |In Order"
-      body="All seven come straight out of existing reference material, so writing them is drafting rather than fresh research."></dl-stack>
+    <dl-stack eyebrow="Recent posts" heading="Straight Answers, |Written Down"
+      body="Practical answers on solar, electrical safety and managing your bill."></dl-stack>
   </dl-reveal>
   <dl-reveal>
     <dl-grid cols="2">
-      <dl-step step="01" heading="Why Your Electricity Bill Went Up"
-        body="Even though you used less. The fixed monthly charge has been rising faster than the rate per unit."></dl-step>
-      <dl-step step="02" heading="Should You Get a Battery?"
-        body="The simple way to work it out, without being sold one."></dl-step>
-      <dl-step step="03" heading="Your Power Keeps Tripping in the Morning"
-        body="Here's why, why it is almost always the geyser, and how it gets found."></dl-step>
-      <dl-step step="04" heading="The Two Year Certificate Myth"
-        body="A Certificate of Compliance does not expire. Here is when you actually need one."></dl-step>
-      <dl-step step="05" heading="What a Home Solar System Really Costs"
-        body="The three things that move the price, and why two houses on one street differ."></dl-step>
-      <dl-step step="06" heading="Thinking About an Electric Car?"
-        body="Read this before you buy the charger, and plan it alongside the solar."></dl-step>
+      <dl-card heading="Three Essential Electrical Checks to Make Your Home Season-Ready"
+        body="Geyser timers, surge protection and backup power for your security system — three checks worth making before you go away.">
+        <dl-tag>Electrical safety</dl-tag>
+        <dl-actions>
+          <dl-button variant="outline" icon="arrow-right" href="blog-3-essential-checks.html">Read</dl-button>
+        </dl-actions>
+      </dl-card>
+      <dl-card heading="Rent-to-Own"
+        body="Rent-to-own and rented systems that can be tailored to your home or business's needs, without a full upfront payment.">
+        <dl-tag>Solar</dl-tag>
+        <dl-actions>
+          <dl-button variant="outline" icon="arrow-right" href="blog-rent-to-own.html">Read</dl-button>
+        </dl-actions>
+      </dl-card>
+      <dl-card heading="Off the Grid vs. Grid-tied"
+        body="The costs and benefits of going fully off-grid versus staying connected with a grid-tied system.">
+        <dl-tag>Solar</dl-tag>
+        <dl-actions>
+          <dl-button variant="outline" icon="arrow-right" href="blog-off-grid-vs-grid-tied.html">Read</dl-button>
+        </dl-actions>
+      </dl-card>
+      <dl-card heading="Five Tips to Beat Load Shedding"
+        body="Practical steps to manage outages, from charging devices ahead of time to investing in alternative power.">
+        <dl-tag>Load shedding</dl-tag>
+        <dl-actions>
+          <dl-button variant="outline" icon="arrow-right" href="blog-five-tips-load-shedding.html">Read</dl-button>
+        </dl-actions>
+      </dl-card>
+      <dl-card heading="The Two-Year Certificate Myth"
+        body="What a Certificate of Compliance actually covers, and when you really need a new one.">
+        <dl-tag>Compliance</dl-tag>
+        <dl-actions>
+          <dl-button variant="outline" icon="arrow-right" href="blog-coc-two-year-myth.html">Read</dl-button>
+        </dl-actions>
+      </dl-card>
+      <dl-card heading="Why Your Electricity Bill Went Up"
+        body="Fixed charges are rising faster than usage rates, sourced from NERSA's own approved tariffs — and what that means for solar payback.">
+        <dl-tag>Saving on your bill</dl-tag>
+        <dl-actions>
+          <dl-button variant="outline" icon="arrow-right" href="blog-why-your-bill-went-up.html">Read</dl-button>
+        </dl-actions>
+      </dl-card>
+      <dl-card heading="Thinking About an Electric Car?"
+        body="What it actually takes electrically to charge an EV at home in South Africa, and what happens when the power goes out.">
+        <dl-tag>Electrical safety</dl-tag>
+        <dl-actions>
+          <dl-button variant="outline" icon="arrow-right" href="blog-ev-home-charging.html">Read</dl-button>
+        </dl-actions>
+      </dl-card>
     </dl-grid>
   </dl-reveal>
-  <dl-reveal>
-    <dl-step step="07" heading="How to Read a Solar Quote Without Getting Caught Out"
-      body="Which rate a proposal values your solar at, and why that one choice can make a payback figure look four times better than it is." tone="inverse"></dl-step>
-  </dl-reveal>
 </dl-section>
-
-<dl-reveal>
-  <dl-statement eyebrow="How often"
-    text="A fortnightly cadence that actually happens beats a weekly one |that stops after a month">
-    <p class="sl-body sl-body--lg" style="max-width:640px">Weekly is roughly three to four hours of someone's time, every week, indefinitely. [Cadence — placeholder pending a decision on who owns it.]</p>
-  </dl-statement>
-</dl-reveal>
 
 <dl-reveal>
   <dl-cta eyebrow="Rather ask directly?"

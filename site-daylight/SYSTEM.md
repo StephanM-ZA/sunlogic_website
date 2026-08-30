@@ -112,6 +112,15 @@ specificity so it wins without `!important`. Follow that pattern for any new
 plugin. **Never edit plugin JavaScript to restyle it** — the next version
 overwrites you and the plugin stops tracking the system.
 
+**If a themed plugin element is an `<a>` tag, opt it out of the link-dim
+rule.** Plain text links dim to 70% opacity on hover (`a:hover`); every
+button and card in the system is explicitly excepted (`a.sl-btn:hover,
+a.sl-card:hover, …`). A plugin card left off that list dims along with
+whatever hover state you did theme for it. Add `opacity: 1` to the
+plugin's own hover rule in `plugins.css` — don't add the plugin to the
+central exception list in `sunlogic.css`, which is for the system's own
+components.
+
 ---
 
 ## Headings and the accent phrase

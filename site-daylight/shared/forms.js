@@ -54,6 +54,23 @@ function dlInitForm(form) {
     });
   });
 }
+/* Prefills "What you need" (and the message) from ?need=, set by the
+   lead-context link rewriting in components.js — so a visitor who
+   arrived from the solar or electrical page doesn't have to re-answer
+   the question that page already implied. */
+function dlPrefillFromQuery() {
+  const need = new URLSearchParams(window.location.search).get('need');
+  if (!need) { return; }
+  const select = document.querySelector('select[name="need"]');
+  if (!select || !Array.from(select.options).some(function(o) { return o.value === need; })) { return; }
+  select.value = need;
+  const message = document.querySelector('textarea[name="message"]');
+  if (message && !message.value) {
+    message.value = "I'm interested in " + need.toLowerCase() + " for my property. ";
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('form[data-dl-form]').forEach(dlInitForm);
+  dlPrefillFromQuery();
 });

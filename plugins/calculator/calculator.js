@@ -167,21 +167,39 @@
     return 'R' + withSeparators;
   }
 
-  function buildChartSvg(cumulativeByYear) {
+  /* `payback` draws a break-even line at the system cost, and shades the
+     bars before it — the same figure as the headline's "typical payback
+     period", so a visitor can see the crossing rather than take the
+     number's word for it. Optional so a caller without a cost figure
+     (there is none today) still gets the plain chart. */
+  function buildChartSvg(cumulativeByYear, payback) {
     const width = 400;
     const height = 160;
     const barGap = 2;
     const barWidth = width / cumulativeByYear.length - barGap;
-    const maxValue = cumulativeByYear[cumulativeByYear.length - 1];
+    const maxValue = Math.max(cumulativeByYear[cumulativeByYear.length - 1], payback || 0);
+    const plotHeight = height - 20;
+    const toY = (value) => height - (value / maxValue) * plotHeight;
 
     const bars = cumulativeByYear.map((value, index) => {
-      const barHeight = (value / maxValue) * (height - 20);
+      const barHeight = (value / maxValue) * plotHeight;
       const x = index * (barWidth + barGap);
       const y = height - barHeight;
-      return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barWidth.toFixed(1)}" height="${barHeight.toFixed(1)}" fill="var(--plugin-calc-accent)"/>`;
+      const paidOff = payback != null && value >= payback;
+      return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barWidth.toFixed(1)}" height="${barHeight.toFixed(1)}" fill="var(--plugin-calc-accent)" opacity="${paidOff ? 1 : 0.4}"/>`;
     }).join('');
 
-    return `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="20-year cumulative savings projection, reaching approximately ${formatRand(maxValue)} by year 20">${bars}</svg>`;
+    let breakEven = '';
+    let label = `${cumulativeByYear.length}-year cumulative savings projection, reaching approximately ${formatRand(maxValue)} by year ${cumulativeByYear.length}`;
+    if (payback != null && payback > 0 && payback <= maxValue) {
+      const y = toY(payback).toFixed(1);
+      breakEven =
+        `<line x1="0" y1="${y}" x2="${width}" y2="${y}" stroke="var(--plugin-calc-text-color, currentColor)" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"/>` +
+        `<text x="${width - 4}" y="${(toY(payback) - 5).toFixed(1)}" text-anchor="end" font-size="10" fill="var(--plugin-calc-text-color, currentColor)" opacity="0.7">Estimated system cost</text>`;
+      label += `. The dashed line marks the estimated system cost — bars before the crossing are the payback period, shaded lighter.`;
+    }
+
+    return `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${label}">${bars}${breakEven}</svg>`;
   }
 
   function residentialInputsHtml(instanceId) {
@@ -239,12 +257,16 @@
         <div class="plugin-calc-card">
           <div class="plugin-calc-inputs">${inputsHtml}</div>
           <div class="plugin-calc-headline" aria-live="polite"></div>
+          <div class="plugin-calc-gate-row">
+            <button type="button" class="plugin-calc-submit" data-share><span>Copy link to this estimate</span></button>
+            <span class="plugin-calc-share-status" aria-live="polite" data-share-status></span>
+          </div>
           <div class="plugin-calc-disclaimer">${DISCLAIMER_TEXT}</div>
           <form class="plugin-calc-gate" novalidate>
             <label for="${this._instanceId}-email">Unlock your full savings report</label>
             <div class="plugin-calc-gate-row">
               <input type="email" id="${this._instanceId}-email" class="plugin-calc-email" placeholder="you@example.com" required/>
-              <button type="submit" class="plugin-calc-submit">Unlock</button>
+              <button type="submit" class="plugin-calc-submit"><span>Unlock</span></button>
             </div>
             <div class="plugin-calc-hp" aria-hidden="true">
               <label for="${this._instanceId}-website">Website</label>
@@ -256,6 +278,8 @@
       `;
 
       this._wireInputs();
+      this._applyUrlParams();
+      this._wireShare();
       this._wireGate();
       this._recalculate();
     }
@@ -295,6 +319,78 @@
           if (range) range.value = clamped;
           this._recalculate();
         });
+      });
+    }
+
+    /* A deep link into this calculator's exact scenario: `res-bill` for the
+       residential mode, `sme-bill` / `sme-hours` for the SME mode — prefixed
+       so two instances on one page (as on solar.html) don't collide. Values
+       run through the same clamp as manual input, via _getFieldValue at
+       calculation time, so an out-of-range query param can't produce a
+       number the headline disagrees with. */
+    _applyUrlParams() {
+      const params = new URLSearchParams(location.search);
+      const apply = (field, param) => {
+        if (!params.has(param)) return;
+        const value = params.get(param);
+        const range = this.querySelector(`.plugin-calc-range[data-field="${field}"]`);
+        const number = this.querySelector(`.plugin-calc-number[data-field="${field}"]`);
+        if (range) range.value = value;
+        if (number) number.value = value;
+      };
+      if (this._mode === 'sme') {
+        apply('bill', 'sme-bill');
+        apply('hours', 'sme-hours');
+      } else {
+        apply('bill', 'res-bill');
+      }
+    }
+
+    /* The nearest ancestor id, if any — used as the link's fragment so it
+       lands back on this instance rather than the top of the page. Reads
+       the DOM rather than assuming a host page's ids, so the plugin stays
+       portable to a page that anchors this calculator differently, or not
+       at all. */
+    _nearestAnchorId() {
+      let el = this;
+      while (el) {
+        if (el.id) return el.id;
+        el = el.parentElement;
+      }
+      return null;
+    }
+
+    _shareUrl() {
+      const url = new URL(location.href);
+      if (this._mode === 'sme') {
+        url.searchParams.set('sme-bill', this._getFieldValue('bill', 15000));
+        url.searchParams.set('sme-hours', this._getFieldValue('hours', 63));
+      } else {
+        url.searchParams.set('res-bill', this._getFieldValue('bill', 2500));
+      }
+      const anchor = this._nearestAnchorId();
+      url.hash = anchor || '';
+      return url.toString();
+    }
+
+    _wireShare() {
+      const button = this.querySelector('[data-share]');
+      const status = this.querySelector('[data-share-status]');
+      if (!button) return;
+      button.addEventListener('click', async () => {
+        const link = this._shareUrl();
+        try {
+          await navigator.clipboard.writeText(link);
+          status.textContent = 'Link copied — paste it anywhere.';
+        } catch (err) {
+          // Clipboard API needs a secure context and permission that are
+          // not always available (older browsers, a plain-HTTP preview).
+          // A prompt still lets the visitor copy the link by hand.
+          window.prompt('Copy this link:', link);
+          status.textContent = '';
+        }
+        clearTimeout(this._shareStatusTimer);
+        this._shareStatusTimer = setTimeout(() => { status.textContent = ''; }, 4000);
       });
     }
 
@@ -377,7 +473,7 @@
             <div><div class="plugin-calc-headline-label">Estimated system cost</div><div>${formatRand(r.systemCost)}</div></div>
             <div><div class="plugin-calc-headline-label">First-year savings</div><div>${formatRand(r.firstYearSavings)}</div></div>
           </div>
-          <div class="plugin-calc-chart">${buildChartSvg(r.cumulativeByYear)}</div>
+          <div class="plugin-calc-chart">${buildChartSvg(r.cumulativeByYear, r.systemCost)}</div>
         `;
       }
       detail.hidden = false;
@@ -436,8 +532,8 @@
               <div class="plugin-calc-headline-figure">${formatRand(result.firstYearSavings / 12)}</div>
             </div>
             <div>
-              <div class="plugin-calc-headline-label">Estimated payback period</div>
-              <div class="plugin-calc-headline-figure">${result.paybackYears.toFixed(1)} years</div>
+              <div class="plugin-calc-headline-label">Typical payback period</div>
+              <div class="plugin-calc-headline-figure">${result.paybackYearsLow.toFixed(0)}–${result.paybackYearsHigh.toFixed(0)} years</div>
             </div>
           </div>
         `;
