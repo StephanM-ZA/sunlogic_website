@@ -28,6 +28,8 @@
   const DAY_END = 17 * 60 + 45;
   const SAT_END = 12 * 60 + 30;
   const LOOKBACK = 4; /* working days scanned for jobs still running */
+  const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
+                     'Friday', 'Saturday'];
 
   /* mulberry32 — small, fast, and identical across browsers, which
      matters because a given date must compose the same day everywhere. */
@@ -129,10 +131,15 @@
           ? job.span[0] + Math.floor(rand() * (job.span[1] - job.span[0] + 1))
           : 1;
 
+        /* An all-day job runs to knock-off; everything else runs its
+           length, clamped so nothing overruns the end of the day. */
+        const end = job.dur === 'allday' ? dayEnd : Math.min(start + length, dayEnd);
+
         out.push({
           crew: crew.id,
           kind: job.kind,
           start: start,
+          end: end,
           time: hhmm(start),
           dur: job.dur,
           allDay: job.dur === 'allday',
@@ -183,6 +190,7 @@
         if (job.span > 1 || job.allDay) freeFrom[job.crew] = offset - job.span;
         if (job.span <= offset) return; /* ran out before today */
 
+        const dayEnd = isSaturday(date) ? SAT_END : DAY_END;
         if (offset === 0) {
           rows.push(Object.assign({}, job, { dayIndex: 1 }));
           return;
@@ -191,8 +199,10 @@
            which day of the run this is. */
         const resume = isSaturday(date) ? 8 * 60 : 7 * 60 + 30;
         const at = job.allDay ? resume : Math.max(job.start, resume);
+        const runs = DURATIONS[job.dur] || 60;
         rows.push(Object.assign({}, job, {
           start: at,
+          end: job.allDay ? dayEnd : Math.min(at + runs, dayEnd),
           time: hhmm(at),
           dayIndex: offset + 1,
           continued: true,
@@ -206,8 +216,36 @@
     return rows;
   }
 
+  /* A continuous stream across neighbouring working days.
+
+     A single day runs out: by late afternoon there is nothing left below
+     the line and the panel shows a void. A calendar does not stop at
+     midnight, so the stream carries the previous working day's tail and
+     the next working days' heads, each entry stamped with how many
+     calendar days away it is and an absolute minute for ordering. */
+  function composeStream(date, pools) {
+    const today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const out = [];
+    for (let delta = -2; delta <= 4; delta++) {
+      const d = new Date(today);
+      d.setDate(d.getDate() + delta);
+      if (!isWorkingDay(d)) continue;
+      composeDay(d, pools).forEach(function (job) {
+        out.push(Object.assign({}, job, {
+          dayDelta: delta,
+          dayName: DAY_NAMES[d.getDay()],
+          abs: delta * 1440 + job.start,
+          absEnd: delta * 1440 + job.end,
+        }));
+      });
+    }
+    out.sort((a, b) => (a.abs - b.abs) || (a.crew < b.crew ? -1 : 1));
+    return out;
+  }
+
   root.PLUGIN_DAY_FEED_SCHEDULE = {
     composeDay: composeDay,
+    composeStream: composeStream,
     buildStarts: buildStarts,
     seedForDate: seedForDate,
     isWorkingDay: isWorkingDay,

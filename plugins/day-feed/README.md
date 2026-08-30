@@ -23,14 +23,13 @@ Then place the element anywhere in your page:
 
 ```html
 <plugin-day-feed></plugin-day-feed>
-<plugin-day-feed title="Today" tone="glass" past="4" next="4"></plugin-day-feed>
+<plugin-day-feed heading="Today" tone="glass" rows="3"></plugin-day-feed>
 ```
 
 | Attribute | Default | Notes |
 |---|---|---|
-| `title` | `Today` | Panel heading. |
-| `past` | `4` | Rows shown above the current-time line. |
-| `next` | `4` | Rows shown below it. |
+| `heading` | `Today` | Panel heading. Not `title` — that would make the browser draw a native tooltip over the panel. A `title` is honoured once, then removed from the host. |
+| `rows` | `3` | Rows shown above and below the current band. The band itself takes what it needs and these give way. |
 | `rest-from` | `18` | Hour (0–23) the working day ends. |
 | `rest-until` | `7` | Hour the working day starts. |
 | `tone` | — | `glass` for the translucent fill used on dark grounds. |

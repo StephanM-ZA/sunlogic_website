@@ -103,21 +103,20 @@
 
       .plugin-day-feed__row {
         display: flex; gap: 12px; align-items: baseline;
-        height: var(--plugin-day-feed-row-h);
-        font-size: var(--plugin-day-feed-size);
         letter-spacing: 0.05em;
         text-transform: uppercase;
         white-space: nowrap;
+        transition: font-size 200ms ease-out, opacity 200ms ease-out;
       }
       .plugin-day-feed__time {
-        flex: 0 0 58px;
+        flex: 0 0 5.2em;
         color: var(--plugin-day-feed-faint);
         font-variant-numeric: tabular-nums;
       }
       /* Which crew, so the panel reads as a company diary rather than
          one person's list. */
       .plugin-day-feed__crew {
-        flex: 0 0 52px;
+        flex: 0 0 5.2em;
         color: var(--plugin-day-feed-accent);
         opacity: 0.85;
         overflow: hidden;
@@ -131,27 +130,62 @@
         color: var(--plugin-day-feed-faint);
       }
 
-      /* Distance from the current moment reads as distance in tone. */
-      .plugin-day-feed__row[data-depth="0"] { opacity: 1; }
-      .plugin-day-feed__row[data-depth="1"] { opacity: 0.7; }
-      .plugin-day-feed__row[data-depth="2"] { opacity: 0.48; }
-      .plugin-day-feed__row[data-depth="3"] { opacity: 0.3; }
-      .plugin-day-feed__row[data-depth="4"] { opacity: 0.18; }
+      /* Distance from the current moment reads as size and tone: the rows
+         touching the line are the largest and brightest, and each step
+         away is smaller and fainter, so the panel reads as a wheel with
+         now at the top of it. */
+      .plugin-day-feed__row[data-depth="0"],
+      .plugin-day-feed__divider[data-depth="0"] { height: 24px; font-size: 12px; opacity: 0.6; }
+      .plugin-day-feed__row[data-depth="1"],
+      .plugin-day-feed__divider[data-depth="1"] { height: 22px; font-size: 11px; opacity: 0.38; }
+      .plugin-day-feed__row[data-depth="2"],
+      .plugin-day-feed__divider[data-depth="2"] { height: 20px; font-size: 10px; opacity: 0.22; }
+      .plugin-day-feed__row[data-depth="3"],
+      .plugin-day-feed__divider[data-depth="3"] { height: 18px; font-size: 9px; opacity: 0.14; }
+      .plugin-day-feed__row[data-depth="4"],
+      .plugin-day-feed__divider[data-depth="4"] { height: 17px; font-size: 9px; opacity: 0.08; }
 
+      /* Where the stream crosses into another day. */
+      .plugin-day-feed__divider {
+        display: flex; align-items: center; gap: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--plugin-day-feed-accent);
+        white-space: nowrap;
+      }
+      .plugin-day-feed__divider::after {
+        content: ""; flex: 1 1 auto; height: 1px;
+        background: var(--plugin-day-feed-rule);
+      }
+
+      /* The band holds the clock and whatever is actually running at
+         that moment — a job counts as current from its start until its
+         end, so a two-hour inspection stays here for two hours. */
       .plugin-day-feed__now {
-        display: flex; gap: 10px; align-items: baseline;
         flex: 0 0 auto;
-        margin: 6px 0; padding: 8px 0;
+        display: flex; flex-direction: column; gap: 4px;
+        margin: 5px 0; padding: 7px 0;
         border-top: 1px solid var(--plugin-day-feed-rule);
         border-bottom: 1px solid var(--plugin-day-feed-rule);
+      }
+      .plugin-day-feed__clock {
+        display: flex; gap: 10px; align-items: baseline;
         color: var(--plugin-day-feed-accent);
         font-size: 17px; font-weight: 600;
+      }
+      .plugin-day-feed__current { display: flex; flex-direction: column; }
+      /* Whatever is on site right now is the brightest thing in the panel. */
+      .plugin-day-feed__row--current { height: 24px; font-size: 13px; opacity: 1; }
+      .plugin-day-feed__more {
+        height: 22px; font-size: 11px; letter-spacing: 0.05em;
+        text-transform: uppercase; color: var(--plugin-day-feed-muted);
       }
       .plugin-day-feed__now-time { font-variant-numeric: tabular-nums; }
       .plugin-day-feed__now-secs {
         font-size: var(--plugin-day-feed-size);
         font-variant-numeric: tabular-nums;
-        opacity: 0.65;
+        opacity: 0.6;
+        margin-left: -6px;
       }
       .plugin-day-feed__now-label {
         margin-left: auto;
@@ -210,8 +244,7 @@
       injectBaseStyles();
       this._pools = window.PLUGIN_DAY_FEED;
       this._sched = window.PLUGIN_DAY_FEED_SCHEDULE;
-      this._pastN = Math.max(1, parseInt(this.getAttribute('past'), 10) || 4);
-      this._nextN = Math.max(1, parseInt(this.getAttribute('next'), 10) || 4);
+      this._sideN = Math.max(1, parseInt(this.getAttribute('rows'), 10) || 3);
       this._restFrom = this._hourAttr('rest-from', 18);
       this._restUntil = this._hourAttr('rest-until', 7);
       this._shell();
@@ -231,7 +264,15 @@
 
     _shell() {
       const tone = this.getAttribute('tone') === 'glass' ? ' plugin-day-feed--glass' : '';
-      const title = this.getAttribute('title') || 'Today';
+      /* `title` on any element makes the browser draw a native tooltip over
+         the panel, so the heading is its own attribute. A `title` left on
+         the host is honoured once and then removed. */
+      let title = this.getAttribute('heading');
+      if (!title && this.hasAttribute('title')) {
+        title = this.getAttribute('title');
+        this.removeAttribute('title');
+      }
+      title = title || 'Today';
       this.innerHTML =
         '<div class="plugin-day-feed' + tone + '">' +
           '<div class="plugin-day-feed__head">' +
@@ -267,23 +308,34 @@
       const seed = this._sched.seedForDate(now);
       if (this._seed !== seed) {
         this._seed = seed;
-        this._rows = this._sched.composeDay(now, this._pools);
-        this._boundary = null;
+        this._rows = this._sched.composeStream(now, this._pools);
+        this._sig = null;
         this._mode = null;
       }
 
-      let boundary = 0;
-      while (boundary < this._rows.length && this._rows[boundary].start <= minutes) boundary++;
+      /* Three buckets, split on when a job ends rather than only when it
+         starts: finished above, running now in the band, not yet started
+         below. A two-hour inspection therefore stays in the band for two
+         hours instead of dropping into the past the minute it begins. */
+      const past = [], current = [], next = [];
+      this._rows.forEach(function (r) {
+        if (r.absEnd <= minutes) past.push(r);
+        else if (r.abs <= minutes) current.push(r);
+        else next.push(r);
+      });
 
-      /* Nothing has crossed — only the clock needs repainting, so the
-         list is left alone and its animation is not restarted. */
-      if (this._mode === 'day' && this._boundary === boundary) {
+      /* Re-render only when the make-up of the band actually changes;
+         otherwise the clock alone is repainted and the step animation is
+         not restarted. */
+      const sig = past.length + '|' + next.length + '|' +
+        current.map((r) => r.abs + r.crew).join(',');
+      if (this._mode === 'day' && this._sig === sig) {
         return this._paintClock(now);
       }
-      const advanced = this._mode === 'day' && this._boundary !== null && boundary > this._boundary;
+      const advanced = this._mode === 'day' && this._sig != null;
       this._mode = 'day';
-      this._boundary = boundary;
-      this._renderDay(now, boundary);
+      this._sig = sig;
+      this._renderDay(now, past, current, next);
       if (advanced) this._playAdvance();
     }
 
@@ -294,14 +346,15 @@
       this._panel.classList.add('is-advancing');
     }
 
-    _row(entry, depth) {
+    _row(entry, depth, extra) {
       /* An all-day job shows the label instead of a start time — it has
          no meaningful hour to give. */
       const when = entry.allDay ? 'All day' : entry.time;
       const span = entry.span > 1
         ? '<span class="plugin-day-feed__span">day ' + entry.dayIndex + '/' + entry.span + '</span>'
         : '';
-      return '<div class="plugin-day-feed__row" data-depth="' + depth + '">' +
+      return '<div class="plugin-day-feed__row' + (extra ? ' ' + extra : '') + '"' +
+        (depth === null ? '' : ' data-depth="' + depth + '"') + '>' +
         '<span class="plugin-day-feed__time">' + esc(when) + '</span>' +
         '<span class="plugin-day-feed__crew">' + esc(entry.crew) + '</span>' +
         '<span class="plugin-day-feed__text">' + esc(entry.text) + '</span>' +
@@ -309,32 +362,108 @@
     }
 
     _nowMarkup(now) {
-      return '<div class="plugin-day-feed__now">' +
+      return '<div class="plugin-day-feed__clock">' +
         '<span class="plugin-day-feed__now-time" data-clock>' +
           pad(now.getHours()) + ':' + pad(now.getMinutes()) + '</span>' +
-        '<span class="plugin-day-feed__now-secs" data-secs>' + pad(now.getSeconds()) + '</span>' +
         '<span class="plugin-day-feed__now-label">now</span></div>';
     }
 
     _paintClock(now) {
       const c = this.querySelector('[data-clock]');
-      const s = this.querySelector('[data-secs]');
       if (c) c.textContent = pad(now.getHours()) + ':' + pad(now.getMinutes());
-      if (s) s.textContent = pad(now.getSeconds());
     }
 
-    _renderDay(now, boundary) {
-      /* Depth 0 is the row touching the line on either side. */
-      const past = this._rows.slice(Math.max(0, boundary - this._pastN), boundary);
-      const next = this._rows.slice(boundary, boundary + this._nextN);
+    /* "Wednesday" is only useful once it is not obvious which day is
+       meant; next to the panel's own "Today" heading it reads as noise. */
+    _dayLabel(entry) {
+      if (entry.dayDelta === 0) return 'Today';
+      if (entry.dayDelta === 1) return 'Tomorrow';
+      if (entry.dayDelta === -1) return 'Yesterday';
+      return entry.dayName;
+    }
+
+    /* Turns a slice of the stream into display items, inserting a
+       divider wherever the stream crosses into another day. `before` is
+       the entry immediately preceding the slice, so a crossing at the
+       slice edge is not dropped.
+
+       A slice that opens on some other day is labelled too — without it
+       the topmost group carries yesterday's times under no heading and
+       reads as today's list out of order. */
+    _items(slice, before) {
+      if (!slice.length) return [];
+      const items = [];
+      let prevDay = before ? before.dayDelta : slice[0].dayDelta;
+      if (slice[0].dayDelta !== 0 && prevDay === slice[0].dayDelta) {
+        items.push({ divider: true, label: this._dayLabel(slice[0]) });
+      }
+      slice.forEach((entry) => {
+        if (entry.dayDelta !== prevDay) {
+          items.push({ divider: true, label: this._dayLabel(entry) });
+          prevDay = entry.dayDelta;
+        }
+        items.push(entry);
+      });
+      return items;
+    }
+
+    /* Trimming the past side to its row budget can cut the divider off
+       the top, leaving that group's times sitting under no heading. The
+       topmost row is the faintest and smallest, so spending it on the
+       label it needs is the cheaper loss. */
+    _labelHead(items) {
+      const head = items[0];
+      if (head && !head.divider && head.dayDelta !== 0) {
+        return [{ divider: true, label: this._dayLabel(head) }].concat(items.slice(1));
+      }
+      return items;
+    }
+
+    _renderItems(items, fromNow) {
+      /* Depth 0 is the item touching the line, whichever side it is on. */
+      const n = items.length;
+      return items.map((it, i) => {
+        const depth = fromNow ? i : n - 1 - i;
+        return it.divider
+          ? '<div class="plugin-day-feed__divider" data-depth="' + depth + '">' +
+              '<span>' + esc(it.label) + '</span></div>'
+          : this._row(it, depth);
+      }).join('');
+    }
+
+    _renderDay(now, past, current, next) {
+      /* The band is the focus, so it gets the rows it needs and the two
+         wings give way. Beyond four on site at once the list is capped
+         and counted, rather than squeezing the panel. */
+      const CAP = 4;
+      const shown = current.slice(0, current.length > CAP ? CAP - 1 : CAP);
+      const hidden = current.length - shown.length;
+      /* The wings take back whatever the band is not using, so a quiet
+         moment shows more of the day either side instead of slack. */
+      const side = Math.min(this._sideN + 1,
+        shown.length >= 4 ? 2 : shown.length >= 2 ? 3 : 4);
+
+      const pastSlice = past.slice(Math.max(0, past.length - side - 1));
+      const pastItems = this._labelHead(
+        this._items(pastSlice, past[past.length - side - 2]).slice(-side));
+
+      const nextSlice = next.slice(0, side + 1);
+      const before = current[current.length - 1] || past[past.length - 1];
+      const nextItems = this._items(nextSlice, before).slice(0, side);
+
+      const currentHtml = shown.map((e) =>
+        this._row(e, null, 'plugin-day-feed__row--current')).join('') +
+        (hidden > 0
+          ? '<div class="plugin-day-feed__more">+ ' + hidden + ' more on site</div>'
+          : '');
+
       this._body.innerHTML =
-        '<div class="plugin-day-feed__past">' +
-          past.map((e, i) => this._row(e, past.length - 1 - i)).join('') +
+        '<div class="plugin-day-feed__past">' + this._renderItems(pastItems, false) + '</div>' +
+        '<div class="plugin-day-feed__now">' +
+          this._nowMarkup(now) +
+          (currentHtml ? '<div class="plugin-day-feed__current">' + currentHtml + '</div>' : '') +
         '</div>' +
-        this._nowMarkup(now) +
-        '<div class="plugin-day-feed__next">' +
-          next.map((e, i) => this._row(e, i)).join('') +
-        '</div>';
+        '<div class="plugin-day-feed__next">' + this._renderItems(nextItems, true) + '</div>';
     }
 
     /* "Tomorrow" reads wrong on a Saturday night, when the next working
@@ -348,12 +477,12 @@
     _renderRest(now, day) {
       if (this._mode === 'rest') return this._paintClock(now);
       this._mode = 'rest';
-      this._boundary = null;
+      this._sig = null;
       const rest = this._pools.rest || {};
       const template = day === 0 ? (rest.sunday || rest.evening || '') : (rest.evening || '');
       const text = template.replace('{next}', this._nextWorkingDay(day));
       this._body.innerHTML =
-        this._nowMarkup(now) +
+        '<div class="plugin-day-feed__now">' + this._nowMarkup(now) + '</div>' +
         '<div class="plugin-day-feed__rest">' +
           '<span class="plugin-day-feed__rest-text">' + esc(text) + '</span>' +
         '</div>';
