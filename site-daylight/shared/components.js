@@ -769,43 +769,38 @@ class DlRevealLines extends HTMLElement {
 }
 customElements.define('dl-reveal-lines', DlRevealLines);
 
-/* Deep links into a rendered section.
+/* Deep links into a rendered section, and lead-context link rewriting.
    ------------------------------------------------------------------
-   Every `<dl-*>` element renders its real content itself, in this
-   deferred script, well after the browser's own one-shot "scroll to
-   #fragment on load" has already run (or been skipped, since the
-   target has no layout yet at that point) — so a link like
-   `page.html#at-home` was silently landing at the top of the page.
-   This re-does that scroll once the components above have rendered,
-   which by this point in a deferred script they already have. */
-if (location.hash) {
-  const target = document.getElementById(location.hash.slice(1));
-  if (target) target.scrollIntoView({ block: 'start' });
-}
+   Both of these need every `<dl-*>` element's real content already
+   rendered (the deep link needs the target's real layout; the lead
+   context needs the real hrefs custom elements render) and the second
+   one needs <body> itself to exist for its data-topic attribute —
+   this script now loads synchronously in <head> for other reasons
+   (see the "no flash of unrendered custom elements" note above), so
+   both must wait for DOMContentLoaded instead of running inline. */
+document.addEventListener('DOMContentLoaded', () => {
+  if (location.hash) {
+    const target = document.getElementById(location.hash.slice(1));
+    if (target) target.scrollIntoView({ block: 'start' });
+  }
 
-/* Lead context — carries "what page are you on" into "what do you need".
-   ------------------------------------------------------------------
-   The solar/electrical/energy pages each set data-topic on <body>. Any
-   link this page renders toward contact.html picks that up as ?need=,
-   and any mailto: link gets a matching subject, so a visitor who has
-   already told us what they're after (by being on the solar page, say)
-   never has to answer the same question again on the contact form. */
-const SL_TOPIC = document.body.getAttribute('data-topic');
-if (SL_TOPIC) {
-  document.querySelectorAll('a[href]').forEach((a) => {
-    const href = a.getAttribute('href');
-    if (/^(?:[^/]*\/)?contact\.html(?:[#?]|$)/.test(href) && !/[?&]need=/.test(href)) {
-      const hashIndex = href.indexOf('#');
-      const path = hashIndex === -1 ? href : href.slice(0, hashIndex);
-      const hash = hashIndex === -1 ? '' : href.slice(hashIndex);
-      const sep = path.includes('?') ? '&' : '?';
-      a.setAttribute('href', path + sep + 'need=' + encodeURIComponent(SL_TOPIC) + hash);
-    } else if (href.indexOf('mailto:') === 0 && !/[?&]subject=/.test(href)) {
-      const sep = href.includes('?') ? '&' : '?';
-      a.setAttribute('href', href + sep + 'subject=' + encodeURIComponent(SL_TOPIC + ' enquiry'));
-    }
-  });
-}
+  const SL_TOPIC = document.body.getAttribute('data-topic');
+  if (SL_TOPIC) {
+    document.querySelectorAll('a[href]').forEach((a) => {
+      const href = a.getAttribute('href');
+      if (/^(?:[^/]*\/)?contact\.html(?:[#?]|$)/.test(href) && !/[?&]need=/.test(href)) {
+        const hashIndex = href.indexOf('#');
+        const path = hashIndex === -1 ? href : href.slice(0, hashIndex);
+        const hash = hashIndex === -1 ? '' : href.slice(hashIndex);
+        const sep = path.includes('?') ? '&' : '?';
+        a.setAttribute('href', path + sep + 'need=' + encodeURIComponent(SL_TOPIC) + hash);
+      } else if (href.indexOf('mailto:') === 0 && !/[?&]subject=/.test(href)) {
+        const sep = href.includes('?') ? '&' : '?';
+        a.setAttribute('href', href + sep + 'subject=' + encodeURIComponent(SL_TOPIC + ' enquiry'));
+      }
+    });
+  }
+});
 
 /* Live fleet stats — polls a small public JSON snapshot for the two
    hero <dl-stat data-live="pv"|"soc"> cards, refreshed every 15 minutes.
