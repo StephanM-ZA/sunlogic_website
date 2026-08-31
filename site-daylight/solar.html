@@ -17,14 +17,14 @@
 <meta name="twitter:description" content="Solar sized to what your property actually uses, installed and certified by Sunlogic SA's in-house team in Cape Town. Straight numbers, no oversized systems."/>
 <meta name="twitter:image" content="https://sunlogic.co.za/images/solar-hero.webp"/>
 <link rel="icon" type="image/png" href="images/fav_icon.png"/>
-<link rel="stylesheet" href="shared/sunlogic.css?v=22"/>
+<link rel="stylesheet" href="shared/sunlogic.css?v=24"/>
 <link rel="stylesheet" href="shared/plugins.css?v=6"/>
 <script src="shared/icons.js?v=2" defer></script>
-<script src="shared/components.js?v=29" defer></script>
+<script src="shared/components.js?v=31" defer></script>
 <script src="shared/sunlogic-check.js?v=4" defer></script>
-<script src="../plugins/calculator/assumptions.js?v=2"></script>
-<script src="../plugins/calculator/calculator-math.js?v=2"></script>
-<script src="../plugins/calculator/calculator.js?v=4"></script>
+<script src="../plugins/calculator/assumptions.js?v=5"></script>
+<script src="../plugins/calculator/calculator-math.js?v=3"></script>
+<script src="../plugins/calculator/calculator.js?v=5"></script>
 <link rel="preload" as="image" href="images/solar-hero.webp" fetchpriority="high"/>
 </head>
 <body data-topic="Solar">
@@ -116,22 +116,25 @@
 
 <!-- Cost — the calculator owns pricing -->
 <dl-section bg="alt" id="home-cost">
-  <dl-grid cols="split">
-    <dl-reveal>
-      <dl-stack eyebrow="What it costs" heading="Three Things Move |the Price"
-        body="How much electricity you use, how much of it you want covered when the sun is down, and how straightforward your roof is. Two houses on the same street can need quite different systems.">
-        <dl-prose>
-          <p>Rather than guess, work it out. Our calculator gives you a realistic range in a couple of minutes, and a site visit turns that into an actual figure.</p>
-        </dl-prose>
-      </dl-stack>
-    </dl-reveal>
-    <dl-reveal>
+  <dl-reveal>
+    <dl-stack eyebrow="What it costs" heading="Three Things Move |the Price"
+      body="Rather than guess, work it out below — our calculator gives you a realistic range in a couple of minutes, and a site visit turns that into an actual figure."></dl-stack>
+  </dl-reveal>
+  <dl-reveal>
+    <dl-grid cols="3">
+      <dl-card icon="chart-bar" heading="How much you use" body="Your average monthly bill sets the baseline for how much system you actually need."></dl-card>
+      <dl-card icon="sun" heading="How much you want covered after dark" body="A battery raises the cost, but it's the difference between solar that helps and solar that keeps the lights on."></dl-card>
+      <dl-card icon="wrench-screwdriver" heading="How straightforward your roof is" body="Orientation, shading and your board's condition move the real number — a site visit turns the estimate below into an actual figure."></dl-card>
+    </dl-grid>
+  </dl-reveal>
+  <dl-reveal>
+    <div style="max-width:600px;margin-inline:auto">
       <dl-card id="calculator-home" tone="white" heading="What Would Solar Cost at Your House?"
         body="Answer a few questions about your home and your bill.">
         <plugin-calculator mode="residential" webhook="PENDING_BACKEND"></plugin-calculator>
       </dl-card>
-    </dl-reveal>
-  </dl-grid>
+    </div>
+  </dl-reveal>
 </dl-section>
 
 <dl-section bg="page">

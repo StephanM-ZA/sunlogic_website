@@ -866,23 +866,30 @@ function slPollFleetLive() {
 slPollFleetLive();
 setInterval(slPollFleetLive, SL_FLEET_POLL_MS);
 
-/* --- Dock scroll-away ------------------------------------------
+/* --- Dock scroll-away (mobile only) -----------------------------
    The dock is `position: fixed`, so on a tall page it sits on top of
    whatever happens to be at the bottom of the viewport wherever a
    scroll gesture settles — confirmed by screenshot cutting into a
    hero heading, an outline button and a contact row at different
-   scroll positions on mobile. Rather than remove the persistent CTA,
-   hide it while the visitor is actively scrolling down (reading
-   further) and bring it back the moment they scroll up or land near
-   the top, where it can't be covering anything they just scrolled
-   past to get to. */
+   scroll positions on mobile, where content is narrower and headings
+   large relative to the viewport. Desktop keeps the dock permanently
+   visible instead (explicit request) — the same overlap is far less
+   disruptive on a wide viewport, and losing constant access to the
+   CTA there wasn't wanted. 768px matches the site's one mobile/desktop
+   breakpoint (nav, grids) elsewhere in this file and in sunlogic.css. */
 (function () {
+  const MOBILE_BREAKPOINT = 768;
   let lastY = window.scrollY;
   let ticking = false;
   function onScroll() {
     const dock = document.querySelector('.sl-dock');
     ticking = false;
     if (!dock) return;
+    if (window.innerWidth >= MOBILE_BREAKPOINT) {
+      dock.classList.remove('sl-dock--hidden');
+      lastY = window.scrollY;
+      return;
+    }
     const y = window.scrollY;
     if (y < 80) dock.classList.remove('sl-dock--hidden');
     else if (y > lastY + 4) dock.classList.add('sl-dock--hidden');
@@ -892,4 +899,5 @@ setInterval(slPollFleetLive, SL_FLEET_POLL_MS);
   window.addEventListener('scroll', () => {
     if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
   }, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
 })();

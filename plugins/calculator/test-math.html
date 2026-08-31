@@ -15,6 +15,10 @@
 <body>
 <div class="wrap">
   <h1>plugin-calculator math — test harness</h1>
+  <p>Payback/pivot should now genuinely vary with bill size (fixed install
+    cost + fixed charge portion), not sit at one constant ratio. See the
+    "Residential payback by bill size" and "SME pivot by bill size" tables
+    below for that at a glance.</p>
   <div id="output"></div>
 </div>
 <script src="assumptions.js"></script>
@@ -26,7 +30,7 @@
       .map(([key, value]) => `<tr><td>${key}</td><td>${typeof value === 'number' ? value.toFixed(2) : value}</td></tr>`)
       .join('');
     const yearRows = result.cumulativeByYear
-      ? `<tr><td>cumulativeByYear[0] (year 1)</td><td>${result.cumulativeByYear[0].toFixed(2)}</td></tr>
+      ? `<tr><td>cumulativeByYear[11] (year 12, inverter replacement dip)</td><td>${result.cumulativeByYear[11].toFixed(2)}</td></tr>
          <tr><td>cumulativeByYear[19] (year 20)</td><td>${result.cumulativeByYear[19].toFixed(2)}</td></tr>`
       : '';
     document.getElementById('output').insertAdjacentHTML('beforeend', `
@@ -35,9 +39,42 @@
     `);
   }
 
-  renderCase('Residential @ R2,500/month', window.PluginCalculatorMath.calculateResidential(2500));
-  renderCase('SME @ R15,000/month, 63 hrs/week', window.PluginCalculatorMath.calculateSme(15000, 63));
-  renderCase('SME @ R15,000/month, 10 hrs/week', window.PluginCalculatorMath.calculateSme(15000, 10));
+  function renderScalingTable(title, rows) {
+    const body = rows.map(([label, value]) => `<tr><td>${label}</td><td>${value}</td></tr>`).join('');
+    document.getElementById('output').insertAdjacentHTML('beforeend', `
+      <h2>${title}</h2>
+      <table><tr><th>Scenario</th><th>Result</th></tr>${body}</table>
+    `);
+  }
+
+  const M = window.PluginCalculatorMath;
+
+  renderScalingTable('Residential payback by bill size (should improve as bill grows, not stay flat)',
+    [300, 1000, 2500, 8000, 15000].map((bill) => {
+      const r = M.calculateResidential(bill, true);
+      return [`R${bill}/month, with battery`, `${r.paybackYears.toFixed(2)} years (cost ${Math.round(r.systemCost)})`];
+    })
+  );
+
+  renderScalingTable('SME pivot by bill size @ 63 hrs/week, panels only (should improve as bill grows, not stay flat)',
+    [2000, 15000, 50000, 100000].map((bill) => {
+      const r = M.calculateSme(bill, 63, false);
+      return [`R${bill}/month`, `R${r.pivot.toFixed(0)}/month`];
+    })
+  );
+
+  renderScalingTable('Residential: panels-only vs. with battery @ R2,500/month',
+    [true, false].map((withBattery) => {
+      const r = M.calculateResidential(2500, withBattery);
+      return [withBattery ? 'With battery' : 'Panels only', `${r.paybackYears.toFixed(2)}yr payback, ${r.treesEquivalent.toFixed(0)} trees-equivalent/yr`];
+    })
+  );
+
+  renderCase('Residential @ R2,500/month, with battery', M.calculateResidential(2500, true));
+  renderCase('Residential @ R2,500/month, panels only', M.calculateResidential(2500, false));
+  renderCase('SME @ R15,000/month, 63 hrs/week, panels only', M.calculateSme(15000, 63, false));
+  renderCase('SME @ R15,000/month, 10 hrs/week, panels only', M.calculateSme(15000, 10, false));
+  renderCase('SME @ R15,000/month, 63 hrs/week, with battery', M.calculateSme(15000, 63, true));
 </script>
 </body>
 </html>

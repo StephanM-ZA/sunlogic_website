@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Sunlogic — corporate identity and design system</title>
 <link rel="icon" type="image/png" href="images/fav_icon.png"/>
-<link rel="stylesheet" href="shared/sunlogic.css?v=22"/>
+<link rel="stylesheet" href="shared/sunlogic.css?v=24"/>
 <script src="shared/icons.js?v=2" defer></script>
-<script src="shared/components.js?v=29" defer></script>
+<script src="shared/components.js?v=31" defer></script>
 <style>
   body { padding: 0; }
   .ci { max-width: 1152px; margin: 0 auto; padding: 0 var(--gutter); }
@@ -182,7 +182,10 @@
   <div class="ci-grid" style="margin-bottom:40px">
     <div class="ci-swatch"><div class="ci-swatch__chip" style="background:#F66F00"></div>
       <div class="ci-swatch__meta"><span class="ci-swatch__name">Orange</span><span class="ci-swatch__hex">#F66F00</span>
-      <span class="ci-swatch__use">The single accent</span></div></div>
+      <span class="ci-swatch__use">Fills, icons, borders — and hero headings over a dark photo scrim, where it already passes contrast</span></div></div>
+    <div class="ci-swatch"><div class="ci-swatch__chip" style="background:#B85300"></div>
+      <div class="ci-swatch__meta"><span class="ci-swatch__name">Orange (text)</span><span class="ci-swatch__hex">#B85300</span>
+      <span class="ci-swatch__use">Same hue, darkened for orange TEXT on beige or white — 4.6:1, passes AA. The vibrant orange above fails at 2.7:1 as text on beige.</span></div></div>
     <div class="ci-swatch"><div class="ci-swatch__chip" style="background:#0D2028"></div>
       <div class="ci-swatch__meta"><span class="ci-swatch__name">Navy</span><span class="ci-swatch__hex">#0D2028</span>
       <span class="ci-swatch__use">Dark sections · all text</span></div></div>
@@ -201,8 +204,8 @@
     <div class="ci-swatch"><div class="ci-swatch__chip" style="background:#DACAB6"></div>
       <div class="ci-swatch__meta"><span class="ci-swatch__name">Dark beige</span><span class="ci-swatch__hex">#DACAB6</span>
       <span class="ci-swatch__use">Borders on warm</span></div></div>
-    <div class="ci-swatch"><div class="ci-swatch__chip" style="background:#676057"></div>
-      <div class="ci-swatch__meta"><span class="ci-swatch__name">Grey strong</span><span class="ci-swatch__hex">#676057</span>
+    <div class="ci-swatch"><div class="ci-swatch__chip" style="background:#5A544B"></div>
+      <div class="ci-swatch__meta"><span class="ci-swatch__name">Grey strong</span><span class="ci-swatch__hex">#5A544B</span>
       <span class="ci-swatch__use">Secondary text</span></div></div>
     <div class="ci-swatch"><div class="ci-swatch__chip" style="background:#A09B93"></div>
       <div class="ci-swatch__meta"><span class="ci-swatch__name">Grey</span><span class="ci-swatch__hex">#A09B93</span>
@@ -240,11 +243,13 @@
 
   <div class="ci-rules">
     <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do</span>
-      <p>Use orange for the one thing you most want clicked, and for the last phrase of a headline.</p></div>
+      <p>Use orange for the one thing you most want clicked, and for the last phrase of a headline — <code>#F66F00</code> on a dark photo, <code>#B85300</code> anywhere the orange itself is the text on beige or white.</p></div>
+    <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Don't</span>
+      <p>Set <code>#F66F00</code> as text on beige or white. It's a fill/icon/border colour there — 2.7:1, fails AA. Use <code>#B85300</code> for that case instead.</p></div>
     <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Don't</span>
       <p>Use orange as an error or warning colour. Errors are <code>#BA1A1A</code>.</p></div>
     <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do</span>
-      <p>Use <code>#676057</code> for secondary text on warm surfaces. It passes AA at 5.8:1.</p></div>
+      <p>Use <code>#5A544B</code> for secondary text on warm surfaces. It passes AA at 7.0:1.</p></div>
     <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Don't</span>
       <p>Use <code>#A09B93</code> for any text. At 2.4:1 on beige it fails. It is for rules and disabled states.</p></div>
   </div>

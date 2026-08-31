@@ -66,6 +66,24 @@
         font-size: 0.875rem;
       }
 
+      .plugin-calc-toggle-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .plugin-calc-toggle-row input {
+        accent-color: var(--plugin-calc-accent);
+        width: 1.1rem;
+        height: 1.1rem;
+      }
+
+      .plugin-calc-toggle-row label {
+        font-weight: 700;
+        font-size: 0.875rem;
+        margin-bottom: 0;
+      }
+
       .plugin-calc-headline {
         background: color-mix(in srgb, var(--plugin-calc-accent) 8%, var(--plugin-calc-bg));
         border-radius: var(--plugin-calc-radius);
@@ -91,6 +109,12 @@
         justify-content: space-between;
         gap: 1rem;
         flex-wrap: wrap;
+      }
+
+      .plugin-calc-headline-note {
+        font-size: 0.8rem;
+        color: var(--plugin-calc-text-muted);
+        margin: 0.75rem 0 0;
       }
 
       .plugin-calc-pivot-fallback {
@@ -153,6 +177,12 @@
         margin-bottom: 1rem;
       }
 
+      .plugin-calc-co2 {
+        font-size: 0.875rem;
+        color: var(--plugin-calc-text-muted);
+        margin: 0 0 1rem;
+      }
+
       .plugin-calc-chart svg {
         width: 100%;
         height: auto;
@@ -165,6 +195,12 @@
     const rounded = Math.round(amount);
     const withSeparators = rounded.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     return 'R' + withSeparators;
+  }
+
+  function formatCo2(annualCo2Kg, treesEquivalent) {
+    const tons = annualCo2Kg / 1000;
+    const tonsText = tons >= 1 ? tons.toFixed(1) + ' tons' : Math.round(annualCo2Kg) + ' kg';
+    return `~${tonsText} of CO₂ avoided per year — roughly the same as ${Math.round(treesEquivalent)} trees planted.`;
   }
 
   /* `payback` draws a break-even line at the system cost, and shades the
@@ -182,7 +218,7 @@
     const toY = (value) => height - (value / maxValue) * plotHeight;
 
     const bars = cumulativeByYear.map((value, index) => {
-      const barHeight = (value / maxValue) * plotHeight;
+      const barHeight = Math.max((value / maxValue) * plotHeight, 0);
       const x = index * (barWidth + barGap);
       const y = height - barHeight;
       const paidOff = payback != null && value >= payback;
@@ -196,10 +232,19 @@
       breakEven =
         `<line x1="0" y1="${y}" x2="${width}" y2="${y}" stroke="var(--plugin-calc-text-color, currentColor)" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"/>` +
         `<text x="${width - 4}" y="${(toY(payback) - 5).toFixed(1)}" text-anchor="end" font-size="10" fill="var(--plugin-calc-text-color, currentColor)" opacity="0.7">Estimated system cost</text>`;
-      label += `. The dashed line marks the estimated system cost — bars before the crossing are the payback period, shaded lighter.`;
+      label += `. The dashed line marks the estimated system cost — bars before the crossing are the payback period, shaded lighter. The dip midway is a real inverter-replacement cost, not a data error.`;
     }
 
     return `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${label}">${bars}${breakEven}</svg>`;
+  }
+
+  function batteryToggleHtml(instanceId, checkedByDefault) {
+    return `
+      <div class="plugin-calc-input-group plugin-calc-toggle-row">
+        <input type="checkbox" id="${instanceId}-battery" data-field="battery" ${checkedByDefault ? 'checked' : ''}/>
+        <label for="${instanceId}-battery">Include battery storage</label>
+      </div>
+    `;
   }
 
   function residentialInputsHtml(instanceId) {
@@ -211,6 +256,7 @@
           <input type="number" id="${instanceId}-bill" class="plugin-calc-number" data-field="bill" min="300" max="15000" step="50" value="2500"/>
         </div>
       </div>
+      ${batteryToggleHtml(instanceId, true)}
     `;
   }
 
@@ -230,6 +276,7 @@
           <input type="number" id="${instanceId}-hours" class="plugin-calc-number" data-field="hours" min="0" max="168" step="1" value="63"/>
         </div>
       </div>
+      ${batteryToggleHtml(instanceId, false)}
     `;
   }
 
@@ -249,7 +296,6 @@
       this._mode = this.getAttribute('mode') === 'sme' ? 'sme' : 'residential';
 
       this._instanceId = 'plugin-calc-' + (instanceCounter++);
-      this._unlocked = false;
 
       const inputsHtml = this._mode === 'sme' ? smeInputsHtml(this._instanceId) : residentialInputsHtml(this._instanceId);
 
@@ -257,29 +303,25 @@
         <div class="plugin-calc-card">
           <div class="plugin-calc-inputs">${inputsHtml}</div>
           <div class="plugin-calc-headline" aria-live="polite"></div>
-          <div class="plugin-calc-gate-row">
-            <button type="button" class="plugin-calc-submit" data-share><span>Copy link to this estimate</span></button>
-            <span class="plugin-calc-share-status" aria-live="polite" data-share-status></span>
-          </div>
+          <div class="plugin-calc-detail"></div>
           <div class="plugin-calc-disclaimer">${DISCLAIMER_TEXT}</div>
           <form class="plugin-calc-gate" novalidate>
-            <label for="${this._instanceId}-email">Unlock your full savings report</label>
+            <label for="${this._instanceId}-email">Want this estimate emailed to you?</label>
             <div class="plugin-calc-gate-row">
               <input type="email" id="${this._instanceId}-email" class="plugin-calc-email" placeholder="you@example.com" required/>
-              <button type="submit" class="plugin-calc-submit"><span>Unlock</span></button>
+              <button type="submit" class="plugin-calc-submit"><span>Email me this</span></button>
             </div>
+            <span class="plugin-calc-share-status" aria-live="polite" data-email-status></span>
             <div class="plugin-calc-hp" aria-hidden="true">
               <label for="${this._instanceId}-website">Website</label>
               <input type="text" id="${this._instanceId}-website" class="plugin-calc-honeypot" tabindex="-1" autocomplete="off"/>
             </div>
           </form>
-          <div class="plugin-calc-detail" hidden></div>
         </div>
       `;
 
       this._wireInputs();
       this._applyUrlParams();
-      this._wireShare();
       this._wireGate();
       this._recalculate();
     }
@@ -287,6 +329,7 @@
     _wireInputs() {
       const ranges = this.querySelectorAll('.plugin-calc-range');
       const numbers = this.querySelectorAll('.plugin-calc-number');
+      const battery = this.querySelector('[data-field="battery"]');
 
       ranges.forEach((range) => {
         range.addEventListener('input', () => {
@@ -320,14 +363,19 @@
           this._recalculate();
         });
       });
+
+      if (battery) {
+        battery.addEventListener('change', () => this._recalculate());
+      }
     }
 
     /* A deep link into this calculator's exact scenario: `res-bill` for the
-       residential mode, `sme-bill` / `sme-hours` for the SME mode — prefixed
-       so two instances on one page (as on solar.html) don't collide. Values
-       run through the same clamp as manual input, via _getFieldValue at
-       calculation time, so an out-of-range query param can't produce a
-       number the headline disagrees with. */
+       residential mode, `sme-bill` / `sme-hours` for the SME mode, plus
+       `-battery` for the storage toggle — prefixed so two instances on one
+       page (as on solar.html) don't collide. Values run through the same
+       clamp as manual input, via _getFieldValue at calculation time, so an
+       out-of-range query param can't produce a number the headline
+       disagrees with. */
     _applyUrlParams() {
       const params = new URLSearchParams(location.search);
       const apply = (field, param) => {
@@ -338,64 +386,24 @@
         if (range) range.value = value;
         if (number) number.value = value;
       };
-      if (this._mode === 'sme') {
-        apply('bill', 'sme-bill');
-        apply('hours', 'sme-hours');
-      } else {
-        apply('bill', 'res-bill');
+      const prefix = this._mode === 'sme' ? 'sme' : 'res';
+      apply('bill', prefix + '-bill');
+      if (this._mode === 'sme') apply('hours', 'sme-hours');
+      const batteryParam = prefix + '-battery';
+      if (params.has(batteryParam)) {
+        const battery = this.querySelector('[data-field="battery"]');
+        if (battery) battery.checked = params.get(batteryParam) === '1';
       }
     }
 
-    /* The nearest ancestor id, if any — used as the link's fragment so it
-       lands back on this instance rather than the top of the page. Reads
-       the DOM rather than assuming a host page's ids, so the plugin stays
-       portable to a page that anchors this calculator differently, or not
-       at all. */
-    _nearestAnchorId() {
-      let el = this;
-      while (el) {
-        if (el.id) return el.id;
-        el = el.parentElement;
-      }
-      return null;
-    }
-
-    _shareUrl() {
-      const url = new URL(location.href);
-      if (this._mode === 'sme') {
-        url.searchParams.set('sme-bill', this._getFieldValue('bill', 15000));
-        url.searchParams.set('sme-hours', this._getFieldValue('hours', 63));
-      } else {
-        url.searchParams.set('res-bill', this._getFieldValue('bill', 2500));
-      }
-      const anchor = this._nearestAnchorId();
-      url.hash = anchor || '';
-      return url.toString();
-    }
-
-    _wireShare() {
-      const button = this.querySelector('[data-share]');
-      const status = this.querySelector('[data-share-status]');
-      if (!button) return;
-      button.addEventListener('click', async () => {
-        const link = this._shareUrl();
-        try {
-          await navigator.clipboard.writeText(link);
-          status.textContent = 'Link copied — paste it anywhere.';
-        } catch (err) {
-          // Clipboard API needs a secure context and permission that are
-          // not always available (older browsers, a plain-HTTP preview).
-          // A prompt still lets the visitor copy the link by hand.
-          window.prompt('Copy this link:', link);
-          status.textContent = '';
-        }
-        clearTimeout(this._shareStatusTimer);
-        this._shareStatusTimer = setTimeout(() => { status.textContent = ''; }, 4000);
-      });
+    _getBatteryToggle() {
+      const battery = this.querySelector('[data-field="battery"]');
+      return battery ? battery.checked : false;
     }
 
     _wireGate() {
       const form = this.querySelector('.plugin-calc-gate');
+      const status = this.querySelector('[data-email-status]');
       form.addEventListener('submit', (event) => {
         event.preventDefault();
 
@@ -413,8 +421,8 @@
 
         const inputs =
           this._mode === 'sme'
-            ? { bill: this._getFieldValue('bill', 15000), operatingHoursPerWeek: this._getFieldValue('hours', 63) }
-            : { bill: this._getFieldValue('bill', 2500) };
+            ? { bill: this._getFieldValue('bill', 15000), operatingHoursPerWeek: this._getFieldValue('hours', 63), includeBattery: this._getBatteryToggle() }
+            : { bill: this._getFieldValue('bill', 2500), includeBattery: this._getBatteryToggle() };
 
         const payload = {
           mode: this._mode,
@@ -437,23 +445,32 @@
           console.warn('[plugin-calculator] No webhook configured (or still PENDING_BACKEND) — lead not sent:', payload);
         }
 
-        form.hidden = true;
-        this._unlocked = true;
-        this._revealDetail();
+        emailInput.value = '';
+        if (status) {
+          status.textContent = "Sent — we'll email that report shortly.";
+          clearTimeout(this._emailStatusTimer);
+          this._emailStatusTimer = setTimeout(() => { status.textContent = ''; }, 5000);
+        }
       });
     }
 
-    _revealDetail() {
+    /* Always visible — the full breakdown used to sit behind an email
+       gate, which meant a shared link (and even the calculator's own
+       user) couldn't see system size, cost or the chart without handing
+       over an email address first. The gate is now just an optional
+       "email me this" convenience, not a lock. */
+    _renderDetail() {
       const detail = this.querySelector('.plugin-calc-detail');
       const r = this._lastResult;
+      const co2Line = `<p class="plugin-calc-co2">${formatCo2(r.annualCo2Kg, r.treesEquivalent)}</p>`;
+      const batteryLine = r.includeBattery ? `${r.batteryKwh.toFixed(1)} kWh` : '0 kWh (not included)';
 
       if (this._mode === 'sme') {
         detail.innerHTML = `
-          <p class="plugin-calc-disclaimer">${DISCLAIMER_TEXT}</p>
           <div class="plugin-calc-detail-grid">
             <div><div class="plugin-calc-headline-label">Recommended panels</div><div>${r.panelKw.toFixed(1)} kW</div></div>
             <div><div class="plugin-calc-headline-label">Recommended inverter</div><div>${r.inverterKw} kW</div></div>
-            <div><div class="plugin-calc-headline-label">Recommended battery</div><div>${r.batteryKwh.toFixed(1)} kWh</div></div>
+            <div><div class="plugin-calc-headline-label">Battery storage</div><div>${batteryLine}</div></div>
             <div><div class="plugin-calc-headline-label">Estimated system cost</div><div>${formatRand(r.systemCost)}</div></div>
           </div>
           <div class="plugin-calc-detail-grid">
@@ -462,21 +479,21 @@
             <div><div class="plugin-calc-headline-label">Estimated monthly cash flow</div><div>${formatRand(r.pivot)}</div></div>
             <div><div class="plugin-calc-headline-label">Illustrative finance term</div><div>${window.PLUGIN_CALCULATOR_ASSUMPTIONS.FINANCE_TERM_MONTHS} months @ ${(window.PLUGIN_CALCULATOR_ASSUMPTIONS.FINANCE_ANNUAL_RATE * 100).toFixed(0)}%</div></div>
           </div>
+          ${co2Line}
         `;
       } else {
         detail.innerHTML = `
-          <p class="plugin-calc-disclaimer">${DISCLAIMER_TEXT}</p>
           <div class="plugin-calc-detail-grid">
             <div><div class="plugin-calc-headline-label">Recommended panels</div><div>${r.panelKw.toFixed(1)} kW</div></div>
             <div><div class="plugin-calc-headline-label">Recommended inverter</div><div>${r.inverterKw} kW</div></div>
-            <div><div class="plugin-calc-headline-label">Recommended battery</div><div>${r.batteryKwh.toFixed(1)} kWh</div></div>
+            <div><div class="plugin-calc-headline-label">Battery storage</div><div>${batteryLine}</div></div>
             <div><div class="plugin-calc-headline-label">Estimated system cost</div><div>${formatRand(r.systemCost)}</div></div>
             <div><div class="plugin-calc-headline-label">First-year savings</div><div>${formatRand(r.firstYearSavings)}</div></div>
           </div>
+          ${co2Line}
           <div class="plugin-calc-chart">${buildChartSvg(r.cumulativeByYear, r.systemCost)}</div>
         `;
       }
-      detail.hidden = false;
     }
 
     _getFieldValue(field, fallback) {
@@ -494,11 +511,13 @@
     _recalculate() {
       const math = window.PluginCalculatorMath;
       const headline = this.querySelector('.plugin-calc-headline');
+      const includeBattery = this._getBatteryToggle();
+      const batteryNote = includeBattery ? 'With battery storage' : 'Panels only, grid-tied — no backup during an outage';
 
       if (this._mode === 'sme') {
         const bill = this._getFieldValue('bill', 15000);
         const hours = this._getFieldValue('hours', 63);
-        const result = math.calculateSme(bill, hours);
+        const result = math.calculateSme(bill, hours, includeBattery);
         this._lastResult = result;
 
         if (result.pivot >= result.monthlyInstallment * 0.1) {
@@ -514,15 +533,17 @@
               </div>
             </div>
             <p class="plugin-calc-pivot-fallback">That's an estimated ${formatRand(result.pivot)}/month back in your pocket, from day one.</p>
+            <p class="plugin-calc-headline-note">${batteryNote}</p>
           `;
         } else {
           headline.innerHTML = `
             <p class="plugin-calc-pivot-fallback">At this size, financing may run close to or above your savings — this is where site-specific numbers matter. Let's talk it through.</p>
+            <p class="plugin-calc-headline-note">${batteryNote}</p>
           `;
         }
       } else {
         const bill = this._getFieldValue('bill', 2500);
-        const result = math.calculateResidential(bill);
+        const result = math.calculateResidential(bill, includeBattery);
         this._lastResult = result;
 
         headline.innerHTML = `
@@ -536,12 +557,11 @@
               <div class="plugin-calc-headline-figure">${result.paybackYearsLow.toFixed(0)}–${result.paybackYearsHigh.toFixed(0)} years</div>
             </div>
           </div>
+          <p class="plugin-calc-headline-note">${batteryNote}</p>
         `;
       }
 
-      if (this._unlocked) {
-        this._revealDetail();
-      }
+      this._renderDetail();
     }
   }
 
