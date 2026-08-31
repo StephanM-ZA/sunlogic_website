@@ -39,6 +39,34 @@ async function insertLead(db, type, payload) {
   return result.meta.last_row_id;
 }
 
+async function deliverToN8n(env, leadId, type, payload) {
+  try {
+    const res = await fetch(env.N8N_WEBHOOK_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Relay-Secret': env.RELAY_SECRET,
+      },
+      body: JSON.stringify({ type, ...payload }),
+    });
+    if (res.ok) {
+      await env.DB.prepare(
+        "UPDATE leads SET status = 'sent', last_attempt_at = datetime('now') WHERE id = ?"
+      ).bind(leadId).run();
+      return true;
+    }
+    await env.DB.prepare(
+      "UPDATE leads SET attempts = attempts + 1, last_error = ?, last_attempt_at = datetime('now') WHERE id = ?"
+    ).bind('n8n responded ' + res.status, leadId).run();
+    return false;
+  } catch (err) {
+    await env.DB.prepare(
+      "UPDATE leads SET attempts = attempts + 1, last_error = ?, last_attempt_at = datetime('now') WHERE id = ?"
+    ).bind(String(err), leadId).run();
+    return false;
+  }
+}
+
 async function handleLeadRoute(request, env, ctx, type) {
   const origin = request.headers.get('Origin') || '';
   if (request.method === 'OPTIONS') {
@@ -60,7 +88,9 @@ async function handleLeadRoute(request, env, ctx, type) {
     return jsonResponse({ ok: false, error: 'missing required fields' }, 400, origin);
   }
 
-  await insertLead(env.DB, type, body);
+  const leadId = await insertLead(env.DB, type, body);
+
+  ctx.waitUntil(deliverToN8n(env, leadId, type, body));
 
   return jsonResponse({ ok: true }, 200, origin);
 }
