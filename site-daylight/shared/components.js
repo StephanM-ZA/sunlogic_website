@@ -672,13 +672,13 @@ class DlNavBar extends SLElement {
          white wordmark would vanish — sl_logo.svg is the same lockup with
          the wordmark set in navy instead, for exactly this ground. Dark
          grounds (the drawer, the CTA block, the footer) use the white one. */
-      '<a href="index.html" class="sl-wordmark-link"><img class="sl-wordmark-logo" src="images/sl_logo.svg" alt="Sunlogic" height="56"/></a>' +
+      '<a href="index.html" class="sl-wordmark-link"><img class="sl-wordmark-logo" src="images/sl_logo.svg" alt="Sunlogic" width="186" height="56"/></a>' +
       '<nav class="sl-nav__links" data-has-active="' + hasActive + '">' + navLinks +
       '<dl-button variant="primary" size="sm" href="contact.html">Get a quote</dl-button></nav>' +
       '<button class="sl-icon-btn sl-nav__toggle" type="button" aria-label="Open menu" aria-expanded="false" data-sl-toggle>' +
       SL_ICON('bars-3', 24) + '</button></header>' +
       '<div class="sl-drawer" hidden data-sl-drawer>' +
-      '<div class="sl-drawer__top"><img class="sl-wordmark-logo" src="images/sl_logo_white.svg" alt="Sunlogic" height="28"/>' +
+      '<div class="sl-drawer__top"><img class="sl-wordmark-logo" src="images/sl_logo_white.svg" alt="Sunlogic" width="93" height="28"/>' +
       '<button class="sl-icon-btn" type="button" aria-label="Close menu" data-sl-close>' + SL_ICON('x-mark', 24) + '</button></div>' +
       drawerLinks +
       '<div class="sl-drawer__cta"><dl-button variant="emphasis" full href="contact.html">Get a quote</dl-button></div></div>';
@@ -702,7 +702,7 @@ class DlFooter extends SLElement {
       '<a class="sl-footer__link" href="' + l[1] + '">' + l[0] + '</a>').join('') + '</div>';
     this.innerHTML =
       '<footer class="sl-footer"><div class="sl-footer__groups">' +
-      '<div class="sl-footer__brand"><img class="sl-wordmark-logo" src="images/sl_logo_verticle.svg" alt="Sunlogic" height="64"/>' +
+      '<div class="sl-footer__brand"><img class="sl-wordmark-logo" src="images/sl_logo_verticle.svg" alt="Sunlogic" width="82" height="64"/>' +
       '<p class="sl-footer__strapline">Solar and electrical, Western Cape</p>' +
       '<p class="sl-footer__strapline">Sunlogic SA (Pty) Ltd · Reg. 2022/651654/07</p></div>' +
       col([['Solar', 'solar.html'], ['Electrical', 'electrical.html'], ['Energy', 'energy-management.html'], ['Worth knowing', 'blog.html']]) +

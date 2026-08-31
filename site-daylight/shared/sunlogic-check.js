@@ -16,10 +16,10 @@
   if (/^(www\.)?sunlogic\.co\.za$/.test(location.hostname)) return;
 
   const PALETTE = new Set([
-    'rgb(246, 111, 0)', 'rgb(13, 32, 40)', 'rgb(8, 22, 25)',
+    'rgb(246, 111, 0)', 'rgb(184, 83, 0)', 'rgb(13, 32, 40)', 'rgb(8, 22, 25)',
     'rgb(255, 247, 233)', 'rgb(247, 238, 217)', 'rgb(240, 229, 207)',
     'rgb(218, 202, 182)', 'rgb(255, 255, 255)', 'rgb(160, 155, 147)',
-    'rgb(103, 96, 87)', 'rgb(186, 26, 26)', 'rgba(0, 0, 0, 0)',
+    'rgb(90, 84, 75)', 'rgb(186, 26, 26)', 'rgba(0, 0, 0, 0)',
   ]);
   const FACES = ['Hanken Grotesk', 'JetBrains Mono'];
   const fails = [];
@@ -130,7 +130,7 @@
     badge.style.cssText = 'position:fixed;left:12px;bottom:12px;z-index:20;padding:6px 10px;' +
       'border-radius:4px;font:600 11px/1 ui-monospace,monospace;letter-spacing:.05em;' +
       'text-transform:uppercase;cursor:pointer;' +
-      'background:' + (fails.length ? '#BA1A1A' : warns.length ? '#F66F00' : '#0D2028') + ';color:#fff';
+      'background:' + (fails.length ? '#BA1A1A' : warns.length ? '#F66F00' : '#0D2028') + ';color:' + (warns.length && !fails.length ? '#0D2028' : '#fff');
     badge.dataset.slCheckBadge = '1';
     badge.title = 'Sunlogic check — open the console for detail';
     badge.onclick = () => badge.remove();

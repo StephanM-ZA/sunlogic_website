@@ -25,6 +25,11 @@
 /* ---- Tokens ------------------------------------------------ */
 :root {
   --color-orange: #F66F00;
+  /* Same hue, darkened until it passes 4.5:1 on both beige and white — for
+     orange TEXT on a light surface. The vibrant --color-orange stays
+     untouched for backgrounds/borders/icons, where it already passes or
+     isn't a text-contrast case at all. */
+  --color-orange-text: #B85300;
   --color-navy: #0D2028;
   --color-navy-deep: #081619;
   --color-beige: #FFF7E9;
@@ -33,7 +38,7 @@
   --color-dark-beige: #DACAB6;
   --color-white: #FFFFFF;
   --color-grey: #A09B93;
-  --color-grey-strong: #676057;
+  --color-grey-strong: #5A544B;
   --color-error: #BA1A1A;
   --color-error-container: #FFDAD6;
 
@@ -145,7 +150,7 @@ body {
   -webkit-font-smoothing: antialiased;
   text-wrap: pretty;
 }
-a { color: var(--color-orange); text-decoration: none; transition: opacity var(--dur-hover) ease-out; }
+a { color: var(--color-orange-text); text-decoration: none; transition: opacity var(--dur-hover) ease-out; }
 /* Off-screen until keyboard-focused, then jumps into view top-left —
    the first tab stop on every page, letting a keyboard/screen-reader
    user skip the nav and land straight in <main>. */
@@ -171,8 +176,8 @@ input, textarea, select, button { font: inherit; color: var(--text-primary); }
 /* The signature device: a heading's LAST phrase in orange.
    <h1 class="sl-hero-heading">Solar sized to <em>what you actually use</em></h1>
    Once per heading. Never mid-sentence. */
-.sl-hero-heading em,
-.sl-section-heading em { font-style: normal; color: var(--color-orange); }
+.sl-hero-heading em { font-style: normal; color: var(--color-orange); }
+.sl-section-heading em { font-style: normal; color: var(--color-orange-text); }
 
 .sl-hero-heading {
   margin: 0;
@@ -338,7 +343,7 @@ input, textarea, select, button { font: inherit; color: var(--text-primary); }
 .sl-btn--outline   { background: transparent; color: var(--text-primary); border-color: var(--border-warm); }
 .sl-btn--outline:hover:not(:disabled) { border-color: var(--color-orange); }
 /* Emphasis is already orange, so it wipes to navy instead. */
-.sl-btn--emphasis  { background: var(--color-orange); color: var(--color-white); --btn-wipe: var(--color-navy); }
+.sl-btn--emphasis  { background: var(--color-orange); color: var(--color-navy); --btn-wipe: var(--color-navy); }
 .sl-btn--ghost     { background: transparent; color: inherit; }
 /* Ghost over photography or navy: a visible edge, and a restrained
    wipe so it never outshouts the emphasis button beside it. */
@@ -502,13 +507,13 @@ dl-nav-bar { position: sticky; top: 0; z-index: var(--z-sticky); }
    Electrical, which takes navy. Same pairing as the Solar/Electrical
    buttons, so the two trades read consistently across the site. */
 .sl-nav__link:hover,
-.sl-nav__link[aria-current="page"] { color: var(--color-orange); opacity: 1; }
+.sl-nav__link[aria-current="page"] { color: var(--color-orange-text); opacity: 1; }
 .sl-nav__link--navy:hover,
 .sl-nav__link--navy[aria-current="page"] { color: var(--color-navy); opacity: 1; }
 .sl-nav--dark .sl-nav__link--navy:hover,
 .sl-nav--dark .sl-nav__link--navy[aria-current="page"] { color: var(--color-beige); }
-.sl-nav__links[data-has-active="true"] .sl-nav__link:not([aria-current="page"]) { opacity: 0.55; }
-.sl-nav__links[data-has-active="true"] .sl-nav__link:not([aria-current="page"]):hover { opacity: 1; }
+.sl-nav__links[data-has-active="true"] .sl-nav__link:not([aria-current="page"]) { color: var(--text-secondary); opacity: 1; }
+.sl-nav__links[data-has-active="true"] .sl-nav__link:not([aria-current="page"]):hover { color: var(--color-orange-text); }
 .sl-nav__toggle { width: 48px; height: 48px; }
 
 .sl-drawer {
@@ -639,7 +644,7 @@ dl-nav-bar { position: sticky; top: 0; z-index: var(--z-sticky); }
 .sl-footer__plain { display: block; color: rgba(255,255,255,0.85); font-size: 15px; padding: 2px 0; }
 .sl-footer__plain:hover { color: var(--color-orange); opacity: 1; }
 .sl-footer__rule { max-width: var(--container-used); margin: 48px auto 0; border-top: 1px solid var(--border-inverse); padding-top: 20px; }
-.sl-footer__strapline { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: rgba(255,255,255,0.4); }
+.sl-footer__strapline { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
 
 /* ---- Placeholder — labelled empty state, never stock ------- */
 .sl-placeholder {
@@ -768,7 +773,7 @@ a.sl-contact:hover .sl-contact__value { color: var(--color-orange); }
 .sl-split-copy__label {
   margin: 8px 0 0;
   font-family: var(--font-mono); font-size: 11px; font-weight: 600;
-  letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-orange);
+  letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-orange-text);
 }
 .sl-split-copy__label:first-child { margin-top: 0; }
 .sl-split-copy .sl-body { margin: 0; }
@@ -915,7 +920,7 @@ dl-subnav { position: sticky; top: 72px; z-index: 30; }
   display: inline-flex; align-items: center; gap: 8px;
   height: 44px; padding: 0 20px;
   border-radius: var(--radius-sm);
-  background: var(--color-orange); color: var(--color-white);
+  background: var(--color-orange); color: var(--color-navy);
   font-family: var(--font-body); font-size: 14px; font-weight: 700;
   white-space: nowrap;
   transition: color var(--dur-hover) ease-out, transform var(--dur-hover) ease-out;
