@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths:
       - 'site-daylight/**'
+      - 'scripts/build-site.js'
+      - 'package.json'
+      - 'package-lock.json'
       - '.github/workflows/deploy-site.yml'
 
 permissions:
@@ -26,13 +29,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (minify CSS/JS into dist/)
+        run: npm run build
+
       - name: Setup Pages
         uses: actions/configure-pages@v6
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          path: site-daylight
+          path: dist
 
       - name: Deploy to GitHub Pages
         id: deployment

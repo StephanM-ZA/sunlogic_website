@@ -74,7 +74,7 @@ class DlRoll extends SLElement {
     if (!items.length) return;
     const itemClass = this.getAttribute('item-class') || '';
     const row = (it) =>
-      '<a class="sl-roll__item' + (itemClass ? ' ' + itemClass : '') + '" href="' + it.href + '">' +
+      '<a class="sl-roll__item' + (itemClass ? ' ' + itemClass : '') + '" href="' + it.href + '" aria-label="' + it.text + '">' +
       (it.icon ? SL_ICON(it.icon, 16) : '') + '<span>' + it.text + '</span></a>';
     this.innerHTML = '<span class="sl-roll"><span class="sl-roll__track">' + items.map(row).join('') + '</span></span>';
 
@@ -574,8 +574,25 @@ class DlHero extends SLElement {
     const photo = this.getAttribute('photo');
     const alt = SL_ATTR(this, 'alt', '[Hero photography pending]');
     const fit = this.getAttribute('fit') === 'contain' ? ' sl-hero__image--contain' : '';
+    /* Opt-in responsive srcset: only pages whose photo has matching
+       "-{width}w" derivatives on disk pass srcset-widths, e.g.
+       srcset-widths="640,1024,1920" for photo="images/hero.webp" expects
+       images/hero-640w.webp and images/hero-1024w.webp to exist alongside
+       the full-size original (used as the largest/fallback size). */
+    const srcsetWidths = this.getAttribute('srcset-widths');
+    let srcsetAttr = '';
+    if (photo && srcsetWidths) {
+      const dot = photo.lastIndexOf('.');
+      const base = photo.slice(0, dot);
+      const ext = photo.slice(dot);
+      const widths = srcsetWidths.split(',').map((w) => w.trim());
+      const maxWidth = widths[widths.length - 1];
+      const entries = widths.map((w) =>
+        (w === maxWidth ? photo : base + '-' + w + 'w' + ext) + ' ' + w + 'w');
+      srcsetAttr = ' srcset="' + entries.join(', ') + '" sizes="100vw"';
+    }
     const media = photo
-      ? '<img class="sl-hero__image' + fit + '" src="' + photo + '" alt="' + alt + '" fetchpriority="high" decoding="async" />'
+      ? '<img class="sl-hero__image' + fit + '" src="' + photo + '"' + srcsetAttr + ' alt="' + alt + '" fetchpriority="high" decoding="async" />'
       : '<div class="sl-placeholder sl-placeholder--inverse sl-hero__empty">' + alt + '</div>';
     this.innerHTML =
       '<section class="sl-hero">' + media +
