@@ -11,14 +11,14 @@
    Copy the 16 .woff2 files from the design bundle's assets/fonts/.
    Do NOT use Feature Deck, Aeonik Pro or Social Mono — those are
    licensed faces belonging to a different brand. */
-@font-face { font-family: "Hanken Grotesk"; font-weight: 400; font-display: swap; src: url("./fonts/HankenGrotesk-400-latin.woff2") format("woff2"); }
-@font-face { font-family: "Hanken Grotesk"; font-weight: 500; font-display: swap; src: url("./fonts/HankenGrotesk-500-latin.woff2") format("woff2"); }
-@font-face { font-family: "Hanken Grotesk"; font-weight: 700; font-display: swap; src: url("./fonts/HankenGrotesk-700-latin.woff2") format("woff2"); }
-@font-face { font-family: "Hanken Grotesk"; font-weight: 800; font-display: swap; src: url("./fonts/HankenGrotesk-800-latin.woff2") format("woff2"); }
-@font-face { font-family: "Hanken Grotesk"; font-weight: 900; font-display: swap; src: url("./fonts/HankenGrotesk-900-latin.woff2") format("woff2"); }
-@font-face { font-family: "JetBrains Mono"; font-weight: 400; font-display: swap; src: url("./fonts/JetBrainsMono-400-latin.woff2") format("woff2"); }
-@font-face { font-family: "JetBrains Mono"; font-weight: 500; font-display: swap; src: url("./fonts/JetBrainsMono-500-latin.woff2") format("woff2"); }
-@font-face { font-family: "JetBrains Mono"; font-weight: 700; font-display: swap; src: url("./fonts/JetBrainsMono-700-latin.woff2") format("woff2"); }
+@font-face { font-family: "Hanken Grotesk"; font-weight: 400; font-display: optional; src: url("./fonts/HankenGrotesk-400-latin.woff2") format("woff2"); }
+@font-face { font-family: "Hanken Grotesk"; font-weight: 500; font-display: optional; src: url("./fonts/HankenGrotesk-500-latin.woff2") format("woff2"); }
+@font-face { font-family: "Hanken Grotesk"; font-weight: 700; font-display: optional; src: url("./fonts/HankenGrotesk-700-latin.woff2") format("woff2"); }
+@font-face { font-family: "Hanken Grotesk"; font-weight: 800; font-display: optional; src: url("./fonts/HankenGrotesk-800-latin.woff2") format("woff2"); }
+@font-face { font-family: "Hanken Grotesk"; font-weight: 900; font-display: optional; src: url("./fonts/HankenGrotesk-900-latin.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-weight: 400; font-display: optional; src: url("./fonts/JetBrainsMono-400-latin.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-weight: 500; font-display: optional; src: url("./fonts/JetBrainsMono-500-latin.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-weight: 700; font-display: optional; src: url("./fonts/JetBrainsMono-700-latin.woff2") format("woff2"); }
 /* latin-ext subsets also shipped in ./fonts/ — add matching rules if you
    need Afrikaans diacritics beyond latin-1. */
 
