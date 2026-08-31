@@ -826,7 +826,15 @@ if (SL_TOPIC) {
    never invented, and it switches back to live kW the moment pv_kw is
    positive again. */
 const SL_FLEET_LIVE_URL = 'https://n8n.digitaloperations.co.za/webhook/fleet-live'; // live once the n8n workflow below is imported + activated
-const SL_FLEET_POLL_MS = 15 * 60 * 1000;
+/* This is the SITE's own poll of the (cheap, already-collected) webhook —
+   independent of how often n8n itself polls the fleet (currently every 15
+   min during daylight, see VoltIQ/docs/n8n-workflows.md). Two unsynced
+   15-minute clocks stack worst-case, so a visitor could see a reading up
+   to ~30 min stale even though n8n itself never lags more than 15. This
+   webhook only reads VoltIQ's own DB (no inverter-provider API calls), so
+   polling it far more often than the backend poll carries no rate-limit
+   risk — 2 minutes caps the worst case at ~17 min instead. */
+const SL_FLEET_POLL_MS = 2 * 60 * 1000;
 
 function slUpdateLiveStats(data) {
   const pv = document.querySelector('[data-live="pv"]');
