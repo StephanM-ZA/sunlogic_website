@@ -286,7 +286,15 @@ input, textarea, select, button { font: inherit; color: var(--text-primary); }
    the other a details card plus a much taller map — centering pushed
    the form noticeably lower than the details card. Top-align just this
    one instance rather than the shared rule everyone else relies on. */
-#get-in-touch .sl-cols { align-items: start; }
+#get-in-touch .sl-cols { align-items: stretch; }
+/* Stretch the form's card to match the details+map column's full
+   height, so both columns' bottoms line up too, not just their tops.
+   .sl-card is already flex/column (built to take a taller box
+   gracefully — see the dl-actions margin-top:auto rule above), so
+   this only needs the two wrapping layers made to fill height. */
+#get-in-touch .sl-cols > dl-reveal:has(> dl-card) { display: flex; }
+#get-in-touch .sl-cols > dl-reveal > dl-card { flex: 1; display: flex; }
+#get-in-touch .sl-cols > dl-reveal > dl-card > .sl-card { flex: 1; }
 
 .sl-split { display: grid; grid-template-columns: 1fr; }
 @media (min-width: 768px) { .sl-split { grid-template-columns: 1.05fr 1fr; } }
