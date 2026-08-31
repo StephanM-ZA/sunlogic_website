@@ -18,7 +18,7 @@ function dlInitForm(form) {
     if (honeypot && honeypot.value) {
       return;
     }
-    const requiredFields = form.querySelectorAll('[required]');
+    const requiredFields = form.querySelectorAll('input[required], select[required], textarea[required]');
     for (let i = 0; i < requiredFields.length; i++) {
       if (!requiredFields[i].value.trim()) {
         requiredFields[i].focus();
