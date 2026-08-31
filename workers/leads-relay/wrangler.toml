@@ -1,3 +1,8 @@
 name = "sunlogic-leads-relay"
 main = "src/index.js"
 compatibility_date = "2026-08-31"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "sunlogic-leads"
+database_id = "3a7d8834-4e84-4fa0-9377-f2b3da573be6"
