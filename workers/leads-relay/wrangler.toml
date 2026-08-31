@@ -9,3 +9,6 @@ N8N_WEBHOOK_URL = "https://httpbin.org/post"
 binding = "DB"
 database_name = "sunlogic-leads"
 database_id = "3a7d8834-4e84-4fa0-9377-f2b3da573be6"
+
+[triggers]
+crons = ["*/5 * * * *"]

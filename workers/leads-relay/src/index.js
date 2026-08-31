@@ -95,6 +95,26 @@ async function handleLeadRoute(request, env, ctx, type) {
   return jsonResponse({ ok: true }, 200, origin);
 }
 
+async function retryPendingLeads(env) {
+  const { results } = await env.DB
+    .prepare("SELECT id, type, payload_json FROM leads WHERE status = 'pending' AND attempts < 20")
+    .all();
+
+  for (const row of results) {
+    const payload = JSON.parse(row.payload_json);
+    const delivered = await deliverToN8n(env, row.id, row.type, payload);
+    if (!delivered) {
+      const current = await env.DB
+        .prepare('SELECT attempts FROM leads WHERE id = ?')
+        .bind(row.id)
+        .first();
+      if (current && current.attempts >= 20) {
+        await env.DB.prepare("UPDATE leads SET status = 'failed' WHERE id = ?").bind(row.id).run();
+      }
+    }
+  }
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -105,5 +125,9 @@ export default {
       return handleLeadRoute(request, env, ctx, 'calculator');
     }
     return new Response('not found', { status: 404 });
+  },
+
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(retryPendingLeads(env));
   },
 };
