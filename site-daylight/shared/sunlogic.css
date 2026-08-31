@@ -487,7 +487,12 @@ a.sl-card:hover, .sl-card:has(> a:hover) { border-color: var(--color-orange); }
    host is shrink-wrapped to the bar's own height — so sticky on the
    inner element gives exactly 0px of travel. Same trap for any future
    sticky component wrapped in a dl-* element. */
-dl-nav-bar { position: sticky; top: 0; z-index: var(--z-sticky); }
+/* min-height matches .sl-nav's own 72px: dl-nav-bar renders nothing
+   until components.js runs, so on a slow connection/CPU the page can
+   sit collapsed for a real, measurable window before the whole page's
+   content and height appear at once — a single large layout shift.
+   Reserving the host's own height here avoids that collapse. */
+dl-nav-bar { position: sticky; top: 0; z-index: var(--z-sticky); min-height: 72px; }
 .sl-nav {
   height: 72px; display: flex; align-items: center; justify-content: space-between;
   padding: 0 var(--gutter);
@@ -540,6 +545,11 @@ dl-nav-bar { position: sticky; top: 0; z-index: var(--z-sticky); }
 .sl-drawer__cta { margin-top: auto; }
 
 /* ---- Hero — five layers, all five required ----------------- */
+/* Same collapse-then-expand risk as dl-nav-bar above: reserve the
+   host's height to match .sl-hero's own before components.js renders
+   the actual <section class="sl-hero"> inside it. */
+dl-hero { display: block; min-height: 560px; }
+@media (min-width: 768px) { dl-hero { min-height: 78vh; } }
 .sl-hero {
   position: relative; overflow: hidden;
   min-height: 560px;
@@ -949,11 +959,12 @@ dl-subnav { position: sticky; top: 72px; z-index: 30; }
 
 /* ---- Custom-element display defaults ----------------------- */
 /* Unregistered/inline custom elements otherwise collapse or wrap. */
-dl-section, dl-card, dl-hero, dl-footer, dl-callout, dl-cta,
+dl-section, dl-card, dl-footer, dl-callout, dl-cta,
 dl-media-bg, dl-media, dl-eyebrow, dl-stat, dl-field, dl-stack, dl-grid,
 dl-step, dl-checklist, dl-creds, dl-terminal, dl-heading, dl-text,
 dl-actions, dl-wordmark, dl-prose, dl-list, dl-contact-row, dl-person,
 dl-statement, dl-faq, dl-figures { display: block; }
+/* dl-hero keeps display:block AND its min-height reservation — declared above. */
 /* Sticky hosts keep display:block AND their position — declared above. */
 dl-nav-bar, dl-subnav { display: block; }
 /* Card-like elements fill their grid cell so a row is always level. */
