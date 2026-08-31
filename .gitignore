@@ -19,6 +19,9 @@ Thumbs.db
 # Node deps (playwright, used for local screenshot checks only)
 node_modules/
 
+# Wrangler local build/dev cache (Cloudflare Worker tooling)
+.wrangler/
+
 # Design reference bundles — kept on disk under design-inspiration/, out of
 # git. Tens of MB of screenshots and PDFs; none of it governs the live site
 # (site-daylight/SYSTEM.md does). These were untracked before the tidy-up.
