@@ -8,12 +8,25 @@
 
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 const csso = require('csso');
 const { minify: minifyJs } = require('terser');
 
 const ROOT = path.join(__dirname, '..');
 const SRC = path.join(ROOT, 'site-daylight');
 const OUT = path.join(ROOT, 'dist');
+const REPO_URL = 'https://github.com/StephanM-ZA/sunlogic_website';
+
+// Commit SHA visible in the site's own footer, stamped fresh on every
+// build so it's never stale and never needs a manual reminder to
+// update. GITHUB_SHA is set automatically in the deploy workflow;
+// falling back to `git` covers local `npm run build`.
+function getBuildInfo() {
+  const sha = process.env.GITHUB_SHA
+    || execSync('git rev-parse HEAD', { cwd: ROOT }).toString().trim();
+  const date = new Date().toISOString().slice(0, 10);
+  return { sha, short: sha.slice(0, 7), repo: REPO_URL, date };
+}
 
 function copyRecursive(src, dest) {
   const stat = fs.statSync(src);
@@ -50,9 +63,25 @@ async function walkAndMinify(dir) {
   }
 }
 
+function stampBuildInfo(dir, build) {
+  const tag = '<script>window.SL_BUILD=' + JSON.stringify(build) + ';</script>\n</head>';
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      stampBuildInfo(full, build);
+    } else if (entry.name.endsWith('.html')) {
+      const html = fs.readFileSync(full, 'utf8');
+      if (html.includes('</head>')) {
+        fs.writeFileSync(full, html.replace('</head>', tag));
+      }
+    }
+  }
+}
+
 async function main() {
   if (fs.existsSync(OUT)) fs.rmSync(OUT, { recursive: true, force: true });
   copyRecursive(SRC, OUT);
+  stampBuildInfo(OUT, getBuildInfo());
   await walkAndMinify(OUT);
   console.log('Build complete:', OUT);
 }

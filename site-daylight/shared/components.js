@@ -733,10 +733,25 @@ class DlFooter extends SLElement {
       '<p class="sl-footer__strapline">9 Chesham Road, Claremont, Cape Town</p>' +
       '<p class="sl-footer__strapline">08:00 – 18:00, weekdays</p></div>' +
       '</div><div class="sl-footer__rule">' +
-      '<p class="sl-footer__strapline">Registered electrical contractor · Certificate of Compliance on every installation</p></div></footer>';
+      '<p class="sl-footer__strapline">Registered electrical contractor · Certificate of Compliance on every installation</p>' +
+      SL_BUILD_LINE() +
+      '</div></footer>';
   }
 }
 customElements.define('dl-footer', DlFooter);
+
+/* Build stamp — commit SHA gets injected by scripts/build-site.js into
+   window.SL_BUILD (see that script for why: so this never needs a
+   manual reminder to update). Silently omitted if that script never
+   ran (e.g. viewing site-daylight/ directly, unbuilt). */
+function SL_BUILD_LINE() {
+  const build = window.SL_BUILD;
+  if (!build || !build.sha) return '';
+  const link = build.repo
+    ? '<a class="sl-footer__strapline" href="' + build.repo + '/commit/' + build.sha + '" style="text-decoration:underline">' + build.short + '</a>'
+    : '<span class="sl-footer__strapline">' + build.short + '</span>';
+  return '<p class="sl-footer__strapline">Build ' + link + (build.date ? ' · ' + build.date : '') + '</p>';
+}
 
 /* --- Reveal — fade + 16px rise, 700ms expo-out ---------------
    Arms only what loads below the fold, so a failure leaves content
