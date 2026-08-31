@@ -548,7 +548,12 @@ dl-nav-bar { position: sticky; top: 0; z-index: var(--z-sticky); min-height: 72p
 /* Same collapse-then-expand risk as dl-nav-bar above: reserve the
    host's height to match .sl-hero's own before components.js renders
    the actual <section class="sl-hero"> inside it. */
-dl-hero { display: block; min-height: 560px; }
+/* 964px measured live at 412px width (Lighthouse's mobile emulation
+   viewport) — .sl-hero's own 560px floor is a minimum, not the actual
+   flex-content height, which needs far more room once real heading/
+   body/button content mounts. Re-measure if the homepage hero copy
+   changes meaningfully. */
+dl-hero { display: block; min-height: 964px; }
 @media (min-width: 768px) { dl-hero { min-height: 78vh; } }
 .sl-hero {
   position: relative; overflow: hidden;
