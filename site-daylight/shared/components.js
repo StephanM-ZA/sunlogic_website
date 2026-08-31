@@ -433,7 +433,10 @@ class DlContactRow extends SLElement {
 }
 customElements.define('dl-contact-row', DlContactRow);
 
-/* --- Person card — avatar slot, name, role, bio -------------- */
+/* --- Person card — avatar slot, name, job title, bio ----------
+   Uses job-title, not role: "role" is a reserved global HTML/ARIA
+   attribute, and a value like "Co-Owner" isn't a valid ARIA role —
+   axe flags the host element itself for it. */
 class DlPerson extends SLElement {
   render() {
     const email = this.getAttribute('email');
@@ -445,7 +448,7 @@ class DlPerson extends SLElement {
       '<div class="sl-card sl-person">' +
       avatar +
       '<h3 class="sl-title">' + SL_ATTR(this, 'name') + '</h3>' +
-      '<p class="sl-person__role">' + SL_ATTR(this, 'role') + '</p>' +
+      '<p class="sl-person__role">' + SL_ATTR(this, 'job-title') + '</p>' +
       '<p class="sl-body">' + SL_ATTR(this, 'bio') + '</p>' +
       (email ? '<a class="sl-contact__value" href="mailto:' + email + '">' + email + '</a>' : '') +
       '</div>';

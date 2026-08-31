@@ -175,8 +175,15 @@ input, textarea, select, button { font: inherit; color: var(--text-primary); }
 /* ---- Type roles -------------------------------------------- */
 /* The signature device: a heading's LAST phrase in orange.
    <h1 class="sl-hero-heading">Solar sized to <em>what you actually use</em></h1>
-   Once per heading. Never mid-sentence. */
-.sl-hero-heading em { font-style: normal; color: var(--color-orange); }
+   Once per heading. Never mid-sentence.
+   sl-hero-heading defaults to the AA-safe --color-orange-text: a
+   level="hero" heading isn't always inside a dark photo <dl-hero> —
+   contact.html's page header uses it on a plain light section, where
+   the bright --color-orange fails contrast (2.74:1). Only a dark
+   surface (.sl-hero, .sl-section--inverse) gets the brighter accent. */
+.sl-hero-heading em { font-style: normal; color: var(--color-orange-text); }
+.sl-hero .sl-hero-heading em,
+.sl-section--inverse .sl-hero-heading em { color: var(--color-orange); }
 .sl-section-heading em { font-style: normal; color: var(--color-orange-text); }
 
 .sl-hero-heading {
