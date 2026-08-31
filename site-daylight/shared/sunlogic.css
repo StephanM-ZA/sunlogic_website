@@ -281,6 +281,12 @@ input, textarea, select, button { font: inherit; color: var(--text-primary); }
 
 .sl-cols { display: grid; grid-template-columns: 1fr; gap: 32px; align-items: center; }
 @media (min-width: 768px) { .sl-cols { grid-template-columns: 1fr 1fr; gap: 56px; } }
+/* Center-alignment reads well for the usual two-text-block pairing this
+   grid is built for, but on contact.html one side is a short form and
+   the other a details card plus a much taller map — centering pushed
+   the form noticeably lower than the details card. Top-align just this
+   one instance rather than the shared rule everyone else relies on. */
+#get-in-touch .sl-cols { align-items: start; }
 
 .sl-split { display: grid; grid-template-columns: 1fr; }
 @media (min-width: 768px) { .sl-split { grid-template-columns: 1.05fr 1fr; } }
