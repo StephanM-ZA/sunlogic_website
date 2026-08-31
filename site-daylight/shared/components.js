@@ -865,3 +865,31 @@ function slPollFleetLive() {
 }
 slPollFleetLive();
 setInterval(slPollFleetLive, SL_FLEET_POLL_MS);
+
+/* --- Dock scroll-away ------------------------------------------
+   The dock is `position: fixed`, so on a tall page it sits on top of
+   whatever happens to be at the bottom of the viewport wherever a
+   scroll gesture settles — confirmed by screenshot cutting into a
+   hero heading, an outline button and a contact row at different
+   scroll positions on mobile. Rather than remove the persistent CTA,
+   hide it while the visitor is actively scrolling down (reading
+   further) and bring it back the moment they scroll up or land near
+   the top, where it can't be covering anything they just scrolled
+   past to get to. */
+(function () {
+  let lastY = window.scrollY;
+  let ticking = false;
+  function onScroll() {
+    const dock = document.querySelector('.sl-dock');
+    ticking = false;
+    if (!dock) return;
+    const y = window.scrollY;
+    if (y < 80) dock.classList.remove('sl-dock--hidden');
+    else if (y > lastY + 4) dock.classList.add('sl-dock--hidden');
+    else if (y < lastY - 4) dock.classList.remove('sl-dock--hidden');
+    lastY = y;
+  }
+  window.addEventListener('scroll', () => {
+    if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
+  }, { passive: true });
+})();

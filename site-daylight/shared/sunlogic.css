@@ -902,7 +902,10 @@ dl-subnav { position: sticky; top: 72px; z-index: 30; }
   border-radius: var(--radius-sm);
   backdrop-filter: var(--glass-blur);
   max-width: calc(100vw - 24px);
+  transition: transform 220ms var(--ease-expo-out), opacity 220ms ease;
 }
+/* Toggled by the scroll-away script in components.js — see there for why. */
+.sl-dock--hidden { transform: translateX(-50%) translateY(calc(100% + 24px)); opacity: 0; pointer-events: none; }
 .sl-dock__phone {
   display: inline-flex; align-items: center; gap: 8px;
   height: 44px; padding: 0 16px 0 18px;
