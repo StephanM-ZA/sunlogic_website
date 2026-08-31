@@ -263,12 +263,22 @@ class DlCard extends SLElement {
     const icon = this.getAttribute('icon');
     const heading = this.getAttribute('heading');
     const body = this.getAttribute('body');
+    const photo = this.getAttribute('photo');
+    const media = photo
+      ? '<div class="sl-card__media"><img src="' + photo + '" alt="' + SL_ATTR(this, 'photo-alt', heading || '') + '" loading="lazy" decoding="async"/></div>'
+      : '';
+    /* A <dl-tag> child is pulled up above the heading/body — a category
+       label reads before the copy, not buried near the button. */
+    const tagEl = this.querySelector('dl-tag');
+    const tagHtml = tagEl ? tagEl.outerHTML : '';
+    if (tagEl) tagEl.remove();
     const head =
       (icon ? '<span class="sl-card__icon">' + SL_ICON(icon, 28) + '</span>' : '') +
+      tagHtml +
       (heading ? '<h3 class="sl-title">' + heading + '</h3>' : '') +
       (body ? '<p class="sl-body">' + body + '</p>' : '');
     const inner = head ? '<div class="sl-card__stack">' + head + '</div>' + this.innerHTML : this.innerHTML;
-    this.innerHTML = '<div class="sl-card' + mod + '">' + inner + '</div>';
+    this.innerHTML = '<div class="sl-card' + mod + '">' + media + inner + '</div>';
   }
 }
 customElements.define('dl-card', DlCard);

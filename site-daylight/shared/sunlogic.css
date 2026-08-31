@@ -250,6 +250,12 @@ input, textarea, select, button { font: inherit; color: var(--text-primary); }
 
 /* ---- Layout ------------------------------------------------ */
 .sl-section { padding: var(--section-pad-y) var(--gutter); }
+/* A blog post's opening section continues straight on from the hero — the
+   normal section-to-section top padding would read as a second, disconnected
+   gap on top of the breadcrumb's own item gap. Match the .sl-container item
+   gap (40px) instead, so hero→breadcrumb→tag→heading step by one consistent
+   amount rather than a big gap then several small ones. */
+dl-section.sl-section--hero-follow .sl-section { padding-top: 40px; }
 .sl-section--alt { background: var(--surface-page-alt); }
 .sl-section--inverse { background: var(--surface-inverse); color: var(--text-inverse); }
 .sl-container { max-width: var(--container-used); margin-inline: auto; }
@@ -265,7 +271,10 @@ input, textarea, select, button { font: inherit; color: var(--text-primary); }
    carousel clips paint, not this — intrinsic sizing looks straight
    through it. min-width: 0 on the grid item is the standard fix. */
 .sl-section > .sl-container > dl-reveal { min-width: 0; }
-@media (max-width: 767px) { .sl-section > .sl-container { gap: 32px; } }
+@media (max-width: 767px) {
+  .sl-section > .sl-container { gap: 32px; }
+  dl-section.sl-section--hero-follow .sl-section { padding-top: 32px; }
+}
 
 .sl-grid-3 { display: grid; grid-template-columns: 1fr; gap: 20px; align-items: stretch; }
 @media (min-width: 768px)  { .sl-grid-3 { grid-template-columns: repeat(2, 1fr); } }
@@ -422,6 +431,10 @@ a.sl-card:hover, .sl-card:has(> a:hover) { border-color: var(--color-orange); }
 .sl-card--inverse { background: var(--surface-inverse); border-color: var(--border-inverse); color: var(--text-inverse); }
 .sl-card--glass   { background: var(--glass-bg); border-color: var(--glass-border); backdrop-filter: var(--glass-blur); color: var(--text-inverse); }
 .sl-card__icon { color: var(--color-orange); width: 28px; height: 28px; }
+/* Optional cover image (dl-card photo="…") — pulled out to the card's
+   edges since .sl-card has uniform padding, rounded to match the card. */
+.sl-card__media { margin: -28px -28px 0; border-radius: var(--radius-md) var(--radius-md) 0 0; overflow: hidden; aspect-ratio: 16 / 9; }
+.sl-card__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 /* ---- Badge / Tag ------------------------------------------- */
 .sl-badge {
@@ -622,6 +635,15 @@ dl-hero { display: block; min-height: 964px; }
 .sl-hero__col { flex: 0 0 300px; display: flex; flex-direction: column; gap: 16px; }
 .sl-hero__col-note { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.05em; color: currentColor; opacity: 0.55; }
 .sl-hero__text { flex: 1 1 480px; max-width: 640px; }
+/* Breadcrumb — blog posts only, first item in the article's dl-section so it
+   shares that section's own top padding instead of stacking a second one. */
+.sl-back-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: currentColor; opacity: 0.7; font-size: 14px; font-weight: 600;
+  text-decoration: none; min-height: 44px;
+}
+.sl-back-link:hover { opacity: 1; color: var(--color-orange); }
+.sl-back-link dl-icon { transform: scaleX(-1); }
 .sl-creds-band { padding: 0 var(--gutter) 48px; }
 .sl-form { display: grid; gap: 16px; max-width: 500px; }
 .sl-hero__actions { display: flex; flex-wrap: wrap; gap: 16px; }
@@ -743,7 +765,11 @@ dl-hero { display: block; min-height: 964px; }
 .sl-prose p { margin: 0; font-size: 16px; line-height: 1.5; color: var(--text-secondary); }
 .sl-prose p strong { color: var(--text-primary); font-weight: 700; }
 .sl-prose h3 { margin: 16px 0 0; font-family: var(--font-display); font-size: 24px; font-weight: 700; line-height: 1.333; color: var(--text-primary); }
-.sl-prose h3:first-child { margin-top: 0; }
+/* The grid's own 16px gap already separates a heading from what precedes
+   it — this extra top margin is only for a heading breaking up prior body
+   copy. A heading opening the article (or sat right under its dl-tag label,
+   which reads as an eyebrow) shouldn't get a doubled 32px gap. */
+.sl-prose h3:first-child, .sl-prose dl-tag + h3 { margin-top: 0; }
 .sl-section--inverse .sl-prose p { color: rgba(255,255,255,0.78); }
 .sl-section--inverse .sl-prose p strong,
 .sl-section--inverse .sl-prose h3 { color: var(--text-inverse); }
