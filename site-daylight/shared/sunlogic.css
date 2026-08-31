@@ -971,12 +971,19 @@ dl-subnav { position: sticky; top: 72px; z-index: 30; }
 
 /* ---- Custom-element display defaults ----------------------- */
 /* Unregistered/inline custom elements otherwise collapse or wrap. */
-dl-section, dl-card, dl-footer, dl-callout, dl-cta,
+dl-card, dl-footer, dl-callout, dl-cta,
 dl-media-bg, dl-media, dl-eyebrow, dl-stat, dl-field, dl-stack, dl-grid,
 dl-step, dl-checklist, dl-creds, dl-terminal, dl-heading, dl-text,
 dl-actions, dl-wordmark, dl-prose, dl-list, dl-contact-row, dl-person,
 dl-statement, dl-faq, dl-figures { display: block; }
 /* dl-hero keeps display:block AND its min-height reservation — declared above. */
+/* dl-section is the one generic wrapper big enough to cause a real
+   layout shift before components.js renders it (a content-heavy
+   section, e.g. a contact form or long-form legal text, can be
+   1000px+ tall) — a flat, general floor can't match every section's
+   real height, but meaningfully cuts the shift distance for any
+   section on any page, present or future, with no per-page tuning. */
+dl-section { display: block; min-height: 500px; }
 /* Sticky hosts keep display:block AND their position — declared above. */
 dl-nav-bar, dl-subnav { display: block; }
 /* Card-like elements fill their grid cell so a row is always level. */

@@ -1,11 +1,13 @@
 {
   "scripts": {
-    "build": "node scripts/build-site.js"
+    "build": "node scripts/build-site.js",
+    "lighthouse": "npm run build && lhci autorun"
   },
   "dependencies": {
     "playwright": "^1.62.1"
   },
   "devDependencies": {
+    "@lhci/cli": "^0.15.1",
     "csso": "^5.0.5",
     "terser": "^5.51.2",
     "wrangler": "^4.127.1"

@@ -1,0 +1,46 @@
+name: Lighthouse CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'site-daylight/**'
+      - 'scripts/build-site.js'
+      - 'lighthouserc.js'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/lighthouse-ci.yml'
+  workflow_dispatch: {}
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Runs against the built dist/ directory served locally, not the
+      # live site — this never depends on DNS/domain state (still
+      # pending a cutover) and never blocks deploy-site.yml, which is a
+      # separate workflow. Pages are discovered dynamically from
+      # dist/*.html in lighthouserc.js, so a new page is covered on its
+      # first push with no config changes needed.
+      - name: Run Lighthouse CI
+        run: npm run lighthouse
+
+      - name: Upload Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci
+          retention-days: 30

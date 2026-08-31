@@ -27,6 +27,10 @@ node_modules/
 # committed; source stays hand-readable under site-daylight/.
 /dist/
 
+# Lighthouse CI report output (npm run lighthouse) — local/CI scratch,
+# uploaded as a workflow artifact instead of committed.
+/.lighthouseci/
+
 # Design reference bundles — kept on disk under design-inspiration/, out of
 # git. Tens of MB of screenshots and PDFs; none of it governs the live site
 # (site-daylight/SYSTEM.md does). These were untracked before the tidy-up.
