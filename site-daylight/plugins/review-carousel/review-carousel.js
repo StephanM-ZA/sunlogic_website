@@ -257,11 +257,17 @@
          visibly faster with no change to the reviewer count's intent.
          Deriving the duration from the actual rendered width instead
          holds a constant px/s pace regardless of how many reviews exist.
-         52px/s matches the original 6-card set's tuned 40s duration. */
+         52px/s matches the original 6-card set's tuned 40s duration.
+         Reading scrollWidth right after the innerHTML write forces a
+         synchronous layout flush mid-script (Lighthouse's "forced
+         reflow" audit). Deferring the read to the next frame lets it
+         land inside the browser's normal layout pass instead. */
       const track = this.querySelector('.plugin-review-track');
-      const PX_PER_SECOND = 52;
-      const oneCopyWidth = track.scrollWidth / 2;
-      track.style.setProperty('--plugin-review-speed', (oneCopyWidth / PX_PER_SECOND) + 's');
+      requestAnimationFrame(() => {
+        const PX_PER_SECOND = 52;
+        const oneCopyWidth = track.scrollWidth / 2;
+        track.style.setProperty('--plugin-review-speed', (oneCopyWidth / PX_PER_SECOND) + 's');
+      });
     }
   }
 

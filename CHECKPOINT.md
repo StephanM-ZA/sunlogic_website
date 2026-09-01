@@ -1,53 +1,111 @@
 # Checkpoint — Sunlogic Website
 
-**Saved:** 2026-08-31 (session 6 — GitHub Pages + Lighthouse CI + DNS cutover + placeholder cleanup + blog fixes + build-time image optimization)
+**Saved:** 2026-09-01 (session 7 — PageSpeed Insights desktop audit fixes)
 
 ## Current task + goal
 
-The site is now **fully live** at `https://sunlogic.co.za/` on GitHub Pages (DNS cut over from the old WordPress site earlier this session, HTTPS cert issued and verified). This session's work, roughly in order:
+User pasted a PageSpeed Insights desktop report (score 67) for `https://sunlogic.co.za/`
+flagging: inefficient cache lifetimes (574 KiB), oversized/uncompressed images (168 KiB),
+render-blocking requests (110 ms), and a forced reflow in `review-carousel.js` (98 ms).
+Worked through the actionable-in-repo items; one item (cache lifetimes) is a hosting-level
+constraint flagged back to the user, not fixed in code.
 
-1. Set up GitHub Pages deployment (mirroring the sibling `doqix_website` pattern) — `.github/workflows/deploy-site.yml`.
-2. Built a non-blocking Lighthouse CI workflow (`.github/workflows/lighthouse-ci.yml`, `lighthouserc.js`) to catch performance/a11y/SEO regressions automatically, after a script-loading auto-fix attempt caused a real regression (`DlButton` broken by removing `defer` — reverted via `git revert`).
-3. Worked through every `[...]` placeholder in the live copy category-by-category with the user (response times, finance options, testimonials/job specs, missing photography) — only real data used, nothing invented.
-4. Cut the DNS over from WordPress to GitHub Pages — confirmed live with valid HTTPS.
-5. Added a fully automated commit-SHA build-stamp in the footer (`window.SL_BUILD`, injected at build time — never needs a manual reminder).
-6. Contact page layout: map now grows via CSS Grid (`grid-template-rows: auto 1fr`) to align its bottom edge with the form card, while the 20px gap to the Contact Details card stays fixed. Commit `eff86ec`.
-7. Blog post fixes (commit `e623d02`):
-   - "← Back to Worth Knowing" breadcrumb on all 7 posts, placed inside the article's opening section using a new `.sl-section--hero-follow` CSS modifier (smaller top-padding matching the site's 40px/32px grid-gap, so hero→breadcrumb→tag→heading step by one consistent amount instead of the normal large section gap).
-   - `DlCard` component gained optional `photo`/`photo-alt` attributes (edge-to-edge cover image via new `.sl-card__media` class) — wired up on the 4 `blog.html` listing cards that have real photography.
-   - `DlCard` also now pulls a `<dl-tag>` child above the heading/body (eyebrow-style); `.sl-prose h3` margin fixed to not double up with the grid gap right after a `<dl-tag>`.
-8. **Build-time image optimization** (commit `f124215`) — `scripts/build-site.js` now converts every `.jpg`/`.jpeg`/`.gif` under `dist/` to WebP (quality 80, animated for GIFs) and rewrites every literal reference across `dist/*.html`. Source files in `site-daylight/` are untouched — only the disposable `dist/` output changes extension. Added `sharp` as a devDependency. Typical savings 40-88% per file; the one real GIF (`routine-control.gif`) went from 954K to 274K, animation verified intact (35 frames, correct delays). Also deleted 2 orphaned/unreferenced GIFs (`home-page-devices.gif`, `Impact-metrics-small-1.gif`, confirmed via grep to be linked nowhere).
+## What was done (uncommitted, in `site-daylight/`, not yet committed to git)
 
-All of the above is committed and pushed to `origin/main` (`3f5929a` through `f124215`). GitHub Pages will redeploy automatically.
+1. **Render-blocking scripts (`index.html`)** — `plugins/day-feed/schedule.data.js`,
+   `plugins/day-feed/day-feed-schedule.js`, and `plugins/review-carousel/reviews.data.js`
+   were loading as plain blocking `<script>` tags (no `defer`), unlike every other script
+   on the page. Added `defer` to all three. Safe because: they only assign `window.*`
+   globals / pure functions, touch no DOM, and deferred scripts still execute in strict
+   document order — so `*.data.js` still runs before the component script that reads it.
+   Bumped `review-carousel.js?v=3` → `?v=5` (content changed, see #2) and `reviews.data.js`
+   stayed at `?v=4` (untouched). This is **not** the "remove defer" mistake from session 6 —
+   that regression was from *removing* defer off `components.js` (which does depend on
+   pre-parsed light-DOM children); this is *adding* defer to scripts with no such dependency.
+2. **Forced reflow fix (`plugins/review-carousel/review-carousel.js`)** — `connectedCallback`
+   wrote `this.innerHTML` then immediately read `track.scrollWidth`, forcing a synchronous
+   layout flush. Wrapped the read (and the `--plugin-review-speed` write that depends on it)
+   in `requestAnimationFrame`. Safe because the CSS already has a `40s` fallback for
+   `--plugin-review-speed`, so the one-frame delay before the precise value lands is
+   invisible. Verified via Playwright: the custom property still gets set correctly
+   (~130s for the full review set) and no console errors.
+3. **Hero image srcset gap (`index.html`, `images/hero-1440w.webp` new file)** — srcset
+   only had 640/1024/1920w, so ~1330–1440px-wide desktop viewports downloaded the full
+   1920w (220 KiB) file for a ~1335px-wide render. Generated `hero-1440w.webp` (121 KiB,
+   sharp, quality 80, matching the site's WebP convention) and added it to both the
+   `<dl-hero srcset-widths>` attribute and the manual `<link rel=preload imagesrcset>` line
+   (the two have to be kept in sync by hand — `<dl-hero>`'s srcset is generated by
+   `DlHero.render()` in `shared/components.js`, the preload hint is separate markup).
+   Confirmed via Playwright that `.sl-hero__image.currentSrc` resolves to the new file at
+   a 1440px viewport.
+4. **Proof-grid image crop (`images/proof/job-{1,2,3}-*.webp`)** — all three "Three Recent
+   Jobs" photos are portrait/landscape-mismatched masters (675×900, 900×506, 506×900)
+   shown through a hard-coded `aspect-ratio:4/3` box with `object-fit:cover`, with **no
+   breakpoint that changes that 4/3 ratio** (confirmed via grep — index.html:223/232/241
+   are the only aspect-ratio uses on this page, no media query touches them). Because the
+   box ratio is constant, the fraction of each source image actually visible under
+   `cover` is a fixed, viewport-independent fraction — the math was worked out per image
+   (which dimension binds depends on whether the source is "more portrait" or "more
+   landscape" than 4:3) and each master was center-cropped (with a small margin) to just
+   that visible band, then re-encoded at quality 80. Confirmed via Playwright screenshot
+   that all three photos still render fully framed with no visible clipping. Savings:
+   72 K→45 K, 24 K→19.5 K, 28 K→15.5 K (~44 KiB total, zero visual change at any viewport).
+5. Ran `npm run build` — clean, no errors. `dist/` is gitignored/CI-rebuilt so nothing
+   there needs committing.
 
-## Key files
+## Deliberately NOT fixed — needs a user decision
 
-- `.github/workflows/deploy-site.yml`, `.github/workflows/lighthouse-ci.yml`, `lighthouserc.js` — deploy + regression-check pipeline.
-- `scripts/build-site.js` — build script: copy → optimize images (WebP conversion + reference rewrite) → stamp build SHA → minify CSS/JS.
-- `site-daylight/shared/components.js` — `DlCard` (photo/tag support), `DlFooter`/`SL_BUILD_LINE` (commit stamp).
-- `site-daylight/shared/sunlogic.css` — `.sl-back-link`, `.sl-section--hero-follow`, `.sl-card__media`, `.sl-contact__side`/`.sl-contact__map`.
-- `site-daylight/contact.html` — corrected map/form alignment.
-- `site-daylight/blog*.html` — breadcrumb + tag/heading order.
+**Cache lifetimes (574 KiB estimated savings, the single biggest item in the report).**
+Every asset in the report shows a flat "10m" TTL — this matches GitHub Pages' known
+behavior: it serves a short, fixed `Cache-Control` (~10 min) on every file and gives you
+no way to override it (no `_headers` support, no custom server config, nothing in this
+repo can change it). Fixing this for real requires putting a CDN/edge layer in front of
+GitHub Pages — most commonly, proxying `sunlogic.co.za` through Cloudflare (orange-cloud)
+and adding a Cache Rule / Page Rule that sets a long edge TTL for static assets
+(images/fonts/css/js) regardless of the short origin TTL GH Pages sends. This project
+already has a Cloudflare account (`workers/leads-relay` — D1 + Worker for the contact
+form), but I don't know from anything in this repo whether `sunlogic.co.za`'s DNS is
+already proxied through Cloudflare or is DNS-only pointing straight at GH Pages' IPs —
+that's an infrastructure/DNS-panel fact only the user can confirm, and turning on the
+proxy + cache rule is an external-service change I shouldn't make unilaterally anyway.
+**Next session: ask the user how DNS is set up before proposing next steps here.**
 
 ## Standing constraints (carry forward)
 
-- Never re-attempt the "remove `defer`" script-loading optimization — confirmed regression risk (breaks `DlButton` and likely other components that read `this.innerHTML` expecting pre-parsed children). Lighthouse CI is the safety net for future performance work instead.
-- iMac/n8n changes still route through `serverMonitor` per the global change-control rule (unrelated to this session's work, but stands for any future backend touch).
-- This machine is dev-only; this repo has no `npm run dev` real-data caveat like `serverMonitor` — n/a here, this is a fully static site.
+- Never re-attempt *removing* `defer` from `shared/components.js`/`icons.js`/`forms.js`/
+  `sunlogic-check.js` — confirmed regression risk (breaks `DlButton` and likely other
+  components that read `this.innerHTML` expecting pre-parsed children). This session's
+  `defer` additions are the opposite change (adding defer to non-DOM-touching scripts)
+  and are unrelated to that risk.
+- Bump `?v=` on any `shared/` or plugin file whose *content* changes (not needed for pure
+  attribute/HTML changes like the ones in `index.html` here, since nothing there is
+  browser-cached under its own versioned URL).
+- `dist/` is a gitignored build artifact, regenerated by CI on push — never hand-edit it,
+  never commit it.
+- Local Lighthouse (`lhci`) still can't run in this dev environment (no Chrome binary) —
+  Playwright (already a dependency) works fine for one-off visual/behavioral checks, as
+  used in this session, but isn't wired into `npm run lighthouse`.
 
-## Uncommitted / untracked (left alone, not part of this work — carried over from session 5, still unresolved)
+## Uncommitted / untracked (carried over, still unresolved)
 
 - `.claude/` — local config directory, never reviewed/decided on.
-- `Sunlogic_Feedback_Decisions.docx` / `.pdf` — unfamiliar documents, unreviewed content, never committed without knowing what's inside.
+- `Sunlogic_Feedback_Decisions.docx` / `.pdf` — unfamiliar documents, unreviewed content,
+  never committed without knowing what's inside.
+- All 5 changes from this session (see above) — uncommitted, waiting on user review/commit
+  instruction.
 
-## Next steps (if picked up later)
+## Next steps
 
-1. **3 blog posts still have `[Hero photography pending]` empty-states**: `blog-ev-home-charging.html`, `blog-five-tips-load-shedding.html`, `blog-why-your-bill-went-up.html`. Decision needed: keep the honest empty-state (matches the site's own "no stock photography" principle) vs. wait for/source real photography.
-2. **Job 2's new Noordhoek battery-bank photo**: user shared it inline in chat but it was never saved to disk (multimodal chat content isn't file-accessible). User was asked to drag it into `site-daylight/images/proof/` via Finder — not yet done as of last check.
-3. Decide what to do with the untracked items listed above.
-4. `plugins/review-carousel/` Task 4 (real review content) — still paused, resume when the user supplies real Google review data.
-5. Local Lighthouse checks can't run in this dev environment (no Chrome binary available for `lhci`) — rely on the GitHub Actions workflow for real Lighthouse runs on push.
+1. User to review the diff (`git diff site-daylight`, plus the new `hero-1440w.webp` file)
+   and say the word to commit.
+2. Ask the user whether `sunlogic.co.za` DNS is proxied through Cloudflare already, to
+   scope the cache-lifetime fix.
+3. Everything else from session 6's "Next steps" list is still open and untouched by this
+   session (3 blog posts with pending hero photography, Noordhoek battery-bank photo never
+   saved to disk, review-carousel real content task 4 still paused, untracked-file decision).
 
 ## Branch / repo state
 
-On `main`, up to date with `origin/main` as of commit `f124215`. Working tree clean except the 3 untracked items above. No open worktrees, no blocked/paused SDD plans.
+On `main`, up to date with `origin/main` as of `0f697d0`. Working tree has the 5 changes
+above (uncommitted) plus the 3 pre-existing untracked items. No open worktrees, no
+blocked/paused SDD plans.
