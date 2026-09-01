@@ -1,49 +1,53 @@
 # Checkpoint — Sunlogic Website
 
-**Saved:** 2026-08-31 (session 5 — lead-capture backend built, tested, and shipped end-to-end)
+**Saved:** 2026-08-31 (session 6 — GitHub Pages + Lighthouse CI + DNS cutover + placeholder cleanup + blog fixes + build-time image optimization)
 
 ## Current task + goal
 
-Built the real backend for lead capture, which didn't exist before this session (both forms silently no-op'd against `PENDING_BACKEND`). Full flow is now live, tested with real submissions to the user's own inbox, and committed/pushed to `main`.
+The site is now **fully live** at `https://sunlogic.co.za/` on GitHub Pages (DNS cut over from the old WordPress site earlier this session, HTTPS cert issued and verified). This session's work, roughly in order:
 
-**Architecture:** Cloudflare Worker (`workers/leads-relay/`) + D1 queue with a Cron retry loop, durable independent of the iMac → n8n workflow on the iMac (`Sunlogic — Leads Relay`, id `aEER87lVVem4ryst`) → SMTP email + Google Sheets logging.
+1. Set up GitHub Pages deployment (mirroring the sibling `doqix_website` pattern) — `.github/workflows/deploy-site.yml`.
+2. Built a non-blocking Lighthouse CI workflow (`.github/workflows/lighthouse-ci.yml`, `lighthouserc.js`) to catch performance/a11y/SEO regressions automatically, after a script-loading auto-fix attempt caused a real regression (`DlButton` broken by removing `defer` — reverted via `git revert`).
+3. Worked through every `[...]` placeholder in the live copy category-by-category with the user (response times, finance options, testimonials/job specs, missing photography) — only real data used, nothing invented.
+4. Cut the DNS over from WordPress to GitHub Pages — confirmed live with valid HTTPS.
+5. Added a fully automated commit-SHA build-stamp in the footer (`window.SL_BUILD`, injected at build time — never needs a manual reminder).
+6. Contact page layout: map now grows via CSS Grid (`grid-template-rows: auto 1fr`) to align its bottom edge with the form card, while the 20px gap to the Contact Details card stays fixed. Commit `eff86ec`.
+7. Blog post fixes (commit `e623d02`):
+   - "← Back to Worth Knowing" breadcrumb on all 7 posts, placed inside the article's opening section using a new `.sl-section--hero-follow` CSS modifier (smaller top-padding matching the site's 40px/32px grid-gap, so hero→breadcrumb→tag→heading step by one consistent amount instead of the normal large section gap).
+   - `DlCard` component gained optional `photo`/`photo-alt` attributes (edge-to-edge cover image via new `.sl-card__media` class) — wired up on the 4 `blog.html` listing cards that have real photography.
+   - `DlCard` also now pulls a `<dl-tag>` child above the heading/body (eyebrow-style); `.sl-prose h3` margin fixed to not double up with the grid gap right after a `<dl-tag>`.
+8. **Build-time image optimization** (commit `f124215`) — `scripts/build-site.js` now converts every `.jpg`/`.jpeg`/`.gif` under `dist/` to WebP (quality 80, animated for GIFs) and rewrites every literal reference across `dist/*.html`. Source files in `site-daylight/` are untouched — only the disposable `dist/` output changes extension. Added `sharp` as a devDependency. Typical savings 40-88% per file; the one real GIF (`routine-control.gif`) went from 954K to 274K, animation verified intact (35 frames, correct delays). Also deleted 2 orphaned/unreferenced GIFs (`home-page-devices.gif`, `Impact-metrics-small-1.gif`, confirmed via grep to be linked nowhere).
 
-## What was done this session (all committed, pushed to `origin/main`)
-
-1. **Cloudflare Worker + D1 lead queue** (`workers/leads-relay/`) — validates both lead types (contact/calculator), persists durably, fire-and-forget delivery to n8n with a shared secret, Cron Trigger retries every 5 min if n8n/iMac is down. Verified live: unpublished n8n → submission queued → republished → auto-delivered.
-2. **n8n workflow wired up** (iMac, coordinated via `serverMonitor` per the change-control rule) — Webhook → Extract Body → Switch(contact/calculator) → Send email(s) → Log to Google Sheet ("Sunlogic Leads") → Respond 200.
-3. **Frontend wiring**: `site-daylight/contact.html` and both `plugin-calculator` instances on `solar.html` now point at the real Worker URL (`https://sunlogic-leads-relay.smarais-za.workers.dev/leads/{contact,calculator}`) instead of `PENDING_BACKEND`.
-4. **Found and fixed a real production bug** during user's own live testing: `site-daylight/shared/forms.js` required-field selector matched `<dl-field required>` wrapper elements (no `.value` prop) instead of actual `input`/`select`/`textarea` — crashed every contact-form submission before it could send. Commit `96b043b`.
-5. **Branded HTML emails built and shipped**: `emails/sales-notification.html` (to sales@sunlogic.co.za) and `emails/client-confirmation.html` (to the visitor) — real Sunlogic brand tokens, real logo (inline base64, `emails/assets/logo-email.png`), both injected into their n8n Send Email nodes and published. Commit `d8fbf43`.
-6. **Dark-mode rendering bug fixed**: mail clients (Apple Mail, Gmail app, Outlook.com) were auto-inverting the emails' colors. Fixed with `color-scheme` meta tags, full `@media (prefers-color-scheme: dark)` + Gmail `[data-ogsc]` overrides on every background/text/border color, plus `bgcolor` HTML attributes as a hard fallback. Verified by the user in their own inbox. Commit `87f37e7`.
-7. **Unrelated drive-by fix**: homepage fleet-live stat cards were polling every 15 min but claiming "23 min stale" — `SL_FLEET_POLL_MS` in `site-daylight/shared/components.js` changed to 2 min. Commit `270ed1f`.
+All of the above is committed and pushed to `origin/main` (`3f5929a` through `f124215`). GitHub Pages will redeploy automatically.
 
 ## Key files
 
-- `workers/leads-relay/src/index.js` — Worker logic, CORS allowlist (prod origins only, temp localhost entry already reverted).
-- `workers/leads-relay/wrangler.toml` — D1 binding, Cron trigger, `N8N_WEBHOOK_URL` var.
-- `emails/sales-notification.html`, `emails/client-confirmation.html`, `emails/assets/logo-email.png`, `emails/README.md` — source-of-truth for the n8n email nodes. **n8n does not read these files** — edit here, then re-paste into n8n's Send Email nodes and republish, or the two drift.
-- `site-daylight/shared/forms.js` — contact form logic (bug fixed).
-- `site-daylight/contact.html`, `site-daylight/solar.html` — real Worker URLs wired in.
+- `.github/workflows/deploy-site.yml`, `.github/workflows/lighthouse-ci.yml`, `lighthouserc.js` — deploy + regression-check pipeline.
+- `scripts/build-site.js` — build script: copy → optimize images (WebP conversion + reference rewrite) → stamp build SHA → minify CSS/JS.
+- `site-daylight/shared/components.js` — `DlCard` (photo/tag support), `DlFooter`/`SL_BUILD_LINE` (commit stamp).
+- `site-daylight/shared/sunlogic.css` — `.sl-back-link`, `.sl-section--hero-follow`, `.sl-card__media`, `.sl-contact__side`/`.sl-contact__map`.
+- `site-daylight/contact.html` — corrected map/form alignment.
+- `site-daylight/blog*.html` — breadcrumb + tag/heading order.
 
 ## Standing constraints (carry forward)
 
-- iMac changes (n8n workflow edits, restarts, etc.) route through `serverMonitor` per the global change-control rule — already done correctly this session, logged appropriately.
-- Never paste real secrets (SMTP passwords, RELAY_SECRET, API tokens) into chat or committed files.
-- Email templates: n8n is the live copy; the repo files are the source of truth but require manual re-sync (no automation exists to push repo → n8n).
+- Never re-attempt the "remove `defer`" script-loading optimization — confirmed regression risk (breaks `DlButton` and likely other components that read `this.innerHTML` expecting pre-parsed children). Lighthouse CI is the safety net for future performance work instead.
+- iMac/n8n changes still route through `serverMonitor` per the global change-control rule (unrelated to this session's work, but stands for any future backend touch).
+- This machine is dev-only; this repo has no `npm run dev` real-data caveat like `serverMonitor` — n/a here, this is a fully static site.
 
-## Uncommitted / untracked (left alone, not part of this work)
+## Uncommitted / untracked (left alone, not part of this work — carried over from session 5, still unresolved)
 
-- `.claude/launch.json` — local browser dev config.
-- `Sunlogic_Feedback_Decisions.docx` / `.pdf` — unfamiliar documents, restrictive permissions, unreviewed content. Did not commit without knowing what's inside.
-- `workers/leads-relay/.wrangler/` — Wrangler's local build cache; should probably be added to `.gitignore` rather than committed.
+- `.claude/` — local config directory, never reviewed/decided on.
+- `Sunlogic_Feedback_Decisions.docx` / `.pdf` — unfamiliar documents, unreviewed content, never committed without knowing what's inside.
 
 ## Next steps (if picked up later)
 
-1. Decide what to do with the 4 untracked items above (gitignore `.wrangler/`, confirm the docx/pdf are meant to be here or move them out, decide if `.claude/` should be committed or ignored).
-2. No other known outstanding work on the lead-capture backend — it's live, tested, and both emails are branded + dark-mode-safe.
-3. `plugins/review-carousel/` Task 4 (real review content) is still paused from session 4 — resume when the user supplies real Google review data (name, rating, text, URL, optional photo). Not touched this session.
+1. **3 blog posts still have `[Hero photography pending]` empty-states**: `blog-ev-home-charging.html`, `blog-five-tips-load-shedding.html`, `blog-why-your-bill-went-up.html`. Decision needed: keep the honest empty-state (matches the site's own "no stock photography" principle) vs. wait for/source real photography.
+2. **Job 2's new Noordhoek battery-bank photo**: user shared it inline in chat but it was never saved to disk (multimodal chat content isn't file-accessible). User was asked to drag it into `site-daylight/images/proof/` via Finder — not yet done as of last check.
+3. Decide what to do with the untracked items listed above.
+4. `plugins/review-carousel/` Task 4 (real review content) — still paused, resume when the user supplies real Google review data.
+5. Local Lighthouse checks can't run in this dev environment (no Chrome binary available for `lhci`) — rely on the GitHub Actions workflow for real Lighthouse runs on push.
 
 ## Branch / repo state
 
-On `main`, up to date with `origin/main` as of commit `96b043b`. No open worktrees. No blocked/paused SDD plans from this session.
+On `main`, up to date with `origin/main` as of commit `f124215`. Working tree clean except the 3 untracked items above. No open worktrees, no blocked/paused SDD plans.
