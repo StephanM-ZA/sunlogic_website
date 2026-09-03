@@ -143,3 +143,15 @@ test('copy: a sentence-case prose sub-head with a proper noun is not flagged', a
   const r = await check('copy-pass-proper-noun.html');
   assert.deepStrictEqual(r.warns.filter((w) => w.rule === 'copy'), []);
 });
+
+// An earlier version of the rule skipped the leading word and required a 0.7
+// majority of the rest. At exactly three long words that dropped the count
+// to two, failing the length guard before the ratio was ever checked — a
+// Title Case sub-head this short went unflagged. Requiring every significant
+// word to be capitalised has no such boundary.
+test('copy: a Title Cased prose sub-head with exactly three long words is flagged', async () => {
+  const r = await check('copy-fail-titlecase-three-words.html');
+  const findings = r.warns.filter((w) => w.rule === 'copy');
+  assert.strictEqual(findings.length, 1, 'expected exactly one copy warning, for the Title Cased sub-head');
+  assert.match(findings[0].detail, /Solar Panel Installation/);
+});

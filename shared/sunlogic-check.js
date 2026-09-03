@@ -104,17 +104,21 @@
         fail('copy', 'ALL CAPS heading: "' + t.slice(0, 48) + '" — capitals belong to the mono face at label size', el);
       }
     });
-    /* An h3 given .sl-title is an explicit titled heading (a named
-       sub-document, say), so it follows heading case, not prose case. The
-       first word is skipped because sentence case capitalises it, and the
-       threshold is a clear majority of the rest: counting every capitalised
-       long word flagged "Cape Town's own structure", where the capitals are a
-       proper noun rather than Title Case. */
+    /* An h3 given .sl-title is an explicit titled heading, so it follows
+       heading case, not prose case.
+       Title Case capitalises every significant word. Sentence case that
+       happens to contain a proper noun — "Cape Town's own structure" — leaves
+       at least one lowercase, which is the distinction being drawn here.
+       An earlier attempt skipped the leading word and used a 0.7 ratio; that
+       stopped catching Title Case at exactly three long words, because
+       dropping one left two and failed the length guard before the ratio was
+       reached. Requiring all-capitalised states the rule directly and has no
+       such boundary. */
     document.querySelectorAll('.sl-prose h3:not(.sl-title)').forEach((el) => {
       const text = el.textContent.trim();
-      const words = text.split(/\s+/).filter((w) => w.length > 3).slice(1);
+      const words = text.split(/\s+/).filter((w) => w.length > 3);
       const caps = words.filter((w) => /^[A-Z]/.test(w));
-      if (words.length > 2 && caps.length > words.length * 0.7) {
+      if (words.length > 2 && caps.length === words.length) {
         warn('copy', 'prose sub-head looks Title Cased: "' + text.slice(0, 48) + '" — sub-heads inside prose are sentence case', el);
       }
     });
