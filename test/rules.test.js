@@ -119,3 +119,17 @@ test('a11y: an inline text link inside prose is not a touch target', async () =>
   const r = await check('a11y-pass-inline-link.html');
   assert.deepStrictEqual(r.warns.filter((w) => w.rule === 'a11y'), []);
 });
+
+/* --- a11y: computed display, not just container --------------------- */
+
+// A container allow-list only covers the containers someone thought to list.
+// `display: inline` is the general case: a link laid out as text, wherever it
+// lives, is not a tap target. A `display: block` link under 44px outside any
+// exempt container is still a genuine finding — the display check narrows
+// the rule, it doesn't gut it.
+test('a11y: an inline-display link is exempt, a block-display link under 44px is still flagged', async () => {
+  const r = await check('a11y-inline-vs-block-link.html');
+  const findings = r.warns.filter((w) => w.rule === 'a11y');
+  assert.strictEqual(findings.length, 1, 'expected exactly one a11y warning, for the block link');
+  assert.match(findings[0].detail, /20px tall, minimum is 44px/);
+});

@@ -134,17 +134,18 @@
     const navLinks = document.querySelectorAll('.sl-nav__links .sl-nav__link');
     if (navLinks.length > 4) fail('limit', navLinks.length + ' nav links; the limit is four', navLinks[4]);
 
-    /* 9 — Touch targets. 44px is a minimum for something you tap; an inline
-       text link inside a paragraph is not a tap target, and treating it as one
-       produced 75 findings that were all the rule's fault. The footer and nav
-       were already exempt for exactly this reason — .sl-prose, .sl-body and
-       the contact roll are the same case. */
+    /* 9 — Touch targets. 44px is a minimum for something you tap. Two things
+       are exempt. The container list covers regions that are entirely text
+       (the footer, the nav, prose, body copy, the contact roll). The display
+       check covers the general case those containers were groping at: an
+       element laid out as `inline` is part of a sentence, not a control —
+       every real control in this system computes to inline-flex or flex. */
     document.querySelectorAll('a, button, .sl-btn, .sl-icon-btn').forEach((el) => {
       const r = el.getBoundingClientRect();
-      const inlineText = el.closest('.sl-footer, .sl-nav__links, .sl-prose, .sl-body, .sl-roll');
-      if (r.height > 0 && r.height < 44 && !inlineText) {
-        warn('a11y', Math.round(r.height) + 'px tall, minimum is 44px', el);
-      }
+      if (r.height === 0 || r.height >= 44) return;
+      if (el.closest('.sl-footer, .sl-nav__links, .sl-prose, .sl-body, .sl-roll')) return;
+      if (getComputedStyle(el).display === 'inline') return;
+      warn('a11y', Math.round(r.height) + 'px tall, minimum is 44px', el);
     });
 
     /* 10 — Every image slot is either real or a labelled empty state. */
