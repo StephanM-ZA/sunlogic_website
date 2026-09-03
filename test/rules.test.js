@@ -55,3 +55,47 @@ test('every rule id has a why', async () => {
     assert.ok(why[id] && why[id].length > 20, 'no why for rule: ' + id);
   }
 });
+
+/* --- rhythm ---------------------------------------------------------- */
+
+test('rhythm: two adjacent sections sharing a background is a fail', async () => {
+  const r = await check('rhythm-fail.html');
+  assert.ok(r.fails.some((f) => f.rule === 'rhythm'), 'expected a rhythm fail');
+});
+
+// Regression: a .sl-hero nested in a section is a card wearing the hero's
+// layer stack, not a band. Two side by side in a grid used to read as
+// "adjacent bands sharing a background" and blocked a legitimate page.
+test('rhythm: two nested .sl-hero cards in one grid are not adjacent bands', async () => {
+  const r = await check('rhythm-pass-nested-hero.html');
+  assert.deepStrictEqual(r.fails.filter((f) => f.rule === 'rhythm'), []);
+});
+
+/* --- accent ---------------------------------------------------------- */
+
+test('accent: three emphasis buttons in view is a fail', async () => {
+  const r = await check('accent-fail.html');
+  assert.ok(r.fails.some((f) => f.rule === 'accent'), 'expected an accent fail');
+});
+
+// Regression: a dialog is its own view with its own emphasis budget, and while
+// it is open the page behind it is inert. Its submit button used to count
+// toward the page's limit.
+test('accent: an emphasis button inside a dialog does not count', async () => {
+  const r = await check('accent-pass-dialog.html');
+  assert.deepStrictEqual(r.fails.filter((f) => f.rule === 'accent'), []);
+});
+
+/* --- copy ------------------------------------------------------------ */
+
+test('copy: an ALL CAPS heading is a fail', async () => {
+  const r = await check('copy-fail-allcaps.html');
+  assert.ok(r.fails.some((f) => f.rule === 'copy'), 'expected a copy fail');
+});
+
+/* --- a11y ------------------------------------------------------------ */
+
+test('a11y: an image with no alt text is a fail', async () => {
+  const r = await check('a11y-fail-noalt.html');
+  assert.ok(r.fails.some((f) => f.rule === 'a11y' && /alt/.test(f.detail)));
+});
