@@ -54,6 +54,7 @@ checking can be checking nothing.
 | Check scope | Design-system rules **+** Lighthouse budgets | Both engines already exist; one gate and one triage flow over both |
 | Gate location | Standalone `npm run conformance`, invoked by whatever publishes | The three sites converge on one deploy path once Xneelo clears; the gate must not bake in today's split |
 | Suppression | **None.** Exceptions live in the rule | Already how this codebase works — see §3.1 |
+| Severity | **One.** Everything blocks, after the §3.3 backlog is cleared | The measured backlog is three causes, not 150 problems — see §3.2 |
 | Escape hatch | One loud env-var override | Escaping must be possible and conspicuous, not quiet and per-finding |
 
 ### 3.1 Why exceptions live in the rule
@@ -81,7 +82,7 @@ have gone to be forgotten.
 The cost is real: a wrong rule blocks legitimate work until the rule is fixed.
 §6 covers the override that makes that survivable.
 
-### 3.2 Why `warn` does not block — an open question
+### 3.2 Severity: one tier, after a backlog pass
 
 "Gate the deploy" was chosen over "block on errors, report on warnings". This
 design nonetheless blocks only on `fail` and reports `warn`, because blocking
@@ -107,18 +108,55 @@ There are two honest ways to reach "everything blocks":
    exempt inline links properly, then collapse the tiers so there is one
    severity and everything blocks.
 
-The size of that backlog is **not currently known**. Spot checks give 3
-warnings on the apex landing page and 6 on `contact.html`, but nobody has
-measured all 42 pages, because measuring them is exactly what the runner in
-§4.3 is for. That is an argument for the sequencing in §8: land the runner,
-run it in report-only mode, read the real backlog, then decide whether to
-promote the tier.
+**Resolved: option 2, everything blocks.** The backlog has now been measured
+(§3.3) and it is three causes, not a wall, so the prerequisite is small enough
+to do before the gate turns on.
 
-Option 2 is the stated intent and is reachable, but it is a prerequisite
-project rather than a switch. Option 1 is assumed here so the gate can land.
+The gate therefore ends with **one severity**. The `fail`/`warn` split remains
+inside the engine as a confidence signal while the three causes are cleared,
+and collapses in step 6 of §8.
 
-**This is the one decision in this spec that does not match the answer given.
-It needs confirming before implementation.**
+### 3.3 The measured backlog
+
+Playwright over all 42 built pages, driving the real checker rather than a
+reimplementation of it. **0 fails, 150 warns.**
+
+| rule | warns | pages | cause | verdict |
+|---|---:|---:|---|---|
+| `a11y` | 75 | 27 | inline links 16–24px against the 44px minimum | rule too broad |
+| `type` | 63 | 6 | SVG `<text>` computing to bare `monospace` | rule too broad, or missing CSS |
+| `copy` | 12 | 6 | Title-Cased prose sub-heads in blog posts | pages wrong |
+
+150 findings, three root causes:
+
+**`type` — 63 warnings, one cause.** All of them are `<text>` inside inline
+SVG. SVG text does not inherit the page font, so it computes to the UA's
+`monospace` and the rule — which walks `body *` and checks `font-family` on
+anything with text content — flags every label in every diagram. Either
+`svg text { font-family: var(--font-mono) }` (if diagram labels should be
+JetBrains Mono, which they should) or the rule excludes the SVG namespace.
+One change clears all 63.
+
+**`a11y` — 75 warnings, ~3 per page, one cause.** The 44px minimum is right
+for a button and wrong for an inline text link inside a paragraph. The rule
+already knows this: it exempts `.sl-footer` and `.sl-nav__links` for exactly
+that reason. These are the same case in a third place (the contact roll and
+prose links). A rule amendment, not 75 page edits.
+
+**`copy` — 12 warnings, 6 pages.** Genuine content findings: "2. Install
+Proper Surge Protection" is Title Case in a prose sub-head. The smallest
+group and the only one that is really the pages' fault.
+
+Two caveats on the measurement. It ran at a 412px mobile viewport, so
+touch-target counts will differ at desktop widths — re-run both before
+declaring the backlog clear. And it took three attempts, each of which
+reported a confident, clean **0 fails 0 warns** while silently dropping
+everything: first the checker's header goes through `console.group` not
+`console.log`, so every page looked like the checker had never run; then the
+severity test `startsWith('!')` never matched because the line begins `%c!`.
+That is the case for §4.1's machine-readable engine output stated as plainly
+as it can be — scraping a console stream produced a green result twice in one
+afternoon, and only disbelief in the number caught it.
 
 ## 4. Architecture
 
@@ -211,10 +249,11 @@ consumers or neither — never one.
    waits for load, and evaluates `window.SL_CHECK.run()`.
 4. Assert the integrity conditions of §4.4.
 5. Print the report of §5.
-6. Exit non-zero if any page produced a `fail`.
+6. Exit non-zero if any page produced a finding.
 
-Warnings print but do not block, matching the checker's existing
-fail/warn split.
+Until the §3.3 backlog is cleared the runner blocks on `fail` and reports
+`warn`, so it can land and be run in anger while the three causes are fixed.
+Step 6 of §8 collapses the tiers and everything blocks from then on.
 
 ### 4.4 Integrity — the gate cannot pass without checking
 
@@ -308,24 +347,33 @@ pages-discovered, and that the count is greater than zero.
    move the production guard to the presenter and off the hostname.
 4. Rule fixtures and the watchman test.
 5. `scripts/conformance.js` and `npm run conformance`.
-6. Close the Lighthouse healthcheck hole; make its exit code gate.
-7. Wire the gate into both publish paths — GitHub Actions for the apex,
+6. Clear the §3.3 backlog, then collapse the severity tiers:
+   a. `svg text { font-family: var(--font-mono) }` — clears 63 `type`.
+   b. Amend the touch-target rule to exempt inline text links properly —
+      clears ~75 `a11y`. It already exempts `.sl-footer` and
+      `.sl-nav__links`; this generalises that to prose and the contact roll.
+   c. Fix the 12 Title-Cased prose sub-heads. Content, not code.
+   d. Re-run at desktop as well as mobile widths and confirm zero.
+   e. Collapse `warn` into `fail` — one severity, everything blocks.
+7. Close the Lighthouse healthcheck hole; make its exit code gate.
+8. Wire the gate into both publish paths — GitHub Actions for the apex,
    the Cloudflare build command for the subdomains — collapsing to one call
    site when the three converge.
 
 Steps 2–5 land without changing any deploy behaviour, so the gate can be run by
-hand and its findings triaged before it starts blocking anything. Step 7 is the
-only one that changes what happens on a push.
+hand and its findings triaged before it blocks anything. Step 6 is the backlog
+clearance that "everything blocks" depends on. Step 8 is the only one that
+changes what happens on a push.
 
 ## 9. Known state at time of writing
 
 - Lighthouse: 42 pages, 14 per site. Worst scores — performance 0.87
   (`/main/solar.html`), accessibility 0.96 (`/electrical/solar.html`),
   best-practices 1.00, SEO 1.00. Nothing under any threshold.
-- Design-system checker on the apex landing page: 3 warnings, 0 errors. The
-  warnings are 24px-tall inline links in the contact roll and footer.
-- So the gate should be green on day one. It is being built to keep that true,
-  not to fix a backlog.
+- Design-system checker, all 42 pages: **0 fails, 150 warns** — see §3.3 for
+  the breakdown and the three root causes.
+- So the gate is green on day one for `fail`, and needs step 6 of §8 before it
+  can be green on one collapsed severity.
 
 ## Cross-references
 
