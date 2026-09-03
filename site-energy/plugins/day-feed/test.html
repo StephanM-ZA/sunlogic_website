@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Day Feed — Test Harness</title>
+<style>
+  body { margin: 0; padding: 3rem 2rem; background: #0D2028; color: #fff;
+         font-family: system-ui, sans-serif; }
+  .wrap { max-width: 1000px; margin: 0 auto; display: grid;
+          grid-template-columns: 480px 1fr; gap: 2.5rem; align-items: start; }
+  h1 { font-size: 1.1rem; margin: 0 0 1.5rem; grid-column: 1 / -1; }
+  .panel { display: grid; gap: 0.75rem; }
+  label { font-size: 0.8rem; opacity: 0.7; display: block; margin-bottom: 0.25rem; }
+  input, button { font: inherit; padding: 0.4rem 0.6rem; }
+  button { cursor: pointer; }
+  .row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  pre { background: rgba(255,255,255,0.06); padding: 1rem; border-radius: 6px;
+        font-size: 11px; line-height: 1.5; overflow: auto; max-height: 320px; margin: 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>plugin-day-feed — test harness</h1>
+
+  <div>
+    <plugin-day-feed heading="Today" tone="glass"></plugin-day-feed>
+  </div>
+
+  <div class="panel">
+    <div>
+      <label for="when">Drive the clock (the component reads <code>el.clock()</code>)</label>
+      <input id="when" type="datetime-local"/>
+    </div>
+    <div class="row">
+      <button id="apply">Apply</button>
+      <button id="live">Back to live</button>
+      <button id="run">Run day at 120&times;</button>
+      <button id="stop">Stop</button>
+    </div>
+    <div class="row">
+      <button id="rest">Jump to 19:30 (rest)</button>
+      <button id="sun">Jump to a Sunday</button>
+      <button id="sat">Jump to a Saturday</button>
+    </div>
+    <div>
+      <label>Checks over 200 working days</label>
+      <button id="scan">Run checks</button>
+    </div>
+    <pre id="out">Ready.</pre>
+  </div>
+</div>
+
+<script src="schedule.data.js"></script>
+<script src="day-feed-schedule.js"></script>
+<script src="day-feed.js" defer></script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  const el = document.querySelector('plugin-day-feed');
+  const out = document.getElementById('out');
+  const when = document.getElementById('when');
+  let fake = null, runner = null;
+
+  const local = (d) => new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+    .toISOString().slice(0, 16);
+  when.value = local(new Date());
+
+  const drive = (d) => { fake = d; el.clock = () => fake; when.value = local(d); };
+
+  document.getElementById('apply').onclick = () => drive(new Date(when.value));
+  document.getElementById('live').onclick = () => { clearInterval(runner); el.clock = null; };
+  document.getElementById('stop').onclick = () => clearInterval(runner);
+
+  document.getElementById('run').onclick = function () {
+    clearInterval(runner);
+    const d = new Date(when.value); d.setHours(7, 0, 0, 0); drive(d);
+    runner = setInterval(function () {
+      fake = new Date(fake.getTime() + 120000); /* 2 minutes per tick */
+      when.value = local(fake);
+      if (fake.getHours() >= 19) clearInterval(runner);
+    }, 200);
+  };
+
+  const jumpTo = (dow, h, m) => {
+    const d = new Date(); d.setHours(h, m, 0, 0);
+    while (dow !== null && d.getDay() !== dow) d.setDate(d.getDate() + 1);
+    drive(d);
+  };
+  document.getElementById('rest').onclick = () => jumpTo(null, 19, 30);
+  document.getElementById('sun').onclick = () => jumpTo(0, 11, 0);
+  document.getElementById('sat').onclick = () => jumpTo(6, 10, 0);
+
+  document.getElementById('scan').onclick = function () {
+    const P = window.PLUGIN_DAY_FEED, S = window.PLUGIN_DAY_FEED_SCHEDULE;
+    const sigs = new Set(); let n = 0, clash = 0, asc = true, conc = 0, cont = 0;
+    const counts = [];
+    for (let i = 0; i < 300 && n < 200; i++) {
+      const d = new Date(); d.setDate(d.getDate() + i);
+      if (d.getDay() === 0) {
+        if (S.composeDay(d, P).length) clash++;
+        continue;
+      }
+      const rows = S.composeDay(d, P);
+      counts.push(rows.length);
+      for (let j = 1; j < rows.length; j++) if (rows[j].start < rows[j - 1].start) asc = false;
+      if (new Set(rows.map(r => r.time)).size !== rows.length) conc++;
+      if (rows.some(r => r.continued)) cont++;
+      const byCrew = {};
+      rows.forEach(r => (byCrew[r.crew] = byCrew[r.crew] || []).push(r));
+      Object.keys(byCrew).forEach(k => {
+        if (byCrew[k].some(r => r.allDay) && byCrew[k].length > 1) clash++;
+      });
+      sigs.add(rows.map(r => r.time + r.crew + r.text + r.dayIndex).join('|'));
+      n++;
+    }
+    out.textContent = [
+      'working days scanned   : ' + n,
+      'unique day signatures  : ' + sigs.size + (sigs.size === n ? '  PASS' : '  FAIL (repeats)'),
+      'times ascending        : ' + (asc ? 'PASS' : 'FAIL'),
+      'crew double-bookings   : ' + clash + (clash === 0 ? '  PASS' : '  FAIL'),
+      'days w/ same-time jobs : ' + conc + '/' + n,
+      'days w/ a continuation : ' + cont + '/' + n,
+      'rows per day           : ' + Math.min.apply(null, counts) + '..' + Math.max.apply(null, counts),
+    ].join('\n');
+  };
+});
+</script>
+</body>
+</html>

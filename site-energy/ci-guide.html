@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sunlogic: corporate identity and design system</title>
+<meta name="description" content="Internal reference for Sunlogic's brand and design system: colors, typography, spacing, and component patterns."/>
+<link rel="icon" type="image/png" href="images/fav_icon.png"/>
+<link rel="preload" href="shared/fonts/HankenGrotesk-400-latin.woff2" as="font" type="font/woff2" crossorigin/>
+<link rel="preload" href="shared/fonts/HankenGrotesk-700-latin.woff2" as="font" type="font/woff2" crossorigin/>
+<link rel="preload" href="shared/fonts/HankenGrotesk-800-latin.woff2" as="font" type="font/woff2" crossorigin/>
+<link rel="preload" href="shared/fonts/HankenGrotesk-900-latin.woff2" as="font" type="font/woff2" crossorigin/>
+<link rel="preload" href="shared/fonts/JetBrainsMono-400-latin.woff2" as="font" type="font/woff2" crossorigin/>
+<link rel="preload" href="shared/fonts/JetBrainsMono-700-latin.woff2" as="font" type="font/woff2" crossorigin/>
+<link rel="stylesheet" href="shared/sunlogic.css?v=33"/>
+<script src="shared/icons.js?v=2" defer></script>
+<script src="shared/components.js?v=36" defer></script>
+<style>
+  body { padding: 0; }
+  .ci { max-width: 1152px; margin: 0 auto; padding: 0 var(--gutter); }
+  .ci-cover { min-height: 78vh; display: flex; flex-direction: column; justify-content: flex-end;
+    background: var(--color-navy); color: #fff; padding: 80px var(--gutter) 64px; position: relative; overflow: hidden; }
+  .ci-cover__grad { position: absolute; inset: 0; background: var(--gradient-dawn);
+    background-size: 300% 100%; animation: daylight-gradient-drift 14s linear infinite; opacity: .5; mix-blend-mode: overlay; }
+  .ci-cover__inner { position: relative; max-width: 1152px; margin: 0 auto; width: 100%; display: grid; gap: 20px; }
+  .ci-sec { padding: 80px 0; border-top: 1px solid var(--border-hairline); }
+  .ci-sec:first-of-type { border-top: none; }
+  .ci-num { font-family: var(--font-mono); font-size: 12px; letter-spacing: .05em;
+    text-transform: uppercase; color: var(--color-orange); }
+  .ci-lede { font-size: 18px; line-height: 1.555; max-width: 640px; color: var(--text-secondary); margin: 0; }
+  .ci-grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+  .ci-swatch { border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border-hairline); }
+  .ci-swatch__chip { height: 96px; }
+  .ci-swatch__meta { padding: 12px 14px; background: #fff; display: grid; gap: 2px; }
+  .ci-swatch__name { font-size: 14px; font-weight: 700; }
+  .ci-swatch__hex, .ci-swatch__use { font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: .05em; text-transform: uppercase; color: var(--text-secondary); }
+  .ci-spec { display: grid; gap: 6px; padding: 24px 0; border-bottom: 1px solid var(--border-hairline); }
+  .ci-spec__meta { font-family: var(--font-mono); font-size: 11px; letter-spacing: .05em;
+    text-transform: uppercase; color: var(--text-secondary); }
+  .ci-demo { background: var(--color-beige-1); border: 1px solid var(--border-warm);
+    border-radius: var(--radius-md); padding: 32px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+  .ci-demo--dark { background: var(--color-navy); border-color: var(--border-inverse); }
+  .ci-demo--plain { background: transparent; border: none; padding: 0; display: block; }
+  .ci-rules { display: grid; gap: 20px; grid-template-columns: 1fr; }
+  @media (min-width: 768px) { .ci-rules { grid-template-columns: 1fr 1fr; } }
+  .ci-rule { border-radius: var(--radius-md); padding: 20px 22px; display: grid; gap: 8px; align-content: start; }
+  .ci-rule--do { background: #fff; border: 1px solid var(--border-hairline); }
+  .ci-rule--dont { background: var(--color-beige-2); border: 1px solid var(--border-warm); }
+  .ci-rule__tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; }
+  .ci-rule--do .ci-rule__tag { color: #0a7a4a; }
+  .ci-rule--dont .ci-rule__tag { color: var(--color-error); }
+  .ci-rule p { margin: 0; font-size: 15px; line-height: 1.5; }
+  .ci-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .ci-table th { text-align: left; font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+    letter-spacing: .05em; text-transform: uppercase; color: var(--text-secondary);
+    padding: 0 16px 10px 0; border-bottom: 1px solid var(--border-warm); }
+  .ci-table td { padding: 12px 16px 12px 0; border-bottom: 1px solid var(--border-hairline); vertical-align: top; }
+  .ci-table code { font-family: var(--font-mono); font-size: 12px; }
+  .ci-toc { display: grid; gap: 2px; }
+  .ci-toc a { display: flex; justify-content: space-between; gap: 24px; padding: 10px 0;
+    border-bottom: 1px solid var(--border-hairline); color: var(--text-primary);
+    font-family: var(--font-mono); font-size: 13px; letter-spacing: .05em; text-transform: uppercase; }
+  .ci-toc a:hover { color: var(--color-orange); opacity: 1; }
+  .ci-ramp { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+  .ci-ramp > div { display: grid; justify-items: center; }
+  .ci-ramp div div { background: var(--color-orange); border-radius: 2px; }
+  .ci-ramp span { font-family: var(--font-mono); font-size: 10px; color: var(--text-secondary); display: block; margin-top: 8px; }
+  /* Social post specimens. */
+  .ci-social { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .ci-post { aspect-ratio: 1; border-radius: var(--radius-md); padding: 28px;
+    display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
+  .ci-post--navy { background: var(--color-navy); color: #fff; }
+  .ci-post--beige { background: var(--color-beige-1); border: 1px solid var(--border-warm); }
+  .ci-post--photo { background: var(--color-navy); padding: 0; }
+  .ci-post__eyebrow { font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+    letter-spacing: .05em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+  .ci-post__head { margin: 0; font-family: var(--font-display); font-size: 30px; font-weight: 800;
+    line-height: 1.1; letter-spacing: -0.01em; }
+  .ci-post__head em { font-style: normal; color: var(--color-orange); }
+  .ci-post__stat { margin: 0; font-family: var(--font-display); font-size: 64px; font-weight: 900;
+    line-height: 1; letter-spacing: -0.02em; color: var(--color-orange); }
+  .ci-post__sub { margin: 0; font-size: 14px; line-height: 1.45; color: rgba(255,255,255,.78); }
+  .ci-post__mark { font-family: var(--font-display); font-weight: 800; font-size: 15px; color: #fff; }
+  .ci-post__slot { flex: 1; display: grid; place-items: center; background: rgba(255,255,255,.06);
+    border-bottom: 1px solid var(--border-inverse); font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: .05em; text-transform: uppercase; color: rgba(255,255,255,.5); text-align: center; padding: 16px; }
+  .ci-post__caption { padding: 20px 22px; display: grid; gap: 6px; }
+  .ci-dockdemo { display: inline-flex; align-items: center; gap: 4px; padding: 5px;
+    background: rgba(13,32,40,0.88); border: 1px solid var(--border-inverse);
+    border-radius: var(--radius-sm); }
+  .ci-dockdemo__phone { display: inline-flex; align-items: center; height: 44px; padding: 0 18px;
+    font-family: var(--font-mono); font-size: 13px; font-weight: 600; letter-spacing: .05em;
+    color: rgba(255,255,255,.82); }
+  .ci-dockdemo__cta { display: inline-flex; align-items: center; height: 44px; padding: 0 20px;
+    border-radius: var(--radius-sm); background: var(--color-orange); color: #fff;
+    font-size: 14px; font-weight: 700; }
+  @media print {
+    .ci-sec { break-inside: avoid; padding: 40px 0; }
+    .ci-cover { min-height: 60vh; }
+  }
+</style>
+</head>
+<body>
+<template id="__bundler_thumbnail" data-bg-color="#0D2028">
+  <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <rect width="200" height="200" fill="#0D2028"/>
+    <circle cx="100" cy="100" r="34" fill="#F66F00"/>
+    <g stroke="#FFF7E9" stroke-width="7" stroke-linecap="round">
+      <path d="M100 40V26"/><path d="M100 174v-14"/>
+      <path d="M160 100h14"/><path d="M26 100h14"/>
+      <path d="M142 58l10-10"/><path d="M48 152l10-10"/>
+      <path d="M142 142l10 10"/><path d="M48 48l10 10"/>
+    </g>
+  </svg>
+</template>
+
+<header class="ci-cover">
+  <div class="ci-cover__grad"></div>
+  <div class="ci-cover__inner">
+    <p class="sl-eyebrow sl-eyebrow--inverse">Corporate identity · Version 1.0</p>
+    <h1 class="sl-hero-heading" style="color:#fff">Sunlogic <em>design system</em></h1>
+    <p class="sl-body sl-body--lg" style="color:rgba(255,255,255,.78);max-width:560px">
+      The complete visual and verbal identity: colour, type, components, motion and voice.
+      Everything here is implemented in <code style="font-family:var(--font-mono);font-size:15px">sunlogic.css</code>.
+      This document explains it, it does not redefine it.
+    </p>
+  </div>
+</header>
+
+<main class="ci">
+
+<section class="ci-sec">
+  <div class="sl-stack" style="margin-bottom:32px">
+    <p class="ci-num">Contents</p>
+  </div>
+  <nav class="ci-toc">
+    <a href="#principles"><span>01: Principles</span><span>What the system is for</span></a>
+    <a href="#colour"><span>02: Colour</span><span>Palette and roles</span></a>
+    <a href="#type"><span>03: Typography</span><span>Two faces, fixed roles</span></a>
+    <a href="#space"><span>04: Space and shape</span><span>Rhythm, radius, elevation</span></a>
+    <a href="#motion"><span>05: Motion</span><span>Four behaviours</span></a>
+    <a href="#components"><span>06: Components</span><span>The whole library</span></a>
+    <a href="#voice"><span>07: Voice</span><span>How Sunlogic writes</span></a>
+    <a href="#social"><span>08: Social media</span><span>Rules, samples, templates</span></a>
+    <a href="#limits"><span>09: Limits and gaps</span><span>Hard rules, open questions</span></a>
+  </nav>
+</section>
+
+<!-- 01 -->
+<section class="ci-sec" id="principles">
+  <div class="sl-stack" style="margin-bottom:40px">
+    <p class="ci-num">01</p>
+    <h2 class="sl-section-heading">A system, not a <em>style guide</em></h2>
+    <p class="ci-lede">Sunlogic installs solar and does the paperwork. The identity has one job:
+      look like a contractor who knows the trade and will tell you the truth about your roof.
+      Warm, plain, unhurried. Nothing here is decorative for its own sake.</p>
+  </div>
+  <div class="ci-rules">
+    <div class="ci-rule ci-rule--do">
+      <span class="ci-rule__tag">Warm, not clinical</span>
+      <p>Surfaces are beige, not white and not grey. The whole palette sits on the warm side, including the greys.</p>
+    </div>
+    <div class="ci-rule ci-rule--do">
+      <span class="ci-rule__tag">Flat, not layered</span>
+      <p>Depth comes from a tonal step and a hairline, never a shadow. The page reads as printed matter, not as floating cards.</p>
+    </div>
+    <div class="ci-rule ci-rule--do">
+      <span class="ci-rule__tag">One accent, rationed</span>
+      <p>A single orange. Used once or twice per screen, it means something. Used everywhere, it means nothing.</p>
+    </div>
+    <div class="ci-rule ci-rule--do">
+      <span class="ci-rule__tag">Honest about gaps</span>
+      <p>Unknown facts show as visible bracketed placeholders. A missing photograph is a labelled empty state, never stock.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 02 -->
+<section class="ci-sec" id="colour">
+  <div class="sl-stack" style="margin-bottom:40px">
+    <p class="ci-num">02</p>
+    <h2 class="sl-section-heading">Colour has <em>roles, not moods</em></h2>
+    <p class="ci-lede">Eleven values do the whole site. Each has one job. A colour used outside
+      its role is the fastest way to make the system stop looking like itself.</p>
+  </div>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Core</h3>
+  <div class="ci-grid" style="margin-bottom:40px">
+    <div class="ci-swatch"><div class="ci-swatch__chip" style="background:#F66F00"></div>
+      <div class="ci-swatch__meta"><span class="ci-swatch__name">Orange</span><span class="ci-swatch__hex">#F66F00</span>
+      <span class="ci-swatch__use">Fills, icons, borders, and hero headings over a dark photo scrim, where it already passes contrast</span></div></div>
+    <div class="ci-swatch"><div class="ci-swatch__chip" style="background:#B85300"></div>
+      <div class="ci-swatch__meta"><span class="ci-swatch__name">Orange (text)</span><span class="ci-swatch__hex">#B85300</span>
+      <span class="ci-swatch__use">Same hue, darkened for orange TEXT on beige or white: 4.6:1, passes AA. The vibrant orange above fails at 2.7:1 as text on beige.</span></div></div>
+    <div class="ci-swatch"><div class="ci-swatch__chip" style="background:#0D2028"></div>
+      <div class="ci-swatch__meta"><span class="ci-swatch__name">Navy</span><span class="ci-swatch__hex">#0D2028</span>
+      <span class="ci-swatch__use">Dark sections · all text</span></div></div>
+    <div class="ci-swatch"><div class="ci-swatch__chip" style="background:#081619"></div>
+      <div class="ci-swatch__meta"><span class="ci-swatch__name">Navy deep</span><span class="ci-swatch__hex">#081619</span>
+      <span class="ci-swatch__use">Hover · pressed</span></div></div>
+    <div class="ci-swatch"><div class="ci-swatch__chip" style="background:#FFF7E9"></div>
+      <div class="ci-swatch__meta"><span class="ci-swatch__name">Beige</span><span class="ci-swatch__hex">#FFF7E9</span>
+      <span class="ci-swatch__use">Page surface, not white</span></div></div>
+    <div class="ci-swatch"><div class="ci-swatch__chip" style="background:#F7EED9"></div>
+      <div class="ci-swatch__meta"><span class="ci-swatch__name">Beige 1</span><span class="ci-swatch__hex">#F7EED9</span>
+      <span class="ci-swatch__use">Alternating sections</span></div></div>
+    <div class="ci-swatch"><div class="ci-swatch__chip" style="background:#F0E5CF"></div>
+      <div class="ci-swatch__meta"><span class="ci-swatch__name">Beige 2</span><span class="ci-swatch__hex">#F0E5CF</span>
+      <span class="ci-swatch__use">Sunk surfaces</span></div></div>
+    <div class="ci-swatch"><div class="ci-swatch__chip" style="background:#DACAB6"></div>
+      <div class="ci-swatch__meta"><span class="ci-swatch__name">Dark beige</span><span class="ci-swatch__hex">#DACAB6</span>
+      <span class="ci-swatch__use">Borders on warm</span></div></div>
+    <div class="ci-swatch"><div class="ci-swatch__chip" style="background:#5A544B"></div>
+      <div class="ci-swatch__meta"><span class="ci-swatch__name">Grey strong</span><span class="ci-swatch__hex">#5A544B</span>
+      <span class="ci-swatch__use">Secondary text</span></div></div>
+    <div class="ci-swatch"><div class="ci-swatch__chip" style="background:#A09B93"></div>
+      <div class="ci-swatch__meta"><span class="ci-swatch__name">Grey</span><span class="ci-swatch__hex">#A09B93</span>
+      <span class="ci-swatch__use">Decorative only, never text</span></div></div>
+    <div class="ci-swatch"><div class="ci-swatch__chip" style="background:#BA1A1A"></div>
+      <div class="ci-swatch__meta"><span class="ci-swatch__name">Error</span><span class="ci-swatch__hex">#BA1A1A</span>
+      <span class="ci-swatch__use">Form validation only</span></div></div>
+  </div>
+
+  <h3 class="sl-title" style="margin-bottom:8px">Secondary: creative contexts only</h3>
+  <p class="ci-lede" style="margin-bottom:16px">Collateral, banners, illustration. <strong>Never core UI,
+    never a page background.</strong> Reaching for these in an interface is how the site stops being Sunlogic.</p>
+  <div class="ci-grid" style="margin-bottom:40px">
+    <div class="ci-swatch"><div class="ci-swatch__chip" style="background:#FCCC3C"></div>
+      <div class="ci-swatch__meta"><span class="ci-swatch__name">Yellow</span><span class="ci-swatch__hex">#FCCC3C</span></div></div>
+    <div class="ci-swatch"><div class="ci-swatch__chip" style="background:#4C2806"></div>
+      <div class="ci-swatch__meta"><span class="ci-swatch__name">Brown</span><span class="ci-swatch__hex">#4C2806</span></div></div>
+    <div class="ci-swatch"><div class="ci-swatch__chip" style="background:#C8B0FF"></div>
+      <div class="ci-swatch__meta"><span class="ci-swatch__name">Purple</span><span class="ci-swatch__hex">#C8B0FF</span></div></div>
+    <div class="ci-swatch"><div class="ci-swatch__chip" style="background:#321F61"></div>
+      <div class="ci-swatch__meta"><span class="ci-swatch__name">Dark purple</span><span class="ci-swatch__hex">#321F61</span></div></div>
+    <div class="ci-swatch"><div class="ci-swatch__chip" style="background:#BED5FF"></div>
+      <div class="ci-swatch__meta"><span class="ci-swatch__name">Light blue</span><span class="ci-swatch__hex">#BED5FF</span></div></div>
+    <div class="ci-swatch"><div class="ci-swatch__chip" style="background:#1D3E86"></div>
+      <div class="ci-swatch__meta"><span class="ci-swatch__name">Dark blue</span><span class="ci-swatch__hex">#1D3E86</span></div></div>
+  </div>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Gradients</h3>
+  <div style="display:grid;gap:12px;margin-bottom:40px">
+    <div style="height:64px;border-radius:var(--radius-md);background:var(--gradient-dawn)"></div>
+    <div style="height:64px;border-radius:var(--radius-md);background:var(--gradient-daylight)"></div>
+    <div style="height:64px;border-radius:var(--radius-md);background:var(--gradient-dusk)"></div>
+    <div style="height:64px;border-radius:var(--radius-md);background:var(--gradient-night)"></div>
+  </div>
+
+  <div class="ci-rules">
+    <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do</span>
+      <p>Use orange for the one thing you most want clicked, and for the last phrase of a headline: <code>#F66F00</code> on a dark photo, <code>#B85300</code> anywhere the orange itself is the text on beige or white.</p></div>
+    <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Don't</span>
+      <p>Set <code>#F66F00</code> as text on beige or white. It's a fill/icon/border colour there: 2.7:1, fails AA. Use <code>#B85300</code> for that case instead.</p></div>
+    <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Don't</span>
+      <p>Use orange as an error or warning colour. Errors are <code>#BA1A1A</code>.</p></div>
+    <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do</span>
+      <p>Use <code>#5A544B</code> for secondary text on warm surfaces. It passes AA at 7.0:1.</p></div>
+    <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Don't</span>
+      <p>Use <code>#A09B93</code> for any text. At 2.4:1 on beige it fails. It is for rules and disabled states.</p></div>
+  </div>
+</section>
+
+<!-- 03 -->
+<section class="ci-sec" id="type">
+  <div class="sl-stack" style="margin-bottom:40px">
+    <p class="ci-num">03</p>
+    <h2 class="sl-section-heading">Two faces, <em>fixed roles</em></h2>
+    <p class="ci-lede">Hanken Grotesk carries everything except labels. JetBrains Mono carries labels
+      and data, always uppercase, never body copy. Both are SIL Open Font Licence and bundled with the
+      site: no CDN, no substitution.</p>
+  </div>
+
+  <div class="ci-spec">
+    <span class="ci-spec__meta">Hero · Hanken Grotesk 900 · clamp(32, 5.4vw, 72) / 1.111 / −0.02em</span>
+    <p class="sl-hero-heading" style="font-size:56px">Solar sized to <em>what you use</em></p>
+  </div>
+  <div class="ci-spec">
+    <span class="ci-spec__meta">Section · 800 · clamp(32, 3.6vw, 48) / 1.166 / −0.01em · normal tracking below 768px</span>
+    <p class="sl-section-heading">Paperwork is part of <em>the job</em></p>
+  </div>
+  <div class="ci-spec">
+    <span class="ci-spec__meta">Title · 700 · 24 / 1.333 / normal</span>
+    <p class="sl-title">Certificate of Compliance</p>
+  </div>
+  <div class="ci-spec">
+    <span class="ci-spec__meta">Body large · 400 · 18 / 1.555</span>
+    <p class="sl-body sl-body--lg">We come out, look at your roof, your board and twelve months of consumption, then size the system to that.</p>
+  </div>
+  <div class="ci-spec">
+    <span class="ci-spec__meta">Body · 400 · 16 / 1.5</span>
+    <p class="sl-body">Council registration, the Certificate of Compliance and the commissioning record are ours to handle.</p>
+  </div>
+  <div class="ci-spec">
+    <span class="ci-spec__meta">Label · JetBrains Mono 600 · 14 / 1.428 / +0.05em · uppercase</span>
+    <p class="sl-eyebrow">Western Cape</p>
+  </div>
+  <div class="ci-spec" style="border-bottom:none">
+    <span class="ci-spec__meta">Button · Hanken Grotesk 700 · 14 (inferred, flagged for review)</span>
+    <div><dl-button variant="primary">Book a Free Site Assessment</dl-button></div>
+  </div>
+
+  <h3 class="sl-title" style="margin:32px 0 8px">Case</h3>
+  <p class="ci-lede" style="margin-bottom:20px">Headings are Title Case; everything inside prose is
+    sentence case. The split follows the copy document, which is the authority on wording.</p>
+  <div class="ci-rules" style="margin-bottom:20px">
+    <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do: headings</span>
+      <p>Title Case for hero and section headings, card titles, step titles and CTA headings.
+      "Solar That Pays For Itself." Minor words stay lower case (<em>a, and, at, for, in, of, on,
+      or, the, to</em>) unless they open the heading.</p></div>
+    <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do: prose</span>
+      <p>Sentence case for sub-heads inside body copy, eyebrows, field labels and captions.
+      "What will it actually save me?"</p></div>
+    <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do</span>
+      <p>Set the final phrase of a headline in orange, once per heading.</p></div>
+    <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Don't</span>
+      <p>Colour a phrase mid-sentence, or use the device twice in one heading. And never
+      ALL CAPS a heading. Capitals belong to the mono face at label size.</p></div>
+  </div>
+</section>
+
+<!-- 04 -->
+<section class="ci-sec" id="space">
+  <div class="sl-stack" style="margin-bottom:40px">
+    <p class="ci-num">04</p>
+    <h2 class="sl-section-heading">Eight-pixel rhythm, <em>flat surfaces</em></h2>
+  </div>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Spacing scale</h3>
+  <div class="ci-ramp" style="margin-bottom:40px">
+    <div><div style="width:4px;height:4px;background:var(--color-orange)"></div><span>4</span></div>
+    <div><div style="width:8px;height:8px;background:var(--color-orange)"></div><span>8</span></div>
+    <div><div style="width:16px;height:16px;background:var(--color-orange)"></div><span>16</span></div>
+    <div><div style="width:24px;height:24px;background:var(--color-orange)"></div><span>24</span></div>
+    <div><div style="width:32px;height:32px;background:var(--color-orange)"></div><span>32</span></div>
+    <div><div style="width:40px;height:40px;background:var(--color-orange)"></div><span>40</span></div>
+    <div><div style="width:48px;height:48px;background:var(--color-orange)"></div><span>48</span></div>
+    <div><div style="width:64px;height:64px;background:var(--color-orange)"></div><span>64</span></div>
+    <div><div style="width:80px;height:80px;background:var(--color-orange)"></div><span>80</span></div>
+    <div><div style="width:120px;height:120px;background:var(--color-orange)"></div><span>120</span></div>
+  </div>
+
+  <table class="ci-table" style="margin-bottom:40px">
+    <thead><tr><th>Measure</th><th>Desktop</th><th>Below 768px</th></tr></thead>
+    <tbody>
+      <tr><td>Section padding</td><td>120px</td><td>64px</td></tr>
+      <tr><td>Between blocks in a section</td><td>40px</td><td>32px</td></tr>
+      <tr><td>Gutter</td><td>24px</td><td>16px</td></tr>
+      <tr><td>Container</td><td colspan="2">1152px</td></tr>
+      <tr><td>Grid gap</td><td colspan="2">20px</td></tr>
+    </tbody>
+  </table>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Section rhythm is automatic</h3>
+  <p class="ci-lede" style="margin-bottom:20px">Every top-level block inside a section sits 40px from the
+    next: heading stack, grid, callout, form. It is a property of the section, not something anyone
+    applies. A heading can never butt up against the grid below it, and nobody has to remember a margin.</p>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Cards in a row are always level</h3>
+  <p class="ci-lede" style="margin-bottom:20px">Every card in a grid stretches to the height of its tallest
+    sibling, whatever the copy length. Ragged card bottoms are the most common way a grid stops looking
+    designed, so it is enforced by the card rather than left to the page.</p>
+  <p class="ci-lede" style="margin-bottom:40px">Matching card heights isn't enough on its own: a card's
+    <code>dl-actions</code> row sits flush with the bottom edge too (<code>.sl-card &gt; dl-actions { margin-top:
+    auto }</code>), so buttons land level across the row instead of trailing wherever the copy above them
+    happens to end. Don't add a fixed height, a spacer, or per-card margin to force this by hand; the rule
+    already does it for any card with a button row.</p>
+  <div class="ci-grid" style="margin-bottom:40px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+    <dl-card heading="Short" body="One line.">
+      <dl-actions><dl-button variant="outline" size="sm">Button</dl-button></dl-actions>
+    </dl-card>
+    <dl-card heading="Longer" body="Three or four lines of copy that would otherwise make this card taller than the one beside it, and leave the row ragged along the bottom edge.">
+      <dl-actions><dl-button variant="outline" size="sm">Button</dl-button></dl-actions>
+    </dl-card>
+    <dl-card heading="Middling" body="Two lines of copy, roughly.">
+      <dl-actions><dl-button variant="outline" size="sm">Button</dl-button></dl-actions>
+    </dl-card>
+  </div>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Radius</h3>
+  <div class="ci-demo" style="margin-bottom:40px">
+    <div style="width:88px;height:56px;background:#fff;border:1px solid var(--border-warm);border-radius:2px"></div>
+    <div style="width:88px;height:56px;background:#fff;border:1px solid var(--border-warm);border-radius:4px"></div>
+    <div style="width:88px;height:56px;background:#fff;border:1px solid var(--border-warm);border-radius:8px"></div>
+    <div style="width:88px;height:56px;background:#fff;border:1px solid var(--border-warm);border-radius:16px"></div>
+    <div style="width:88px;height:56px;background:#fff;border:1px solid var(--border-warm);border-radius:999px"></div>
+  </div>
+  <p class="ci-lede" style="margin-bottom:40px">2px chips · 4px buttons and inputs · 8px cards and panels ·
+    16px images and large panels · 999px status dots only.</p>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Elevation is a tonal step</h3>
+  <div class="ci-demo ci-demo--plain" style="margin-bottom:32px">
+    <div style="display:grid;gap:0;grid-template-columns:repeat(3,1fr);max-width:600px">
+      <div style="background:#FFFFFF;padding:24px;border:1px solid var(--border-hairline)">
+        <span class="ci-swatch__hex">White</span></div>
+      <div style="background:#F7EED9;padding:24px;border:1px solid var(--border-warm);border-left:none">
+        <span class="ci-swatch__hex">Beige 1</span></div>
+      <div style="background:#F0E5CF;padding:24px;border:1px solid var(--border-warm);border-left:none">
+        <span class="ci-swatch__hex">Beige 2</span></div>
+    </div>
+  </div>
+  <div class="ci-rules">
+    <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do</span>
+      <p>Separate a card from its background with a tonal step and a 1px hairline.</p></div>
+    <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Don't</span>
+      <p>Put a drop shadow on a card, panel or button. Two shadows exist, for menus and sheets only.</p></div>
+  </div>
+</section>
+
+<!-- 05 -->
+<section class="ci-sec" id="motion">
+  <div class="sl-stack" style="margin-bottom:40px">
+    <p class="ci-num">05</p>
+    <h2 class="sl-section-heading">Four behaviours, <em>nothing else</em></h2>
+    <p class="ci-lede">Gradient drift, light sweep, fade-up, pulse. Motion in this system is slow and
+      atmospheric, never reactive. Nothing bounces, nothing springs, nothing scales on hover.</p>
+  </div>
+
+  <table class="ci-table" style="margin-bottom:40px">
+    <thead><tr><th>Behaviour</th><th>Timing</th><th>Where</th></tr></thead>
+    <tbody>
+      <tr><td>Gradient drift</td><td><code>14s linear infinite</code></td><td>Hero layer 2, closing CTA</td></tr>
+      <tr><td>Light sweep</td><td><code>9s linear infinite</code></td><td>Hero layer 3</td></tr>
+      <tr><td>Fade-up</td><td><code>700ms expo-out</code></td><td>Scroll reveals, feed rows</td></tr>
+      <tr><td>Pulse</td><td><code>1.6s infinite</code></td><td>Live indicator only</td></tr>
+      <tr><td>Button wipe</td><td><code>240ms expo-out</code></td><td>Every button, bottom to top</td></tr>
+      <tr><td>Link hover</td><td><code>100ms ease-out</code></td><td>Opacity 0.7. Never a scale.</td></tr>
+      <tr><td>Press</td><td><code>translateY(1px)</code></td><td>All buttons. Never a shrink.</td></tr>
+    </tbody>
+  </table>
+
+  <h3 class="sl-title" style="margin-bottom:16px">The hero needs all five layers</h3>
+  <p class="ci-lede" style="margin-bottom:20px">Photograph, 14s gradient drift, 9s light sweep, side scrim,
+    bottom scrim. The drift alone reads static in a single glance. The sweep is what makes motion legible
+    over a photograph. The side scrim is what holds text contrast against a bright image nobody has seen yet.</p>
+  <div style="position:relative;height:280px;border-radius:var(--radius-md);overflow:hidden;background:var(--color-navy);margin-bottom:40px">
+    <div class="sl-hero__layer sl-hero__gradient"></div>
+    <div class="sl-hero__layer sl-hero__sweep"></div>
+    <div class="sl-hero__layer sl-hero__scrim-side"></div>
+    <div class="sl-hero__layer sl-hero__scrim-bottom"></div>
+    <div style="position:relative;padding:32px;display:flex;height:100%;align-items:flex-end">
+      <p class="sl-section-heading" style="color:#fff;font-size:32px">Live, over an <em>empty slot</em></p>
+    </div>
+  </div>
+
+  <div class="ci-rules">
+    <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do</span>
+      <p>Honour <code>prefers-reduced-motion</code>: animations resolve to their end state rather than disappearing.</p></div>
+    <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Don't</span>
+      <p>Add particles, parallax, spring physics or hover scaling. None are in the vocabulary.</p></div>
+  </div>
+</section>
+
+<!-- 06 -->
+<section class="ci-sec" id="components">
+  <div class="sl-stack" style="margin-bottom:40px">
+    <p class="ci-num">06</p>
+    <h2 class="sl-section-heading">The library is <em>the system</em></h2>
+    <p class="ci-lede">Pages are compositions of these elements and nothing else. No page should contain
+      a colour, a font-size or a radius. If a layout needs something not here, that is a design question,
+      not an improvisation.</p>
+  </div>
+
+  <h3 class="sl-title" style="margin-bottom:16px">The whole library</h3>
+  <p class="ci-lede" style="margin-bottom:20px">Thirty-five elements. Nothing outside this list belongs
+    in a page.</p>
+  <table class="ci-table" style="margin-bottom:40px">
+    <thead><tr><th>Element</th><th>What it is for</th></tr></thead>
+    <tbody>
+      <tr><td><code>dl-nav-bar</code></td><td>Sticky 72px header. Four links plus the quote button.</td></tr>
+      <tr><td><code>dl-subnav</code></td><td>Sticky anchor row. Only on pages serving several audiences in one scroll.</td></tr>
+      <tr><td><code>dl-dock</code></td><td>The fixed action pill: phone and quote. Not a second nav.</td></tr>
+      <tr><td><code>dl-hero</code></td><td>Five-layer hero. All five layers required.</td></tr>
+      <tr><td><code>dl-section</code></td><td>Section band. <code>bg</code> = page, alt or inverse.</td></tr>
+      <tr><td><code>dl-statement</code></td><td>Full-bleed band, one large line, gradient behind. Breaks up long copy.</td></tr>
+      <tr><td><code>dl-grid</code></td><td>Layout. <code>cols</code> = 3, 2 or split.</td></tr>
+      <tr><td><code>dl-stack</code></td><td>The canonical opener: eyebrow → heading → body → slot.</td></tr>
+      <tr><td><code>dl-heading</code> · <code>dl-text</code> · <code>dl-eyebrow</code></td><td>Standalone type roles.</td></tr>
+      <tr><td><code>dl-prose</code></td><td>Long-form editorial column. Sub-heads are <code>h3</code>, sentence case.</td></tr>
+      <tr><td><code>dl-list</code> · <code>dl-checklist</code></td><td>Orange dot with a bold lead-in; orange ticks.</td></tr>
+      <tr><td><code>dl-card</code></td><td>Flat card. <code>tone</code> = white, warm, sunk, inverse, glass.</td></tr>
+      <tr><td><code>dl-step</code></td><td>Numbered process step. The final step in a sequence takes <code>tone="inverse"</code>, one per sequence.</td></tr>
+      <tr><td><code>dl-callout</code></td><td>Warm flat card with an icon. No accent bar.</td></tr>
+      <tr><td><code>dl-faq</code></td><td>Accordion. Use once past three questions.</td></tr>
+      <tr><td><code>dl-stat</code> · <code>dl-figures</code> · <code>dl-creds</code></td><td>Numbers: card, band, and the low-density phone restatement.</td></tr>
+      <tr><td><code>dl-badge</code> · <code>dl-tag</code></td><td>Status chip; bracketed tag.</td></tr>
+      <tr><td><code>dl-button</code> · <code>dl-actions</code></td><td>Buttons and button rows.</td></tr>
+      <tr><td><code>dl-field</code></td><td>Input or select. An <code>options</code> list makes it a select.</td></tr>
+      <tr><td><code>dl-contact-row</code> · <code>dl-person</code></td><td>Contact line; team card.</td></tr>
+      <tr><td><code>dl-media</code></td><td>Real image, or a labelled empty state. Never stock.</td></tr>
+      <tr><td><code>dl-icon</code> · <code>dl-wordmark</code></td><td>Heroicon; the name set in type.</td></tr>
+      <tr><td><code>dl-terminal</code></td><td>The day's job feed.</td></tr>
+      <tr><td><code>dl-cta</code></td><td>Closing call to action. One per page, last before the footer.</td></tr>
+      <tr><td><code>dl-footer</code></td><td>Navy footer with the real contact details.</td></tr>
+      <tr><td><code>dl-reveal</code></td><td>Fade and rise on scroll. Wrap section content.</td></tr>
+    </tbody>
+  </table>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Trust strip</h3>
+  <p class="ci-lede" style="margin-bottom:16px">One row of checkable facts under the hero, beige-1 ground,
+    orange separators. Never launch it with an unfilled placeholder still in it.</p>
+  <div style="margin-bottom:40px">
+    <div class="sl-trust"><div class="sl-trust__inner">
+      <span>Registered electrical contractor</span>
+      <span>Compliance certificate on every job</span>
+      <span>Council registration handled for you</span>
+    </div></div>
+  </div>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Buttons</h3>
+  <div class="ci-demo" style="margin-bottom:12px">
+    <dl-button variant="primary">Primary</dl-button>
+    <dl-button variant="emphasis">Emphasis</dl-button>
+    <dl-button variant="secondary">Secondary</dl-button>
+    <dl-button variant="outline">Outline</dl-button>
+    <dl-button variant="primary" size="sm">Small</dl-button>
+  </div>
+  <div class="ci-demo ci-demo--dark" style="margin-bottom:20px">
+    <dl-button variant="emphasis">Emphasis</dl-button>
+    <dl-button variant="ghost" on-dark>Ghost on dark</dl-button>
+    <dl-button variant="secondary">Secondary</dl-button>
+  </div>
+  <h3 class="sl-title" style="margin:32px 0 8px">Paired buttons can fill different colours</h3>
+  <p class="ci-lede" style="margin-bottom:16px">Where two buttons sit side by side and each should read as
+    its own thing, <code>wipe</code> sets which colour fills. On the home page Solar fills orange and
+    Electrical fills navy, so the pair is distinguishable before you read the labels. Only these two
+    values exist. It is not a licence to introduce a colour.</p>
+  <div class="ci-demo" style="margin-bottom:40px">
+    <dl-button variant="outline" wipe="orange">Solar</dl-button>
+    <dl-button variant="outline" wipe="navy">Electrical</dl-button>
+  </div>
+
+  <p class="ci-lede" style="margin-bottom:40px">50px tall, 38px small. 4px radius. Press is a 1px downward
+    translate. <strong>Every button wipes on hover</strong>: a fill rising bottom-to-top over 240ms.
+    It sits on the base button rather than a variant, so it is automatic wherever a button appears.
+    Navy, beige and outline wipe to orange; the orange emphasis button wipes to navy; ghost-on-dark
+    wipes to a restrained white. <strong>One emphasis button in view</strong>: the closing CTA is the
+    allowed second.</p>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Cards, steps and stats</h3>
+  <dl-grid cols="3">
+    <dl-card icon="sun" heading="Service card" body="Flat white card, hairline border, orange icon at 28px."></dl-card>
+    <dl-step step="01" heading="Step card" body="Numbered process step. The final step in a sequence takes the navy inverse tone."></dl-step>
+    <dl-stat label="Registration" value="[pending]" sub="Number to be confirmed"></dl-stat>
+  </dl-grid>
+  <p class="ci-lede" style="margin:20px 0 20px"><strong>When a card goes navy.</strong> Exactly one place:
+    the <em>final</em> step of a numbered sequence, so the process closes on a full stop rather than trailing
+    off. Never an interior step, never two in one sequence, and never as decoration on an ordinary card.
+    It is navy <code>#0D2028</code>, not a second accent, and it carries meaning only because it is rationed.
+    Elsewhere a dark card belongs to a <code>dl-statement</code> band or the closing CTA.</p>
+  <p class="ci-lede" style="margin:0 0 40px">The stat value slot is 40px at weight 900, sized for numerals
+    and short values. For long word values at phone width, the same facts restate as a label/value row instead.</p>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Cards hover</h3>
+  <p class="ci-lede" style="margin-bottom:20px">The hairline alone. The border warms over 100ms and
+    nothing else moves: no fill change, no lift, no shadow, no scale. A card that is itself a link takes
+    the orange edge instead. It is on the card, so it applies everywhere.</p>
+  <dl-grid cols="3">
+    <dl-card heading="White" body="Hover: hairline warms to the dark beige."></dl-card>
+    <dl-card tone="warm" heading="Warm" body="Hover: edge steps to the warm grey."></dl-card>
+    <dl-card tone="inverse" heading="Inverse" body="Hover: edge brightens against the navy."></dl-card>
+  </dl-grid>
+
+  <h3 class="sl-title" style="margin:40px 0 16px">Statement band</h3>
+  <p class="ci-lede" style="margin-bottom:20px">One large line with the dawn gradient drifting behind it,
+    full bleed. This is what breaks up a long service page: a beat between two runs of prose.
+    One per two or three sections; more and it stops being a break.</p>
+  <div style="margin-bottom:40px;border-radius:var(--radius-md);overflow:hidden">
+    <dl-statement eyebrow="Worth knowing"
+      text="A system built to cut your bill is sized around |what you actually use"></dl-statement>
+  </div>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Question sets</h3>
+  <p class="ci-lede" style="margin-bottom:20px">Three or fewer questions can be cards. More than three
+    becomes an accordion. A grid of six cards is a wall, and nobody reads a wall.</p>
+  <div style="margin-bottom:40px">
+    <dl-faq items="Will I still get a bill?=Almost certainly yes, unless you go fully off-grid. The bill gets much smaller, and far less of it is outside your control.|Do I have to register it?=Yes, if it stays connected to the grid, and we handle that with your municipality as part of the job.|What if I sell the house?=A well-documented system is a selling point, and the paperwork transfers with the property."></dl-faq>
+  </div>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Figures</h3>
+  <div style="margin-bottom:40px">
+    <dl-figures items="R849=Device, once off|R149=Per month, per device|1 app=Both controllers"></dl-figures>
+  </div>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Navigation, and the dock</h3>
+  <p class="ci-lede" style="margin-bottom:20px">Two layers of navigation, and one action. The
+    <strong>header</strong> is sticky, 72px, four links plus the quote button. The <strong>section nav</strong>
+    appears only on pages that serve several audiences in one scroll, sits under the header at 72px, and
+    marks the section you are in.</p>
+  <p class="ci-lede" style="margin-bottom:20px"><strong>Nav links take the accent on hover and when
+    current</strong>: orange, except Electrical, which takes navy. That is the same pairing as the
+    Solar/Electrical buttons, so the two trades read consistently wherever they appear together. When one
+    link is current the rest drop to 55% opacity and come back to full on hover.</p>
+  <p class="ci-lede" style="margin-bottom:20px">The <strong>dock</strong> is not a second nav. Repeating the
+    header at the bottom of the page earns nothing. It carries the things someone actually wants within
+    reach while reading a long page (a way to reach us and the quote), at 4px corners and with the same
+    hover wipe as every other button. The contact slot rolls between both phone numbers and the email
+    address, one visible at a time, sliding up every 3 seconds (<code>&lt;dl-roll&gt;</code>: the same
+    component handles every rolling phone number on the site, not just the dock's).</p>
+  <div class="ci-demo ci-demo--dark" style="margin-bottom:20px;justify-content:center">
+    <div class="ci-dockdemo">
+      <span class="ci-dockdemo__phone">+27 (82) 655 5371</span>
+      <span class="ci-dockdemo__cta">Get a quote</span>
+    </div>
+  </div>
+  <p class="ci-lede" style="margin-bottom:40px">Anchor clearance tracks the chrome:
+    <code>scroll-margin-top</code> is 88px with the header alone and 145px where a section nav is present.
+    Add sticky chrome later and those two numbers must move, or in-page links silently land behind the bars.</p>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Labels and status</h3>
+  <div class="ci-demo" style="margin-bottom:40px">
+    <dl-eyebrow>Section label</dl-eyebrow>
+    <dl-badge>Status</dl-badge>
+    <dl-badge live>Live</dl-badge>
+    <dl-tag>golden hour</dl-tag>
+  </div>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Form fields</h3>
+  <div class="ci-demo" style="margin-bottom:40px;display:grid;gap:16px;max-width:440px">
+    <dl-field label="Email address" name="ci-email" type="email"></dl-field>
+    <dl-field label="Service required" name="ci-service" placeholder="Select a service"
+      options="Full solar system|Electrical servicing"></dl-field>
+  </div>
+  <p class="ci-lede" style="margin-bottom:40px">50px tall, white fill, warm border, navy on focus, orange on error.
+    Labels are 12px uppercase mono.</p>
+
+  <h3 class="sl-title" style="margin-bottom:16px">The job feed</h3>
+  <div style="max-width:480px;margin-bottom:40px">
+    <dl-terminal title="Today" lines='[
+      {"time":"08:10","text":"site assessment booked · Durbanville"},
+      {"time":"11:05","text":"SSEG application submitted"},
+      {"time":"14:02","text":"certificate of compliance issued"}
+    ]'></dl-terminal>
+  </div>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Empty states</h3>
+  <div style="position:relative;height:200px;margin-bottom:40px">
+    <dl-media alt="[Installation photography pending]"></dl-media>
+  </div>
+  <div class="ci-rules" style="margin-bottom:40px">
+    <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do</span>
+      <p>Label what is missing and why. A visible gap is honest and gets filled.</p></div>
+    <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Don't</span>
+      <p>Fill a slot with stock photography, or a placeholder with a plausible-looking number.</p></div>
+  </div>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Plugins</h3>
+  <p class="ci-lede" style="margin-bottom:20px">The savings calculator, the review carousel and the
+    day feed are third-party web components with their own markup. They are themed, never forked.
+    the <strong>PLUGIN THEME</strong> section at the bottom of <code>shared/sunlogic.css</code> maps
+    their CSS variables and class names onto the system tokens, so a change to the palette or the
+    type scale reaches them too. It used to be its own <code>shared/plugins.css</code> file, merged
+    in to cut a render-blocking request — nothing about how it works changed.</p>
+  <table class="ci-table" style="margin-bottom:20px">
+    <thead><tr><th>Plugin element</th><th>Rendered as</th></tr></thead>
+    <tbody>
+      <tr><td>Number and email inputs</td><td>50px, white fill, warm border, same as <code>dl-field</code></td></tr>
+      <tr><td>Field labels</td><td>12px uppercase mono, secondary</td></tr>
+      <tr><td>Result panel</td><td>Sunk beige surface, hairline border, flat</td></tr>
+      <tr><td>Result figures</td><td>40px / weight 900 / orange, the StatTile slot</td></tr>
+      <tr><td>Unlock button</td><td>Navy, 50px, orange wipe on hover</td></tr>
+      <tr><td>Review card</td><td>Flat white, hairline border; the plugin's drop shadow is removed</td></tr>
+      <tr><td>Stars, slider track</td><td>Accent orange</td></tr>
+      <tr><td>Carousel drift</td><td>60s linear, pauses on hover, becomes a scroll row under reduced motion</td></tr>
+      <tr><td>Day feed rows</td><td>12px uppercase mono, the same row as <code>dl-terminal</code></td></tr>
+      <tr><td>Day feed crew</td><td>Accent orange, the one colour in the row</td></tr>
+      <tr><td>Day feed current time</td><td>24px / weight 800 display face, the only non-mono line in the panel</td></tr>
+    </tbody>
+  </table>
+  <div class="ci-rules">
+    <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do</span>
+      <p>Theme a plugin in the PLUGIN THEME section of <code>shared/sunlogic.css</code>, at <code>:root</code> specificity so it beats the style block the plugin injects at runtime.</p></div>
+    <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Don't</span>
+      <p>Edit the plugin's JavaScript to restyle it. The next version overwrites you, and the plugin stops tracking the system.</p></div>
+    <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do</span>
+      <p>Bump the <code>?v=</code> on every tag that loads a file you have just changed: the plugins and everything in <code>shared/</code>. There is no build step, so a browser will serve a cached copy of the old file and the page runs stale code without erroring.</p></div>
+    <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Don't</span>
+      <p>Theme a plugin element that is an <code>&lt;a&gt;</code> tag without opting it out of the system's own link-dim rule. Plain text links dim to 70% opacity on hover (<code>a:hover</code>); every button and card is explicitly excepted (<code>a.sl-btn:hover, a.sl-card:hover, …</code>). A plugin card left off that list silently washes out on hover along with whatever hover state you did theme. A review card once dimmed exactly this way. Add <code>opacity: 1</code> to the plugin's own hover rule in the PLUGIN THEME section, not to the central exception list.</p></div>
+  </div>
+</section>
+
+<!-- 07 -->
+<section class="ci-sec" id="voice">
+  <div class="sl-stack" style="margin-bottom:40px">
+    <p class="ci-num">07</p>
+    <h2 class="sl-section-heading">Someone who knows <em>the trade</em></h2>
+    <p class="ci-lede">Knowledgeable rather than technical. Not a friendly stranger, not a brochure.
+      A contractor explaining what they found on your roof.</p>
+  </div>
+  <div class="ci-rules" style="margin-bottom:32px">
+    <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do</span>
+      <p>"If solar is not worth it for your property yet, we will say so."</p></div>
+    <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Don't</span>
+      <p>"The Western Cape's leading solar solutions provider."</p></div>
+    <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do</span>
+      <p>Explain a Certificate of Compliance in one clause, the first time it appears on a page.</p></div>
+    <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Don't</span>
+      <p>Quote a payback period. It depends on tariff assumptions nobody can promise.</p></div>
+  </div>
+  <table class="ci-table">
+    <thead><tr><th>Rule</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr><td>Spelling</td><td>South African English: colour, organised, licence (noun) / license (verb)</td></tr>
+      <tr><td>Headings</td><td>Title Case. Sub-heads inside prose are sentence case.</td></tr>
+      <tr><td>Claims</td><td>No superlatives, nothing unverifiable. Specific checkable facts instead.</td></tr>
+      <tr><td>First use</td><td>"Certificate of Compliance" and "Section 12B" spelled out in full</td></tr>
+      <tr><td>Punctuation</td><td>No em or en dashes, anywhere. Use a colon, comma or full stop for an aside instead, and reserve parentheses for a genuine side note</td></tr>
+      <tr><td>Emoji</td><td>None, anywhere</td></tr>
+      <tr><td>Unknowns</td><td>Visible bracketed placeholders, never invented, never silently dropped</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 08 -->
+<section class="ci-sec" id="social">
+  <div class="sl-stack" style="margin-bottom:40px">
+    <p class="ci-num">08</p>
+    <h2 class="sl-section-heading">Social is the same voice, <em>shorter</em></h2>
+    <p class="ci-lede">Sunlogic posts to be useful, not to be seen. A post that teaches someone something
+      about their own electricity bill earns more than a photograph of a van. The identity does not
+      loosen because the medium changed.</p>
+  </div>
+
+  <h3 class="sl-title" style="margin-bottom:16px">What each channel is for</h3>
+  <table class="ci-table" style="margin-bottom:40px">
+    <thead><tr><th>Channel</th><th>Purpose</th><th>Cadence</th></tr></thead>
+    <tbody>
+      <tr><td>Facebook</td><td>Local reach. Completed jobs, bill explainers, area coverage.</td><td>2 a week</td></tr>
+      <tr><td>Instagram</td><td>The work itself: installations, boards, rooftops, teams on site.</td><td>2-3 a week</td></tr>
+      <tr><td>LinkedIn</td><td>Commercial and multi-site. Compliance, tax treatment, maintenance contracts.</td><td>1 a week</td></tr>
+    </tbody>
+  </table>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Formats</h3>
+  <table class="ci-table" style="margin-bottom:40px">
+    <thead><tr><th>Format</th><th>Ratio</th><th>Safe area</th></tr></thead>
+    <tbody>
+      <tr><td>Feed post</td><td>1:1 (1080 × 1080)</td><td>80px inset all round</td></tr>
+      <tr><td>Portrait feed</td><td>4:5 (1080 × 1350)</td><td>80px inset all round</td></tr>
+      <tr><td>Story or reel</td><td>9:16 (1080 × 1920)</td><td>250px top, 320px bottom</td></tr>
+      <tr><td>Link card</td><td>1.91:1 (1200 × 628)</td><td>60px inset all round</td></tr>
+      <tr><td>Profile mark</td><td>1:1 (512 × 512)</td><td>Wordmark on navy until a mark exists</td></tr>
+    </tbody>
+  </table>
+
+  <h3 class="sl-title" style="margin-bottom:16px">The three post templates</h3>
+  <p class="ci-lede" style="margin-bottom:20px">Everything Sunlogic posts is one of these. Same tokens as
+    the site: navy or beige ground, one orange accent phrase, mono eyebrow, no gradient behind text,
+    no drop shadows.</p>
+
+  <div class="ci-social" style="margin-bottom:20px">
+    <div class="ci-post ci-post--navy">
+      <span class="ci-post__eyebrow">Worth knowing</span>
+      <p class="ci-post__head">Your bill can go up in a month you used <em>less</em></p>
+      <span class="ci-post__mark">Sunlogic</span>
+    </div>
+    <div class="ci-post ci-post--photo">
+      <div class="ci-post__slot">[Installation photograph]</div>
+      <div class="ci-post__caption">
+        <span class="ci-post__eyebrow">Durbanville</span>
+        <p class="ci-post__sub">8.2 kW and 13.5 kWh, commissioned and certified in three days.</p>
+      </div>
+    </div>
+    <div class="ci-post ci-post--beige">
+      <span class="ci-post__eyebrow" style="color:var(--text-secondary)">Compliance</span>
+      <p class="ci-post__stat">2 yrs</p>
+      <p class="ci-post__sub" style="color:var(--text-secondary)">The maximum age of a Certificate of Compliance when you sell. It does not otherwise expire.</p>
+      <span class="ci-post__mark" style="color:var(--text-primary)">Sunlogic</span>
+    </div>
+  </div>
+  <p class="ci-lede" style="margin-bottom:40px"><strong>A: statement.</strong> Navy ground, one line of
+    display type, the last phrase in orange. <strong>B: photo-led.</strong> The photograph carries it;
+    a mono location eyebrow and one line of caption. <strong>C: fact.</strong> Beige ground, a single
+    number at display weight, one line explaining it.</p>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Caption samples</h3>
+  <div class="ci-rules" style="margin-bottom:40px">
+    <div class="ci-rule ci-rule--do">
+      <span class="ci-rule__tag">Do: teaches something</span>
+      <p>"The fixed monthly charge on your bill has been rising faster than the rate per unit. That is why your bill can go up in a month you used less. Solar will not change what the municipality charges, but it does take the biggest part of the bill back under your control."</p>
+    </div>
+    <div class="ci-rule ci-rule--dont">
+      <span class="ci-rule__tag">Don't: says nothing</span>
+      <p>"Another happy customer! Sunlogic is the Western Cape's LEADING solar provider. DM us today for the BEST prices! #solar #solarpower #capetown #savings #greenenergy #offgrid"</p>
+    </div>
+    <div class="ci-rule ci-rule--do">
+      <span class="ci-rule__tag">Do: specific and checkable</span>
+      <p>"Finished in Durbanville this week. 8.2 kW on the roof, 13.5 kWh of storage, SSEG registration lodged with the City and the Certificate of Compliance issued on handover."</p>
+    </div>
+    <div class="ci-rule ci-rule--dont">
+      <span class="ci-rule__tag">Don't: unverifiable</span>
+      <p>"Save up to 90% on your electricity bill! Pays for itself in under 2 years! Limited time offer!"</p>
+    </div>
+  </div>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Rules</h3>
+  <table class="ci-table" style="margin-bottom:40px">
+    <tbody>
+      <tr><td>Emoji</td><td><strong>None.</strong> Not in captions, not in bios, not as bullets.</td></tr>
+      <tr><td>Hashtags</td><td>Three at most, at the end, lowercase, genuinely descriptive. No stacked blocks.</td></tr>
+      <tr><td>Claims</td><td>No savings percentages, no payback periods, no "leading" or "best". Specific facts only.</td></tr>
+      <tr><td>Prices</td><td>Never in a post. The calculator on the site is the only place pricing appears.</td></tr>
+      <tr><td>Photography</td><td>Real jobs only, with the client's permission. Never stock, never a render.</td></tr>
+      <tr><td>Faces</td><td>Signed release required: see the video and photography release on the legal page.</td></tr>
+      <tr><td>Accent</td><td>One orange phrase per graphic. Never a full orange background.</td></tr>
+      <tr><td>Type</td><td>Hanken Grotesk and JetBrains Mono. Never a platform default, never a script face.</td></tr>
+      <tr><td>Gradients</td><td>Behind imagery only, never behind body text.</td></tr>
+      <tr><td>Reposts</td><td>Credit the source. Do not silently re-caption someone else's photograph.</td></tr>
+    </tbody>
+  </table>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Bio</h3>
+  <div class="ci-demo ci-demo--plain" style="margin-bottom:20px">
+    <div class="sl-card" style="max-width:520px">
+      <p class="sl-body" style="color:var(--text-primary)">Solar and electrical from one team. Western Cape.<br/>
+      Registered electrical contractor: Certificate of Compliance on every installation.<br/>
+      Free site assessment: sunlogic.co.za</p>
+    </div>
+  </div>
+  <p class="ci-lede">Same three lines on every channel, trimmed to fit. Handles are
+    <strong>@sunlogicsa</strong> on Facebook, <strong>@sunlogic_sa</strong> on Instagram and
+    <strong>sunlogic-sa</strong> on LinkedIn. Keep them consistent if a new channel is opened.</p>
+</section>
+
+<!-- 09 -->
+<section class="ci-sec" id="limits">
+  <div class="sl-stack" style="margin-bottom:40px">
+    <p class="ci-num">09</p>
+    <h2 class="sl-section-heading">Limits, and what is <em>still open</em></h2>
+  </div>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Hard limits</h3>
+  <table class="ci-table" style="margin-bottom:40px">
+    <tbody>
+      <tr><td>Emphasis buttons in view</td><td>1, plus the closing CTA</td></tr>
+      <tr><td>Hero-level headings per page</td><td>2</td></tr>
+      <tr><td>Nav links</td><td>4</td></tr>
+      <tr><td>Background colours per page</td><td>2</td></tr>
+      <tr><td>Table columns</td><td>6</td></tr>
+      <tr><td>Stacked toasts</td><td>3</td></tr>
+      <tr><td>Minimum touch target</td><td>44px</td></tr>
+      <tr><td>Adjacent sections sharing a background</td><td>Never</td></tr>
+    </tbody>
+  </table>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Open: flag, never guess</h3>
+  <div class="ci-rules">
+    <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Missing</span>
+      <p><strong>The logo.</strong> No mark exists. The wordmark sets the name in display type. Do not draw, trace, generate or approximate one.</p></div>
+    <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Missing</span>
+      <p><strong>All photography.</strong> Every slot is a labelled empty state awaiting real installation and team images.</p></div>
+    <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Missing</span>
+      <p><strong>Nine facts</strong>: phone, email, address, hours, registration number, response time, install cost.</p></div>
+    <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Unresolved</span>
+      <p><strong>Accessibility.</strong> No focus trap in the drawer, no skip link, no arrow-key navigation in tabs or menus. Contrast and reduced motion are fixed.</p></div>
+    <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Unresolved</span>
+      <p><strong>Landscape phone</strong> behaviour, and whether the sticky header should hide on scroll-down.</p></div>
+    <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Inferred</span>
+      <p><strong>Button typography</strong> (Hanken Grotesk 700 / 14px) was not sourced from an existing Sunlogic component. Flagged for design review.</p></div>
+  </div>
+</section>
+
+<section class="ci-sec" style="padding-bottom:120px">
+  <p class="ci-num" style="margin-bottom:12px">Reference</p>
+  <p class="ci-lede">Everything in this document is implemented. <code>sunlogic.css</code> holds the tokens and
+    geometry, <code>components.js</code> the library, <code>SYSTEM.md</code> the written contract, and
+    <code>sunlogic-check.js</code> verifies a page against all of it in the browser console.
+    <code>index.html</code> is the reference composition.</p>
+</section>
+
+</main>
+
+<dl-footer></dl-footer>
+</body>
+</html>
