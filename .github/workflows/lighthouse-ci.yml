@@ -33,11 +33,11 @@ jobs:
         run: npm ci
 
       # Runs against the built dist/ directory served locally, not the
-      # live site — this never depends on DNS/domain state (still
-      # pending a cutover) and never blocks deploy-site.yml, which is a
-      # separate workflow. Pages are discovered dynamically from
-      # dist/*.html in lighthouserc.js, so a new page is covered on its
-      # first push with no config changes needed.
+      # live site — this never depends on DNS/domain state. Pages come from
+      # scripts/site-pages.js, so a new page or a fourth site is covered on
+      # its first push. Wrapped by scripts/lighthouse.js because `lhci
+      # autorun` exits 0 after printing "Healthcheck failed!", which made a
+      # Chrome-less runner report success over nothing.
       - name: Run Lighthouse CI
         run: npm run lighthouse
 
