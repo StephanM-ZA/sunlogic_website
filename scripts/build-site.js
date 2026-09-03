@@ -24,11 +24,23 @@ const REPO_URL = 'https://github.com/StephanM-ZA/sunlogic_website';
 
 // Commit SHA visible in the site's own footer, stamped fresh on every
 // build so it's never stale and never needs a manual reminder to
-// update. GITHUB_SHA is set automatically in the deploy workflow;
-// falling back to `git` covers local `npm run build`.
+// update. Each CI provider exposes it under its own name:
+//   GITHUB_SHA           GitHub Actions
+//   CF_PAGES_COMMIT_SHA  Cloudflare Pages
+// `git` covers a local `npm run build`. If none of those work (a build
+// image without git, say), the stamp is omitted rather than the build
+// failing: SL_BUILD_LINE() already renders nothing when the sha is absent.
 function getBuildInfo() {
-  const sha = process.env.GITHUB_SHA
-    || execSync('git rev-parse HEAD', { cwd: ROOT }).toString().trim();
+  let sha = process.env.CF_PAGES_COMMIT_SHA || process.env.GITHUB_SHA || '';
+  if (!sha) {
+    try {
+      sha = execSync('git rev-parse HEAD', { cwd: ROOT, stdio: ['ignore', 'pipe', 'ignore'] })
+        .toString().trim();
+    } catch (e) {
+      console.warn('  (no commit SHA available; footer build stamp omitted)');
+      return {};
+    }
+  }
   const date = new Date().toISOString().slice(0, 10);
   return { sha, short: sha.slice(0, 7), repo: REPO_URL, date };
 }
@@ -141,6 +153,44 @@ function rewriteImageReferences(dir, renameMap) {
   }
 }
 
+/* Cloudflare Pages serves extensionless URLs and 308-redirects /solar.html to
+   /solar. Left alone that means every internal link and every canonical tag
+   points at a URL that redirects away from itself, which is bad for search and
+   adds a hop to every click.
+
+   Rather than rewrite the hand-authored source (which stays readable and opens
+   correctly from disk), the links are rewritten here, in the build output only:
+     href="contact.html"          -> href="/contact"
+     href="solar.html#larger"     -> href="/solar#larger"
+     href="index.html"            -> href="/"
+     https://host/solar.html      -> https://host/solar
+   Applies to HTML, the component library's own link lists, and the sitemap. */
+function toExtensionless(text) {
+  return text
+    // relative links in HTML: href="x.html" and href="x.html#frag"
+    .replace(/href="index\.html(#[^"]*)?"/g, (m, frag) => 'href="/' + (frag || '') + '"')
+    .replace(/href="([a-z0-9-]+)\.html(#[^"]*)?"/g, (m, name, frag) => 'href="/' + name + (frag || '') + '"')
+    // link lists inside components.js, which use single quotes
+    .replace(/'index\.html'/g, "'/'")
+    .replace(/'([a-z0-9-]+)\.html'/g, "'/$1'")
+    // absolute URLs: canonical, og:url, twitter, JSON-LD, sitemap <loc>
+    .replace(/(https:\/\/[a-z0-9.-]*sunlogic\.co\.za)\/index\.html/g, '$1/')
+    .replace(/(https:\/\/[a-z0-9.-]*sunlogic\.co\.za)\/([a-z0-9-]+)\.html/g, '$1/$2');
+}
+
+function rewriteToExtensionless(dir) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      rewriteToExtensionless(full);
+    } else if (/\.(html|xml|js)$/.test(entry.name)) {
+      const src = fs.readFileSync(full, 'utf8');
+      const out = toExtensionless(src);
+      if (out !== src) fs.writeFileSync(full, out);
+    }
+  }
+}
+
 function stampBuildInfo(dir, build) {
   const tag = '<script>window.SL_BUILD=' + JSON.stringify(build) + ';</script>\n</head>';
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -165,6 +215,7 @@ async function buildSite(site, build) {
   copyRecursive(SHARED, path.join(out, 'shared'));
   const renameMap = await optimizeImages(out);
   rewriteImageReferences(out, renameMap);
+  rewriteToExtensionless(out);
   stampBuildInfo(out, build);
   await walkAndMinify(out);
 }
