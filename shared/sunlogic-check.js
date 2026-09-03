@@ -134,10 +134,15 @@
     const navLinks = document.querySelectorAll('.sl-nav__links .sl-nav__link');
     if (navLinks.length > 4) fail('limit', navLinks.length + ' nav links; the limit is four', navLinks[4]);
 
-    /* 9 — Touch targets. */
+    /* 9 — Touch targets. 44px is a minimum for something you tap; an inline
+       text link inside a paragraph is not a tap target, and treating it as one
+       produced 75 findings that were all the rule's fault. The footer and nav
+       were already exempt for exactly this reason — .sl-prose, .sl-body and
+       the contact roll are the same case. */
     document.querySelectorAll('a, button, .sl-btn, .sl-icon-btn').forEach((el) => {
       const r = el.getBoundingClientRect();
-      if (r.height > 0 && r.height < 44 && !el.closest('.sl-footer, .sl-nav__links')) {
+      const inlineText = el.closest('.sl-footer, .sl-nav__links, .sl-prose, .sl-body, .sl-roll');
+      if (r.height > 0 && r.height < 44 && !inlineText) {
         warn('a11y', Math.round(r.height) + 'px tall, minimum is 44px', el);
       }
     });

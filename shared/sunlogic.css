@@ -157,6 +157,11 @@ body {
   text-wrap: pretty;
 }
 a { color: var(--color-orange-text); text-decoration: none; transition: opacity var(--dur-hover) ease-out; }
+/* SVG text does not inherit the page font — it falls back to the UA's
+   monospace — so diagram labels rendered in a face that is not in the system
+   at all. Every <text> in every inline SVG was flagged by the type rule, 63
+   findings from one cause. */
+svg text { font-family: var(--font-mono); }
 /* Off-screen until keyboard-focused, then jumps into view top-left —
    the first tab stop on every page, letting a keyboard/screen-reader
    user skip the nav and land straight in <main>. */

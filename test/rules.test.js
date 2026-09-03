@@ -99,3 +99,23 @@ test('a11y: an image with no alt text is a fail', async () => {
   const r = await check('a11y-fail-noalt.html');
   assert.ok(r.fails.some((f) => f.rule === 'a11y' && /alt/.test(f.detail)));
 });
+
+/* --- type: SVG text ---------------------------------------------------- */
+
+// 63 of the 150 warnings measured on 2026-09-03 were <text> inside inline SVG.
+// SVG text does not inherit the page font, so it computes to the UA's
+// monospace and the rule flagged every label in every diagram.
+test('type: SVG text inherits the mono face rather than the UA default', async () => {
+  const r = await check('type-pass-svg.html');
+  assert.deepStrictEqual(r.warns.filter((w) => w.rule === 'type'), []);
+});
+
+/* --- a11y: inline links ------------------------------------------------ */
+
+// 75 of the 150 were inline text links measured against a 44px minimum that
+// exists for buttons. The rule already exempts .sl-footer and .sl-nav__links
+// for this reason; prose and the contact roll are the same case.
+test('a11y: an inline text link inside prose is not a touch target', async () => {
+  const r = await check('a11y-pass-inline-link.html');
+  assert.deepStrictEqual(r.warns.filter((w) => w.rule === 'a11y'), []);
+});
