@@ -449,6 +449,16 @@
       <p>Honour <code>prefers-reduced-motion</code>: animations resolve to their end state rather than disappearing.</p></div>
     <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Don't</span>
       <p>Add particles, parallax, spring physics or hover scaling. None are in the vocabulary.</p></div>
+    <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do</span>
+      <p><strong>Overlay a dialog on glass, not on blackout.</strong> The modal backdrop is
+      <code>--scrim-modal</code> (<code>rgba(13,32,40,0.45)</code>) over <code>--glass-blur-soft</code>
+      (<code>blur(10px) saturate(1.05)</code>): a light tint and a soft blur, so the page stays
+      readable behind the dialog as context. The 24px <code>--glass-blur</code> is tuned for a small
+      pane over a photo; across a whole viewport it reads as fog.</p></div>
+    <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Don't</span>
+      <p>Blur anything else. Glass is for the badge, the stat pane, the glass card and the modal
+      backdrop — four places, all of them a surface sitting over photography. It is not a
+      decoration to reach for elsewhere.</p></div>
   </div>
 </section>
 
@@ -487,6 +497,8 @@
       <tr><td><code>dl-badge</code> · <code>dl-tag</code></td><td>Status chip; bracketed tag.</td></tr>
       <tr><td><code>dl-button</code> · <code>dl-actions</code></td><td>Buttons and button rows.</td></tr>
       <tr><td><code>dl-field</code></td><td>Input or select. An <code>options</code> list makes it a select.</td></tr>
+      <tr><td><code>dl-contact-form</code></td><td>The lead form. One definition, used wherever an enquiry is taken.</td></tr>
+      <tr><td><code>dl-contact-modal</code></td><td>That form in a native <code>&lt;dialog&gt;</code>. Every link to the contact page opens it instead of navigating. One per page.</td></tr>
       <tr><td><code>dl-contact-row</code> · <code>dl-person</code></td><td>Contact line; team card.</td></tr>
       <tr><td><code>dl-media</code></td><td>Real image, or a labelled empty state. Never stock.</td></tr>
       <tr><td><code>dl-icon</code> · <code>dl-wordmark</code></td><td>Heroicon; the name set in type.</td></tr>

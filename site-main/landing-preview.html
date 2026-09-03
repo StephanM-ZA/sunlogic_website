@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="shared/sunlogic.css?v=33"/>
 <script src="shared/icons.js?v=2" defer></script>
 <script src="shared/components.js?v=36" defer></script>
+<script src="shared/forms.js?v=3" defer></script>
 <script src="shared/sunlogic-check.js?v=4" defer></script>
 <link rel="preload" as="image" href="images/hero.webp" imagesrcset="images/hero-640w.webp 640w, images/hero-1024w.webp 1024w, images/hero-1440w.webp 1440w, images/hero.webp 1920w" imagesizes="100vw" fetchpriority="high"/>
 <style>
@@ -68,6 +69,18 @@
   .sl-division__list li { display: flex; gap: 10px; align-items: flex-start; }
   .sl-division__list li::before { content: ""; flex: 0 0 6px; width: 6px; height: 6px;
     margin-top: 8px; border-radius: 50%; background: var(--color-orange); }
+
+  /* .sl-cols centres its two columns, which is right for a copy-and-image pair
+     but not for a copy-and-card one: the shorter card floats off the heading it
+     belongs beside. Top-aligned, the eyebrow and the card's own heading start
+     on the same line. */
+  #company .sl-cols { align-items: start; }
+
+  /* The closing CTA is an inset card on its own gutter wrap, and that wrap
+     opens a full section gap on top of the one the section above just closed
+     with — 240px of beige between the contact card and the callout. The
+     section's own bottom padding is the gap; the wrap's top is a second one. */
+  dl-cta .sl-cta-wrap { padding-top: 0; }
 
   /* The trust band belongs to the hero block, not to a section of its own, so
      the first real section continues from it rather than opening the full
@@ -169,75 +182,35 @@
   </dl-reveal>
 </dl-section>
 
-<!-- One full-bleed beat between the two long sections. -->
-<dl-reveal>
-  <dl-statement eyebrow="Why it matters"
-    text="A solar system is an electrical installation, so |the two belong together">
-    <p class="sl-body sl-body--lg" style="max-width:640px">One company designs it, installs it, certifies it and answers the phone afterwards. No arguing about whose work the fault is.</p>
-  </dl-statement>
-</dl-reveal>
-
 <dl-section bg="alt" id="why">
   <dl-reveal>
     <dl-stack eyebrow="Why Sunlogic" heading="What You Get |Either Way"></dl-stack>
   </dl-reveal>
   <dl-reveal>
-    <dl-grid cols="3">
+    <!-- Four cards in a two-column grid, so the grid is always full. cols="3"
+         drops to two columns between 768 and 1024, where three cards leave an
+         orphan on its own row. The fourth takes tone="inverse" — the same rule
+         the numbered steps follow, where the sequence ends on navy. -->
+    <dl-grid cols="2">
       <dl-card icon="clipboard-document-check" heading="Certified, and it goes on paper"
-        body="We are a registered electrical contractor. Every installation ends with the certificate it needs, and council registration is handled as part of the job."></dl-card>
+        body="We are a registered electrical contractor. Every job ends with the certificate it needs, and council and SSEG registration is handled as part of the work."></dl-card>
       <dl-card icon="chart-bar" heading="Straight numbers"
-        body="Savings worked out from your actual bills, with the method shown. If something is not worth doing yet, we will say so rather than quote it anyway."></dl-card>
-      <dl-card icon="chat-bubble-left-right" heading="We stay in touch"
+        body="Solar sized and costed from your actual bills, electrical work quoted against a scope you can read. If something is not worth doing yet, we will say so rather than quote it anyway."></dl-card>
+      <dl-card icon="wrench-screwdriver" heading="One team, both trades"
+        body="A solar system is an electrical installation. Having both under one registered company means nobody is arguing about whose work the fault is."></dl-card>
+      <dl-card tone="inverse" icon="chat-bubble-left-right" heading="We stay in touch"
         body="Monitoring, scheduled check-ups and someone to phone when something is not right. The person who quoted the job is usually the one you see again."></dl-card>
     </dl-grid>
   </dl-reveal>
 </dl-section>
 
-<dl-section bg="page" id="proof">
-  <dl-reveal>
-    <dl-stack eyebrow="Proof" heading="Three Recent |Jobs"
-      body="Real installations, with the numbers behind them, so you can judge the work rather than the claim."></dl-stack>
-  </dl-reveal>
-  <dl-reveal>
-    <dl-grid cols="3">
-      <dl-card tone="white">
-        <div style="position:relative;aspect-ratio:4/3">
-          <dl-media src="images/proof/job-1-rooftop-install.webp" alt="A rooftop solar installation on a home"></dl-media>
-        </div>
-        <div class="sl-card__stack">
-          <h3 class="sl-title">Stellenbosch</h3>
-          <p class="sl-body">A 12kW system, 18 panels and 15kWh of battery storage.</p>
-        </div>
-      </dl-card>
-      <dl-card tone="white">
-        <div style="position:relative;aspect-ratio:4/3">
-          <dl-media src="images/proof/job-2-battery-bank.webp" alt="Three inverters and battery units installed in a plant room"></dl-media>
-        </div>
-        <div class="sl-card__stack">
-          <h3 class="sl-title">Noordhoek</h3>
-          <p class="sl-body">Three 8kW systems, 10kW of panels each, for 21 panels in total.</p>
-        </div>
-      </dl-card>
-      <dl-card tone="white">
-        <div style="position:relative;aspect-ratio:4/3">
-          <dl-media src="images/proof/job-3-inverter-install.webp" alt="A wall-mounted inverter and battery installation with a combiner box"></dl-media>
-        </div>
-        <div class="sl-card__stack">
-          <h3 class="sl-title">Rondebosch</h3>
-          <p class="sl-body">A pure backup system with 64kW of inverter capacity and 250kWh of battery storage, no panels.</p>
-        </div>
-      </dl-card>
-    </dl-grid>
-  </dl-reveal>
-</dl-section>
-
-<dl-section bg="alt" id="company">
+<dl-section bg="page" id="company">
   <dl-grid cols="split">
     <dl-reveal>
       <dl-stack eyebrow="The company"
         heading="Not a Call Centre"
-        body="Sunlogic SA is a registered electrical contractor working across the Western Cape. The person who quotes your job is usually the one who comes back to do it, backed by an in-house install team.">
-        <dl-checklist items="Registered electrical contractor|Compliance certificate on every installation|Council and SSEG registration handled for you|In-house install team, not subcontracted"></dl-checklist>
+        body="Sunlogic SA is a registered electrical contractor and solar installer working across the Western Cape. The person who quotes your job is usually the one who comes back to do it, backed by an in-house team.">
+        <dl-checklist items="Registered electrical contractor|Compliance certificate on every job|Council and SSEG registration handled for you|In-house team for both trades, not subcontracted"></dl-checklist>
       </dl-stack>
     </dl-reveal>
     <dl-reveal>
@@ -266,6 +239,10 @@
 </dl-reveal>
 
 </main>
+
+<!-- The apex takes enquiries without leaving the page: every link to the
+     contact page opens this instead. -->
+<dl-contact-modal></dl-contact-modal>
 <dl-footer></dl-footer>
 <dl-dock></dl-dock>
 </body>

@@ -36,7 +36,14 @@ const SITES = [
       { href: 'https://energy.sunlogic.co.za', key: 'solar', label: 'Solar' },
       { href: 'https://electrical.sunlogic.co.za', key: 'electrical', label: 'Electrical', accent: 'navy' },
     ],
-    footer: null,
+    /* Columns of [label, href]. No Energy and no Worth knowing: energy-management
+       lives on the energy site and each division site carries its own blog, so
+       the apex has nothing of either to link to. Real URLs, not filenames, for
+       the same reason as nav above. */
+    footer: [
+      [['Energy', 'https://energy.sunlogic.co.za'], ['Electrical', 'https://electrical.sunlogic.co.za']],
+      [['Contact', '/contact'], ['Legal', '/legal']],
+    ],
     /* Per-site logo artwork. Same filenames would have been simpler, but these
        are three distinct lockups, so the path is config rather than convention.
        `logoWhite` is the horizontal wordmark for dark grounds (the mobile

@@ -387,9 +387,141 @@ class DlField extends SLElement {
     this.innerHTML =
       '<div class="sl-field"><label class="sl-label" for="' + id + '">' + SL_ATTR(this, 'label') + '</label>' +
       control + (hint ? '<p class="sl-hint">' + hint + '</p>' : '') + '</div>';
+    /* The attribute has done its job — it named the control inside. Left on the
+       wrapper it shadows that control: form.querySelector('[name="email"]'),
+       the obvious thing to write, returns the <dl-field> rather than the
+       <input>, and setting .value on it silently does nothing. */
+    this.removeAttribute('name');
   }
 }
 customElements.define('dl-field', DlField);
+
+/* --- Contact modal -------------------------------------------
+   The contact form in a native <dialog>, so a page can take an enquiry
+   without navigating away. Native rather than a hand-rolled overlay
+   because showModal() brings the focus trap, Escape, inert background
+   and ::backdrop with it — all of which we would otherwise write and
+   get subtly wrong.
+
+   Any link to the contact page opens this instead, on any page that
+   includes the element. One per page:
+
+     <dl-contact-modal></dl-contact-modal>
+
+   Requires forms.js, which does the posting. The form carries
+   data-success="inline" so forms.js renders the thank-you in place
+   rather than navigating to thank-you.html — navigating is exactly
+   what a page using this modal is trying to avoid.
+
+   NOTE: contact.html still has its own copy of this form inline. That
+   is one lead form defined twice, which is one too many — that page
+   should render <dl-contact-form> when it is next worked on. */
+const SL_CONTACT_WEBHOOK = 'https://sunlogic-leads-relay.smarais-za.workers.dev/leads/contact';
+
+class DlContactForm extends SLElement {
+  render() {
+    this.innerHTML =
+      '<form data-dl-form data-success="inline" data-webhook="' + SL_CONTACT_WEBHOOK + '" class="sl-form">' +
+      '<dl-field label="Name" name="name" required></dl-field>' +
+      '<dl-field label="Email address" name="email" type="email" required></dl-field>' +
+      '<dl-field label="Phone number" name="phone" type="tel" required></dl-field>' +
+      '<dl-field label="Suburb" name="suburb" required></dl-field>' +
+      '<dl-field label="What you need" name="need" required placeholder="Select an option" ' +
+        'options="Solar|Electrical|Energy management|Not sure yet"></dl-field>' +
+      '<dl-field label="Property type" name="property-type" required placeholder="Select an option" ' +
+        'options="Home|Small business|Larger site"></dl-field>' +
+      '<div class="sl-field"><label class="sl-label" for="sl-modal-message">Message</label>' +
+      '<textarea class="sl-input sl-textarea" id="sl-modal-message" name="message" rows="4" required ' +
+        'placeholder="Tell us about your property and what you need"></textarea></div>' +
+      /* Honeypot: a real person never fills this, a bot fills everything. */
+      '<label for="sl-modal-website" style="position:absolute;left:-9999px">Website</label>' +
+      '<input id="sl-modal-website" type="text" name="website" tabindex="-1" autocomplete="off" ' +
+        'aria-hidden="true" style="position:absolute;left:-9999px"/>' +
+      '<dl-button variant="emphasis" icon="arrow-right" type="submit" full>Send Message</dl-button>' +
+      '</form>';
+  }
+}
+customElements.define('dl-contact-form', DlContactForm);
+
+class DlContactModal extends SLElement {
+  render() {
+    this.innerHTML =
+      '<dialog class="sl-modal" aria-labelledby="sl-modal-title">' +
+      '<div class="sl-modal__head">' +
+      '<div><p class="sl-eyebrow">Get in touch</p>' +
+      '<h2 class="sl-title" id="sl-modal-title">Tell us what you need</h2></div>' +
+      '<button class="sl-icon-btn" type="button" aria-label="Close" data-sl-modal-close>' +
+      SL_ICON('x-mark', 24) + '</button></div>' +
+      '<div class="sl-modal__body"><dl-contact-form></dl-contact-form></div>' +
+      '</dialog>';
+
+    const dialog = this.querySelector('dialog');
+    const body = this.querySelector('.sl-modal__body');
+    let timer = null;
+
+    /* Reset after closing, not before opening: a visitor who sent a message and
+       comes back gets a fresh form, and one who closed mid-typing does not find
+       their half-filled form still sitting there next time. Idempotent, because
+       it is reachable from three directions. */
+    const reset = () => {
+      if (timer) { clearTimeout(timer); timer = null; }
+      if (body.querySelector('form[data-dl-form]')) return;
+      body.innerHTML = '<dl-contact-form></dl-contact-form>';
+      /* The replacement form is built long after forms.js swept the document,
+         so it has to be wired up by hand or the second enquiry never posts. */
+      const form = body.querySelector('form[data-dl-form]');
+      if (form && window.dlInitForm) window.dlInitForm(form);
+    };
+
+    const close = () => {
+      if (dialog.open) dialog.close();
+      reset();
+    };
+
+    /* Escape and the backdrop dismiss a native dialog without going through
+       close() above, so both events reset too. Belt and braces on purpose: the
+       reset has to happen however the dialog was dismissed, and relying on one
+       of these alone leaves a stale form behind when it is the other that
+       fires. */
+    dialog.addEventListener('cancel', reset);
+    dialog.addEventListener('close', reset);
+
+    this.querySelector('[data-sl-modal-close]').addEventListener('click', close);
+    /* Clicking the backdrop closes. The backdrop IS the dialog element, so a
+       click that lands on <dialog> itself rather than on its contents is a
+       backdrop click. */
+    dialog.addEventListener('click', (e) => { if (e.target === dialog) close(); });
+
+    /* forms.js dispatches this once the lead has posted. */
+    this.addEventListener('dl-form-success', () => {
+      timer = setTimeout(close, 5000);
+    });
+
+    this.open = (need) => {
+      const select = this.querySelector('select[name="need"]');
+      if (need && select && [...select.options].some((o) => o.value === need)) select.value = need;
+      dialog.showModal();
+    };
+  }
+}
+customElements.define('dl-contact-modal', DlContactModal);
+
+/* A link to the contact page opens the modal instead of navigating, wherever
+   one is present. Delegated so it covers the nav, footer and dock, which all
+   render after this script runs. data-need on the trigger preselects "What you
+   need", the same context the ?need= query param carries between pages. */
+document.addEventListener('click', (e) => {
+  const modal = document.querySelector('dl-contact-modal');
+  if (!modal || !modal.open) return;
+  const trigger = e.target.closest('a[href], [data-sl-contact]');
+  if (!trigger) return;
+  const href = trigger.getAttribute('href') || '';
+  const isContact = trigger.hasAttribute('data-sl-contact') ||
+    /(^|\/)contact(\.html)?(\?|#|$)/.test(href.split('?')[0] + (href.includes('?') ? '?' : ''));
+  if (!isContact) return;
+  e.preventDefault();
+  modal.open(trigger.getAttribute('data-need') || new URLSearchParams(href.split('?')[1] || '').get('need'));
+});
 
 /* --- Callout -------------------------------------------------
    Flat warm card with an orange icon. The old left-border accent
@@ -763,13 +895,22 @@ class DlFooter extends SLElement {
   render() {
     const col = (links) => '<div class="sl-footer__col">' + links.map((l) =>
       '<a class="sl-footer__link" href="' + l[1] + '">' + l[0] + '</a>').join('') + '</div>';
+    /* Link columns come from the site config, the same way the nav's do, so the
+       apex can point at the two subdomains while each division site points at
+       its own pages. Falls back to the full single-site list for any page built
+       without a config. */
+    const cols = (window.SL_SITE && Array.isArray(window.SL_SITE.footer) && window.SL_SITE.footer.length)
+      ? window.SL_SITE.footer
+      : [
+        [['Solar', 'solar.html'], ['Electrical', 'electrical.html'], ['Energy', 'energy-management.html'], ['Worth knowing', 'blog.html']],
+        [['Contact', 'contact.html'], ['Legal', 'legal.html']],
+      ];
     this.innerHTML =
       '<footer class="sl-footer"><div class="sl-footer__groups">' +
       '<div class="sl-footer__brand">' + SL_LOGO_IMG('logoVertical', 82, 64) +
       '<p class="sl-footer__strapline">Solar and electrical, Western Cape</p>' +
       '<p class="sl-footer__strapline">Sunlogic SA (Pty) Ltd · Reg. 2022/651654/07</p></div>' +
-      col([['Solar', 'solar.html'], ['Electrical', 'electrical.html'], ['Energy', 'energy-management.html'], ['Worth knowing', 'blog.html']]) +
-      col([['Contact', 'contact.html'], ['Legal', 'legal.html']]) +
+      cols.map(col).join('') +
       '<div class="sl-footer__col"><p class="sl-eyebrow sl-eyebrow--accent">Get in touch</p>' +
       '<dl-roll item-class="sl-footer__plain" items=\'' + JSON.stringify(SL_PHONES) + '\'></dl-roll>' +
       '<a class="sl-footer__plain" href="mailto:sales@sunlogic.co.za">sales@sunlogic.co.za</a>' +

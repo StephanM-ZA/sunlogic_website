@@ -106,6 +106,12 @@
   --glass-bg: rgba(255,247,233,0.10);
   --glass-border: rgba(255,255,255,0.22);
   --glass-blur: blur(24px) saturate(1.1);
+  /* A softer glass, for a full-viewport surface. The 24px above is tuned for a
+     small pane sitting on a photo; across the whole page it reads as fog. */
+  --glass-blur-soft: blur(10px) saturate(1.05);
+  /* The modal backdrop: lighter than a scrim, because the page behind should
+     stay legible as context rather than being blacked out. */
+  --scrim-modal: rgba(13,32,40,0.45);
   --focus-ring: 0 0 0 2px var(--color-beige), 0 0 0 4px var(--color-orange);
 
   --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
@@ -676,6 +682,53 @@ dl-hero { display: block; min-height: 964px; }
 .sl-back-link dl-icon { transform: scaleX(-1); }
 .sl-creds-band { padding: 0 var(--gutter) 48px; }
 .sl-form { display: grid; gap: 16px; max-width: 500px; }
+
+/* Contact modal. A native <dialog>, so the focus trap, Escape, inert
+   background and backdrop are the browser's job rather than ours. The UA
+   centres a modal dialog with margin:auto — it is set explicitly because the
+   default margin would otherwise pin it to the top on some engines. */
+.sl-modal {
+  width: min(560px, calc(100vw - 32px));
+  max-height: min(calc(100vh - 48px), 720px);
+  margin: auto;
+  padding: 0;
+  border: 1px solid var(--border-warm);
+  border-radius: var(--radius-md);
+  background: var(--surface-card-warm);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-lg, 0 24px 64px rgba(13,32,40,0.28));
+}
+/* display goes on [open], never on .sl-modal itself. The UA hides a closed
+   dialog with display:none, and a display of our own on the bare element beats
+   it — leaving the dialog on screen after close, in normal flow rather than the
+   top layer, with page content painting straight over it. */
+.sl-modal[open] {
+  display: flex; flex-direction: column;
+  animation: daylight-fade-up 240ms var(--ease-expo-out);
+}
+/* Glass, not blackout: a light navy tint over a soft blur, so the page stays
+   readable behind the dialog as context. backdrop-filter is unsupported on
+   some older engines, where this degrades to the tint alone — still legible,
+   just flatter, which is why the tint is not doing all the work either. */
+.sl-modal::backdrop {
+  background: var(--scrim-modal);
+  backdrop-filter: var(--glass-blur-soft);
+  -webkit-backdrop-filter: var(--glass-blur-soft);
+}
+.sl-modal__head {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+  padding: 28px 28px 0;
+}
+/* The form is the part that scrolls, so the heading and the close button stay
+   reachable on a short screen. */
+.sl-modal__body { padding: 20px 28px 28px; overflow-y: auto; }
+.sl-modal .sl-form { max-width: none; }
+.sl-form-success { display: grid; gap: 8px; padding: 24px 0; }
+@media (max-width: 479px) { .sl-modal__head { padding: 20px 20px 0; }
+  .sl-modal__body { padding: 16px 20px 20px; } }
+/* The dock floats above everything and would otherwise sit on top of the
+   backdrop — same reason the drawer hides it. */
+body:has(.sl-modal[open]) .sl-dock { display: none; }
 .sl-hero__actions { display: flex; flex-wrap: wrap; gap: 16px; }
 @media (max-width: 479px) { .sl-hero__actions { flex-direction: column; } .sl-hero__actions .sl-btn { width: 100%; } }
 

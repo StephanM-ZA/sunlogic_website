@@ -59,8 +59,11 @@
       if (s !== 'none' && !el.matches(':focus-visible')) fail('elevation', 'box-shadow on ' + el.className, el);
     });
 
-    /* 5 — One emphasis button in view (the closing CTA is the allowed second). */
-    const emph = document.querySelectorAll('.sl-btn--emphasis:not(.sl-drawer .sl-btn)');
+    /* 5 — One emphasis button in view (the closing CTA is the allowed second).
+       "In view" is the point, so the drawer is excluded — and a dialog for the
+       same reason: it is its own view with its own emphasis budget, and while
+       it is open the page behind it is inert. */
+    const emph = document.querySelectorAll('.sl-btn--emphasis:not(.sl-drawer .sl-btn):not(dialog .sl-btn)');
     if (emph.length > 2) fail('accent', emph.length + ' emphasis buttons on the page; the limit is one, plus the closing CTA', emph[2]);
 
     /* 6 — Case. Headings are Title Case; prose sub-heads are sentence case.
