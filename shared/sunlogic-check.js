@@ -105,12 +105,17 @@
       }
     });
     /* An h3 given .sl-title is an explicit titled heading (a named
-       sub-document, say), so it follows heading case, not prose case. */
+       sub-document, say), so it follows heading case, not prose case. The
+       first word is skipped because sentence case capitalises it, and the
+       threshold is a clear majority of the rest: counting every capitalised
+       long word flagged "Cape Town's own structure", where the capitals are a
+       proper noun rather than Title Case. */
     document.querySelectorAll('.sl-prose h3:not(.sl-title)').forEach((el) => {
-      const words = el.textContent.trim().split(/\s+/).filter((w) => w.length > 3);
+      const text = el.textContent.trim();
+      const words = text.split(/\s+/).filter((w) => w.length > 3).slice(1);
       const caps = words.filter((w) => /^[A-Z]/.test(w));
-      if (words.length > 2 && caps.length > words.length / 2) {
-        warn('copy', 'prose sub-head looks Title Cased: "' + el.textContent.trim().slice(0, 48) + '" — sub-heads inside prose are sentence case', el);
+      if (words.length > 2 && caps.length > words.length * 0.7) {
+        warn('copy', 'prose sub-head looks Title Cased: "' + text.slice(0, 48) + '" — sub-heads inside prose are sentence case', el);
       }
     });
 

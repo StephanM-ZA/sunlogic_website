@@ -880,7 +880,10 @@ a.sl-contact:hover .sl-contact__value { color: var(--color-orange); }
 .sl-contact__icon { flex: 0 0 22px; color: var(--color-orange); display: inline-flex; margin-top: 2px; }
 .sl-contact__body { display: grid; gap: 4px; }
 .sl-contact__label { font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-secondary); }
-.sl-contact__value { font-size: 16px; color: var(--text-primary); transition: color var(--dur-hover) ease-out; }
+/* min-height + flex centring: as a grid item of .sl-person, this collapses
+   to display: block at its line-height (24px) — too short a tap target for
+   the email/phone links on the contact-card. */
+.sl-contact__value { display: flex; align-items: center; min-height: 44px; font-size: 16px; color: var(--text-primary); transition: color var(--dur-hover) ease-out; }
 .sl-card--inverse .sl-contact__value, .sl-card--glass .sl-contact__value { color: var(--text-inverse); }
 
 /* Person card. */

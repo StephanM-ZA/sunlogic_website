@@ -133,3 +133,13 @@ test('a11y: an inline-display link is exempt, a block-display link under 44px is
   assert.strictEqual(findings.length, 1, 'expected exactly one a11y warning, for the block link');
   assert.match(findings[0].detail, /20px tall, minimum is 44px/);
 });
+
+/* --- copy: sentence case with a proper noun ---------------------------- */
+
+// The rule counts long words starting with a capital, so a sentence-case
+// sub-head containing a proper noun trips it: "Cape Town's own structure" has
+// 3 long words of which 2 are capitalised. A proper noun is not Title Case.
+test('copy: a sentence-case prose sub-head with a proper noun is not flagged', async () => {
+  const r = await check('copy-pass-proper-noun.html');
+  assert.deepStrictEqual(r.warns.filter((w) => w.rule === 'copy'), []);
+});
