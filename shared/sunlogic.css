@@ -786,6 +786,9 @@ body:has(.sl-modal[open]) .sl-dock { display: none; }
 .sl-footer__plain:hover { color: var(--color-orange); opacity: 1; }
 .sl-footer__rule { max-width: var(--container-used); margin: 48px auto 0; border-top: 1px solid var(--border-inverse); padding-top: 20px; }
 .sl-footer__strapline { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+/* A commit SHA is a literal, and uppercasing it produces a string that no
+   longer matches the one in git. The only text in the footer that opts out. */
+.sl-build-sha { text-transform: none; }
 
 /* ---- Placeholder — labelled empty state, never stock ------- */
 .sl-placeholder {

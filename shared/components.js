@@ -931,10 +931,14 @@ customElements.define('dl-footer', DlFooter);
 function SL_BUILD_LINE() {
   const build = window.SL_BUILD;
   if (!build || !build.sha) return '';
-  const link = build.repo
-    ? '<a class="sl-footer__strapline" href="' + build.repo + '/commit/' + build.sha + '" style="text-decoration:underline">' + build.short + '</a>'
-    : '<span class="sl-footer__strapline">' + build.short + '</span>';
-  return '<p class="sl-footer__strapline">Build ' + link + (build.date ? ' · ' + build.date : '') + '</p>';
+  /* Plain text, not a link to the commit: this is a build identifier for
+     whoever is looking at the page, not an invitation into the repository.
+     .sl-footer__strapline uppercases its text, which mangles a SHA into
+     something you cannot paste back into git — so the SHA opts out and keeps
+     the case it actually has. */
+  return '<p class="sl-footer__strapline">Build ' +
+    '<span class="sl-build-sha">' + build.short + '</span>' +
+    (build.date ? ' · ' + build.date : '') + '</p>';
 }
 
 /* --- Reveal — fade + 16px rise, 700ms expo-out ---------------
