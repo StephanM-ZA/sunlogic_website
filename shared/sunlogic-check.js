@@ -87,7 +87,11 @@
        gutter: it has no band colour of its own, but that gutter does separate
        what sits either side of it, so it RESETS the run rather than joining
        it. That is why a navy CTA can sit above the navy footer. */
-    const bands = [...document.querySelectorAll('.sl-hero, .sl-trust, .sl-section, .sl-statement, .sl-cta-wrap, .sl-footer')];
+    const bands = [...document.querySelectorAll('.sl-hero, .sl-trust, .sl-section, .sl-statement, .sl-cta-wrap, .sl-footer')]
+      /* A .sl-hero inside a section is a card wearing the hero's layer stack,
+         not a band of its own — two of them side by side in a grid are not
+         "adjacent bands sharing a background". Only a top-level hero counts. */
+      .filter((s) => !(s.classList.contains('sl-hero') && s.parentElement.closest('.sl-section')));
     let prevBg = null;
     bands.forEach((s) => {
       if (s.classList.contains('sl-cta-wrap')) { prevBg = null; return; }

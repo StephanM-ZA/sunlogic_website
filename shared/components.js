@@ -73,40 +73,51 @@ class DlRoll extends SLElement {
     try { items = JSON.parse(this.getAttribute('items') || '[]'); } catch (e) { items = []; }
     if (!items.length) return;
     const itemClass = this.getAttribute('item-class') || '';
-    const row = (it) =>
-      '<a class="sl-roll__item' + (itemClass ? ' ' + itemClass : '') + '" href="' + it.href + '" aria-label="' + it.text + '">' +
+    /* The trailing clone is what the wrap slides onto. It is a duplicate of a
+       link that is already in the list, so it is hidden from assistive tech and
+       taken out of the tab order. */
+    const row = (it, clone) =>
+      '<a class="sl-roll__item' + (itemClass ? ' ' + itemClass : '') + '" href="' + it.href + '"' +
+      (clone ? ' aria-hidden="true" tabindex="-1"' : ' aria-label="' + it.text + '"') + '>' +
       (it.icon ? SL_ICON(it.icon, 16) : '') + '<span>' + it.text + '</span></a>';
-    this.innerHTML = '<span class="sl-roll"><span class="sl-roll__track">' + items.map(row).join('') + '</span></span>';
+
+    const animate = items.length > 1 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.innerHTML = '<span class="sl-roll"><span class="sl-roll__track">' +
+      items.map((it) => row(it)).join('') + (animate ? row(items[0], true) : '') + '</span></span>';
 
     const roll = this.querySelector('.sl-roll');
     const track = this.querySelector('.sl-roll__track');
     const itemHeight = track.children[0].getBoundingClientRect().height;
     roll.style.height = itemHeight + 'px';
 
-    if (items.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!animate) return;
     const ms = parseInt(this.getAttribute('interval'), 10) || 3000;
     const n = items.length;
     let i = 0;
     setInterval(() => {
       i++;
       /* translateY(-100%) is relative to the TRACK's own height (every
-         item stacked, n × itemHeight) — not one item's height, which is
-         what a step here actually needs — so this steps in measured
-         pixels instead. The final step slides past the real last item
-         onto a clone of the first, then snaps back to the real first
-         item with transitions off: an ordinary infinite-marquee loop,
-         rolling forever with only n real items ever on screen and no
-         runaway transform value — and never a gap between one item
-         sliding out and the next sliding in. */
-      if (i === n) track.appendChild(track.children[0].cloneNode(true));
+         item stacked) — not one item's height, which is what a step here
+         actually needs — so this steps in measured pixels instead. The
+         final step slides past the real last item onto the trailing clone
+         of the first, then resets to zero with transitions off: an
+         ordinary infinite-marquee loop, with no runaway transform value
+         and never a gap between one item sliding out and the next
+         sliding in.
+
+         The clone is built once, in render, and never touched again.
+         Appending it at the start of the wrap and removing it after —
+         which is what this did before — left a frame where the track sat
+         at the clone's offset with the clone already gone, and the slot
+         rendered empty. Mutating nothing during the animation is what
+         makes that frame impossible rather than merely unlikely. */
       track.style.transition = 'transform 420ms var(--ease-expo-out)';
       track.style.transform = 'translateY(-' + (i * itemHeight) + 'px)';
       if (i === n) {
         setTimeout(() => {
           track.style.transition = 'none';
-          void track.offsetHeight;
           track.style.transform = 'translateY(0)';
-          track.removeChild(track.lastElementChild);
+          void track.offsetHeight;
           i = 0;
         }, 440);
       }
@@ -675,13 +686,35 @@ customElements.define('dl-terminal', DlTerminal);
 
 /* --- NavBar — 72px, sticky, mono uppercase links -------------
    The system caps this at FOUR links plus the CTA. */
+/* Logo artwork is per-site — three distinct lockups across the three domains,
+   under three different filenames — so the path comes from window.SL_SITE,
+   written by the build from sites.config.js. No filename is common to all
+   three folders, so there is no path that would work as a fallback: naming one
+   site's artwork here would be a dead reference on the other two. A page with
+   no SL_SITE (a source file opened straight off disk) therefore degrades to
+   the text wordmark, which is what this library used before artwork existed. */
+const SL_LOGO_IMG = (key, width, height) => {
+  const src = window.SL_SITE && window.SL_SITE[key];
+  return src
+    ? '<img class="sl-wordmark-logo" src="' + src + '" alt="Sunlogic" width="' + width + '" height="' + height + '"/>'
+    : '<span class="sl-wordmark" style="font-size:20px">Sunlogic</span>';
+};
+
 class DlNavBar extends SLElement {
   render() {
     const active = SL_ATTR(this, 'active', 'none');
     /* Electrical takes the navy accent; everything else takes orange. Same
        pairing as the Solar/Electrical buttons, so the two trades read
-       consistently wherever they appear together. */
-    const links = [
+       consistently wherever they appear together.
+
+       The three sites need different nav, so the link list comes from
+       window.SL_SITE.nav, injected per site at build time by
+       scripts/build-site.js from sites.config.js. The array below is the
+       fallback: if that injection is ever missing, the nav still renders as
+       it always has rather than coming out empty. */
+    const links = (window.SL_SITE && Array.isArray(window.SL_SITE.nav) && window.SL_SITE.nav.length)
+      ? window.SL_SITE.nav
+      : [
       { href: 'index.html', key: 'home', label: 'Home' },
       { href: 'solar.html', key: 'solar', label: 'Solar' },
       { href: 'electrical.html', key: 'electrical', label: 'Electrical', accent: 'navy' },
@@ -702,13 +735,13 @@ class DlNavBar extends SLElement {
          white wordmark would vanish — sl_logo.svg is the same lockup with
          the wordmark set in navy instead, for exactly this ground. Dark
          grounds (the drawer, the CTA block, the footer) use the white one. */
-      '<a href="index.html" class="sl-wordmark-link"><img class="sl-wordmark-logo" src="images/sl_logo.svg" alt="Sunlogic" width="186" height="56"/></a>' +
+      '<a href="index.html" class="sl-wordmark-link">' + SL_LOGO_IMG('logo', 186, 56) + '</a>' +
       '<nav class="sl-nav__links" data-has-active="' + hasActive + '">' + navLinks +
       '<dl-button variant="primary" size="sm" href="contact.html">Get a quote</dl-button></nav>' +
       '<button class="sl-icon-btn sl-nav__toggle" type="button" aria-label="Open menu" aria-expanded="false" data-sl-toggle>' +
       SL_ICON('bars-3', 24) + '</button></header>' +
       '<div class="sl-drawer" hidden data-sl-drawer>' +
-      '<div class="sl-drawer__top"><img class="sl-wordmark-logo" src="images/sl_logo_white.svg" alt="Sunlogic" width="93" height="28"/>' +
+      '<div class="sl-drawer__top">' + SL_LOGO_IMG('logoWhite', 93, 28) +
       '<button class="sl-icon-btn" type="button" aria-label="Close menu" data-sl-close>' + SL_ICON('x-mark', 24) + '</button></div>' +
       drawerLinks +
       '<div class="sl-drawer__cta"><dl-button variant="emphasis" full href="contact.html">Get a quote</dl-button></div></div>';
@@ -732,7 +765,7 @@ class DlFooter extends SLElement {
       '<a class="sl-footer__link" href="' + l[1] + '">' + l[0] + '</a>').join('') + '</div>';
     this.innerHTML =
       '<footer class="sl-footer"><div class="sl-footer__groups">' +
-      '<div class="sl-footer__brand"><img class="sl-wordmark-logo" src="images/sl_logo_verticle.svg" alt="Sunlogic" width="82" height="64"/>' +
+      '<div class="sl-footer__brand">' + SL_LOGO_IMG('logoVertical', 82, 64) +
       '<p class="sl-footer__strapline">Solar and electrical, Western Cape</p>' +
       '<p class="sl-footer__strapline">Sunlogic SA (Pty) Ltd · Reg. 2022/651654/07</p></div>' +
       col([['Solar', 'solar.html'], ['Electrical', 'electrical.html'], ['Energy', 'energy-management.html'], ['Worth knowing', 'blog.html']]) +

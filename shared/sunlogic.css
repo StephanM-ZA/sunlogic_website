@@ -372,8 +372,32 @@ dl-section.sl-section--hero-follow .sl-section { padding-top: 40px; }
 .sl-btn--secondary { background: var(--color-beige); color: var(--color-navy); }
 .sl-btn--outline   { background: transparent; color: var(--text-primary); border-color: var(--border-warm); }
 .sl-btn--outline:hover:not(:disabled) { border-color: var(--color-orange); }
-/* Emphasis is already orange, so it wipes to navy instead. */
-.sl-btn--emphasis  { background: var(--color-orange); color: var(--color-navy); --btn-wipe: var(--color-navy); }
+/* Emphasis is already orange, so it runs the wipe backwards: the orange IS the
+   resting state and retracts on hover, the same way .sl-dock__cta does it. You
+   cannot paint "transparent" over a solid fill, so the orange has to be the
+   layer that moves, and what it uncovers is whatever the button sits on. */
+.sl-btn--emphasis  { background: transparent; border-color: var(--color-orange);
+  color: var(--color-navy); --btn-wipe: var(--color-orange); }
+.sl-btn--emphasis::before { height: 100%; }
+.sl-btn--emphasis:hover:not(:disabled)::before { height: 0; }
+/* On beige or white the cleared label has to be #B85300: #F66F00 as text there
+   is 2.7:1 and fails AA. */
+.sl-btn--emphasis:hover:not(:disabled) { color: var(--color-orange-text); }
+/* On a dark ground it takes the ghost-on-dark treatment instead — 0.16 fill,
+   0.35 border, white label. Same surface swap the stylesheet already makes for
+   .sl-eyebrow and .sl-body, and for the same reason: the light-surface value
+   is wrong the moment the button lands on a photo or on navy. */
+.sl-hero .sl-btn--emphasis,
+.sl-section--inverse .sl-btn--emphasis,
+.sl-card--inverse .sl-btn--emphasis,
+.sl-cta .sl-btn--emphasis,
+.sl-drawer .sl-btn--emphasis { background: rgba(255,255,255,0.16); }
+.sl-hero .sl-btn--emphasis:hover:not(:disabled),
+.sl-section--inverse .sl-btn--emphasis:hover:not(:disabled),
+.sl-card--inverse .sl-btn--emphasis:hover:not(:disabled),
+.sl-cta .sl-btn--emphasis:hover:not(:disabled),
+.sl-drawer .sl-btn--emphasis:hover:not(:disabled) {
+  color: var(--color-white); border-color: rgba(255,255,255,0.35); }
 .sl-btn--ghost     { background: transparent; color: inherit; }
 /* Ghost over photography or navy: a visible edge, and a restrained
    wipe so it never outshouts the emphasis button beside it. */
@@ -386,9 +410,15 @@ dl-section.sl-section--hero-follow .sl-section { padding-top: 40px; }
 .sl-btn--ghost.sl-on-dark:hover:not(:disabled) { border-color: rgba(255,255,255,0.6); }
 /* Wipe overrides. Any variant can be told which colour to fill with — used
    where two buttons sit side by side and each should read as its own thing
-   (Solar fills orange, Electrical fills navy). */
-.sl-btn--wipe-orange { --btn-wipe: var(--color-orange); --btn-wipe-ink: var(--color-white); }
-.sl-btn--wipe-navy   { --btn-wipe: var(--color-navy);   --btn-wipe-ink: var(--color-white); }
+   (Solar fills orange, Electrical fills navy).
+
+   Doubled up as .sl-btn.sl-btn--wipe-*: "any variant" was not true before.
+   .sl-btn--ghost.sl-on-dark sets --btn-wipe at two classes, so it outranked a
+   single-class wipe override and wipe="orange" silently did nothing on a ghost
+   button over photography — the one place a caller is most likely to want it. */
+.sl-btn.sl-btn--wipe-orange { --btn-wipe: var(--color-orange); --btn-wipe-ink: var(--color-white); }
+.sl-btn.sl-btn--wipe-navy   { --btn-wipe: var(--color-navy);   --btn-wipe-ink: var(--color-white); }
+.sl-btn--wipe-orange:hover:not(:disabled) { border-color: var(--color-orange); }
 .sl-btn--wipe-navy:hover:not(:disabled) { border-color: var(--color-navy); }
 
 .sl-icon-btn {
@@ -985,21 +1015,27 @@ dl-subnav { position: sticky; top: 72px; z-index: 30; }
   display: inline-flex; align-items: center; gap: 8px;
   height: 44px; padding: 0 20px;
   border-radius: var(--radius-sm);
-  background: var(--color-orange); color: var(--color-navy);
+  background: rgba(255,255,255,0.16); border: 1px solid var(--color-orange);
+  color: var(--color-navy);
   font-family: var(--font-body); font-size: 14px; font-weight: 700;
   white-space: nowrap;
-  transition: color var(--dur-hover) ease-out, transform var(--dur-hover) ease-out;
+  transition: color var(--dur-hover) ease-out, border-color var(--dur-hover) ease-out,
+              transform var(--dur-hover) ease-out;
 }
+/* This button runs the wipe backwards. Everywhere else the fill rises into an
+   empty button; here the orange IS the resting state and retracts on hover,
+   uncovering the ghost-on-dark treatment underneath — 0.16 fill, 0.35 border,
+   white label. It has to work this way round because you cannot paint
+   "transparent" over a solid background: the orange must be the layer that
+   moves. Beige was the old wipe, and read as white. */
 .sl-dock__cta::before {
-  content: ""; position: absolute; inset: auto 0 0 0; height: 0;
-  background: var(--color-beige);
+  content: ""; position: absolute; inset: auto 0 0 0; height: 100%;
+  background: var(--color-orange);
   transition: height 240ms var(--ease-expo-out);
   z-index: 0;
 }
-.sl-dock__cta:hover::before { height: 100%; }
-/* Wipes to beige, not navy — the dock itself is navy, so a navy wipe would
-   dissolve the button into its own container. */
-.sl-dock__cta:hover { color: var(--color-navy); opacity: 1; }
+.sl-dock__cta:hover::before { height: 0; }
+.sl-dock__cta:hover { color: var(--color-white); border-color: rgba(255,255,255,0.35); opacity: 1; }
 .sl-dock__cta:active { transform: translateY(1px); }
 .sl-dock__cta > span, .sl-dock__cta > svg { position: relative; z-index: 1; }
 /* On a narrow phone the number collapses to the icon alone. */

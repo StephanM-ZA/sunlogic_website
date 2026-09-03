@@ -191,12 +191,25 @@ function rewriteToExtensionless(dir) {
   }
 }
 
-function stampBuildInfo(dir, build) {
-  const tag = '<script>window.SL_BUILD=' + JSON.stringify(build) + ';</script>\n</head>';
+/* Injects the build stamp and, when the site defines one, its own nav and
+   footer link lists as window.SL_SITE. The nav/footer components read that and
+   fall back to their built-in lists if it is absent, so a site with no config
+   renders exactly as it always has. */
+const SITE_KEYS = ['nav', 'footer', 'logo', 'logoWhite', 'logoVertical'];
+
+function stampBuildInfo(dir, build, site) {
+  /* Whitelisted rather than spread wholesale: the config also carries build
+     paths (src, out) that have no business in a published page. */
+  const cfg = {};
+  for (const k of SITE_KEYS) if (site && site[k]) cfg[k] = site[k];
+  const siteCfg = Object.keys(cfg).length
+    ? '<script>window.SL_SITE=' + JSON.stringify(cfg) + ';</script>'
+    : '';
+  const tag = '<script>window.SL_BUILD=' + JSON.stringify(build) + ';</script>' + siteCfg + '\n</head>';
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) {
-      stampBuildInfo(full, build);
+      stampBuildInfo(full, build, site);
     } else if (entry.name.endsWith('.html')) {
       const html = fs.readFileSync(full, 'utf8');
       if (html.includes('</head>')) {
@@ -216,7 +229,7 @@ async function buildSite(site, build) {
   const renameMap = await optimizeImages(out);
   rewriteImageReferences(out, renameMap);
   rewriteToExtensionless(out);
-  stampBuildInfo(out, build);
+  stampBuildInfo(out, build, site);
   await walkAndMinify(out);
 }
 

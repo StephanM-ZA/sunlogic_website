@@ -25,10 +25,26 @@ const SITES = [
     domain: 'https://sunlogic.co.za',
     src: 'site-main',
     out: 'dist/main',
-    /* The current site, unchanged. Its nav and footer stay hardcoded in
-       components.js for now, so this build is byte-for-byte what it is today. */
-    nav: null,
+    /* The apex is a company landing page that routes to the two divisions, so
+       its nav points at the subdomains rather than at pages on this domain.
+       No Energy tab: energy-management lives on the energy site. */
+    nav: [
+      /* Real URLs, not filenames: this list is injected as JSON and the
+         build's extensionless rewrite only matches quoted paths in HTML and
+         single-quoted paths in JS, so it would not touch these. */
+      { href: '/', key: 'home', label: 'Home' },
+      { href: 'https://energy.sunlogic.co.za', key: 'solar', label: 'Solar' },
+      { href: 'https://electrical.sunlogic.co.za', key: 'electrical', label: 'Electrical', accent: 'navy' },
+    ],
     footer: null,
+    /* Per-site logo artwork. Same filenames would have been simpler, but these
+       are three distinct lockups, so the path is config rather than convention.
+       `logoWhite` is the horizontal wordmark for dark grounds (the mobile
+       drawer); there is no per-site artwork for it yet, so all three still
+       point at the shared white lockup. */
+    logo: 'images/sl_logo_main_blue.svg',
+    logoWhite: 'images/sl_logo_white.svg',
+    logoVertical: 'images/sl_logo_verticle_main_white.svg',
   },
 
   {
@@ -38,6 +54,9 @@ const SITES = [
     out: 'dist/energy',
     nav: null,
     footer: null,
+    logo: 'images/sl_logo_energy_blue.svg',
+    logoWhite: 'images/sl_logo_white.svg',
+    logoVertical: 'images/sl_logo_verticle_energy_white.svg',
   },
 
   {
@@ -47,6 +66,9 @@ const SITES = [
     out: 'dist/electrical',
     nav: null,
     footer: null,
+    logo: 'images/sl_logo_electrical_blue.svg',
+    logoWhite: 'images/sl_logo_white.svg',
+    logoVertical: 'images/sl_logo_verticle_electrical_white.svg',
   },
 ];
 
