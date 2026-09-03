@@ -2,28 +2,19 @@
    SUNLOGIC DESIGN-SYSTEM CHECK
    Add to any page during development:
        <script src="shared/sunlogic-check.js" defer></script>
-   It prints a pass/fail table to the console and paints a badge
-   in the corner. Remove the tag (or it self-disables) in production.
+
+   Two consumers, one ruleset:
+     window.SL_CHECK.run()  the engine — returns findings, presents nothing
+     the presenter          console group + corner badge, dev builds only
+
+   The engine is always available, including in a production build, because
+   scripts/conformance.js audits a production build and needs to call it. Only
+   the presenter is suppressed there.
 
    This exists because "read the guidelines" does not survive a long
    session. A failing check does.
    ============================================================ */
 (function () {
-  /* Run everywhere except a production build.
-     This guard has now been wrong twice in opposite directions. It first
-     disabled the check on any https URL, so it never ran on a dev server, a
-     staging URL or a deploy preview — almost everywhere it was needed. The
-     replacement matched one hostname, /^(www\.)?sunlogic\.co\.za$/, which was
-     right while there was one site; when the environment grew to three hosts
-     it kept running on two of them and painted a developer badge in public.
-     Both mistakes came from inferring the environment from the URL.
-     window.SL_BUILD.prod is set by scripts/build-site.js from the CI branch
-     variable, so it is a property of the build rather than of the address it
-     happens to be served from, and a fourth host cannot reintroduce this.
-     A missing SL_BUILD means an unbuilt source file opened straight off disk —
-     development, so the check runs. */
-  if (window.SL_BUILD && window.SL_BUILD.prod) return;
-
   const PALETTE = new Set([
     'rgb(246, 111, 0)', 'rgb(184, 83, 0)', 'rgb(13, 32, 40)', 'rgb(8, 22, 25)',
     'rgb(255, 247, 233)', 'rgb(247, 238, 217)', 'rgb(240, 229, 207)',
@@ -31,19 +22,50 @@
     'rgb(90, 84, 75)', 'rgb(186, 26, 26)', 'rgba(0, 0, 0, 0)',
   ]);
   const FACES = ['Hanken Grotesk', 'JetBrains Mono'];
-  const fails = [];
-  const warns = [];
-  const fail = (rule, detail, el) => fails.push({ rule, detail, el });
-  const warn = (rule, detail, el) => warns.push({ rule, detail, el });
 
-  const run = () => {
+  /* Each rule's intent, in a form the report can print. A blocking failure
+     that will not say why the rule exists is not decidable: you cannot tell
+     "this page is wrong" from "this rule is wrong" without it. */
+  const WHY = {
+    surface: 'the page ground is beige and its text navy — a page that starts on another colour is not in the system',
+    palette: 'every colour on the page comes from the token file; an off-palette value is either a mistake or a token that was never added',
+    type: 'two typefaces carry everything — Hanken Grotesk for text, JetBrains Mono for labels and data. A third face is not in the vocabulary',
+    elevation: 'the system is flat: separation comes from tone and hairlines, never from a shadow',
+    accent: 'one emphasis button in view, plus the closing CTA — more than that and none of them reads as the thing to click',
+    copy: 'headings are Title Case and prose sub-heads are sentence case; capitals belong to the mono face at label size',
+    rhythm: 'a reader should never meet the same band colour twice running — the alternation is what separates sections without a rule line',
+    limit: 'the nav caps at four links, because a fifth turns a route into a menu',
+    a11y: 'anything you tap is at least 44px tall, and every image either says what it shows or is a labelled empty state',
+  };
+
+  /* A serialised locator, not the node. page.evaluate() cannot return
+     elements, so the runner would receive {} for every finding.
+     className is deliberately type-checked: on an SVG element it is an
+     SVGAnimatedString, and 63 of the findings on this site are SVG <text>. */
+  const selectorFor = (el) => {
+    if (!el || !el.tagName) return '';
+    const tag = el.tagName.toLowerCase();
+    const id = el.id ? '#' + el.id : '';
+    const cls = typeof el.className === 'string' && el.className.trim()
+      ? '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.')
+      : '';
+    return tag + id + cls;
+  };
+
+  function run() {
+    const fails = [];
+    const warns = [];
+    const finding = (rule, detail, el) => ({ rule, why: WHY[rule], detail, selector: selectorFor(el) });
+    const fail = (rule, detail, el) => fails.push(finding(rule, detail, el));
+    const warn = (rule, detail, el) => warns.push(finding(rule, detail, el));
+
     /* 1 — Page surface is beige, text is navy. */
     const bodyBg = getComputedStyle(document.body).backgroundColor;
     if (bodyBg !== 'rgb(255, 247, 233)') fail('surface', 'body background is ' + bodyBg + ', should be rgb(255, 247, 233)', document.body);
 
     /* 2 — No colour outside the palette. */
     document.querySelectorAll('body *').forEach((el) => {
-      if (el.dataset.slCheckBadge) return;      /* never flag the badge itself */
+      if (el.dataset && el.dataset.slCheckBadge) return;      /* never flag the badge itself */
       const cs = getComputedStyle(el);
       if (el.offsetParent === null && cs.position !== 'fixed') return;
       ['backgroundColor', 'color'].forEach((prop) => {
@@ -56,7 +78,7 @@
 
     /* 3 — Two typefaces only. */
     document.querySelectorAll('body *').forEach((el) => {
-      if (el.dataset.slCheckBadge) return;
+      if (el.dataset && el.dataset.slCheckBadge) return;
       if (!el.textContent.trim()) return;
       const f = getComputedStyle(el).fontFamily;
       if (!FACES.some((x) => f.includes(x))) warn('type', 'font-family: ' + f, el);
@@ -75,8 +97,7 @@
     const emph = document.querySelectorAll('.sl-btn--emphasis:not(.sl-drawer .sl-btn):not(dialog .sl-btn)');
     if (emph.length > 2) fail('accent', emph.length + ' emphasis buttons on the page; the limit is one, plus the closing CTA', emph[2]);
 
-    /* 6 — Case. Headings are Title Case; prose sub-heads are sentence case.
-       Flag ALL CAPS headings, and prose sub-heads that have been Title Cased. */
+    /* 6 — Case. Headings are Title Case; prose sub-heads are sentence case. */
     document.querySelectorAll('.sl-hero-heading, .sl-section-heading, .sl-title, .sl-cta__heading').forEach((el) => {
       const t = el.textContent.trim();
       if (t.length > 3 && t === t.toUpperCase() && /[A-Z]/.test(t)) {
@@ -93,16 +114,13 @@
       }
     });
 
-    /* 7 — No two adjacent full-bleed bands share a background. Statement
-       bands, the hero and the trust strip are tonal breaks, so they count in
-       the run. The closing CTA is an inset rounded card on a transparent
-       gutter: it has no band colour of its own, but that gutter does separate
-       what sits either side of it, so it RESETS the run rather than joining
-       it. That is why a navy CTA can sit above the navy footer. */
+    /* 7 — No two adjacent full-bleed bands share a background. The closing CTA
+       is an inset rounded card on a transparent gutter: it has no band colour
+       of its own, but that gutter does separate what sits either side of it,
+       so it RESETS the run rather than joining it. */
     const bands = [...document.querySelectorAll('.sl-hero, .sl-trust, .sl-section, .sl-statement, .sl-cta-wrap, .sl-footer')]
       /* A .sl-hero inside a section is a card wearing the hero's layer stack,
-         not a band of its own — two of them side by side in a grid are not
-         "adjacent bands sharing a background". Only a top-level hero counts. */
+         not a band of its own. Only a top-level hero counts. */
       .filter((s) => !(s.classList.contains('sl-hero') && s.parentElement.closest('.sl-section')));
     let prevBg = null;
     bands.forEach((s) => {
@@ -130,14 +148,30 @@
     });
 
     /* 11 — Placeholders are visible, not invented. Informational. */
-    const pending = (document.body.innerText.match(/\[[^\]]*(pending|placeholder)[^\]]*\]/gi) || []).length;
+    const placeholders = (document.body.innerText.match(/\[[^\]]*(pending|placeholder)[^\]]*\]/gi) || []).length;
 
+    return { fails, warns, info: { placeholders } };
+  }
+
+  window.SL_CHECK = { run, WHY };
+
+  /* ---- Presenter. Dev builds only. -------------------------------------
+     The guard reads the build flag rather than location.hostname: a hostname
+     regex was right while there was one site and shipped a developer badge to
+     the public on two of three once the environment grew. window.SL_BUILD.prod
+     is a property of the build, so a fourth host cannot reintroduce it.
+     Only this presenter is suppressed — the engine above stays callable,
+     because the headless runner audits production builds. */
+  if (window.SL_BUILD && window.SL_BUILD.prod) return;
+
+  const present = (result) => {
+    const { fails, warns, info } = result;
     const style = (c) => 'color:' + c + ';font-weight:600';
     console.group('%cSunlogic design-system check', 'font-weight:700;font-size:13px');
     if (!fails.length && !warns.length) console.log('%c✓ all checks pass', style('#0a7'));
-    fails.forEach((f) => console.log('%c✗ ' + f.rule + '%c  ' + f.detail, style('#c00'), 'color:inherit', f.el));
-    warns.forEach((w) => console.log('%c! ' + w.rule + '%c  ' + w.detail, style('#b70'), 'color:inherit', w.el));
-    if (pending) console.log('%ci placeholders%c  ' + pending + ' unresolved value(s) visible on this page — correct, until the client supplies them', style('#678'), 'color:inherit');
+    fails.forEach((f) => console.log('%c✗ ' + f.rule + '%c  ' + f.detail, style('#c00'), 'color:inherit', f.selector));
+    warns.forEach((w) => console.log('%c! ' + w.rule + '%c  ' + w.detail, style('#b70'), 'color:inherit', w.selector));
+    if (info.placeholders) console.log('%ci placeholders%c  ' + info.placeholders + ' unresolved value(s) visible on this page — correct, until the client supplies them', style('#678'), 'color:inherit');
     console.groupEnd();
 
     const badge = document.createElement('div');
@@ -153,6 +187,6 @@
     document.body.appendChild(badge);
   };
 
-  if (document.readyState === 'complete') setTimeout(run, 200);
-  else window.addEventListener('load', () => setTimeout(run, 200));
+  if (document.readyState === 'complete') setTimeout(() => present(run()), 200);
+  else window.addEventListener('load', () => setTimeout(() => present(run()), 200));
 })();
