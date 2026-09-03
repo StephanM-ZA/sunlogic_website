@@ -63,6 +63,9 @@ jobs:
       - name: Lighthouse budgets
         run: node scripts/lighthouse.js
 
+      # Rebuilds dist/main on its own so the artifact that uploads is produced by
+      # a single explicit step. Same environment as the gate's build above, so the
+      # output is identical — this is for clarity about what ships, not a fix-up.
       - name: Build the main site (dist/main)
         run: npm run build:main
 

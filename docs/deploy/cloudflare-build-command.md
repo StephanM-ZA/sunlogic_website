@@ -25,9 +25,17 @@ everything before the per-site build produces what ships.
 
 ## Why the per-site build runs last
 
-It rebuilds with Cloudflare's `CF_PAGES_BRANCH` in the environment, so
-`window.SL_BUILD.prod` is `true` in the published output and the developer
-badge stays out of production. See `scripts/build-site.js:isProductionBuild`.
+Rebuilds on its own so the artifact that ships is produced by a single
+explicit step. Same environment as the gate's build above, so the output is
+identical — this is for clarity about what ships, not a fix-up. See
+`scripts/build-site.js:isProductionBuild`.
+
+## Rolling this out
+
+Update the build command on `sunlogic-energy` first, deploy, and confirm from
+the build log that `pages checked 42/42` appears before touching
+`sunlogic-electrical`. One project at a time, so a bad build command cannot
+take both subdomains down at once.
 
 ## Overriding a blocked deploy
 
@@ -39,8 +47,9 @@ arrived at one line at a time.
 
 ## Chromium on the Cloudflare builder
 
-`npm run conformance` needs a browser. Cloudflare's build image does not ship
-one, so the build command needs `npx playwright install --with-deps chromium`
-prepended on first use, or `PLAYWRIGHT_BROWSERS_PATH=0` set so the download is
-cached in `node_modules` between builds. Verify on the first gated deployment
-and correct this file with whatever actually worked.
+`npm run conformance` needs a browser. Cloudflare's build image is not
+expected to ship one, so the build command needs
+`npx playwright install --with-deps chromium` prepended on first use, or
+`PLAYWRIGHT_BROWSERS_PATH=0` set so the download is cached in `node_modules`
+between builds. Verify on the first gated deployment and correct this file
+with whatever actually worked.
