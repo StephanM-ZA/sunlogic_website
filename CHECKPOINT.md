@@ -1,6 +1,86 @@
 # Checkpoint — Sunlogic Website
 
-**Saved:** 2026-09-01 (session 7 — PageSpeed Insights desktop audit fixes)
+**Saved:** 2026-09-01 (session 7 — PageSpeed Insights desktop + mobile audit fixes)
+
+## Session 7 part 2 — mobile PageSpeed report (uncommitted at time of writing)
+
+Same session, same day, continuing straight from the desktop-report work below. User
+pasted a **mobile** PageSpeed Insights report (separate from the desktop one) flagging:
+cache lifetimes (331 KiB, same GH Pages limitation — see below, unchanged), image
+delivery (52 KiB, hero-1024w.webp compression), render-blocking requests (180 ms,
+sunlogic.css + plugins.css), a forced reflow in `components.js` (30 ms, `dl-roll`), and
+an LCP breakdown showing **2,030 ms of "element render delay"** — by far the largest
+number in either report.
+
+**Fixed:**
+- **Merged `shared/plugins.css` into `shared/sunlogic.css`** (as a clearly delimited
+  "PLUGIN THEME" section at the end, same content, comment updated) to cut one
+  render-blocking stylesheet request on `index.html`/`solar.html` (the only two pages
+  that loaded it — confirmed via grep). Removed the `<link>` tag from both. Bumped
+  `sunlogic.css?v=32` → `?v=33` across **all 16 pages** that load it (content changed,
+  cache-bust required everywhere, not just the 2 pages that also had plugins.css).
+  Updated `ci-guide.html`'s 3 prose references to `shared/plugins.css` to point at the
+  new section instead, so the internal style-guide doesn't teach a file that no longer
+  exists. Verified via Playwright: `--plugin-calc-accent`, `--plugin-review-speed` (60s,
+  not the plugin's own 40s default), and `--plugin-day-feed-height` all still resolve
+  correctly post-merge — the override relationship works because each plugin scopes its
+  own defaults under `:where(:root)` (zero specificity), so the theme file's plain
+  `:root` rules always win regardless of which stylesheet/style-tag is later in the DOM.
+- **Recompressed all 4 hero derivatives** (`hero.webp`, `hero-1440w.webp`,
+  `hero-1024w.webp`, `hero-640w.webp`) from quality 80/default-effort to **quality 72,
+  effort 6** (sharp's max compression effort — same quality, more CPU spent finding a
+  smaller encoding). ~29-31% smaller across the board (hero-1024w — the mobile LCP
+  image — went 81 KiB → 56.9 KiB). Visually verified at quality 65 and 75 side-by-side
+  against the original (PNG diffs, human eyeball) — no visible difference at any tested
+  quality down to 65, chose 72 as a conservative middle ground since this is the LCP
+  image on every page that uses it. Confirmed via Playwright that a 412px/DPR2 mobile
+  viewport still resolves to `hero-1024w.webp` (matches the report's own finding).
+
+**Deliberately NOT fixed:**
+- **`dl-roll` forced reflow** (`shared/components.js` line ~83,
+  `track.children[0].getBoundingClientRect().height` read right after an `innerHTML`
+  write). Same pattern as the review-carousel fix from earlier this session, but NOT
+  applied here: that fix worked safely because CSS already had a `40s` fallback for the
+  custom property being set, so a one-frame delay was invisible. `dl-roll` has no such
+  fallback — `.sl-roll` has no CSS height at all, so deferring the read to
+  `requestAnimationFrame` would show ALL items stacked full-height for one frame before
+  JS corrects it, a visible flash. `dl-roll` is also used sitewide (header/footer phone
+  rotator, present on every page) vs. review-carousel's single page, so the blast radius
+  of getting a guessed fallback height wrong is much bigger. Only 30ms — not worth the
+  risk without a properly-tuned CSS fallback, which needs a design decision (what height
+  to guess) rather than a mechanical fix. Flagged to user, not fixed.
+- **2,030 ms LCP "element render delay"** — the single biggest number across both
+  reports, and NOT a caching or image-weight problem. Working theory: this site renders
+  everything through custom elements (`dl-hero`, `dl-stack`, etc.) that build their
+  `innerHTML` in a JS `render()` method — meaning the `<img>` that IS the LCP element
+  doesn't even exist in the DOM until `shared/components.js` executes (deferred, so
+  after full HTML parse), and `customElements.define()` upgrades every matching element
+  already in the tree synchronously, which is likely one long main-thread task on a
+  throttled mobile CPU that blocks paint of everything, hero image included, until it
+  finishes. This lines up with desktop's own report showing "Total Blocking Time:
+  1,170ms" (red) despite LCP itself scoring green — consistent with one big synchronous
+  task rather than network weight. This is an **architectural** property of the
+  component system (client-side-rendered custom elements gating first paint), not a
+  quick fix — a real fix means changing how above-the-fold content gets to the screen
+  (e.g. not gating the hero `<img>` behind a custom-element upgrade at all). Flagged to
+  user as the most consequential open finding; not attempted without discussion given
+  the size of the change and the standing "don't touch script-loading without
+  understanding the full blast radius" lesson from session 6.
+
+**Verification done:** `npm run build` clean; Playwright checks on both `index.html` and
+`solar.html` at mobile (412×900 DPR2) and desktop (1200×900) viewports — zero console
+errors/warnings on either page, hero srcset resolves correctly, plugin theme CSS
+variables resolve correctly post-merge.
+
+**Files touched:** all 16 `*.html` pages (version bump only, one line each, except
+`index.html`/`solar.html` which also lost the `plugins.css` `<link>`), `ci-guide.html`
+(3 prose edits), `shared/sunlogic.css` (grew by the merged section),
+`shared/plugins.css` (deleted), 4 hero `.webp` files (recompressed in place, same
+dimensions).
+
+**Status:** uncommitted as of this writing — same pattern as the desktop-report work,
+waiting on user to say "commit and push" (they did, explicitly, for the desktop-report
+batch; not yet asked for this one).
 
 ## Current task + goal
 

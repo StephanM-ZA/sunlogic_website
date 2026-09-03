@@ -12,7 +12,7 @@
 <link rel="preload" href="shared/fonts/HankenGrotesk-900-latin.woff2" as="font" type="font/woff2" crossorigin/>
 <link rel="preload" href="shared/fonts/JetBrainsMono-400-latin.woff2" as="font" type="font/woff2" crossorigin/>
 <link rel="preload" href="shared/fonts/JetBrainsMono-700-latin.woff2" as="font" type="font/woff2" crossorigin/>
-<link rel="stylesheet" href="shared/sunlogic.css?v=32"/>
+<link rel="stylesheet" href="shared/sunlogic.css?v=33"/>
 <script src="shared/icons.js?v=2" defer></script>
 <script src="shared/components.js?v=36" defer></script>
 <style>
@@ -648,8 +648,10 @@
   <h3 class="sl-title" style="margin-bottom:16px">Plugins</h3>
   <p class="ci-lede" style="margin-bottom:20px">The savings calculator, the review carousel and the
     day feed are third-party web components with their own markup. They are themed, never forked.
-    <code>shared/plugins.css</code> maps their CSS variables and class names onto the system tokens,
-    so a change to the palette or the type scale reaches them too.</p>
+    the <strong>PLUGIN THEME</strong> section at the bottom of <code>shared/sunlogic.css</code> maps
+    their CSS variables and class names onto the system tokens, so a change to the palette or the
+    type scale reaches them too. It used to be its own <code>shared/plugins.css</code> file, merged
+    in to cut a render-blocking request — nothing about how it works changed.</p>
   <table class="ci-table" style="margin-bottom:20px">
     <thead><tr><th>Plugin element</th><th>Rendered as</th></tr></thead>
     <tbody>
@@ -668,13 +670,13 @@
   </table>
   <div class="ci-rules">
     <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do</span>
-      <p>Theme a plugin in <code>shared/plugins.css</code>, at <code>:root</code> specificity so it beats the style block the plugin injects at runtime.</p></div>
+      <p>Theme a plugin in the PLUGIN THEME section of <code>shared/sunlogic.css</code>, at <code>:root</code> specificity so it beats the style block the plugin injects at runtime.</p></div>
     <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Don't</span>
       <p>Edit the plugin's JavaScript to restyle it. The next version overwrites you, and the plugin stops tracking the system.</p></div>
     <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do</span>
       <p>Bump the <code>?v=</code> on every tag that loads a file you have just changed: the plugins and everything in <code>shared/</code>. There is no build step, so a browser will serve a cached copy of the old file and the page runs stale code without erroring.</p></div>
     <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Don't</span>
-      <p>Theme a plugin element that is an <code>&lt;a&gt;</code> tag without opting it out of the system's own link-dim rule. Plain text links dim to 70% opacity on hover (<code>a:hover</code>); every button and card is explicitly excepted (<code>a.sl-btn:hover, a.sl-card:hover, …</code>). A plugin card left off that list silently washes out on hover along with whatever hover state you did theme. A review card once dimmed exactly this way. Add <code>opacity: 1</code> to the plugin's own hover rule in <code>plugins.css</code>, not to the central exception list.</p></div>
+      <p>Theme a plugin element that is an <code>&lt;a&gt;</code> tag without opting it out of the system's own link-dim rule. Plain text links dim to 70% opacity on hover (<code>a:hover</code>); every button and card is explicitly excepted (<code>a.sl-btn:hover, a.sl-card:hover, …</code>). A plugin card left off that list silently washes out on hover along with whatever hover state you did theme. A review card once dimmed exactly this way. Add <code>opacity: 1</code> to the plugin's own hover rule in the PLUGIN THEME section, not to the central exception list.</p></div>
   </div>
 </section>
 
