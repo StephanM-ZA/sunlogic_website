@@ -127,7 +127,10 @@ reimplementation of it. **0 fails, 150 warns.**
 | `type` | 63 | 6 | SVG `<text>` computing to bare `monospace` | rule too broad, or missing CSS |
 | `copy` | 12 | 6 | Title-Cased prose sub-heads in blog posts | pages wrong |
 
-150 findings, three root causes:
+150 findings, three root causes — and note the verdict column: two of the
+three are the rule being too broad, not the pages being wrong. That is the
+pattern of the whole day, and it is why the design puts the rule's intent in
+the failure report rather than assuming a finding means a page defect.
 
 **`type` — 63 warnings, one cause.** All of them are `<text>` inside inline
 SVG. SVG text does not inherit the page font, so it computes to the UA's
@@ -143,9 +146,13 @@ already knows this: it exempts `.sl-footer` and `.sl-nav__links` for exactly
 that reason. These are the same case in a third place (the contact roll and
 prose links). A rule amendment, not 75 page edits.
 
-**`copy` — 12 warnings, 6 pages.** Genuine content findings: "2. Install
-Proper Surge Protection" is Title Case in a prose sub-head. The smallest
-group and the only one that is really the pages' fault.
+**`copy` — 12 warnings, 6 pages. Mixed, and needs per-finding triage.** Some
+are genuine: "2. Install Proper Surge Protection" is Title Case in a prose
+sub-head. Others are the rule's fault — it counts long words starting with a
+capital, so `"Cape Town's own structure"` trips it, being sentence case with a
+proper noun in it (3 long words, 2 capitalised). Verified by replicating the
+rule against the real heading. So this group is read finding by finding, not
+fixed in bulk; the plan's Task 6 does that and narrows the rule.
 
 Two caveats on the measurement. It ran at a 412px mobile viewport, so
 touch-target counts will differ at desktop widths — re-run both before
