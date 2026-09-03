@@ -5,7 +5,8 @@
     "build:main": "node scripts/build-site.js main",
     "build:energy": "node scripts/build-site.js energy",
     "build:electrical": "node scripts/build-site.js electrical",
-    "test": "node --test"
+    "test": "node --test",
+    "conformance": "node scripts/conformance.js"
   },
   "dependencies": {
     "playwright": "^1.62.1"
