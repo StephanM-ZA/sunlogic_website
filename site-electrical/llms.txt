@@ -1,0 +1,24 @@
+# Sunlogic SA
+
+> Solar and certified electrical contracting for homes and businesses in Cape Town, South Africa. One team designs, installs and certifies each system — solar, electrical work, or the smart HotBot/SolarBot energy controllers — with council registration and Certificate of Compliance handled as part of the job, not an extra.
+
+Sunlogic SA (Pty) Ltd, registration 2022/651654/07. Based at 9 Chesham Road, Claremont, Cape Town, 7708. Phone +27 (82) 655 5371, email sales@sunlogic.co.za.
+
+## Services
+
+- [Solar](https://sunlogic.co.za/solar.html): Solar sized to actual usage for homes, small businesses and larger sites, installed and certified in-house.
+- [Electrical](https://sunlogic.co.za/electrical.html): Certified electrical work — rewiring, compliance certificates, surge protection, EV chargers.
+- [Energy management](https://sunlogic.co.za/energy-management.html): HotBot and SolarBot smart controllers (Plentify hardware) for geyser and solar/battery systems.
+- [Contact](https://sunlogic.co.za/contact.html): Free site assessment booking, office details, and the people who do the work.
+
+## Worth knowing (blog)
+
+- [The Two-Year Certificate Myth](https://sunlogic.co.za/blog-coc-two-year-myth.html): A Certificate of Compliance does not expire on its own — the two-year rule only applies to property transfer.
+- [Why Your Electricity Bill Went Up](https://sunlogic.co.za/blog-why-your-bill-went-up.html): NERSA-approved South African tariff increases and the shift toward fixed charges.
+- [Thinking About an Electric Car?](https://sunlogic.co.za/blog-ev-home-charging.html): What home EV charging actually requires electrically in South Africa.
+- [Rent-to-Own](https://sunlogic.co.za/blog-rent-to-own.html), [Off the Grid vs. Grid-tied](https://sunlogic.co.za/blog-off-grid-vs-grid-tied.html), [Five Tips to Beat Load Shedding](https://sunlogic.co.za/blog-five-tips-load-shedding.html), [Three Essential Electrical Checks](https://sunlogic.co.za/blog-3-essential-checks.html)
+
+## Other
+
+- [Legal & Policies](https://sunlogic.co.za/legal.html): Terms, privacy policy, warranty statement, company details.
+- [Sitemap](https://sunlogic.co.za/sitemap.xml)
