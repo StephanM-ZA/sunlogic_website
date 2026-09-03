@@ -265,12 +265,12 @@ from `warn` and the report still labels them, but both block.
 
 ### 4.4 Integrity — the gate cannot pass without checking
 
-Three ways a check can pass while checking nothing. Two were live on
+Three ways a check can pass while checking nothing. One was confirmed live on
 2026-09-03:
 
 | Mode | Observed | Guard |
 |---|---|---|
-| `lhci autorun` exits 0 after `Healthcheck failed!` | Yes — a Chrome-less runner goes green | Resolve the browser explicitly and assert before running |
+| `lhci autorun` reports success having audited nothing | No — the "exits 0 on healthcheck failure" claim was wrong; it exits 1. Recorded because the claim reached this spec and a CI comment before being checked | Resolve the browser explicitly, and refuse to pass unless the output states the asserted URL count |
 | Empty page set | Yes — zero pages, weeks | `sitePages` throws on empty; both consumers inherit it |
 | `SL_CHECK` absent on a page → zero findings | Not yet | Assert `SL_CHECK` present on every page, and pages-evaluated === pages-discovered |
 
@@ -287,7 +287,8 @@ warn-only at 0.8 for the documented runner-noise reason — the same page scored
 0.96 locally and 0.72 on a GitHub runner in back-to-back tests.
 
 What changes: its discovery comes from `site-pages.js`, its exit code gates,
-and the healthcheck hole is closed.
+and it now refuses to report a pass unless the output states how many URLs
+were asserted against (see §4.4).
 
 ## 5. The report
 

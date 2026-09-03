@@ -1,13 +1,22 @@
 #!/usr/bin/env node
 'use strict';
 
-/* Wrapper around `lhci autorun`, for one reason: lhci prints
- * "Healthcheck failed!" and then exits 0. A runner with no resolvable Chrome
- * therefore reports success having audited nothing — the same silent-pass
- * class as the page-discovery glob that matched no files for weeks.
+/* Wrapper around `lhci autorun`, for defence in depth.
  *
- * So: resolve a browser and fail loudly before running, and treat the
- * healthcheck line in the output as a failure regardless of the exit code. */
+ * A check that reports success while having audited nothing is the failure
+ * this repository has already suffered once: page discovery globbed a path
+ * that matched no files, and the job passed green for weeks. So this refuses
+ * to report a pass unless the output states how many URLs were asserted
+ * against, and it resolves a browser up front so a missing one fails with a
+ * clear message rather than an obscure lhci error.
+ *
+ * NOTE: an earlier version of this comment claimed `lhci autorun` exits 0
+ * after printing "Healthcheck failed!". That is false — it exits 1, because
+ * autorun runs the healthcheck with --fatal. The original observation read a
+ * shell pipeline's exit code, which is the last command's status rather than
+ * lhci's. The healthcheck check below is kept as belt and braces against a
+ * future version changing that behaviour, not because it is needed today.
+ */
 
 const { spawnSync } = require('child_process');
 const fs = require('fs');
