@@ -1,0 +1,36 @@
+; Authoritative zone export for sunlogic.co.za
+; Source: Xneelo (konsoleh), exported 2026-09-03
+; Purpose: source of truth for the Cloudflare migration, and rollback reference.
+; NOTE: Xneelo supports only AAAA, A, CNAME, SRV, MX, TXT. No ALIAS/ANAME,
+;       which is why the apex cannot point at Cloudflare Pages without
+;       moving nameservers.
+
+$TTL 7200 ;
+$ORIGIN sunlogic.co.za.
+@                   		IN	SOA	ns1.host-h.net. postmaster.sunlogic.co.za. ( 20260831 86400 1800 3600000 86400 )
+@ IN NS ns1.dns-h.com.
+@ IN NS ns1.host-h.net.
+@ IN NS ns2.dns-h.com.
+@ IN NS ns2.host-h.net.
+@                   		IN	MX 10	mail
+@                   	1200	IN	TXT	"v=spf1 mx a include:spf.host-h.net ~all"
+_dmarc              	1200	IN	TXT	"v=DMARC1; p=none; rua=mailto:postmaster@sunlogic.co.za"
+xneelo._domainkey    		IN	TXT	"v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuz1aQ8T0SO9VgSwKSo8II1D1k93MC6ZCDaOL9LV8Ws4JkM5YR19IDf6FBcLhxVMPrcYtEzrBLk7gyY/AOGtI7h+Twmtydtr79DB4QUBmZ5s4BPnpkvD87L9KBm/mut4V9vQNlRUHHD3VFT0V1XPvYwe30KQVzAdJzHMPCZQTpAMfi67rY+bZNvwT7OMOG48i96e/xGnC7q/oE2YxhhLdNkyg7qBizRWnnNtjJ9mdcydLLKDVTI1yANxjZqCXwZBrRQTJ2JLg5HUB+Er/vNnkAmR9gang0WIZlVU7Ke7bSoxpeDarNqUIe7dX+RsiOqOE9Cf10wFx+NPJc6eEMRGLCQIDAQAB;"
+@                   	1200	IN	A	185.199.110.153
+@                   	1200	IN	A	185.199.111.153
+mail                		IN	A	41.203.16.80
+@                   	1200	IN	A	185.199.109.153
+@                   	1200	IN	A	185.199.108.153
+jhb.control         	601	IN	CNAME	jhb.clientcontrol.your-server.co.za.
+k2._domainkey       	1200	IN	CNAME	dkim2.mcsv.net.
+k3._domainkey       	1200	IN	CNAME	dkim3.mcsv.net.
+ftp                 		IN	CNAME	www
+control             	601	IN	CNAME	clientcontrol.your-server.co.za.
+autoconfig          		IN	CNAME	mailconfig.konsoleh.co.za.
+smtp                		IN	CNAME	mail
+relay               		IN	CNAME	mail
+www                 	1200	IN	CNAME	stephanm-za.github.io.
+de.control          	601	IN	CNAME	de.clientcontrol.your-server.co.za.
+imap                		IN	CNAME	mail
+pop                 		IN	CNAME	mail
+_autodiscover._tcp    		IN	SRV	0 100 443 mailconfig.konsoleh.co.za.

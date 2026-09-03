@@ -1,0 +1,29 @@
+$ORIGIN sunlogic.co.za.
+$TTL 1200
+
+@                       1200    IN  MX  10  mail.sunlogic.co.za.
+@                       1200    IN  A   185.199.108.153
+@                       1200    IN  A   185.199.109.153
+@                       1200    IN  A   185.199.110.153
+@                       1200    IN  A   185.199.111.153
+@                       1200    IN  TXT "v=spf1 mx a include:spf.host-h.net ~all"
+
+mail                    300     IN  A   41.203.16.80
+smtp                    300     IN  CNAME   mail.sunlogic.co.za.
+relay                   300     IN  CNAME   mail.sunlogic.co.za.
+imap                    300     IN  CNAME   mail.sunlogic.co.za.
+pop                     300     IN  CNAME   mail.sunlogic.co.za.
+autoconfig              300     IN  CNAME   mailconfig.konsoleh.co.za.
+_autodiscover._tcp      300     IN  SRV 0 100 443 mailconfig.konsoleh.co.za.
+
+_dmarc                  300     IN  TXT "v=DMARC1; p=none; rua=mailto:postmaster@sunlogic.co.za"
+xneelo._domainkey       300     IN  TXT "v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuz1aQ8T0SO9VgSwKSo8II1D1k93MC6ZCDaOL9LV8Ws4JkM5YR19IDf6FBcLhxVMPrcYtEzrBLk7gyY/AOGtI7h+Twmtydtr79DB4QUBmZ5s4BPnpkvD87L9KBm/mut4V9vQNlRUHHD3VFT0V1XPvYwe30KQVzAdJzHMPCZQTpAMfi67rY+bZNvwT7OMOG48i96e/xGnC7q/oE2YxhhLdNkyg7qBizRWnnNtjJ9mdcydLLKDVTI1yANxjZqCXwZBrRQTJ2JLg5HUB+Er/vNnkAmR9gang0WIZlVU7Ke7bSoxpeDarNqUIe7dX+RsiOqOE9Cf10wFx+NPJc6eEMRGLCQIDAQAB;"
+k2._domainkey           1200    IN  CNAME   dkim2.mcsv.net.
+k3._domainkey           1200    IN  CNAME   dkim3.mcsv.net.
+
+www                     1200    IN  CNAME   stephanm-za.github.io.
+ftp                     1200    IN  CNAME   www.sunlogic.co.za.
+
+control                 601     IN  CNAME   clientcontrol.your-server.co.za.
+jhb.control             601     IN  CNAME   jhb.clientcontrol.your-server.co.za.
+de.control              601     IN  CNAME   de.clientcontrol.your-server.co.za.

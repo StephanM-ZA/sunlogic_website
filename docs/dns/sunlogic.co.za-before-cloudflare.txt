@@ -1,0 +1,28 @@
+DNS snapshot for sunlogic.co.za
+Captured: 2026-09-03 07:15 UTC
+Purpose: pre-Cloudflare-migration reference and rollback record.
+Authoritative NS at capture time: Xneelo (host-h.net / dns-h.com)
+
+== APEX ==
+NS     ns2.host-h.net. ns1.host-h.net.|ns1.dns-h.com. ns2.dns-h.com.
+SOA    ns1.host-h.net. postmaster.sunlogic.co.za. 20260831 86400 1800 3600000 86400
+A      185.199.109.153 185.199.108.153|185.199.111.153 185.199.110.153
+AAAA   (none)
+MX     10 mail.sunlogic.co.za.
+TXT    "v=spf1 mx a include:spf.host-h.net ~all"
+CAA    (none)
+
+== COMMON SUBDOMAINS ==
+www            A:stephanm-za.github.io. 185.199.111.153 185.199.109.153 185.199.110.153 185.199.108.153 CNAME:stephanm-za.github.io.
+mail           A:41.203.16.80                                             CNAME:(none)
+smtp           A:mail.sunlogic.co.za. 41.203.16.80                        CNAME:mail.sunlogic.co.za.
+pop            A:mail.sunlogic.co.za. 41.203.16.80                        CNAME:mail.sunlogic.co.za.
+imap           A:mail.sunlogic.co.za. 41.203.16.80                        CNAME:mail.sunlogic.co.za.
+ftp            A:www.sunlogic.co.za. stephanm-za.github.io. 185.199.111.153 185.199.109.153 185.199.108.153 185.199.110.153 CNAME:www.sunlogic.co.za.
+autoconfig     A:mailconfig.konsoleh.co.za. 196.40.99.93                  CNAME:mailconfig.konsoleh.co.za.
+
+== MAIL-RELATED TXT ==
+_dmarc                   "v=DMARC1; p=none; rua=mailto:postmaster@sunlogic.co.za"
+
+== SRV ==
+_autodiscover._tcp       0 100 443 mailconfig.konsoleh.co.za.
