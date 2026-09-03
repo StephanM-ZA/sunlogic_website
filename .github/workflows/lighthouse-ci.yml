@@ -3,8 +3,12 @@ name: Lighthouse CI
 on:
   push:
     branches: [main]
+    # Same set the deploy workflow watches: anything that changes what gets
+    # published is worth re-measuring.
     paths:
-      - 'site-daylight/**'
+      - 'site-main/**'
+      - 'shared/**'
+      - 'sites.config.js'
       - 'scripts/build-site.js'
       - 'lighthouserc.js'
       - 'package.json'

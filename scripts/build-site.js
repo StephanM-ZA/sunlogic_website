@@ -1,8 +1,11 @@
 #!/usr/bin/env node
-// Copies site-daylight/ to dist/ and minifies every .css/.js file in the
-// copy. Source under site-daylight/ stays hand-readable; dist/ is the
-// build artifact GitHub Pages actually publishes (see
-// .github/workflows/deploy-site.yml).
+// Builds every site in sites.config.js — site-main, site-energy and
+// site-electrical — into its own dist/ directory: copies the source, folds in
+// shared/, optimises images, rewrites links to extensionless, stamps the build
+// and site config, then minifies every .css/.js in the copy. Source stays
+// hand-readable; dist/ is the artifact that actually gets published. dist/main
+// goes to GitHub Pages (see .github/workflows/deploy-site.yml); the other two
+// go to Cloudflare Pages.
 
 'use strict';
 

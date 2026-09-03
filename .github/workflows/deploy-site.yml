@@ -3,8 +3,17 @@ name: Deploy Website to GitHub Pages
 on:
   push:
     branches: [main]
+    # This workflow publishes dist/main, the apex, so it watches the apex's own
+    # source plus everything dist/main is built from. shared/ and
+    # sites.config.js are in the list because the build copies shared/ into
+    # every site and reads the nav, footer and logo config from that file: a
+    # change to either alters the published output without site-main/ being
+    # touched at all. site-energy/ and site-electrical/ are deliberately absent
+    # — those two deploy through Cloudflare Pages, not here.
     paths:
-      - 'site-daylight/**'
+      - 'site-main/**'
+      - 'shared/**'
+      - 'sites.config.js'
       - 'scripts/build-site.js'
       - 'package.json'
       - 'package-lock.json'
