@@ -1,6 +1,6 @@
 # CI Conformance Gate — Design
 
-**Status:** approved, not yet implemented
+**Status:** implemented on branch `ci-conformance-gate`
 **Date:** 2026-09-03
 **Scope:** all three Sunlogic sites (`sunlogic.co.za`, `energy.sunlogic.co.za`, `electrical.sunlogic.co.za`)
 
@@ -50,7 +50,7 @@ checking can be checking nothing.
 
 | Decision | Choice | Why |
 |---|---|---|
-| Gate or report | **Gate** — a `fail` blocks the deploy, a `warn` reports | Reporting is what exists today, and a regression stays live for as long as triage takes. See §3.2 for why `warn` does not block |
+| Gate or report | **Gate** — every finding blocks the deploy | Reporting is what exists today, and a regression stays live for as long as triage takes. One severity, after the §3.3 backlog pass — see §3.2 |
 | Check scope | Design-system rules **+** Lighthouse budgets | Both engines already exist; one gate and one triage flow over both |
 | Gate location | Standalone `npm run conformance`, invoked by whatever publishes | The three sites converge on one deploy path once Xneelo clears; the gate must not bake in today's split |
 | Suppression | **None.** Exceptions live in the rule | Already how this codebase works — see §3.1 |
@@ -84,9 +84,12 @@ The cost is real: a wrong rule blocks legitimate work until the rule is fixed.
 
 ### 3.2 Severity: one tier, after a backlog pass
 
-"Gate the deploy" was chosen over "block on errors, report on warnings". This
-design nonetheless blocks only on `fail` and reports `warn`, because blocking
-on `warn` is not currently possible without other changes:
+"Gate the deploy" was chosen over "block on errors, report on warnings". The
+gate now does exactly that: every finding blocks. Reaching it needed a backlog
+pass first, and the reasoning below is kept because it records why the two
+tiers existed at all and what had to be true before they could collapse.
+
+While the backlog stood at 150 findings, blocking on `warn` was not possible:
 
 - The apex landing page has **3 warnings and 0 errors** today (24px-tall inline
   links in the contact roll and the footer). `contact.html` has 6. Blocking on
