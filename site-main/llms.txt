@@ -4,21 +4,22 @@
 
 Sunlogic SA (Pty) Ltd, registration 2022/651654/07. Based at 9 Chesham Road, Claremont, Cape Town, 7708. Phone +27 (82) 655 5371, email sales@sunlogic.co.za.
 
-## Services
+sunlogic.co.za is the company page. The work itself lives on two division sites, each with its own services and blog.
 
-- [Solar](https://sunlogic.co.za/solar.html): Solar sized to actual usage for homes, small businesses and larger sites, installed and certified in-house.
-- [Electrical](https://sunlogic.co.za/electrical.html): Certified electrical work — rewiring, compliance certificates, surge protection, EV chargers.
-- [Energy management](https://sunlogic.co.za/energy-management.html): HotBot and SolarBot smart controllers (Plentify hardware) for geyser and solar/battery systems.
+## Divisions
+
+- [Sunlogic Energy](https://energy.sunlogic.co.za): Solar sized to actual usage, batteries, backup power, and the HotBot/SolarBot smart controllers (Plentify hardware) for geyser and solar/battery systems. For homes, small businesses and larger sites.
+- [Sunlogic Electrical](https://electrical.sunlogic.co.za): Certified electrical work — rewiring, compliance certificates, surge protection, EV chargers, maintenance, and council registration.
+
+## On this site
+
 - [Contact](https://sunlogic.co.za/contact.html): Free site assessment booking, office details, and the people who do the work.
+- [Legal & Policies](https://sunlogic.co.za/legal.html): Terms, privacy policy, warranty statement, company details.
+- [Sitemap](https://sunlogic.co.za/sitemap.xml)
 
 ## Worth knowing (blog)
 
-- [The Two-Year Certificate Myth](https://sunlogic.co.za/blog-coc-two-year-myth.html): A Certificate of Compliance does not expire on its own — the two-year rule only applies to property transfer.
-- [Why Your Electricity Bill Went Up](https://sunlogic.co.za/blog-why-your-bill-went-up.html): NERSA-approved South African tariff increases and the shift toward fixed charges.
-- [Thinking About an Electric Car?](https://sunlogic.co.za/blog-ev-home-charging.html): What home EV charging actually requires electrically in South Africa.
-- [Rent-to-Own](https://sunlogic.co.za/blog-rent-to-own.html), [Off the Grid vs. Grid-tied](https://sunlogic.co.za/blog-off-grid-vs-grid-tied.html), [Five Tips to Beat Load Shedding](https://sunlogic.co.za/blog-five-tips-load-shedding.html), [Three Essential Electrical Checks](https://sunlogic.co.za/blog-3-essential-checks.html)
+The blog moved to the division sites. Each post is listed in that site's own llms.txt.
 
-## Other
-
-- [Legal & Policies](https://sunlogic.co.za/legal.html): Terms, privacy policy, warranty statement, company details.
-- [Sitemap](https://sunlogic.co.za/sitemap.xml)
+- Bills, batteries, off-grid and load shedding: https://energy.sunlogic.co.za/blog
+- Compliance certificates, EV charging and electrical checks: https://electrical.sunlogic.co.za/blog

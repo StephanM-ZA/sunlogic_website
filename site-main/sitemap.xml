@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Every page in site-daylight/ that is meant to be public.
-     ci-guide.html is deliberately excluded — it is the internal corporate
-     identity document, and robots.txt disallows it.
-     thank-you.html is excluded — it is a post-submit destination, not an
-     entry point. -->
+<!-- The apex. Since the site split into three this is a router: it describes
+     the company and sends you to whichever division you need, so the only
+     pages it still owns are the home page, contact and legal.
+
+     Solar, electrical, energy management and the blog moved to
+     energy.sunlogic.co.za and electrical.sunlogic.co.za and are listed in
+     those sites' own sitemaps. The apex 301s the old URLs there — see
+     _redirects — so they are deliberately absent here rather than listed as
+     redirects, which is what a sitemap should never contain.
+
+     ci-guide.html is excluded — internal corporate identity document, and
+     robots.txt disallows it.
+     thank-you.html and 404.html are excluded — a post-submit destination and
+     an error page are not entry points. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://sunlogic.co.za/</loc>
@@ -11,64 +20,9 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://sunlogic.co.za/solar.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://sunlogic.co.za/electrical.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://sunlogic.co.za/energy-management.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://sunlogic.co.za/contact.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://sunlogic.co.za/blog.html</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://sunlogic.co.za/blog-3-essential-checks.html</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://sunlogic.co.za/blog-rent-to-own.html</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://sunlogic.co.za/blog-off-grid-vs-grid-tied.html</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://sunlogic.co.za/blog-five-tips-load-shedding.html</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://sunlogic.co.za/blog-coc-two-year-myth.html</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://sunlogic.co.za/blog-why-your-bill-went-up.html</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://sunlogic.co.za/blog-ev-home-charging.html</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://sunlogic.co.za/legal.html</loc>
