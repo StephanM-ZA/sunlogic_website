@@ -15,6 +15,10 @@ on:
       - 'shared/**'
       - 'sites.config.js'
       - 'scripts/build-site.js'
+      - 'scripts/conformance.js'
+      - 'scripts/site-pages.js'
+      - 'scripts/lighthouse.js'
+      - 'test/**'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/deploy-site.yml'
@@ -46,6 +50,11 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      # playwright has no install script, and the runner image ships no
+      # browser. Without this every step that opens a page fails at launch.
+      - name: Install Chromium for the gate
+        run: npx --no-install playwright install --with-deps chromium
 
       # The gate. A design-system violation or a Lighthouse budget breach stops
       # the deploy here rather than being reported after the fact. Runs against

@@ -23,6 +23,14 @@ const { startServer } = require('./static-server.js');
    width, so the viewport is part of the result and is printed with it. */
 const DEFAULT_VIEWPORT = { width: 412, height: 823 };
 
+/* Element visibility and touch-target heights differ by width, and roughly
+   ten colour findings per page only exist at desktop width — a gate that
+   only ever opened 412x823 never visited them. The CLI path runs both;
+   runConformance() itself still takes a single viewport per call because
+   the tests call it that way. */
+const DESKTOP_VIEWPORT = { width: 1440, height: 900 };
+const GATED_VIEWPORTS = [DEFAULT_VIEWPORT, DESKTOP_VIEWPORT];
+
 async function runConformance(options) {
   const opts = options || {};
   const distDir = opts.distDir || path.join(ROOT, 'dist');
@@ -49,6 +57,36 @@ async function runConformance(options) {
            between runs, and a gate whose count moves on its own fails deploys at
            random. */
         await page.addStyleTag({ content: '*,*::before,*::after{transition:none !important;animation:none !important}' });
+        /* The CSS freeze above closes the transition door, but not the
+           JavaScript one: dl-terminal[stream] in shared/components.js paints
+           one row every 900ms, and the fleet-live poll rewrites
+           .sl-stat__value on its own timer, both well after `load` fires. A
+           page sampled mid-render gives findings that shift between runs for
+           reasons that have nothing to do with the page being right or
+           wrong. Wait for the DOM to actually stop changing — no mutation
+           for ~1000ms — before evaluating, with a ~5000ms ceiling so a
+           page that never stops animating fails fast instead of hanging
+           the gate. */
+        await page.evaluate(() => new Promise((resolve) => {
+          const QUIET_MS = 1000;
+          const CEILING_MS = 5000;
+          let quietTimer = null;
+          const done = () => {
+            clearTimeout(quietTimer);
+            observer.disconnect();
+            clearTimeout(ceiling);
+            resolve();
+          };
+          const observer = new MutationObserver(() => {
+            clearTimeout(quietTimer);
+            quietTimer = setTimeout(done, QUIET_MS);
+          });
+          observer.observe(document.documentElement, {
+            childList: true, subtree: true, attributes: true, characterData: true,
+          });
+          quietTimer = setTimeout(done, QUIET_MS);
+          const ceiling = setTimeout(done, CEILING_MS);
+        }));
         const hasEngine = await page.evaluate(() => !!(window.SL_CHECK && window.SL_CHECK.run));
         if (!hasEngine) {
           throw new Error(
@@ -125,15 +163,37 @@ function report(result) {
 
 async function main() {
   const override = process.env.SL_CONFORMANCE_OVERRIDE;
-  const result = await runConformance({});
-  console.log(report(result));
 
-  if (!result.blocking) return;
+  /* Both gated viewports, aggregated. Each is a separate runConformance()
+     call — and a separate browser/server lifecycle — because the design
+     requires both widths checked, not just the default one runConformance()
+     falls back to when called bare. */
+  const results = [];
+  for (const viewport of GATED_VIEWPORTS) {
+    const result = await runConformance({ viewport });
+    results.push(result);
+    console.log(report(result));
+    console.log('');
+  }
+
+  const totalBlocking = results.reduce((sum, r) => sum + r.blocking, 0);
+  const totalFails = results.reduce((sum, r) => sum + r.fails.length, 0);
+  const totalWarns = results.reduce((sum, r) => sum + r.warns.length, 0);
+
+  console.log('================================================================');
+  console.log('per-viewport: ' + results.map((r) =>
+    r.viewport.width + 'x' + r.viewport.height + ' → fails ' + r.fails.length +
+    ' warns ' + r.warns.length).join('   |   '));
+  console.log('total fails ' + totalFails + '   total warns ' + totalWarns +
+    '   total blocking ' + totalBlocking);
+  console.log('================================================================');
+
+  if (!totalBlocking) return;
 
   if (override && override.trim()) {
     console.log('');
     console.log('================================================================');
-    console.log('CONFORMANCE OVERRIDDEN — ' + result.blocking + ' failure(s) allowed through');
+    console.log('CONFORMANCE OVERRIDDEN — ' + totalBlocking + ' failure(s) allowed through');
     console.log('reason: ' + override.trim());
     console.log('================================================================');
     return;

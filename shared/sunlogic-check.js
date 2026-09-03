@@ -35,7 +35,7 @@
     copy: 'headings are Title Case and prose sub-heads are sentence case; capitals belong to the mono face at label size',
     rhythm: 'a reader should never meet the same band colour twice running — the alternation is what separates sections without a rule line',
     limit: 'the nav caps at four links, because a fifth turns a route into a menu',
-    a11y: 'anything you tap is at least 44px tall, and every image either says what it shows or is a labelled empty state',
+    a11y: 'anything you tap should be at least 44px tall, and every image either says what it shows or is a labelled empty state — but this rule does not catch every sub-44px control: inline text is exempt because it is not a control, and the footer/nav link lists are exempt by a separate standing decision that dense navigation is not a tap target',
   };
 
   /* A serialised locator, not the node. page.evaluate() cannot return
@@ -143,23 +143,39 @@
     const navLinks = document.querySelectorAll('.sl-nav__links .sl-nav__link');
     if (navLinks.length > 4) fail('limit', navLinks.length + ' nav links; the limit is four', navLinks[4]);
 
-    /* 9 — Touch targets. 44px is a minimum for something you tap. Two things
-       are exempt. The container list covers regions that are entirely text
-       (the footer, the nav, prose, body copy, the contact roll). The display
-       check covers the general case those containers were groping at: an
-       element laid out as `inline` is part of a sentence, not a control —
-       every real control in this system computes to inline-flex or flex. */
+    /* 9 — Touch targets. 44px is a minimum for something you tap. Two
+       things are exempt, and they are different kinds of exemption.
+       First, the display check: an element laid out as `inline` is part
+       of a sentence, not a control — every real control in this system
+       computes to inline-flex or flex. This is the general discriminator
+       and it runs first, against every candidate.
+       Second, a narrower, separate standing decision that predates this
+       branch: the footer and nav link lists are navigation, not tap
+       targets, so anything inside .sl-footer or .sl-nav__links is exempt
+       regardless of display. That decision does NOT extend to prose, body
+       copy or the contact roll — those were folded into the same
+       closest() call by accident, which let it swallow block- and
+       flex-level links in those regions before they ever reached the
+       display check above. A link sitting in running prose is normally
+       inline anyway and clears rule 9 through the first check; a link
+       laid out as flex or block inside prose IS a control and is meant to
+       be caught. So: this rule does not flag everything under 44px — only
+       what is neither inline text nor inside the footer/nav — and it must
+       not be read as claiming otherwise. */
     document.querySelectorAll('a, button, .sl-btn, .sl-icon-btn').forEach((el) => {
       const r = el.getBoundingClientRect();
       if (r.height === 0 || r.height >= 44) return;
-      if (el.closest('.sl-footer, .sl-nav__links, .sl-prose, .sl-body, .sl-roll')) return;
       if (getComputedStyle(el).display === 'inline') return;
+      if (el.closest('.sl-footer, .sl-nav__links')) return;
       warn('a11y', Math.round(r.height) + 'px tall, minimum is 44px', el);
     });
 
-    /* 10 — Every image slot is either real or a labelled empty state. */
+    /* 10 — Every image slot is either real or a labelled empty state.
+       alt="" is the correct marker for a decorative image, not a missing
+       one — checking !el.alt treated the empty string the same as a
+       genuinely absent attribute, so only a missing attribute is flagged. */
     document.querySelectorAll('img').forEach((el) => {
-      if (!el.alt) fail('a11y', 'image with no alt text', el);
+      if (!el.hasAttribute('alt')) fail('a11y', 'image with no alt text', el);
     });
 
     /* 11 — Placeholders are visible, not invented. Informational. */
