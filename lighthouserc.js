@@ -4,48 +4,18 @@
 //
 // Pages are discovered per site at config-load time, so a new page is
 // covered automatically on its first push and a fourth site would be too.
-//
-// It used to glob dist/*.html, which was correct when the build produced one
-// site straight into dist/. After the three-site split dist/ holds only
-// directories, so that glob matched nothing and this job audited zero pages —
-// passing green for weeks because there was nothing in it to fail. Discovery
-// that can silently return an empty set is worse than no discovery, so the
-// export below refuses to run on one.
 
-const fs = require('fs');
 const path = require('path');
+const { sitePages } = require('./scripts/site-pages.js');
 
 const DIST_DIR = path.join(__dirname, 'dist');
 
-// Pages that are deliberately not indexable, so Lighthouse's "is-crawlable"
-// SEO audit intentionally and correctly fails on them — not a bug to track.
-// thank-you.html is post-submit-only and ci-guide.html is an internal design
-// doc, both blocked in robots.txt; landing-preview.html carries its own
-// noindex meta while the apex rebuild is in progress.
-// Everything else is audited.
-const EXCLUDED_PAGES = new Set(['thank-you.html', 'ci-guide.html', 'landing-preview.html']);
-
 /* Served from dist/ rather than from each site directory, so one lhci run
    covers all three. Each page's own asset references are relative
-   (shared/…, images/…), so they resolve correctly under /<site>/. */
-const sites = fs
-  .readdirSync(DIST_DIR, { withFileTypes: true })
-  .filter((e) => e.isDirectory())
-  .map((e) => e.name)
-  .sort();
-
-const urls = sites.flatMap((site) =>
-  fs
-    .readdirSync(path.join(DIST_DIR, site))
-    .filter((f) => f.endsWith('.html') && !EXCLUDED_PAGES.has(f))
-    .sort()
-    .map((f) => '/' + site + '/' + f));
-
-if (urls.length === 0) {
-  throw new Error(
-    'lighthouserc: no pages found under ' + DIST_DIR + '. Run a build first ' +
-    '(npm run build). Failing loudly rather than auditing nothing.');
-}
+   (shared/…, images/…), so they resolve correctly under /<site>/.
+   Discovery and the exclusion list live in scripts/site-pages.js — see the
+   comment there for why they are not duplicated here any more. */
+const urls = sitePages(DIST_DIR).map((p) => p.url);
 
 module.exports = {
   ci: {
