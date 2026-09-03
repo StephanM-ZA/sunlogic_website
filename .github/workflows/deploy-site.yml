@@ -38,8 +38,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build (minify CSS/JS into dist/)
-        run: npm run build
+      - name: Build the main site (dist/main)
+        run: npm run build:main
 
       - name: Setup Pages
         uses: actions/configure-pages@v6
@@ -47,7 +47,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          path: dist
+          path: dist/main
 
       - name: Deploy to GitHub Pages
         id: deployment

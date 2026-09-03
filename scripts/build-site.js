@@ -13,13 +13,13 @@ const csso = require('csso');
 const { minify: minifyJs } = require('terser');
 const sharp = require('sharp');
 
+const { SITES, byKey } = require('../sites.config.js');
+
 const ROOT = path.join(__dirname, '..');
-const SRC = path.join(ROOT, 'site-energy');
 /* The design system lives outside any one site so all three can share it.
    It is copied into each site's output, which keeps every page's existing
    relative reference (shared/sunlogic.css) working untouched. */
 const SHARED = path.join(ROOT, 'shared');
-const OUT = path.join(ROOT, 'dist');
 const REPO_URL = 'https://github.com/StephanM-ZA/sunlogic_website';
 
 // Commit SHA visible in the site's own footer, stamped fresh on every
@@ -156,16 +156,28 @@ function stampBuildInfo(dir, build) {
   }
 }
 
+async function buildSite(site, build) {
+  const src = path.join(ROOT, site.src);
+  const out = path.join(ROOT, site.out);
+  console.log('\n' + site.key + '  (' + site.src + ' -> ' + site.out + ')');
+  if (fs.existsSync(out)) fs.rmSync(out, { recursive: true, force: true });
+  copyRecursive(src, out);
+  copyRecursive(SHARED, path.join(out, 'shared'));
+  const renameMap = await optimizeImages(out);
+  rewriteImageReferences(out, renameMap);
+  stampBuildInfo(out, build);
+  await walkAndMinify(out);
+}
+
+/* Builds every site in sites.config.js, or just one if a key is passed:
+   `node scripts/build-site.js energy`. */
 async function main() {
-  if (fs.existsSync(OUT)) fs.rmSync(OUT, { recursive: true, force: true });
-  copyRecursive(SRC, OUT);
-  copyRecursive(SHARED, path.join(OUT, 'shared'));
-  console.log('Optimizing images:');
-  const renameMap = await optimizeImages(OUT);
-  rewriteImageReferences(OUT, renameMap);
-  stampBuildInfo(OUT, getBuildInfo());
-  await walkAndMinify(OUT);
-  console.log('Build complete:', OUT);
+  const only = process.argv[2];
+  const sites = only ? [byKey(only)] : SITES;
+  if (only && !sites[0]) throw new Error('Unknown site key: ' + only);
+  const build = getBuildInfo();
+  for (const site of sites) await buildSite(site, build);
+  console.log('\nBuild complete: ' + sites.map((s) => s.out).join(', '));
 }
 
 main().catch((err) => {

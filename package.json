@@ -1,7 +1,10 @@
 {
   "scripts": {
     "build": "node scripts/build-site.js",
-    "lighthouse": "npm run build && lhci autorun"
+    "lighthouse": "npm run build && lhci autorun",
+    "build:main": "node scripts/build-site.js main",
+    "build:energy": "node scripts/build-site.js energy",
+    "build:electrical": "node scripts/build-site.js electrical"
   },
   "dependencies": {
     "playwright": "^1.62.1"
