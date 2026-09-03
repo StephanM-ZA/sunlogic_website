@@ -1,10 +1,12 @@
 {
   "scripts": {
     "build": "node scripts/build-site.js",
-    "lighthouse": "npm run build && lhci autorun",
+    "lighthouse": "npm run build && node scripts/lighthouse.js",
     "build:main": "node scripts/build-site.js main",
     "build:energy": "node scripts/build-site.js energy",
-    "build:electrical": "node scripts/build-site.js electrical"
+    "build:electrical": "node scripts/build-site.js electrical",
+    "test": "node --test",
+    "conformance": "node scripts/conformance.js"
   },
   "dependencies": {
     "playwright": "^1.62.1"

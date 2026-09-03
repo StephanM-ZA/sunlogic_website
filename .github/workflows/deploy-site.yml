@@ -15,6 +15,10 @@ on:
       - 'shared/**'
       - 'sites.config.js'
       - 'scripts/build-site.js'
+      - 'scripts/conformance.js'
+      - 'scripts/site-pages.js'
+      - 'scripts/lighthouse.js'
+      - 'test/**'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/deploy-site.yml'
@@ -47,6 +51,30 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # playwright has no install script, and the runner image ships no
+      # browser. Without this every step that opens a page fails at launch.
+      - name: Install Chromium for the gate
+        run: npx --no-install playwright install --with-deps chromium
+
+      # The gate. A design-system violation or a Lighthouse budget breach stops
+      # the deploy here rather than being reported after the fact. Runs against
+      # a full build of all three sites, because shared/ is copied into each and
+      # a change there can break a site whose own source was untouched.
+      - name: Build all sites for checking
+        run: npm run build
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Design-system conformance
+        run: npm run conformance
+
+      - name: Lighthouse budgets
+        run: node scripts/lighthouse.js
+
+      # Rebuilds dist/main on its own so the artifact that uploads is produced by
+      # a single explicit step. Same environment as the gate's build above, so the
+      # output is identical — this is for clarity about what ships, not a fix-up.
       - name: Build the main site (dist/main)
         run: npm run build:main
 

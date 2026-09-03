@@ -157,6 +157,11 @@ body {
   text-wrap: pretty;
 }
 a { color: var(--color-orange-text); text-decoration: none; transition: opacity var(--dur-hover) ease-out; }
+/* SVG text does not inherit the page font — it falls back to the UA's
+   monospace — so diagram labels rendered in a face that is not in the system
+   at all. Every <text> in every inline SVG was flagged by the type rule, 63
+   findings from one cause. */
+svg text { font-family: var(--font-mono); }
 /* Off-screen until keyboard-focused, then jumps into view top-left —
    the first tab stop on every page, letting a keyboard/screen-reader
    user skip the nav and land straight in <main>. */
@@ -789,6 +794,20 @@ body:has(.sl-modal[open]) .sl-dock { display: none; }
 /* A commit SHA is a literal, and uppercasing it produces a string that no
    longer matches the one in git. The only text in the footer that opts out. */
 .sl-build-sha { text-transform: none; }
+/* Design credit. Sits with the build stamp under the footer rule. The
+   domain opts out of the strapline's uppercase for the same reason the
+   SHA does — a web address is not an acronym. Underlined rather than
+   coloured so it reads as a link at 12px against a 50%-white strapline,
+   where a hue shift alone would be too quiet to notice. */
+.sl-footer__credit { margin-top: 4px; }
+.sl-footer__credit a {
+  text-transform: none;
+  color: rgba(255,255,255,0.5);
+  border-bottom: 1px solid rgba(255,255,255,0.28);
+  transition: color var(--dur-hover) ease-out, border-color var(--dur-hover) ease-out;
+}
+.sl-footer__credit a:hover,
+.sl-footer__credit a:focus-visible { color: var(--color-orange); border-bottom-color: var(--color-orange); }
 
 /* ---- Placeholder — labelled empty state, never stock ------- */
 .sl-placeholder {
@@ -875,7 +894,10 @@ a.sl-contact:hover .sl-contact__value { color: var(--color-orange); }
 .sl-contact__icon { flex: 0 0 22px; color: var(--color-orange); display: inline-flex; margin-top: 2px; }
 .sl-contact__body { display: grid; gap: 4px; }
 .sl-contact__label { font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-secondary); }
-.sl-contact__value { font-size: 16px; color: var(--text-primary); transition: color var(--dur-hover) ease-out; }
+/* min-height + flex centring: as a grid item of .sl-person, this collapses
+   to display: block at its line-height (24px) — too short a tap target for
+   the email/phone links on the contact-card. */
+.sl-contact__value { display: flex; align-items: center; min-height: 44px; font-size: 16px; color: var(--text-primary); transition: color var(--dur-hover) ease-out; }
 .sl-card--inverse .sl-contact__value, .sl-card--glass .sl-contact__value { color: var(--text-inverse); }
 
 /* Person card. */

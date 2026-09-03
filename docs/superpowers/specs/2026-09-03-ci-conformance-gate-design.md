@@ -1,6 +1,6 @@
 # CI Conformance Gate — Design
 
-**Status:** approved, not yet implemented
+**Status:** implemented on branch `ci-conformance-gate`
 **Date:** 2026-09-03
 **Scope:** all three Sunlogic sites (`sunlogic.co.za`, `energy.sunlogic.co.za`, `electrical.sunlogic.co.za`)
 
@@ -50,7 +50,7 @@ checking can be checking nothing.
 
 | Decision | Choice | Why |
 |---|---|---|
-| Gate or report | **Gate** — a `fail` blocks the deploy, a `warn` reports | Reporting is what exists today, and a regression stays live for as long as triage takes. See §3.2 for why `warn` does not block |
+| Gate or report | **Gate** — every finding blocks the deploy | Reporting is what exists today, and a regression stays live for as long as triage takes. One severity, after the §3.3 backlog pass — see §3.2 |
 | Check scope | Design-system rules **+** Lighthouse budgets | Both engines already exist; one gate and one triage flow over both |
 | Gate location | Standalone `npm run conformance`, invoked by whatever publishes | The three sites converge on one deploy path once Xneelo clears; the gate must not bake in today's split |
 | Suppression | **None.** Exceptions live in the rule | Already how this codebase works — see §3.1 |
@@ -84,9 +84,12 @@ The cost is real: a wrong rule blocks legitimate work until the rule is fixed.
 
 ### 3.2 Severity: one tier, after a backlog pass
 
-"Gate the deploy" was chosen over "block on errors, report on warnings". This
-design nonetheless blocks only on `fail` and reports `warn`, because blocking
-on `warn` is not currently possible without other changes:
+"Gate the deploy" was chosen over "block on errors, report on warnings". The
+gate now does exactly that: every finding blocks. Reaching it needed a backlog
+pass first, and the reasoning below is kept because it records why the two
+tiers existed at all and what had to be true before they could collapse.
+
+While the backlog stood at 150 findings, blocking on `warn` was not possible:
 
 - The apex landing page has **3 warnings and 0 errors** today (24px-tall inline
   links in the contact roll and the footer). `contact.html` has 6. Blocking on
@@ -113,8 +116,7 @@ There are two honest ways to reach "everything blocks":
 to do before the gate turns on.
 
 The gate therefore ends with **one severity**. The `fail`/`warn` split remains
-inside the engine as a confidence signal while the three causes are cleared,
-and collapses in step 6 of §8.
+inside the engine as a confidence signal; the gate counts every finding.
 
 ### 3.3 The measured backlog
 
@@ -258,18 +260,17 @@ consumers or neither — never one.
 5. Print the report of §5.
 6. Exit non-zero if any page produced a finding.
 
-Until the §3.3 backlog is cleared the runner blocks on `fail` and reports
-`warn`, so it can land and be run in anger while the three causes are fixed.
-Step 6 of §8 collapses the tiers and everything blocks from then on.
+The gate exits non-zero on any finding. The engine still separates `fail`
+from `warn` and the report still labels them, but both block.
 
 ### 4.4 Integrity — the gate cannot pass without checking
 
-Three ways a check can pass while checking nothing. Two were live on
+Three ways a check can pass while checking nothing. One was confirmed live on
 2026-09-03:
 
 | Mode | Observed | Guard |
 |---|---|---|
-| `lhci autorun` exits 0 after `Healthcheck failed!` | Yes — a Chrome-less runner goes green | Resolve the browser explicitly and assert before running |
+| `lhci autorun` reports success having audited nothing | No — the "exits 0 on healthcheck failure" claim was wrong; it exits 1. Recorded because the claim reached this spec and a CI comment before being checked | Resolve the browser explicitly, and refuse to pass unless the output states the asserted URL count |
 | Empty page set | Yes — zero pages, weeks | `sitePages` throws on empty; both consumers inherit it |
 | `SL_CHECK` absent on a page → zero findings | Not yet | Assert `SL_CHECK` present on every page, and pages-evaluated === pages-discovered |
 
@@ -286,7 +287,8 @@ warn-only at 0.8 for the documented runner-noise reason — the same page scored
 0.96 locally and 0.72 on a GitHub runner in back-to-back tests.
 
 What changes: its discovery comes from `site-pages.js`, its exit code gates,
-and the healthcheck hole is closed.
+and it now refuses to report a pass unless the output states how many URLs
+were asserted against (see §4.4).
 
 ## 5. The report
 
@@ -377,10 +379,10 @@ changes what happens on a push.
 - Lighthouse: 42 pages, 14 per site. Worst scores — performance 0.87
   (`/main/solar.html`), accessibility 0.96 (`/electrical/solar.html`),
   best-practices 1.00, SEO 1.00. Nothing under any threshold.
-- Design-system checker, all 42 pages: **0 fails, 150 warns** — see §3.3 for
-  the breakdown and the three root causes.
-- So the gate is green on day one for `fail`, and needs step 6 of §8 before it
-  can be green on one collapsed severity.
+- Design-system checker, all 42 pages: **0 fails, 0 warns**, verified at both
+  412x823 and 1440x900 — the §3.3 backlog of 150 warnings is cleared.
+- The gate is green on one collapsed severity: any finding, `fail` or `warn`,
+  blocks the deploy.
 
 ## Cross-references
 
