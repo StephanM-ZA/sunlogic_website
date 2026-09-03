@@ -919,6 +919,7 @@ class DlFooter extends SLElement {
       '</div><div class="sl-footer__rule">' +
       '<p class="sl-footer__strapline">Registered electrical contractor · Certificate of Compliance on every installation</p>' +
       SL_BUILD_LINE() +
+      SL_CREDIT_LINE() +
       '</div></footer>';
   }
 }
@@ -939,6 +940,21 @@ function SL_BUILD_LINE() {
   return '<p class="sl-footer__strapline">Build ' +
     '<span class="sl-build-sha">' + build.short + '</span>' +
     (build.date ? ' · ' + build.date : '') + '</p>';
+}
+
+/* Design credit. Lives in the shared footer rather than in each site's
+   config, because it is the same on all three and is not a site-level
+   choice — every Sunlogic footer carries it.
+   The domain keeps its own case for the same reason the build SHA does:
+   .sl-footer__strapline uppercases, and DOQIX.CO.ZA is not the address.
+   Opens in a new tab, as asked, so leaving the credit never costs the
+   visitor their place on the page — hence rel="noopener", and an
+   aria-label that says so out loud for anyone who cannot see the tab
+   open. */
+function SL_CREDIT_LINE() {
+  return '<p class="sl-footer__strapline sl-footer__credit">Site designed by: ' +
+    '<a href="https://doqix.co.za" target="_blank" rel="noopener noreferrer" ' +
+    'aria-label="doqix.co.za — opens in a new tab">doqix.co.za</a></p>';
 }
 
 /* --- Reveal — fade + 16px rise, 700ms expo-out ---------------

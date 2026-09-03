@@ -794,6 +794,20 @@ body:has(.sl-modal[open]) .sl-dock { display: none; }
 /* A commit SHA is a literal, and uppercasing it produces a string that no
    longer matches the one in git. The only text in the footer that opts out. */
 .sl-build-sha { text-transform: none; }
+/* Design credit. Sits with the build stamp under the footer rule. The
+   domain opts out of the strapline's uppercase for the same reason the
+   SHA does — a web address is not an acronym. Underlined rather than
+   coloured so it reads as a link at 12px against a 50%-white strapline,
+   where a hue shift alone would be too quiet to notice. */
+.sl-footer__credit { margin-top: 4px; }
+.sl-footer__credit a {
+  text-transform: none;
+  color: rgba(255,255,255,0.5);
+  border-bottom: 1px solid rgba(255,255,255,0.28);
+  transition: color var(--dur-hover) ease-out, border-color var(--dur-hover) ease-out;
+}
+.sl-footer__credit a:hover,
+.sl-footer__credit a:focus-visible { color: var(--color-orange); border-bottom-color: var(--color-orange); }
 
 /* ---- Placeholder — labelled empty state, never stock ------- */
 .sl-placeholder {

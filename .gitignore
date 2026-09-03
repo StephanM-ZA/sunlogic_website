@@ -37,3 +37,10 @@ node_modules/
 design-inspiration/godaylight-design/
 design-inspiration/design_handoff_sunlogic_blend/
 design-inspiration/design-system/
+
+# Original high-resolution image sources (iStock etc). Kept on disk, out of
+# git, and OUT of any site-*/ directory: scripts/build-site.js converts every
+# .jpg it finds in a site tree to webp and ships it, so an 18MB original left
+# in site-energy/images/ would be published as a converted asset nobody asks
+# for. Compressed, correctly-sized variants are committed instead.
+design-inspiration/source-images/
