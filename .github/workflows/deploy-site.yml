@@ -47,6 +47,22 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # The gate. A design-system violation or a Lighthouse budget breach stops
+      # the deploy here rather than being reported after the fact. Runs against
+      # a full build of all three sites, because shared/ is copied into each and
+      # a change there can break a site whose own source was untouched.
+      - name: Build all sites for checking
+        run: npm run build
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Design-system conformance
+        run: npm run conformance
+
+      - name: Lighthouse budgets
+        run: node scripts/lighthouse.js
+
       - name: Build the main site (dist/main)
         run: npm run build:main
 

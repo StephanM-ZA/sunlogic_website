@@ -32,6 +32,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Unit tests
+        run: npm test
+
+      - name: Design-system conformance
+        run: npm run build && npm run conformance
+
       # Runs against the built dist/ directory served locally, not the
       # live site — this never depends on DNS/domain state. Pages come from
       # scripts/site-pages.js, so a new page or a fourth site is covered on
