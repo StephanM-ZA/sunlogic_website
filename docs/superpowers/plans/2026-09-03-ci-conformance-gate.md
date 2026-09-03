@@ -1687,6 +1687,22 @@ EOF
 
 ## Task 8: Close the Lighthouse healthcheck hole
 
+> **Later correction (2026-09-03, post-implementation):** the premise below —
+> that `lhci autorun` exits 0 after printing `Healthcheck failed!` — is
+> false. It exits 1, because `autorun` always runs the healthcheck with
+> `--fatal`. The original observation read a shell pipeline's exit code
+> (e.g. `... | tail`), which is the last command's status, not lhci's. This
+> plan section is left as originally written, as the record of what was
+> instructed and why; it is not corrected in place. The wrapper described
+> below was still built and kept, on its own merits unrelated to the false
+> claim: the browser-resolution guard gives a clear failure message instead
+> of an obscure lhci one, and the assertion-count guard is independent of
+> this bug — it catches a future lhci version that changes its wording, or a
+> config that ends up auditing zero pages. See
+> `docs/superpowers/specs/2026-09-03-ci-conformance-gate-design.md` §4.4 and
+> `.superpowers/sdd/2026-09-03-ci-conformance-gate/task-8-report.md` for the
+> corrected account.
+
 **Files:**
 - Create: `scripts/lighthouse.js`
 - Modify: `package.json` (`lighthouse` script points at it)

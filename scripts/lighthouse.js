@@ -62,7 +62,10 @@ if (/Healthcheck failed/i.test(output)) {
   console.error('\nlighthouse: healthcheck failed — treating as a failure despite lhci exit ' + run.status);
   process.exit(1);
 }
-if (!/Checking assertions against \d+ URL/.test(output)) {
+/* Must be [1-9]\d*, not \d+: lhci prints "Checking assertions against 0
+   URL(s)" and exits 0 when the URL set is empty, so a bare \d+ would match
+   zero and wave through exactly the scenario this guard exists to catch. */
+if (!/Checking assertions against [1-9]\d* URL/.test(output)) {
   console.error('\nlighthouse: no assertions were checked — refusing to report a pass over nothing.');
   process.exit(1);
 }
