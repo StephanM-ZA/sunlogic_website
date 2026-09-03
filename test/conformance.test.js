@@ -37,6 +37,18 @@ test('a non-conformant page makes the gate fail', async () => {
   assert.ok(r.fails.some((f) => f.rule === 'accent'));
 });
 
+// Proves the freeze actually works, not merely that it was called: the fixture
+// starts a 5s colour transition from one palette colour to another right as the
+// page parses, so without disabling transitions first the check would sample an
+// interpolated, off-palette RGB triple and wrongly warn. Both endpoints are
+// system colours — only a mid-flight sample is a problem.
+test('measures resting colour, not a frame mid-transition', async () => {
+  const r = await runConformance({ distDir: distWith('palette-pass-transition.html') });
+  assert.ok(!r.warns.some((w) => w.rule === 'palette'),
+    'palette warning fired — the runner read an animated frame instead of the resting colour: ' +
+    JSON.stringify(r.warns.filter((w) => w.rule === 'palette'), null, 1));
+});
+
 test('every discovered page is actually evaluated', async () => {
   const r = await runConformance({ distDir: distWith('engine-smoke.html') });
   assert.strictEqual(r.pages, 1);

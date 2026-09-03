@@ -41,6 +41,14 @@ async function runConformance(options) {
       const page = await browser.newPage({ viewport });
       try {
         await page.goto(server.urlFor(p.url), { waitUntil: 'load' });
+        /* Measure resting state. A colour caught partway through a transition is a
+           sampling artefact, not a violation: .sl-nav__link transitions colour over
+           100ms and components.js sets aria-current after render, so a sample taken
+           200ms after load intermittently read a value between two palette colours
+           and reported a palette warning for it. Without this the warn count drifts
+           between runs, and a gate whose count moves on its own fails deploys at
+           random. */
+        await page.addStyleTag({ content: '*,*::before,*::after{transition:none !important;animation:none !important}' });
         const hasEngine = await page.evaluate(() => !!(window.SL_CHECK && window.SL_CHECK.run));
         if (!hasEngine) {
           throw new Error(

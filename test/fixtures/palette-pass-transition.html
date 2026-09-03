@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>palette pass despite a running animation</title>
+<link rel="stylesheet" href="../../shared/sunlogic.css"/>
+<script src="../../shared/icons.js" defer></script>
+<script src="../../shared/sunlogic-check.js" defer></script>
+<style>
+  /* An infinite animation, not a one-shot transition: a one-shot transition
+     timed against a single evaluate() can land its first style recalc at
+     elapsed ~0 and read the resting start colour by luck, which would make
+     this test pass whether or not the freeze works. A looping animation is
+     already under way, at an arbitrary phase, the instant anything queries
+     computed style — so without disabling animations first, the check is
+     certain to sample a colour partway between the two keyframes: an RGB
+     triple that matches neither end and isn't in the palette. Both keyframe
+     endpoints are system colours (navy text-primary, orange text-accent);
+     only a mid-flight sample is a problem. */
+  .sl-transition-probe {
+    color: var(--text-primary);
+    animation: sl-probe-pulse 4s linear infinite;
+  }
+  @keyframes sl-probe-pulse {
+    0%, 100% { color: var(--text-primary); }
+    50%      { color: var(--text-accent); }
+  }
+</style>
+</head>
+<body>
+<main><section class="sl-section"><div class="sl-container">
+  <h2 class="sl-section-heading">A Perfectly Ordinary Heading</h2>
+  <p class="sl-transition-probe" id="probe">Mid-animation text used to prove the runner measures resting colour, not an animated frame.</p>
+</div></section></main>
+</body>
+</html>
