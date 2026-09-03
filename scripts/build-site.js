@@ -14,7 +14,11 @@ const { minify: minifyJs } = require('terser');
 const sharp = require('sharp');
 
 const ROOT = path.join(__dirname, '..');
-const SRC = path.join(ROOT, 'site-daylight');
+const SRC = path.join(ROOT, 'site-energy');
+/* The design system lives outside any one site so all three can share it.
+   It is copied into each site's output, which keeps every page's existing
+   relative reference (shared/sunlogic.css) working untouched. */
+const SHARED = path.join(ROOT, 'shared');
 const OUT = path.join(ROOT, 'dist');
 const REPO_URL = 'https://github.com/StephanM-ZA/sunlogic_website';
 
@@ -155,6 +159,7 @@ function stampBuildInfo(dir, build) {
 async function main() {
   if (fs.existsSync(OUT)) fs.rmSync(OUT, { recursive: true, force: true });
   copyRecursive(SRC, OUT);
+  copyRecursive(SHARED, path.join(OUT, 'shared'));
   console.log('Optimizing images:');
   const renameMap = await optimizeImages(OUT);
   rewriteImageReferences(OUT, renameMap);
