@@ -9,11 +9,20 @@
    session. A failing check does.
    ============================================================ */
 (function () {
-  /* Run everywhere except the live production host. The previous guard
-     disabled the check on any https URL, which meant it never ran on a dev
-     server, a staging URL or a deploy preview — i.e. almost everywhere it
-     was needed. Remove the script tag for production; that is the off switch. */
-  if (/^(www\.)?sunlogic\.co\.za$/.test(location.hostname)) return;
+  /* Run everywhere except a production build.
+     This guard has now been wrong twice in opposite directions. It first
+     disabled the check on any https URL, so it never ran on a dev server, a
+     staging URL or a deploy preview — almost everywhere it was needed. The
+     replacement matched one hostname, /^(www\.)?sunlogic\.co\.za$/, which was
+     right while there was one site; when the environment grew to three hosts
+     it kept running on two of them and painted a developer badge in public.
+     Both mistakes came from inferring the environment from the URL.
+     window.SL_BUILD.prod is set by scripts/build-site.js from the CI branch
+     variable, so it is a property of the build rather than of the address it
+     happens to be served from, and a fourth host cannot reintroduce this.
+     A missing SL_BUILD means an unbuilt source file opened straight off disk —
+     development, so the check runs. */
+  if (window.SL_BUILD && window.SL_BUILD.prod) return;
 
   const PALETTE = new Set([
     'rgb(246, 111, 0)', 'rgb(184, 83, 0)', 'rgb(13, 32, 40)', 'rgb(8, 22, 25)',

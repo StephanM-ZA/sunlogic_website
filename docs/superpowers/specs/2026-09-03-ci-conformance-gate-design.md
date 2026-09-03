@@ -164,16 +164,24 @@ developer sees must be identical afterwards.
 **Presenter.** The existing console group and corner badge, rebuilt on the
 returned result.
 
-**Production guard moves to the presenter.** Today the whole file self-disables
-on `/^(www\.)?sunlogic\.co\.za$/` — a hostname regex written when there was one
-host. The consequence is live as of this writing: `energy.sunlogic.co.za` and
-`electrical.sunlogic.co.za` paint a "SYSTEM OK" developer badge for every
-public visitor. The engine should always be available; only the presenter is
-suppressed, and it keys off a build flag rather than a hostname, so a fourth
-host cannot reintroduce the bug.
+**Production guard moves to the presenter.** The file used to self-disable on
+`/^(www\.)?sunlogic\.co\.za$/` — a hostname regex written when there was one
+host — so once the environment grew to three it kept painting a "SYSTEM OK"
+developer badge for every public visitor to `energy.sunlogic.co.za` and
+`electrical.sunlogic.co.za`.
 
-> The badge leak is a live defect that does not need this design to be fixed.
-> Fix it separately and first.
+> **Done (step 1).** The guard now reads `window.SL_BUILD.prod`, set by
+> `scripts/build-site.js` from `CF_PAGES_BRANCH` / `GITHUB_REF_NAME`. It is a
+> property of the build, not of the address it is served from, so a fourth host
+> cannot reintroduce it — and a local build of `main` is still a local build,
+> so developers keep the badge. Verified: production build → no badge; local
+> and preview-branch builds → badge.
+
+What remains for this section is the engine/presenter split. The guard
+currently still suppresses the *whole* file on a production build, which is
+correct today but blocks §4.3: the headless runner needs `SL_CHECK` available
+in a build it is auditing. After the split the engine is always present and
+only the presenter is suppressed.
 
 ### 4.2 `scripts/site-pages.js` — one definition of "every page"
 
@@ -294,7 +302,7 @@ pages-discovered, and that the count is greater than zero.
 
 ## 8. Sequencing
 
-1. Fix the public badge leak on the two subdomains (independent, do first).
+1. ~~Fix the public badge leak on the two subdomains~~ — **done**, see §4.1.
 2. Extract `scripts/site-pages.js`; point `lighthouserc.js` at it.
 3. Split `sunlogic-check.js` into engine and presenter; add `why` per rule;
    move the production guard to the presenter and off the hostname.

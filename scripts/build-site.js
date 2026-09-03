@@ -33,7 +33,25 @@ const REPO_URL = 'https://github.com/StephanM-ZA/sunlogic_website';
 // `git` covers a local `npm run build`. If none of those work (a build
 // image without git, say), the stamp is omitted rather than the build
 // failing: SL_BUILD_LINE() already renders nothing when the sha is absent.
+/* Is this build the one the public will see? Not a branch check and not a
+   hostname check: a local build of main is still a local build and should keep
+   its dev tooling, and hostnames rot — sunlogic-check.js guarded itself with a
+   regex matching one host, so when the environment grew to three it kept its
+   developer badge on two of them, in public. The honest signal is the CI
+   variable, which only a real publish sets:
+     CF_PAGES_BRANCH    Cloudflare Pages
+     GITHUB_REF_NAME    GitHub Actions
+   A preview build on any other branch is not production, and correctly keeps
+   the dev tooling. */
+const PROD_BRANCH = 'main';
+
+function isProductionBuild() {
+  const branch = process.env.CF_PAGES_BRANCH || process.env.GITHUB_REF_NAME || '';
+  return branch === PROD_BRANCH;
+}
+
 function getBuildInfo() {
+  const prod = isProductionBuild();
   let sha = process.env.CF_PAGES_COMMIT_SHA || process.env.GITHUB_SHA || '';
   if (!sha) {
     try {
@@ -41,11 +59,11 @@ function getBuildInfo() {
         .toString().trim();
     } catch (e) {
       console.warn('  (no commit SHA available; footer build stamp omitted)');
-      return {};
+      return { prod };
     }
   }
   const date = new Date().toISOString().slice(0, 10);
-  return { sha, short: sha.slice(0, 7), repo: REPO_URL, date };
+  return { sha, short: sha.slice(0, 7), repo: REPO_URL, date, prod };
 }
 
 function copyRecursive(src, dest) {
