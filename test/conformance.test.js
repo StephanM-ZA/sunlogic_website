@@ -68,3 +68,19 @@ test('an empty dist is an error, not a pass', async () => {
   fs.mkdirSync(path.join(dir, 'main'), { recursive: true });
   await assert.rejects(() => runConformance({ distDir: dir }), /no pages found/);
 });
+
+// One severity. The engine keeps fails and warns as a confidence signal, but
+// the gate no longer distinguishes them: "block the deploy" was the decision,
+// and the backlog that made that impossible has been cleared.
+test('a warning is enough to fail the gate', async () => {
+  const dir = distWith('engine-smoke.html');
+  const page = path.join(dir, 'main', 'index.html');
+  /* An off-palette background is a `palette` warning, not a fail. */
+  fs.writeFileSync(page, fs.readFileSync(page, 'utf8')
+    .replace('<main>', '<main><p class="sl-body" style="background:#ff00ff">hot pink</p>'));
+  const r = await runConformance({ distDir: dir });
+  assert.strictEqual(r.fails.length, 0, 'this fixture should produce warnings, not fails');
+  assert.ok(r.warns.length > 0);
+  assert.strictEqual(r.blocking, r.fails.length + r.warns.length,
+    'blocking count must include warnings once the tiers are collapsed');
+});

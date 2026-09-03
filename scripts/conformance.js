@@ -75,7 +75,18 @@ async function runConformance(options) {
     throw new Error('evaluated ' + evaluated + ' of ' + pages.length + ' pages — coverage gap');
   }
 
-  return { pages: pages.length, evaluated, fails, warns, viewport };
+  return {
+    pages: pages.length,
+    evaluated,
+    fails,
+    warns,
+    /* One severity. The engine still separates fails from warns as a
+       confidence signal, and the report still labels them, but the gate counts
+       every finding. The two tiers existed while the §3.3 backlog was being
+       cleared; it is clear. */
+    blocking: fails.length + warns.length,
+    viewport,
+  };
 }
 
 /* Grouped by rule, not by page: a rule failing on 40 pages is one rule
@@ -117,12 +128,12 @@ async function main() {
   const result = await runConformance({});
   console.log(report(result));
 
-  if (!result.fails.length) return;
+  if (!result.blocking) return;
 
   if (override && override.trim()) {
     console.log('');
     console.log('================================================================');
-    console.log('CONFORMANCE OVERRIDDEN — ' + result.fails.length + ' failure(s) allowed through');
+    console.log('CONFORMANCE OVERRIDDEN — ' + result.blocking + ' failure(s) allowed through');
     console.log('reason: ' + override.trim());
     console.log('================================================================');
     return;

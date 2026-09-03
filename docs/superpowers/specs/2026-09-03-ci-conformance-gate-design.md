@@ -113,8 +113,7 @@ There are two honest ways to reach "everything blocks":
 to do before the gate turns on.
 
 The gate therefore ends with **one severity**. The `fail`/`warn` split remains
-inside the engine as a confidence signal while the three causes are cleared,
-and collapses in step 6 of §8.
+inside the engine as a confidence signal; the gate counts every finding.
 
 ### 3.3 The measured backlog
 
@@ -258,9 +257,8 @@ consumers or neither — never one.
 5. Print the report of §5.
 6. Exit non-zero if any page produced a finding.
 
-Until the §3.3 backlog is cleared the runner blocks on `fail` and reports
-`warn`, so it can land and be run in anger while the three causes are fixed.
-Step 6 of §8 collapses the tiers and everything blocks from then on.
+The gate exits non-zero on any finding. The engine still separates `fail`
+from `warn` and the report still labels them, but both block.
 
 ### 4.4 Integrity — the gate cannot pass without checking
 
@@ -377,10 +375,10 @@ changes what happens on a push.
 - Lighthouse: 42 pages, 14 per site. Worst scores — performance 0.87
   (`/main/solar.html`), accessibility 0.96 (`/electrical/solar.html`),
   best-practices 1.00, SEO 1.00. Nothing under any threshold.
-- Design-system checker, all 42 pages: **0 fails, 150 warns** — see §3.3 for
-  the breakdown and the three root causes.
-- So the gate is green on day one for `fail`, and needs step 6 of §8 before it
-  can be green on one collapsed severity.
+- Design-system checker, all 42 pages: **0 fails, 0 warns**, verified at both
+  412x823 and 1440x900 — the §3.3 backlog of 150 warnings is cleared.
+- The gate is green on one collapsed severity: any finding, `fail` or `warn`,
+  blocks the deploy.
 
 ## Cross-references
 
