@@ -1,0 +1,50 @@
+# Cloudflare Pages redirect map for the apex.
+#
+# The apex used to be the whole site. When it split into three, its solar,
+# electrical and blog pages moved to the division subdomains and the copies
+# left here were byte-identical duplicates of pages live on two other hosts.
+# They have been deleted; these send anything Google already indexed — or any
+# bookmark, or any link on someone else's site — to where the page now lives,
+# rather than to a 404.
+#
+# 301, not 302: the move is permanent, and only a 301 passes ranking on.
+#
+# Paths are extensionless because scripts/build-site.js rewrites every link
+# and canonical to the extensionless form and Cloudflare Pages 308s
+# /solar.html to /solar. Both spellings are listed so a link written the old
+# way still lands somewhere useful in one hop rather than two.
+#
+# This file is NOT processed by the build's link rewrite (that walks .html and
+# the sitemap only), so what is written here is what ships.
+
+# --- Energy: solar, batteries, backup, energy management -------------------
+/solar                      https://energy.sunlogic.co.za/solar                 301
+/solar.html                 https://energy.sunlogic.co.za/solar                 301
+/energy-management          https://energy.sunlogic.co.za/energy-management     301
+/energy-management.html     https://energy.sunlogic.co.za/energy-management     301
+
+# --- Electrical: contracting, compliance, EV charging ----------------------
+/electrical                 https://electrical.sunlogic.co.za/electrical        301
+/electrical.html            https://electrical.sunlogic.co.za/electrical        301
+
+# --- Blog, split by subject to the division that owns it -------------------
+# Both division sites currently carry all seven posts, so every target below
+# resolves today. The split is by what the post is about: bills, batteries and
+# off-grid to Energy; compliance, EV charging and the electrical checks to
+# Electrical. The index goes to Energy because four of the seven do.
+/blog                             https://energy.sunlogic.co.za/blog                              301
+/blog.html                        https://energy.sunlogic.co.za/blog                              301
+/blog-why-your-bill-went-up       https://energy.sunlogic.co.za/blog-why-your-bill-went-up        301
+/blog-why-your-bill-went-up.html  https://energy.sunlogic.co.za/blog-why-your-bill-went-up        301
+/blog-rent-to-own                 https://energy.sunlogic.co.za/blog-rent-to-own                  301
+/blog-rent-to-own.html            https://energy.sunlogic.co.za/blog-rent-to-own                  301
+/blog-off-grid-vs-grid-tied       https://energy.sunlogic.co.za/blog-off-grid-vs-grid-tied        301
+/blog-off-grid-vs-grid-tied.html  https://energy.sunlogic.co.za/blog-off-grid-vs-grid-tied        301
+/blog-five-tips-load-shedding     https://energy.sunlogic.co.za/blog-five-tips-load-shedding      301
+/blog-five-tips-load-shedding.html https://energy.sunlogic.co.za/blog-five-tips-load-shedding     301
+/blog-coc-two-year-myth           https://electrical.sunlogic.co.za/blog-coc-two-year-myth        301
+/blog-coc-two-year-myth.html      https://electrical.sunlogic.co.za/blog-coc-two-year-myth        301
+/blog-ev-home-charging            https://electrical.sunlogic.co.za/blog-ev-home-charging         301
+/blog-ev-home-charging.html       https://electrical.sunlogic.co.za/blog-ev-home-charging         301
+/blog-3-essential-checks          https://electrical.sunlogic.co.za/blog-3-essential-checks       301
+/blog-3-essential-checks.html     https://electrical.sunlogic.co.za/blog-3-essential-checks       301
