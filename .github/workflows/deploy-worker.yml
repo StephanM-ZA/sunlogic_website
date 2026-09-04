@@ -1,0 +1,76 @@
+name: Deploy leads Worker
+
+# The three sites deploy themselves — each is a Cloudflare Pages project
+# watching main. The Worker did not: it lives in the same repo but Pages
+# builds only the site it is pointed at, so workers/leads-relay was deployed
+# by hand with `wrangler deploy`. That is a step someone has to remember
+# after every change to the lead pipeline, and the failure mode is silent —
+# the code is merged, the tests pass, the repo says the bug is fixed, and
+# production is still running the old Worker.
+#
+# It now deploys on push, like everything else.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'workers/leads-relay/**'
+      # The Worker imports these at build time (see mailer.mjs — one copy of
+      # every template, bundled in). Editing an email template changes what
+      # customers and directors receive, and without this line it would
+      # change nothing at all until the Worker happened to be redeployed for
+      # some unrelated reason.
+      - 'emails/**'
+      - '.github/workflows/deploy-worker.yml'
+  # Deployable on demand too, for a rollback or a redeploy after changing a
+  # secret or an environment variable in the dashboard.
+  workflow_dispatch: {}
+
+concurrency:
+  group: leads-worker
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Fail here rather than at wrangler, which reports a missing token as
+      # an authentication error and reads like a permissions problem.
+      - name: Check the deploy token exists
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "CLOUDFLARE_API_TOKEN is not set on this repository."
+            echo "Add it under Settings > Secrets and variables > Actions."
+            echo "The token needs the 'Edit Cloudflare Workers' template, scoped to this account."
+            exit 1
+          fi
+
+      # The Worker's logic is pure and covered — rotation, division mapping,
+      # expiry, the mail redirect. None of it should reach production without
+      # passing, and a lead pipeline is the wrong place to find out later.
+      - name: Unit tests
+        run: npm test
+
+      - name: Deploy
+        working-directory: workers/leads-relay
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        # --env="" targets the top-level (production) environment explicitly.
+        # wrangler warns when a config defines multiple environments and none
+        # is named, and a warning is a poor guard against deploying staging
+        # over production.
+        run: npx --no-install wrangler deploy --env=""

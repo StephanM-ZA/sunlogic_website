@@ -1,6 +1,6 @@
 /* ============================================================
    SUNLOGIC ANALYTICS
-   One GA4 property across three hosts, behind a consent gate.
+   One GA4 property per site, behind a consent gate.
 
    Nothing here runs until SL_GA_ID below is filled in. With it empty the
    file is inert: no banner, no cookies, no network. That is deliberate —
@@ -9,14 +9,8 @@
 
    TWO DECISIONS ARE BAKED IN, both made explicitly:
 
-   1. ONE property, cross-domain. sunlogic.co.za, energy.* and electrical.*
-      are three hosts that read as one company, and the closing promo on
-      each division site exists to send people to the other one. Left
-      alone, GA4 ends the session at the host boundary and records the
-      other Sunlogic site as the referrer — so the cross-sell would show up
-      as external traffic and the journey that produced a lead would be
-      split across two sessions. Listing all three below keeps one visit
-      one visit.
+   1. ONE property PER SITE, selected by hostname — see SL_GA_IDS for what
+      that costs and what it buys.
 
    2. Consent BEFORE loading, not Consent Mode. Google's consent mode would
       let gtag load in a denied state and send cookieless pings; this
@@ -35,13 +29,34 @@
   'use strict';
 
   /* ---- Configuration -------------------------------------------------
-     Paste the GA4 Measurement ID here (looks like G-XXXXXXXXXX). One ID:
-     all three sites report into the same property on purpose. */
-  const SL_GA_ID = '';
+     One GA4 property PER SITE, keyed by hostname.
 
-  /* Every host the property covers. GA4 needs these to treat a hop
-     between them as one session rather than a new one with a referrer. */
-  const SL_DOMAINS = ['sunlogic.co.za', 'energy.sunlogic.co.za', 'electrical.sunlogic.co.za'];
+     This is a change from the original plan of a single cross-domain
+     property, and the trade is worth stating because it cannot be
+     recovered retrospectively: with separate properties, a visitor who
+     follows the closing promo from Energy to Electrical is two sessions in
+     two properties, and each site appears in the other's report as a
+     referrer. Neither property can show that journey as one visit. What
+     you get in exchange is a clean, self-contained property per division,
+     which is the right shape if the two are ever reported on — or handed
+     over — separately.
+
+     The cross_site_click event is what survives the split: it is recorded
+     in the property of the site being LEFT, carrying to_site and which
+     placement sent them, so the hand-off is still countable from one side
+     even though the session is not continuous.
+
+     A host with no ID here stays inert — no banner, no cookies. That keeps
+     Cloudflare preview builds and localhost out of the reports rather than
+     filing them under whichever property happened to be first. */
+  const SL_GA_IDS = {
+    'sunlogic.co.za': 'G-0ZF74GHJ7M',
+    'www.sunlogic.co.za': 'G-0ZF74GHJ7M',
+    'energy.sunlogic.co.za': 'G-G6Q0E6WGH3',
+    'electrical.sunlogic.co.za': 'G-44SRED3Q20',
+  };
+
+  const SL_GA_ID = SL_GA_IDS[window.location.hostname] || '';
 
   /* Bumping this re-asks everyone. Only change it if what is being
      consented TO changes — a new tool, a new cookie — because silently
@@ -100,8 +115,9 @@
 
     gtag('js', new Date());
     gtag('config', SL_GA_ID, {
-      /* The three hosts as one property. */
-      linker: { domains: SL_DOMAINS, accept_incoming: true },
+      /* No cross-domain linker: it stitches sessions WITHIN one property,
+         and these are three. Setting it here would imply a continuity the
+         data cannot have. See the note on SL_GA_IDS above. */
       /* Truncates the visitor's IP before storage. Not required once
          consent has been given, kept because it costs nothing and the
          full address was never wanted for anything. */
@@ -222,7 +238,20 @@
      (generate_lead) and is plainly descriptive where none does. */
 
   const host = window.location.hostname;
-  const siteOf = (h) => (h.split('.')[0] === 'sunlogic' ? 'apex' : h.split('.')[0]);
+
+  /* Which of the three sites this is. Mapped explicitly rather than taking
+     the first label of the hostname: that returned "127" on localhost and
+     would return a preview subdomain's name on a Cloudflare preview build,
+     quietly filing test traffic under invented site names that then need
+     explaining in the reports. Anything not one of ours is "other", which
+     is both true and easy to exclude. */
+  const SITES = {
+    'sunlogic.co.za': 'apex',
+    'www.sunlogic.co.za': 'apex',
+    'energy.sunlogic.co.za': 'energy',
+    'electrical.sunlogic.co.za': 'electrical',
+  };
+  const siteOf = (h) => SITES[h] || 'other';
 
   document.addEventListener('click', function (e) {
     const a = e.target.closest && e.target.closest('a, button');
@@ -258,6 +287,19 @@
           : 'body';
         return track('cross_site_click', {
           from_site: siteOf(host), to_site: siteOf(h), placement: place, link_text: label,
+        });
+      }
+      /* Leaving Sunlogic altogether — a manufacturer, a government page,
+         the social accounts, the site credit. GA4's enhanced measurement
+         has an outbound click of its own, but it cannot know WHERE on the
+         page the link sat, and "which section sends people away" is the
+         useful half. Social links are excluded: they are handled above
+         with the network named. */
+      if (h && h !== host && !a.classList.contains('sl-footer__social')) {
+        return track('outbound_click', {
+          from_site: siteOf(host), destination: h, link_text: label,
+          placement: a.closest('.sl-footer') ? 'footer'
+            : a.closest('.sl-prose') ? 'article_body' : 'body',
         });
       }
     }
@@ -308,6 +350,103 @@
   document.addEventListener('dl-form-success', function () {
     track('form_success', { from_site: siteOf(host), page: window.location.pathname });
   });
+
+  /* ---- Where they get to, and where they stop ------------------------
+     GA4 answers two of the four questions on its own and needs help with
+     the other two:
+
+       where traffic comes FROM   automatic (referrer, UTM, session source)
+       how long they stay         automatic (engagement time per page)
+       where they GO              partly — page_view covers within a site,
+                                  cross_site_click covers the hand-off
+       where they DROP OFF        not at all, without the below
+
+     "Average time on page" is a poor answer to "where did I lose them",
+     because a long time can mean absorbed or lost. Depth and progress say
+     which. */
+
+  /* Scroll depth. GA4's own enhanced measurement fires once, at 90%, which
+     tells you who finished and nothing about who did not. Quarter marks
+     turn a long page into a drop-off curve: 25/50/75/100 with a big fall
+     between two of them names the section people stop at. Fires once each
+     per page view. */
+  (function () {
+    const marks = [25, 50, 75, 100];
+    const hit = {};
+    function check() {
+      const doc = document.documentElement;
+      const scrollable = doc.scrollHeight - window.innerHeight;
+      if (scrollable < 240) return;            /* nothing to scroll through */
+      const pct = Math.min(100, Math.round((window.scrollY / scrollable) * 100));
+      marks.forEach(function (m) {
+        if (pct >= m && !hit[m]) {
+          hit[m] = true;
+          track('scroll_depth', { percent: m, page: location.pathname, from_site: siteOf(host) });
+        }
+      });
+    }
+    let ticking = false;
+    window.addEventListener('scroll', function () {
+      if (!ticking) { ticking = true; requestAnimationFrame(function () { ticking = false; check(); }); }
+    }, { passive: true });
+  })();
+
+  /* Time actually spent looking at the page, not time the tab existed.
+     The clock stops when the tab is hidden, so a page left open in a
+     background tab overnight does not report as the most engaging page on
+     the site — which is exactly how naive time-on-page metrics mislead. */
+  (function () {
+    const marks = [15, 30, 60, 120, 300];
+    const hit = {};
+    let spent = 0;
+    let since = document.visibilityState === 'visible' ? Date.now() : 0;
+
+    function accrue() {
+      if (since) { spent += (Date.now() - since) / 1000; since = 0; }
+    }
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'visible') since = Date.now();
+      else accrue();
+    });
+    setInterval(function () {
+      if (document.visibilityState !== 'visible') return;
+      const now = spent + (since ? (Date.now() - since) / 1000 : 0);
+      marks.forEach(function (m) {
+        if (now >= m && !hit[m]) {
+          hit[m] = true;
+          track('engaged_time', { seconds: m, page: location.pathname, from_site: siteOf(host) });
+        }
+      });
+    }, 5000);
+  })();
+
+  /* Form drop-off, which is the one that pays for itself.
+     contact_form_start against generate_lead already gives a rate; this
+     gives a REASON, by reporting the last field the visitor actually
+     filled before leaving. If people consistently stop at "Suburb", that
+     is a fixable fact about the form rather than a mystery about intent. */
+  (function () {
+    let lastField = '';
+    let submitted = false;
+
+    document.addEventListener('input', function (e) {
+      const f = e.target.closest && e.target.closest('form[data-dl-form] [name]');
+      if (f && f.name && f.name !== 'website') lastField = f.name;   /* never the honeypot */
+    }, true);
+
+    document.addEventListener('submit', function (e) {
+      if (e.target.closest && e.target.closest('form[data-dl-form]')) submitted = true;
+    }, true);
+
+    /* pagehide, not beforeunload: beforeunload is unreliable on mobile and
+       blocks the back/forward cache. */
+    window.addEventListener('pagehide', function () {
+      if (!lastField || submitted) return;
+      track('contact_form_abandon', {
+        last_field: lastField, page: location.pathname, from_site: siteOf(host),
+      });
+    });
+  })();
 
   document.addEventListener('DOMContentLoaded', function () {
     /* The calculator is a plugin with its own submit button inside a
