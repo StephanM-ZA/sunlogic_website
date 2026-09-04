@@ -194,7 +194,7 @@ async function handleLeadRoute(request, env, ctx, type) {
   const { leadId, division } = await insertLead(env.DB, type, body);
   const { assignee, token } = await createOffer(env, leadId, 1, null);
 
-  ctx.waitUntil(notify(env, leadId, 'offer', assignee, token));
+  ctx.waitUntil(notify(env, leadId, 'offer', assignee, token, 1));
 
   /* The calculator also owes the visitor their estimate. This used to be a
      plain-text node inside n8n, which meant a customer-facing email depended
@@ -231,14 +231,14 @@ async function sweepExpiredOffers(env) {
     ).bind(offer.id).run();
     if (done.meta.changes !== 1) continue;
 
-    await notify(env, offer.lead_id, 'expired', offer.assignee, null);
+    await notify(env, offer.lead_id, 'expired', offer.assignee, null, offer.round);
 
     if (offer.round === 1) {
       /* To the OTHER director specifically, not to whoever the rotation
          pointer happens to name — a lead that has already been past one
          person must not be offered back to them. */
       const next = await createOffer(env, offer.lead_id, 2, OTHER[offer.assignee]);
-      await notify(env, offer.lead_id, 'offer', next.assignee, next.token);
+      await notify(env, offer.lead_id, 'offer', next.assignee, next.token, 2);
     } else {
       await reviveBothOffers(env, offer.lead_id);
     }
@@ -280,11 +280,11 @@ async function alertUnclaimed(env, onlyLeadId) {
        it". Caught by reading a sent email in the sheet; invisible from
        the database, where the row looked completely normal. */
     const live = await env.DB.prepare(
-      "SELECT assignee, token FROM offers WHERE lead_id=? AND state='offered'"
+      "SELECT assignee, token, round FROM offers WHERE lead_id=? AND state='offered'"
     ).bind(row.lead_id).all();
 
     for (const offer of live.results) {
-      await notify(env, row.lead_id, 'unclaimed', offer.assignee, offer.token);
+      await notify(env, row.lead_id, 'unclaimed', offer.assignee, offer.token, offer.round);
     }
 
     await env.DB.prepare(
@@ -318,7 +318,25 @@ async function sendVisitorReport(env, leadId, payload) {
   return result.ok;
 }
 
-async function notify(env, leadId, event, assignee, token) {
+/* Reads the offers table and returns the four assignment columns as they
+   stand right now. Round 1 is the first offer, round 2 the reassignment;
+   anything beyond that does not exist, because a second timeout revives
+   both rather than creating a third. */
+async function assignmentState(env, leadId) {
+  const { results } = await env.DB.prepare(
+    'SELECT round, assignee, accepted_at FROM offers WHERE lead_id=? ORDER BY round'
+  ).bind(leadId).all();
+  const r1 = results.find((r) => r.round === 1);
+  const r2 = results.find((r) => r.round === 2);
+  return {
+    assignedTo: r1 ? r1.assignee : '',
+    acceptedAt: r1 && r1.accepted_at ? r1.accepted_at : '',
+    reassignedTo: r2 ? r2.assignee : '',
+    reassignedAcceptedAt: r2 && r2.accepted_at ? r2.accepted_at : '',
+  };
+}
+
+async function notify(env, leadId, event, assignee, token, round) {
   const lead = await env.DB.prepare('SELECT type, payload_json, division, created_at FROM leads WHERE id=?')
     .bind(leadId).first();
   if (!lead) return false;
@@ -364,6 +382,17 @@ async function notify(env, leadId, event, assignee, token) {
       divisionLabel: label,
       assignee,
       status: event,
+      round: round || 1,
+      /* The COMPLETE assignment history, on every event, read from D1.
+         ------------------------------------------------------------------
+         Not a diff. The sheet row is an append-or-update, so a blank value
+         clears the cell it lands in — send only the field this event
+         changed and every other column is wiped by the next event. Sending
+         the whole current state means each write is a full projection of
+         the truth, idempotent, and safe to replay.
+         It also leaves n8n making no decisions: it copies six values into
+         six columns and has no opinion about rounds. */
+      ...(await assignmentState(env, leadId)),
       type: lead.type,
       name: payload.name || '',
       email: payload.email || '',
@@ -461,10 +490,10 @@ async function retryPendingLeads(env) {
        token, or the claim link in the email that finally arrives would
        point at nothing. */
     const offer = await env.DB.prepare(
-      "SELECT assignee, token FROM offers WHERE lead_id=? AND state='pending_send' ORDER BY id DESC LIMIT 1"
+      "SELECT assignee, token, round FROM offers WHERE lead_id=? AND state='pending_send' ORDER BY id DESC LIMIT 1"
     ).bind(row.id).first();
     const delivered = offer
-      ? await notify(env, row.id, 'offer', offer.assignee, offer.token)
+      ? await notify(env, row.id, 'offer', offer.assignee, offer.token, offer.round)
       : false;
     if (!delivered) {
       const current = await env.DB
@@ -497,7 +526,7 @@ export default {
       if (request.method === 'GET') return handleClaimGet(env, token);
       if (request.method === 'POST') {
         return handleClaimPost(env, token, async (offer) => {
-          ctx.waitUntil(notify(env, offer.lead_id, 'accepted', offer.assignee, null));
+          ctx.waitUntil(notify(env, offer.lead_id, 'accepted', offer.assignee, null, offer.round));
         });
       }
       return new Response('method not allowed', { status: 405 });

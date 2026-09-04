@@ -27,7 +27,7 @@
     },
     {
       "parameters": {
-        "jsCode": "/* The Worker sends one shape now. Everything downstream reads these\n   fields, so normalise once and never guess again. */\nreturn $input.all().map((item) => {\n  const b = item.json.body || item.json;\n  return { json: {\n    event: b.event || 'offer',\n    leadId: b.leadId ?? '',\n    needsSend: b.needsSend !== false,\n    to: Array.isArray(b.to) ? b.to.join(', ') : (b.to || ''),\n    replyTo: b.replyTo || '',\n    subject: b.subject || 'Sunlogic',\n    html: b.html || '',\n    type: b.type || '',\n    name: b.name || '', email: b.email || '', phone: b.phone || '',\n    need: b.need || '', division: b.divisionLabel || b.division || '',\n    assignee: b.assignee || '', status: b.status || b.event || '',\n    raw: b.raw || JSON.stringify(b),\n  } };\n});"
+        "jsCode": "/* The Worker sends one shape now. Everything downstream reads these\n   fields, so normalise once and never guess again. */\nreturn $input.all().map((item) => {\n  const b = item.json.body || item.json;\n  return { json: {\n    event: b.event || 'offer',\n    leadId: b.leadId ?? '',\n    needsSend: b.needsSend !== false,\n    to: Array.isArray(b.to) ? b.to.join(', ') : (b.to || ''),\n    replyTo: b.replyTo || '',\n    subject: b.subject || 'Sunlogic',\n    html: b.html || '',\n    type: b.type || '',\n    name: b.name || '', email: b.email || '', phone: b.phone || '',\n    need: b.need || '', division: b.divisionLabel || b.division || '',\n    assignee: b.assignee || '', status: b.status || b.event || '',\n    raw: b.raw || JSON.stringify(b),\n    /* The complete assignment history, sent whole on every event so\n       an append-or-update never blanks a column it did not set. */\n    assignedTo: b.assignedTo || '',\n    acceptedAt: b.acceptedAt || '',\n    reassignedTo: b.reassignedTo || '',\n    reassignedAcceptedAt: b.reassignedAcceptedAt || '',\n  } };\n});"
       },
       "id": "extract-body",
       "name": "Extract Body",
@@ -224,9 +224,11 @@
             "Phone": "={{ $json.phone }}",
             "Need": "={{ $json.division || $json.need }}",
             "Status": "={{ $json.status }}",
-            "Assigned To": "={{ $json.event === 'offer' ? $json.assignee : '' }}",
-            "Accepted At": "={{ $json.event === 'accepted' ? $now : '' }}",
-            "Raw JSON": "={{ $json.raw }}"
+            "Assigned To": "={{ $json.assignedTo }}",
+            "Accepted At": "={{ $json.acceptedAt }}",
+            "Raw JSON": "={{ $json.raw }}",
+            "Reassigned To": "={{ $json.reassignedTo }}",
+            "Reassigned Accepted At": "={{ $json.reassignedAcceptedAt }}"
           }
         },
         "options": {}
