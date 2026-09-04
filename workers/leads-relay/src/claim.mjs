@@ -16,7 +16,7 @@
  * and it shows up in the log as an accept nobody remembers making.
  */
 
-import { divisionLabel } from './logic.mjs';
+import { divisionLabel, formatSast } from './logic.mjs';
 
 const CSS = `body{margin:0;background:#FFF7E9;color:#0D2028;
 font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
@@ -28,7 +28,35 @@ p{margin:0 0 20px;color:#5A544B}
 text-transform:uppercase;color:#B85300;margin:0 0 16px}
 button{font:600 16px/1 inherit;background:#F66F00;color:#fff;border:0;border-radius:4px;
 padding:16px 28px;min-height:48px;cursor:pointer}
-button:hover{background:#B85300}`;
+button:hover{background:#B85300}
+.t{font:600 13px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:#A09B93;margin-top:24px}`;
+
+/* Counts down and then tries to close the tab.
+   ------------------------------------------------------------------
+   window.close() only works on a window that script opened. A tab opened
+   by clicking a link in an email was opened by the browser, so most
+   browsers refuse — Chrome, Firefox and Safari all block it. The attempt
+   is harmless and costs nothing where it does work (some mail clients open
+   these in a script-opened window, where it does).
+
+   So the countdown never promises what it cannot deliver: it says the tab
+   will close, and if the browser refuses, the same line becomes "you can
+   close this tab" rather than counting to zero and sitting there looking
+   broken. */
+const AUTOCLOSE = `<p class="t" id="c">This tab will close in 5 seconds</p>
+<script>
+(function(){
+  var n=5,el=document.getElementById('c');
+  var t=setInterval(function(){
+    n--;
+    if(n>0){el.textContent='This tab will close in '+n+' second'+(n===1?'':'s');return;}
+    clearInterval(t);
+    el.textContent='Closing…';
+    window.close();
+    setTimeout(function(){ el.textContent='You can close this tab now'; },400);
+  },1000);
+})();
+</script>`;
 
 function page(inner) {
   return new Response(
@@ -51,7 +79,7 @@ function page(inner) {
 function outcome(state, claimedBy) {
   if (state === 'expired' && claimedBy) {
     return page(`<p class="e">Already taken</p><h1>Someone got there first</h1>
-      <p>This enquiry has already been accepted. Nothing more to do.</p>`);
+      <p>This enquiry has already been accepted. Nothing more to do.</p>` + AUTOCLOSE);
   }
   return outcomeByState(state);
 }
@@ -59,7 +87,7 @@ function outcome(state, claimedBy) {
 function outcomeByState(state) {
   if (state === 'accepted') {
     return page(`<p class="e">Already taken</p><h1>Someone got there first</h1>
-      <p>This enquiry has already been accepted. Nothing more to do.</p>`);
+      <p>This enquiry has already been accepted. Nothing more to do.</p>` + AUTOCLOSE);
   }
   if (state === 'expired') {
     return page(`<p class="e">Expired</p><h1>This one has moved on</h1>
@@ -96,7 +124,7 @@ export async function handleClaimGet(env, token) {
   }
 
   const label = divisionLabel(offer.division);
-  const when = String(offer.created_at || '').slice(0, 10);
+  const when = formatSast(offer.created_at);
   return page(
     `<p class="e">${label} enquiry</p>` +
     `<h1>Accept this enquiry?</h1>` +
@@ -141,6 +169,6 @@ export async function handleClaimPost(env, token, onAccepted) {
   const label = divisionLabel(offer.division);
   return page(
     `<p class="e">${label} enquiry</p><h1>Accepted</h1>
-     <p>It is yours. The full details are on their way to your inbox now.</p>`
+     <p>It is yours. The full details are on their way to your inbox now.</p>` + AUTOCLOSE
   );
 }

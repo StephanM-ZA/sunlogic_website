@@ -126,3 +126,19 @@ export function estimateValues(payload) {
     trees: Math.round(Number(r.treesEquivalent) || 0),
   };
 }
+
+/* SQLite stores UTC; a director reads South African time. Formatted here
+   rather than in a template so both the email and the claim page say the
+   same thing, and so "when did this come in" is answerable at a glance
+   instead of being a date with no hour on it. */
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+export function formatSast(sqliteUtc) {
+  if (!sqliteUtc) return '';
+  const t = Date.parse(String(sqliteUtc).replace(' ', 'T') + 'Z');
+  if (Number.isNaN(t)) return String(sqliteUtc);
+  const d = new Date(t + 2 * 3600 * 1000);   /* SAST is UTC+2 all year — no DST */
+  const pad = (n) => String(n).padStart(2, '0');
+  return d.getUTCDate() + ' ' + MONTHS[d.getUTCMonth()] + ' ' + d.getUTCFullYear() +
+    ' at ' + pad(d.getUTCHours()) + ':' + pad(d.getUTCMinutes()) + ' SAST';
+}

@@ -1,5 +1,6 @@
 import {
   normaliseDivision, nextAssignee, newToken, expiryFrom, sqliteNow, OTHER, estimateValues,
+  formatSast,
 } from './logic.mjs';
 import { handleClaimGet, handleClaimPost } from './claim.mjs';
 import { compose, recipients, send, ADDRESS_OF } from './mailer.mjs';
@@ -355,7 +356,7 @@ async function notify(env, leadId, event, assignee, token, round) {
      away; an offer template cannot render a name it was never given. */
   const safe = {
     divisionLabel: label,
-    receivedOn: String(lead.created_at || '').slice(0, 10),
+    receivedOn: formatSast(lead.created_at),
     claimUrl: token ? claimUrl(env, token) : '',
     preheader: SUBJECTS[event] || 'Sunlogic',
     footnote: 'Sunlogic lead system &middot; sunlogic.co.za',
