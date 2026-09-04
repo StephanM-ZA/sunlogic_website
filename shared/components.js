@@ -427,7 +427,7 @@ class DlContactForm extends SLElement {
       '<dl-field label="Phone number" name="phone" type="tel" required></dl-field>' +
       '<dl-field label="Suburb" name="suburb" required></dl-field>' +
       '<dl-field label="What you need" name="need" required placeholder="Select an option" ' +
-        'options="Solar|Electrical|Energy management|Not sure yet"></dl-field>' +
+        'options="Energy|Electrical|Smart Solutions|Not sure yet"></dl-field>' +
       '<dl-field label="Property type" name="property-type" required placeholder="Select an option" ' +
         'options="Home|Small business|Larger site"></dl-field>' +
       '<div class="sl-field"><label class="sl-label" for="sl-modal-message">Message</label>' +

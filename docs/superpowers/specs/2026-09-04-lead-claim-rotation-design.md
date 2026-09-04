@@ -171,12 +171,12 @@ to move together:
 | Was | Is now |
 |---|---|
 | Solar | **Energy** |
-| Energy management | **Smart** |
+| Energy management | **Smart Solutions** |
 | Electrical | Electrical (unchanged) |
 | Not sure yet | Not sure yet (unchanged) |
 
 The teaser names whichever the visitor picked, verbatim — "an Energy enquiry
-has come in", "a Smart enquiry has come in". No mapping table, no inference,
+has come in", "a Smart Solutions enquiry has come in". No mapping table, no inference,
 nothing shown to a director that they did not choose. "Not sure yet" stays as
 it is and reads "a Not sure yet enquiry"; earlier drafts forced it into a
 division, which meant showing a guess as fact.

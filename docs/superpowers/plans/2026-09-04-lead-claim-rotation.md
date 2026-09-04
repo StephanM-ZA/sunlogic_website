@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- **Divisions are `Energy`, `Electrical`, `Smart`, `Not sure yet`.** Never "Solar", never "Energy management", except when reading historic rows.
+- **Divisions are `Energy`, `Electrical`, `Smart Solutions`, `Not sure yet`.** Never "Solar", never "Energy management", except when reading historic rows.
 - **Assignees are `stephan` and `craig`** (lower-case keys). Addresses: `stephan@sunlogic.co.za`, `craig@sunlogic.co.za`. Emails send **from** `sales@sunlogic.co.za` — that is the SMTP credential and it does not change.
 - **The teaser email must never contain the visitor's name, email, phone, suburb, property type or message.** Division and date only. This is the whole point of the claim step.
 - **`GET /claim/<token>` must never change state.** Only `POST` accepts. R1–R6 in the spec are requirements, not suggestions.
@@ -43,14 +43,14 @@
 
 ---
 
-## Task 1: Rename the divisions
+## Task 1: Rename the divisions — DONE
 
 Independent of everything else and shippable on its own. Do it first so every later task sees the new values.
 
 **Files:**
 - Modify: `site-main/contact.html`, `site-energy/contact.html`, `site-electrical/contact.html`, `shared/components.js`
 
-- [ ] **Step 1: Change all four option lists**
+- [x] **Step 1: Change all four option lists**
 
 Each contains exactly one occurrence of:
 
@@ -61,20 +61,20 @@ options="Solar|Electrical|Energy management|Not sure yet"
 Replace with:
 
 ```
-options="Energy|Electrical|Smart|Not sure yet"
+options="Energy|Electrical|Smart Solutions|Not sure yet"
 ```
 
-- [ ] **Step 2: Verify all four changed and none was missed**
+- [x] **Step 2: Verify all four changed and none was missed**
 
 ```bash
 cd /Users/stephanmarais/Projects/development_projects/build/sunlogic_website
 grep -rn 'Solar|Electrical|Energy management' site-main site-energy site-electrical shared --include='*.html' --include='*.js'
-grep -rc 'Energy|Electrical|Smart|Not sure yet' site-main/contact.html site-energy/contact.html site-electrical/contact.html shared/components.js
+grep -rc 'Energy|Electrical|Smart Solutions|Not sure yet' site-main/contact.html site-energy/contact.html site-electrical/contact.html shared/components.js
 ```
 
 Expected: the first prints nothing, the second prints `1` for all four files.
 
-- [ ] **Step 3: Bump the component version**
+- [x] **Step 3: Bump the component version**
 
 `shared/components.js` changed, so every page must re-fetch it:
 
@@ -82,7 +82,7 @@ Expected: the first prints nothing, the second prints `1` for all four files.
 find site-main site-energy site-electrical -name '*.html' -exec sed -i '' 's/components\.js?v=38/components.js?v=39/g' {} +
 ```
 
-- [ ] **Step 4: Build and check conformance**
+- [x] **Step 4: Build and check conformance**
 
 ```bash
 npm run build && npm run conformance
@@ -90,14 +90,40 @@ npm run build && npm run conformance
 
 Expected: `34/34`, `0 fails 0 warns` at both viewports.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add site-main site-energy site-electrical shared
-git commit -m "feat(forms): divisions renamed — Energy, Electrical, Smart"
+git commit -m "feat(forms): divisions renamed — Energy, Electrical, Smart Solutions"
 ```
 
 ---
+
+### What Task 1 actually needed, beyond the plan
+
+Two things the plan missed, both found by testing rather than by reading:
+
+**`data-topic` carries the same labels.** Twenty pages set
+`<body data-topic="Solar">` or `"Energy management"`. components.js turns that
+into `?need=<value>` on every link to the contact page, and forms.js prefills
+the dropdown only on an **exact** option match — so after the rename every one
+of those links silently stopped prefilling. No error, just a form that had
+stopped being helpful. Renamed to `Energy` / `Smart Solutions`; all 20 now
+match an option.
+
+**The prefilled message stopped being a sentence.** It was built as
+`"I'm interested in " + need.toLowerCase()`, which read "I'm interested in
+solar for my property" before and "I'm interested in smart for my property"
+after. Division names are not nouns you can drop into a sentence. Replaced
+with a per-division phrase, and "Not sure yet" now prefills nothing at all —
+someone who has not decided has nothing to say, and putting words in their
+mouth is worse than an empty box.
+
+`forms.js` v3 -> v4 alongside `components.js` v38 -> v39.
+
+Verified in a browser across all three sites: the dropdown offers
+`Energy | Electrical | Smart Solutions | Not sure yet`, and all four
+`?need=` values select correctly with the right message.
 
 ## Task 2: Schema
 
@@ -202,7 +228,7 @@ const {
 test('current division names normalise to themselves', () => {
   assert.strictEqual(normaliseDivision('Energy', 'contact'), 'energy');
   assert.strictEqual(normaliseDivision('Electrical', 'contact'), 'electrical');
-  assert.strictEqual(normaliseDivision('Smart', 'contact'), 'smart');
+  assert.strictEqual(normaliseDivision('Smart Solutions', 'contact'), 'smart');
   assert.strictEqual(normaliseDivision('Not sure yet', 'contact'), 'unsure');
 });
 
@@ -224,7 +250,7 @@ test('an unrecognised value is unsure, never a guess', () => {
 
 test('labels are what a director reads', () => {
   assert.strictEqual(divisionLabel('energy'), 'Energy');
-  assert.strictEqual(divisionLabel('smart'), 'Smart');
+  assert.strictEqual(divisionLabel('smart'), 'Smart Solutions');
   assert.strictEqual(divisionLabel('unsure'), 'Not sure yet');
 });
 
@@ -282,6 +308,7 @@ const DIVISIONS = {
   'energy': 'energy',
   'solar': 'energy',
   'electrical': 'electrical',
+  'smart solutions': 'smart',
   'smart': 'smart',
   'energy management': 'smart',
   'not sure yet': 'unsure',
@@ -290,7 +317,7 @@ const DIVISIONS = {
 const LABELS = {
   energy: 'Energy',
   electrical: 'Electrical',
-  smart: 'Smart',
+  smart: 'Smart Solutions',
   unsure: 'Not sure yet',
 };
 

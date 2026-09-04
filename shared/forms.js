@@ -85,9 +85,20 @@ function dlPrefillFromQuery() {
   const select = document.querySelector('select[name="need"]');
   if (!select || !Array.from(select.options).some(function(o) { return o.value === need; })) { return; }
   select.value = need;
+  /* Spelled out per division rather than lower-casing the option label. The
+     labels are division names, not things you can drop into a sentence: the
+     rename to Energy/Smart turned this into "I'm interested in smart for my
+     property", which is not a sentence anyone would type. "Not sure yet" is
+     absent on purpose — someone who has not decided has nothing to prefill,
+     and putting words in their mouth is worse than an empty box. */
+  const INTEREST = {
+    'Energy': 'solar and backup power',
+    'Electrical': 'electrical work',
+    'Smart Solutions': 'smart energy management',
+  };
   const message = document.querySelector('textarea[name="message"]');
-  if (message && !message.value) {
-    message.value = "I'm interested in " + need.toLowerCase() + " for my property. ";
+  if (message && !message.value && INTEREST[need]) {
+    message.value = "I'm interested in " + INTEREST[need] + " for my property. ";
   }
 }
 
