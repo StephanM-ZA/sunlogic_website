@@ -77,6 +77,11 @@ export function recipients(env, assignee) {
 }
 
 async function sendViaResend(env, { to, replyTo, subject, html }) {
+  /* A deliberate way to exercise the fallback without destroying the real
+     key. A fallback nobody has run is not a fallback, and the only honest
+     way to know it works is to make the primary fail on purpose. Staging
+     sets this for that test; production never does. */
+  if (env.FORCE_FALLBACK === '1') return { ok: false, why: 'forced (FORCE_FALLBACK=1)' };
   if (!env.RESEND_API_KEY) return { ok: false, why: 'no api key' };
   try {
     const res = await fetch('https://api.resend.com/emails', {
