@@ -795,9 +795,23 @@ customElements.define('dl-dock', DlDock);
     window.scrollTo({ top: 0, behavior: still ? 'auto' : 'smooth' });
     /* Send focus back with the reader. Without this, keyboard focus stays
        on a button that is about to hide itself, and the next Tab resumes
-       from the bottom of a page they have just left. */
-    const skip = document.querySelector('.sl-skip-link');
-    if (skip) skip.focus({ preventScroll: true });
+       from the bottom of a page they have just left.
+
+       The main landmark, NOT the skip link. Focusing the skip link did the
+       right thing for the tab order and the wrong thing on screen: it is
+       parked at left:-9999px and pulled back to left:0 BY :focus, which is
+       exactly how a skip link is supposed to behave for a keyboard user —
+       so clicking back-to-top with a mouse made a large orange "SKIP TO
+       MAIN CONTENT" bar appear over the logo and stay there.
+
+       tabindex is added only for the moment of focus and removed on blur,
+       so <main> never becomes a tab stop of its own. */
+    const main = document.getElementById('main-content') || document.body;
+    main.setAttribute('tabindex', '-1');
+    main.focus({ preventScroll: true });
+    main.addEventListener('blur', function () {
+      main.removeAttribute('tabindex');
+    }, { once: true });
   });
 
   window.addEventListener('scroll', function () {

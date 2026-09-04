@@ -47,6 +47,20 @@ const LABELS = {
 
 const OTHER = { stephan: 'craig', craig: 'stephan' };
 
+/* Where mail actually goes.
+   ------------------------------------------------------------------
+   Lives here, in the pure module, because it is a RULE and rules get
+   tested. It used to be a private function in mailer.mjs applied only
+   when building the director list, so the calculator's estimate to the
+   visitor — which addresses itself — slipped past it entirely while the
+   "redirected" banner was stamped on every message regardless. A customer
+   got their own estimate carrying a notice that it had been sent
+   somewhere else. Nothing failed; nothing logged.
+   One rule, one place, and a test that holds it. */
+export function applyRedirect(env, to) {
+  return env && env.MAIL_REDIRECT_TO ? [env.MAIL_REDIRECT_TO] : to;
+}
+
 /* An unrecognised value becomes 'unsure' rather than a guess. A director
    reading "an Energy enquiry has come in" must be able to trust that the
    visitor chose Energy — the teaser is the only thing they see before

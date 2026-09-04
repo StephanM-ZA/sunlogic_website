@@ -182,6 +182,11 @@ a.sl-btn:hover, a.sl-card:hover, a.sl-contact:hover,
    including hidden ones like a honeypot, which are still in the tree. */
 input, textarea, select, button { font: inherit; color: var(--text-primary); }
 :focus-visible { outline: none; box-shadow: var(--focus-ring); }
+/* The main landmark is given focus programmatically — by the skip link and
+   by back-to-top — purely to move the tab order. It is the whole page, so
+   ringing it outlines everything and reads as a rendering fault rather than
+   as focus. The controls that sent focus here keep their own rings. */
+#main-content:focus, #main-content:focus-visible { outline: none; box-shadow: none; }
 
 /* ---- Type roles -------------------------------------------- */
 /* The signature device: a heading's LAST phrase in orange.

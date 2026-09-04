@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import {
   normaliseDivision, divisionLabel, nextAssignee, newToken,
-  expiryFrom, sqliteNow, OTHER, estimateValues,
+  expiryFrom, sqliteNow, OTHER, estimateValues, applyRedirect,
 } from '../src/logic.mjs';
 
 const REPO = fileURLToPath(new URL('../../../', import.meta.url));
@@ -209,4 +209,28 @@ test('a missing or malformed result set produces text, never NaN or undefined', 
     assert.ok(!String(val).includes('undefined'), k + ' contains undefined');
   }
   assert.strictEqual(v.panelKw, '—');
+});
+
+/* --- mail redirect ------------------------------------------------------
+   The bug this exists to prevent: the redirect was applied when building
+   the director list and nowhere else, so the calculator's estimate — which
+   is addressed to whoever filled the form in — went straight to a real
+   customer while wearing a banner announcing it had been redirected to a
+   personal Gmail account. Both halves were wrong and neither errored. */
+
+test('with MAIL_REDIRECT_TO set, every recipient collapses to it', () => {
+  const env = { MAIL_REDIRECT_TO: 'test@example.com' };
+  assert.deepStrictEqual(applyRedirect(env, ['stephan@sunlogic.co.za']), ['test@example.com']);
+  assert.deepStrictEqual(applyRedirect(env, ['stephan@sunlogic.co.za', 'craig@sunlogic.co.za']), ['test@example.com']);
+  // the one that used to escape: a visitor's own address
+  assert.deepStrictEqual(applyRedirect(env, ['a.customer@gmail.com']), ['test@example.com']);
+});
+
+test('without it, recipients are untouched and identity is preserved', () => {
+  const to = ['a.customer@gmail.com'];
+  // Same reference back, which is what lets send() tell "not redirected"
+  // from "redirected" without comparing contents.
+  assert.strictEqual(applyRedirect({}, to), to);
+  assert.strictEqual(applyRedirect(undefined, to), to);
+  assert.strictEqual(applyRedirect({ MAIL_REDIRECT_TO: '' }, to), to);
 });

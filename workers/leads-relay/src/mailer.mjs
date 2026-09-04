@@ -19,6 +19,7 @@ import bodyExpired from '../../../emails/body-offer-expired.html';
 import bodyUnclaimed from '../../../emails/body-unclaimed-alert.html';
 import bodyDigest from '../../../emails/body-daily-digest.html';
 import bodyVisitor from '../../../emails/body-visitor-report.html';
+import { applyRedirect } from './logic.mjs';
 
 const BODIES = {
   offer: bodyOffer,
@@ -45,9 +46,9 @@ const ADDRESS = {
    to turn off at cutover — not a permanent feature. Production must never
    carry it: with it set, only one director is ever told anything, and the
    rotation would look like it was working while nobody else heard a word. */
-function redirect(env, list) {
-  return env.MAIL_REDIRECT_TO ? [env.MAIL_REDIRECT_TO] : list;
-}
+/* The rule itself lives in logic.mjs so it can be tested without pulling
+   the email templates in. See applyRedirect there. */
+const redirect = (env, list) => applyRedirect(env, list);
 
 /* [a-zA-Z0-9_] and not [a-zA-Z_]: the digest's placeholders are named
    arrived_24h and accepted_24h. A pattern without digits leaves those two
@@ -82,16 +83,17 @@ export function recipients(env, assignee) {
    temporary and is trivially forgotten; a banner on every message is the
    reminder that cannot be ignored, and it deletes itself the moment the
    variable comes off. */
-function redirectBanner(env, html) {
+function redirectBanner(env, html, originalTo) {
   if (!env.MAIL_REDIRECT_TO) return html;
+  const was = (originalTo || []).join(', ');
   const bar = '<div style="background:#B85300;color:#fff;padding:10px 16px;' +
     'font:600 13px/1.4 -apple-system,Helvetica,Arial,sans-serif;text-align:center;">' +
-    'TEST MODE — redirected to ' + env.MAIL_REDIRECT_TO +
-    '. The directors are not receiving their own mail.</div>';
+    'TEST MODE — this was addressed to ' + (was || 'someone else') +
+    ' and was redirected here. Nobody else received it.</div>';
   return html.replace(/(<body[^>]*>)/i, '$1' + bar);
 }
 
-async function sendViaResend(env, { to, replyTo, subject, html }) {
+async function sendViaResend(env, { to, replyTo, subject, html, originalTo }) {
   /* A deliberate way to exercise the fallback without destroying the real
      key. A fallback nobody has run is not a fallback, and the only honest
      way to know it works is to make the primary fail on purpose. Staging
@@ -110,7 +112,7 @@ async function sendViaResend(env, { to, replyTo, subject, html }) {
         to,
         ...(replyTo ? { reply_to: replyTo } : {}),
         subject,
-        html: redirectBanner(env, html),
+        html: redirectBanner(env, html, originalTo),
       }),
     });
     if (res.ok) return { ok: true, via: 'resend' };
@@ -166,12 +168,31 @@ async function sendViaN8n(env, { to, replyTo, subject, html, leadId, event, extr
    has already gone and only the row is missing, which is the right way
    round. Sending must never depend on the iMac; logging may. */
 export async function send(env, message) {
-  const first = await sendViaResend(env, message);
+  /* The redirect belongs HERE, not only in recipients().
+     ------------------------------------------------------------------
+     It used to be applied when building the director list, which covered
+     every director notification and nothing else. The calculator's estimate
+     to the visitor calls send() directly with the address they typed, so it
+     was never redirected — while redirectBanner ran on every Resend send
+     regardless. A real customer therefore received their own estimate, at
+     their own address, wearing a banner announcing it had been redirected
+     to a personal Gmail account. The claim was false and the address was
+     not ours to hand out.
+     Applying it at the single exit point makes the two agree: with
+     MAIL_REDIRECT_TO set, nothing reaches anyone but the test mailbox —
+     which is what a test mode has to mean, or it is not one. Reapplying it
+     to an already-redirected director list is harmless; redirect() replaces
+     the list outright. */
+  const to = applyRedirect(env, message.to);
+  const msg = to === message.to
+    ? message
+    : { ...message, to, originalTo: message.to };
+  const first = await sendViaResend(env, msg);
   if (first.ok) {
-    await sendViaN8n(env, { ...message, needsSend: false });
+    await sendViaN8n(env, { ...msg, needsSend: false });
     return first;
   }
-  const second = await sendViaN8n(env, { ...message, needsSend: true });
+  const second = await sendViaN8n(env, { ...msg, needsSend: true });
   if (second.ok) return { ok: true, via: 'n8n', primaryFailed: first.why };
   return { ok: false, why: first.why + ' | ' + second.why };
 }
