@@ -46,6 +46,58 @@ six pages concurrently for that reason — sequentially the same sweep took 113s
 and this runs once per Pages project plus once in Actions. A check slow enough
 to resent is a check that gets switched off.
 
+## The leads Worker
+
+The Worker deploys through **Workers Builds**, Cloudflare's own Git integration
+— the same model as Pages, and for the same reason the sites use it: GitHub is
+the repository, Cloudflare is the build and deploy system. Nothing about
+deployment lives in GitHub Actions, and no Cloudflare credential is stored
+there.
+
+Connected at **Workers & Pages → sunlogic-leads-relay → Settings → Build**.
+
+| Setting | Value |
+|---|---|
+| Repository | `StephanM-ZA/sunlogic_website` |
+| Branch | `main` |
+| Root directory | *(repo root — leave empty)* |
+| Build command | `npm ci && npm test` |
+| Deploy command | `npx wrangler deploy --config workers/leads-relay/wrangler.toml --env=""` |
+
+**Root directory is the repo root, not `workers/leads-relay`.** Two things
+force that and both are easy to get wrong:
+
+- there is no `package.json` inside the Worker directory — its dependencies,
+  and `npm test`, come from the root;
+- `mailer.mjs` imports the email templates from `../../../emails/`, which is
+  above the Worker directory entirely. There is exactly one copy of every
+  template and the Worker bundles it at build time, so a build rooted inside
+  `workers/leads-relay` cannot see them.
+
+`--env=""` targets the top-level (production) environment explicitly. wrangler
+only *warns* when a config defines multiple environments and none is named,
+and a warning is a poor guard against deploying staging over production.
+
+`npm test` in the build command is not ceremony: the Worker's logic is pure
+and covered — rotation, division mapping, expiry, the mail redirect — and a
+lead pipeline is the wrong place to discover a regression afterwards.
+
+### Why this exists
+
+The three sites deployed themselves; the Worker did not, because a Pages
+project builds only the site it is pointed at. `workers/leads-relay` was
+deployed by hand with `wrangler deploy`, which is a step someone has to
+remember after every change to the lead pipeline — and the failure mode is
+silent. The code is merged, the tests pass, the repository says the bug is
+fixed, and production is still running the old Worker.
+
+### Watch the email templates
+
+`emails/**` is part of the Worker's build input. Editing a template changes
+what customers and directors receive, and it only takes effect when the Worker
+is rebuilt. If Workers Builds is ever configured with a path filter, `emails/`
+must be in it alongside `workers/leads-relay/`.
+
 ## Rollback
 
 The build command each project had before the gate. Paste it back into
