@@ -163,20 +163,39 @@ Existing style, header and tokens throughout. Five templates in `emails/`:
 
 ### Division mapping
 
-| `need` | Teaser says |
+The division names changed while this was being specified. The dropdown the
+visitor sees is the value the form submits, so the labels and the backend have
+to move together:
+
+| Was | Is now |
 |---|---|
-| Solar | a solar enquiry |
-| Energy management | a solar enquiry |
-| Electrical | an electrical enquiry |
-| Not sure yet | **open — see below** |
-| calculator submission | a solar enquiry |
+| Solar | **Energy** |
+| Energy management | **Smart** |
+| Electrical | Electrical (unchanged) |
+| Not sure yet | Not sure yet (unchanged) |
 
-Energy management sits in the Energy division, so it reads as solar. The
-calculator is a solar calculator and has no `need` field at all.
+The teaser names whichever the visitor picked, verbatim — "an Energy enquiry
+has come in", "a Smart enquiry has come in". No mapping table, no inference,
+nothing shown to a director that they did not choose. "Not sure yet" stays as
+it is and reads "a Not sure yet enquiry"; earlier drafts forced it into a
+division, which meant showing a guess as fact.
 
-**Open question:** "Not sure yet" is neither. Calling it solar would be a
-guess shown to a director as fact. Proposal: the teaser says "a new enquiry"
-with no division. Needs a decision before build.
+A calculator submission has no `need` field at all and is always Energy — it
+is the solar calculator.
+
+Two consequences worth naming:
+
+**The option list lives in four places** and all four must change together, or
+a visitor on one site submits a value the backend does not recognise:
+`site-main/contact.html`, `site-energy/contact.html`,
+`site-electrical/contact.html`, and the fallback list inside
+`shared/components.js`. The same duplication that produced today's CORS bug.
+
+**Existing rows say the old words.** The eleven leads already in D1, and every
+row already in the sheet, carry "Solar" and "Energy management". The Worker
+accepts both spellings and normalises to the new ones, rather than a migration
+that rewrites history — the old rows are a record of what was actually
+submitted at the time.
 
 ## Logging
 
