@@ -48,7 +48,7 @@
 </style>
 </head>
 <body  class="sl-bg-page" bgcolor="#FFF7E9" style="margin:0; padding:0; background-color:#FFF7E9;">
-<div style="display:none; max-height:0; overflow:hidden; mso-hide:all;">New enquiry from {{ $json.name }} — {{ $json.need }} in {{ $json.suburb }}.&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</div>
+<div style="display:none; max-height:0; overflow:hidden; mso-hide:all;">{{preheader}}</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"  class="sl-bg-page" bgcolor="#FFF7E9" style="background-color:#FFF7E9;">
 <tr><td align="center" style="padding:32px 16px;">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0"  class="sl-bg-card sl-border-card" bgcolor="#FFFFFF" style="width:600px; max-width:600px; background-color:#FFFFFF; border:1px solid #DACAB6; border-radius:12px; overflow:hidden;">
@@ -63,82 +63,12 @@
   <!-- Orange rule -->
   <tr><td  class="sl-bg-orange" bgcolor="#F66F00" style="height:4px; line-height:4px; font-size:0; background-color:#F66F00;">&nbsp;</td></tr>
 
-  <!-- Eyebrow + heading -->
-  <tr>
-    <td style="padding:32px 32px 8px 32px;">
-      <div  class="sl-text-accent" style="font-family:ui-monospace, 'JetBrains Mono', Menlo, monospace; font-size:12px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#B85300;">
-        New Enquiry
-      </div>
-      <div  class="sl-text-ink" style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; font-size:26px; font-weight:800; color:#0D2028; margin-top:8px; line-height:1.25;">
-        {{ $json.name }}
-      </div>
-      <div  class="sl-text-dim" style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; font-size:15px; color:#5A544B; margin-top:4px;">
-        {{ $json.need }} &middot; {{ $json.suburb }}
-      </div>
-    </td>
-  </tr>
-
-  <!-- Details table -->
-  <tr>
-    <td style="padding:24px 32px 8px 32px;">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-        <tr>
-          <td  class="sl-text-label sl-border-warm" style="padding:12px 0; border-top:1px solid #F0E5CF; font-family:ui-monospace, 'JetBrains Mono', Menlo, monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#A09B93; width:120px; vertical-align:top;">Email</td>
-          <td  class="sl-text-ink sl-border-warm" style="padding:12px 0; border-top:1px solid #F0E5CF; font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; font-size:15px; color:#0D2028;"><a href="mailto:{{ $json.email }}"  class="sl-text-ink" style="color:#0D2028; text-decoration:none;">{{ $json.email }}</a></td>
-        </tr>
-        <tr>
-          <td  class="sl-text-label sl-border-warm" style="padding:12px 0; border-top:1px solid #F0E5CF; font-family:ui-monospace, 'JetBrains Mono', Menlo, monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#A09B93; vertical-align:top;">Phone</td>
-          <td  class="sl-text-ink sl-border-warm" style="padding:12px 0; border-top:1px solid #F0E5CF; font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; font-size:15px; color:#0D2028;"><a href="tel:{{ $json.phone }}"  class="sl-text-ink" style="color:#0D2028; text-decoration:none;">{{ $json.phone }}</a></td>
-        </tr>
-        <tr>
-          <td  class="sl-text-label sl-border-warm" style="padding:12px 0; border-top:1px solid #F0E5CF; font-family:ui-monospace, 'JetBrains Mono', Menlo, monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#A09B93; vertical-align:top;">Suburb</td>
-          <td  class="sl-text-ink sl-border-warm" style="padding:12px 0; border-top:1px solid #F0E5CF; font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; font-size:15px; color:#0D2028;">{{ $json.suburb }}</td>
-        </tr>
-        <tr>
-          <td  class="sl-text-label sl-border-warm" style="padding:12px 0; border-top:1px solid #F0E5CF; font-family:ui-monospace, 'JetBrains Mono', Menlo, monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#A09B93; vertical-align:top;">Needs</td>
-          <td  class="sl-text-ink sl-border-warm" style="padding:12px 0; border-top:1px solid #F0E5CF; font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; font-size:15px; color:#0D2028;">{{ $json.need }}</td>
-        </tr>
-        <tr>
-          <td  class="sl-text-label sl-border-warm" style="padding:12px 0; border-top:1px solid #F0E5CF; border-bottom:1px solid #F0E5CF; font-family:ui-monospace, 'JetBrains Mono', Menlo, monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#A09B93; vertical-align:top;">Property</td>
-          <td  class="sl-text-ink sl-border-warm" style="padding:12px 0; border-top:1px solid #F0E5CF; border-bottom:1px solid #F0E5CF; font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; font-size:15px; color:#0D2028;">{{ $json["property-type"] }}</td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-
-  <!-- Message callout -->
-  <tr>
-    <td style="padding:24px 32px 8px 32px;">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0"  class="sl-bg-warm sl-border-orange" bgcolor="#F7EED9" style="background-color:#F7EED9; border-left:3px solid #F66F00; border-radius:0 8px 8px 0;">
-        <tr>
-          <td style="padding:18px 20px;">
-            <div  class="sl-text-accent" style="font-family:ui-monospace, 'JetBrains Mono', Menlo, monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#B85300; margin-bottom:6px;">Message</div>
-            <div  class="sl-text-ink" style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; font-size:15px; color:#0D2028; line-height:1.6; white-space:pre-wrap;">{{ $json.message }}</div>
-          </td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-
-  <!-- CTA -->
-  <tr>
-    <td style="padding:28px 32px 32px 32px;">
-      <table role="presentation" cellpadding="0" cellspacing="0">
-        <tr>
-          <td  class="sl-bg-orange" bgcolor="#F66F00" style="background-color:#F66F00; border-radius:8px;">
-            <a href="mailto:{{ $json.email }}"  class="sl-text-white" style="display:inline-block; padding:14px 28px; font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; font-size:15px; font-weight:700; color:#FFFFFF; text-decoration:none;">Reply to {{ $json.name }}</a>
-          </td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-
+{{BODY}}
   <!-- Footer -->
   <tr>
     <td  class="sl-bg-warm sl-border-warm" bgcolor="#F7EED9" style="padding:20px 32px; background-color:#F7EED9; border-top:1px solid #F0E5CF;">
       <div  class="sl-text-label" style="font-family:ui-monospace, 'JetBrains Mono', Menlo, monospace; font-size:11px; color:#A09B93;">
-        Submitted via the contact form on sunlogic.co.za &middot; {{ $now.format('d LLL yyyy, HH:mm') }} SAST
-      </div>
+        {{footnote}}</div>
     </td>
   </tr>
 

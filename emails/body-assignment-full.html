@@ -1,0 +1,69 @@
+  <!-- Eyebrow + heading -->
+  <tr>
+    <td style="padding:32px 32px 8px 32px;">
+      <div  class="sl-text-accent" style="font-family:ui-monospace, 'JetBrains Mono', Menlo, monospace; font-size:12px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#B85300;">
+        New Enquiry
+      </div>
+      <div  class="sl-text-ink" style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; font-size:26px; font-weight:800; color:#0D2028; margin-top:8px; line-height:1.25;">
+        {{name}}
+      </div>
+      <div  class="sl-text-dim" style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; font-size:15px; color:#5A544B; margin-top:4px;">
+        {{need}} &middot; {{suburb}}
+      </div>
+    </td>
+  </tr>
+
+  <!-- Details table -->
+  <tr>
+    <td style="padding:24px 32px 8px 32px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td  class="sl-text-label sl-border-warm" style="padding:12px 0; border-top:1px solid #F0E5CF; font-family:ui-monospace, 'JetBrains Mono', Menlo, monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#A09B93; width:120px; vertical-align:top;">Email</td>
+          <td  class="sl-text-ink sl-border-warm" style="padding:12px 0; border-top:1px solid #F0E5CF; font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; font-size:15px; color:#0D2028;"><a href="mailto:{{email}}"  class="sl-text-ink" style="color:#0D2028; text-decoration:none;">{{email}}</a></td>
+        </tr>
+        <tr>
+          <td  class="sl-text-label sl-border-warm" style="padding:12px 0; border-top:1px solid #F0E5CF; font-family:ui-monospace, 'JetBrains Mono', Menlo, monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#A09B93; vertical-align:top;">Phone</td>
+          <td  class="sl-text-ink sl-border-warm" style="padding:12px 0; border-top:1px solid #F0E5CF; font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; font-size:15px; color:#0D2028;"><a href="tel:{{phone}}"  class="sl-text-ink" style="color:#0D2028; text-decoration:none;">{{phone}}</a></td>
+        </tr>
+        <tr>
+          <td  class="sl-text-label sl-border-warm" style="padding:12px 0; border-top:1px solid #F0E5CF; font-family:ui-monospace, 'JetBrains Mono', Menlo, monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#A09B93; vertical-align:top;">Suburb</td>
+          <td  class="sl-text-ink sl-border-warm" style="padding:12px 0; border-top:1px solid #F0E5CF; font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; font-size:15px; color:#0D2028;">{{suburb}}</td>
+        </tr>
+        <tr>
+          <td  class="sl-text-label sl-border-warm" style="padding:12px 0; border-top:1px solid #F0E5CF; font-family:ui-monospace, 'JetBrains Mono', Menlo, monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#A09B93; vertical-align:top;">Needs</td>
+          <td  class="sl-text-ink sl-border-warm" style="padding:12px 0; border-top:1px solid #F0E5CF; font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; font-size:15px; color:#0D2028;">{{need}}</td>
+        </tr>
+        <tr>
+          <td  class="sl-text-label sl-border-warm" style="padding:12px 0; border-top:1px solid #F0E5CF; border-bottom:1px solid #F0E5CF; font-family:ui-monospace, 'JetBrains Mono', Menlo, monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#A09B93; vertical-align:top;">Property</td>
+          <td  class="sl-text-ink sl-border-warm" style="padding:12px 0; border-top:1px solid #F0E5CF; border-bottom:1px solid #F0E5CF; font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; font-size:15px; color:#0D2028;">{{property_type}}</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- Message callout -->
+  <tr>
+    <td style="padding:24px 32px 8px 32px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0"  class="sl-bg-warm sl-border-orange" bgcolor="#F7EED9" style="background-color:#F7EED9; border-left:3px solid #F66F00; border-radius:0 8px 8px 0;">
+        <tr>
+          <td style="padding:18px 20px;">
+            <div  class="sl-text-accent" style="font-family:ui-monospace, 'JetBrains Mono', Menlo, monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#B85300; margin-bottom:6px;">Message</div>
+            <div  class="sl-text-ink" style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; font-size:15px; color:#0D2028; line-height:1.6; white-space:pre-wrap;">{{message}}</div>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- CTA -->
+  <tr>
+    <td style="padding:28px 32px 32px 32px;">
+      <table role="presentation" cellpadding="0" cellspacing="0">
+        <tr>
+          <td  class="sl-bg-orange" bgcolor="#F66F00" style="background-color:#F66F00; border-radius:8px;">
+            <a href="mailto:{{email}}"  class="sl-text-white" style="display:inline-block; padding:14px 28px; font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; font-size:15px; font-weight:700; color:#FFFFFF; text-decoration:none;">Reply to {{name}}</a>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>

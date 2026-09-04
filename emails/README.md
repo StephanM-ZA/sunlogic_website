@@ -1,54 +1,59 @@
-# Contact-form email templates
+# Lead email templates
 
-Source-of-truth HTML for the two emails the "Sunlogic — Leads Relay" n8n
-workflow sends on a **contact form** submission (not the calculator — that
-flow's visitor-report email is separate and lives only in the n8n node
-today). Kept here so the design has a reviewable home in the repo; n8n does
-not read these files directly — each is pasted into the matching Send
-Email node's HTML field, so **edit here first, then copy into n8n and
-re-publish**, or the two will drift.
+**These are the only copies.** The Worker imports them at build time and
+renders them; n8n holds no templates and never did after 2026-09-04. That is
+deliberate — two senders meant two places for email HTML to live, and they
+would have drifted.
 
-- `sales-notification.html` — to `sales@sunlogic.co.za`, all submitted
-  fields, sent from the "Notify Sales — Contact" node.
-- `client-confirmation.html` — to the visitor, confirms what they
-  submitted and what happens next, sent from a new "Confirm Receipt —
-  Contact" node (chained after "Notify Sales — Contact").
+## Structure
 
-## Using in n8n
+| File | What it is |
+|---|---|
+| `_layout.html` | The chrome: preheader, navy header, logo, orange rule, footer. Slots: `{{preheader}}`, `{{BODY}}`, `{{footnote}}` |
+| `body-offer-notification.html` | The teaser. Division and date, plus the Accept button |
+| `body-assignment-full.html` | Every field, sent to whoever accepted |
+| `body-offer-expired.html` | "24 hours has passed", to the director who lapsed |
+| `body-unclaimed-alert.html` | Repeating alert to both, after two timeouts |
+| `body-daily-digest.html` | The morning summary |
+| `client-confirmation.html` | To the visitor. Still sent by n8n, unchanged |
 
-Both files use n8n expression syntax (`{{ $json.name }}`, etc.) directly in
-the HTML, matching the fields `Extract Body` normalizes from the webhook
-payload: `name`, `email`, `phone`, `suburb`, `need`, `property-type`,
-`message`.
+`sales-notification.html` was retired: `body-assignment-full.html` is the same
+content, re-addressed to the accepter instead of `sales@`.
 
-1. Open the file, copy its full contents.
-2. In the target Send Email node, set **Email Format** to `HTML`.
-3. Paste into the **HTML** field, then prefix the pasted content with `=`
-   (n8n's marker for "this field is an expression") if the editor doesn't
-   already switch to expression mode on its own — check the `fx` icon
-   appears active.
-4. Save, re-publish the workflow.
+## The rule that matters
+
+**Nothing identifying may appear in `_layout.html` or in any body except
+`body-assignment-full.html`.** The whole point of the claim step is that a
+director sees only the division before deciding. The preheader is part of this
+— it is the preview line in the inbox list, so a name there leaks before the
+mail is even opened. That is exactly what it used to do.
+
+Check before committing any change here:
+
+```bash
+grep -nE '\{\{ *(name|email|phone|suburb|message|property_type)' \
+  emails/_layout.html emails/body-offer-*.html emails/body-unclaimed-*.html emails/body-daily-*.html
+```
+
+Expected: no output.
+
+## Placeholders
+
+`{{name}}` style, substituted by `workers/leads-relay/src/mailer.mjs`. The
+pattern allows digits (`{{arrived_24h}}`) — a pattern without them leaves
+those in the sent mail as literal text.
+
+These are **not** n8n expressions any more. `{{ $json.x }}` will not render.
+
+## Sender
+
+`leads@send.sunlogic.co.za`, via Resend. The subdomain is deliberate:
+`sunlogic.co.za`'s own SPF, DKIM and reputation are untouched, and mail to
+`@sunlogic.co.za` still goes to Xneelo. Reply-To is the director the lead
+belongs to, so replies thread to the person who owns it.
 
 ## Logo
 
-Both templates embed the Sunlogic wordmark as an inline base64 `<img>` —
-`assets/logo-email.png` is the same file, kept here for reference and for
-regenerating the base64 if the logo ever changes. It's a cropped, resized
-PNG rendered from `site-daylight/images/sl_logo_white.svg` (the
-dark-background variant, matching the emails' navy header) via
-`rsvg-convert`.
-
-Inline base64 was used instead of a hosted URL because
-`sunlogic.co.za` isn't live yet (still on the old WordPress site) — there
-was no public URL to point at. **Once the new site is live, consider
-switching both templates to `<img src="https://sunlogic.co.za/images/...">`
-instead** — it's lighter (the base64 payload adds ~66KB to every email)
-and easier to update without touching the email HTML.
-
-## Design
-
-Colors, type, and copy voice are pulled directly from
-`site-daylight/shared/sunlogic.css` and the site's own contact-page copy —
-see the design tokens there (`--color-orange`, `--color-navy`, etc.) before
-changing anything here, so the emails don't drift from the live site's
-brand.
+Inline base64 in `_layout.html`; `assets/logo-email.png` is the same file kept
+for regenerating it. Now that the sites are live this could become a hosted
+URL and save ~6KB per email — not done yet.

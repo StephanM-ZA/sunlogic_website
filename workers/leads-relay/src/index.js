@@ -2,6 +2,8 @@ import {
   normaliseDivision, nextAssignee, newToken, expiryFrom, sqliteNow, OTHER,
 } from './logic.mjs';
 import { handleClaimGet, handleClaimPost } from './claim.mjs';
+import { compose, recipients, send } from './mailer.mjs';
+import { divisionLabel } from './logic.mjs';
 
 /* Any Sunlogic host over https, rather than a list.
    The list this replaces held sunlogic.co.za and www.sunlogic.co.za — correct
@@ -250,13 +252,50 @@ async function alertUnclaimed(env, onlyLeadId) {
    replaces the body with the Resend call and keeps n8n as the fallback;
    until then everything goes through the existing relay. */
 async function notify(env, leadId, event, assignee, token) {
-  const lead = await env.DB.prepare('SELECT type, payload_json, division FROM leads WHERE id=?')
+  const lead = await env.DB.prepare('SELECT type, payload_json, division, created_at FROM leads WHERE id=?')
     .bind(leadId).first();
   if (!lead) return false;
-  return deliverToN8n(
-    env, leadId, lead.type, JSON.parse(lead.payload_json),
-    { division: lead.division, assignee, token }, event,
-  );
+  const payload = JSON.parse(lead.payload_json);
+  const label = divisionLabel(lead.division);
+
+  const SUBJECTS = {
+    offer: 'New ' + label + ' enquiry — accept to take it',
+    accepted: label + ' enquiry — the details',
+    expired: label + ' enquiry — 24 hours passed, reassigned',
+    unclaimed: label + ' enquiry still unclaimed',
+  };
+
+  /* The teaser deliberately receives ONLY these. Passing the whole payload
+     and trusting the template not to print it would make the leak one typo
+     away; an offer template cannot render a name it was never given. */
+  const safe = {
+    divisionLabel: label,
+    receivedOn: String(lead.created_at || '').slice(0, 10),
+    claimUrl: token ? claimUrl(env, token) : '',
+    preheader: SUBJECTS[event] || 'Sunlogic',
+    footnote: 'Sunlogic lead system &middot; sunlogic.co.za',
+  };
+
+  const values = event === 'accepted'
+    ? { ...safe, ...payload, property_type: payload['property-type'] || '', need: payload.need || label }
+    : safe;
+
+  const result = await send(env, {
+    to: recipients(assignee),
+    replyTo: assignee === 'both' ? undefined : recipients(assignee)[0],
+    subject: SUBJECTS[event] || 'Sunlogic enquiry',
+    html: compose(event, values),
+    leadId,
+    event,
+    extra: { division: lead.division, assignee, status: event },
+  });
+
+  if (!result.ok) {
+    await env.DB.prepare(
+      "UPDATE leads SET last_error=?, last_attempt_at=datetime('now') WHERE id=?"
+    ).bind(('send failed: ' + result.why).slice(0, 400), leadId).run();
+  }
+  return result.ok;
 }
 
 /* ---- The daily digest --------------------------------------------------

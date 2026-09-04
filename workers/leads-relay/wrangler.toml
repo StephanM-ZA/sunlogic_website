@@ -19,3 +19,12 @@ database_id = "3a7d8834-4e84-4fa0-9377-f2b3da573be6"
 # 0 5 UTC is 07:00 in Cape Town — the digest, every morning, whether or not
 # anything is wrong. See sendDailyDigest.
 crons = ["*/5 * * * *", "0 5 * * *"]
+
+# The email templates are imported as text and bundled into the Worker, so
+# there is exactly one copy of each and it lives in emails/ where it can be
+# reviewed. Workers cannot read files at runtime; without this rule the
+# imports in src/mailer.mjs fail at build.
+[[rules]]
+type = "Text"
+globs = ["**/*.html"]
+fallthrough = true
