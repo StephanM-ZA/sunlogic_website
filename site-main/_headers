@@ -11,14 +11,23 @@
 # cannot be cached at all. Everything here follows from which of those a
 # given path is.
 
-# --- HTML: never cached ------------------------------------------------
-# A page's URL does not change when its content does, so a cached copy is a
-# stale copy with no way to find out. must-revalidate makes the browser ask
-# every time; the answer is usually a 304 with no body, which costs a round
-# trip and nothing else. This is also what keeps the ?v= scheme below
-# honest: the page carrying the new version number has to arrive first.
-/*
-  Cache-Control: public, max-age=0, must-revalidate
+# --- HTML is deliberately NOT listed here -------------------------------
+# There is no /* rule, and that is not an omission.
+#
+# Cloudflare Pages applies EVERY matching rule cumulatively — it is not
+# most-specific-wins. A /* catch-all therefore appends its header to every
+# response as well as the specific one, which produced this on the live
+# site:
+#
+#     /sitemap.xml -> public, max-age=0, must-revalidate, public, max-age=3600
+#
+# Browsers take the first max-age, so the intended 3600 was dead on arrival
+# and the font and image rules had picked up a stray must-revalidate.
+#
+# Pages already serves HTML as `public, max-age=0, must-revalidate` by
+# default, which is exactly what is wanted: a page's URL does not change
+# when its content does, so a cached page is a stale page with no way to
+# find out. Restating that default only breaks everything below it.
 
 # --- Fonts: a year, immutable ------------------------------------------
 # Subset woff2 files. The name encodes the family, weight and subset, so a
