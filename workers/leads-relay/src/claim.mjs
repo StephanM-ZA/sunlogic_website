@@ -125,13 +125,38 @@ export async function handleClaimGet(env, token) {
 
   const label = divisionLabel(offer.division);
   const when = formatSast(offer.created_at);
+
+  /* This page and the accepted page are deliberately the SAME page, with one
+     word different.
+     ------------------------------------------------------------------
+     The first attempt rendered "Accept this enquiry?" with a button, then
+     submitted a form — so the reader saw one page, a flash, and a different
+     page. Hiding the button helped and did not fix it, because the form
+     submit is a full navigation: the browser tears the document down and
+     paints a new one.
+     So there is no navigation. fetch() POSTs in place and swaps the
+     response in, and because the GET page already reads "Accepting…" under
+     the same eyebrow, the only visible change is the heading. Someone who
+     clicked a button in an email sees a page settle, not two pages fight.
+     <noscript> still gets a real form, because without JavaScript there is
+     no fetch and the button is the only way through. */
   return page(
     `<p class="e">${label} enquiry</p>` +
-    `<h1>Accept this enquiry?</h1>` +
-    `<p>Received ${when}. Accepting sends you the full details and assigns it to you.</p>` +
-    `<form method="POST" id="f"><button type="submit">Accept this enquiry</button></form>` +
-    `<script>document.getElementById('f').submit()</script>` +
-    `<noscript><p>Press the button above to accept.</p></noscript>`
+    `<h1 id="h">Accepting…</h1>` +
+    `<p id="p">Received ${when}.</p>` +
+    `<form method="POST" id="f" style="display:none">` +
+    `<button type="submit">Accept this enquiry</button></form>` +
+    `<script>
+fetch(location.href,{method:'POST',headers:{'X-Requested-With':'fetch'}})
+  .then(function(r){return r.text()})
+  .then(function(h){document.open();document.write(h);document.close()})
+  .catch(function(){
+    document.getElementById('h').textContent='Could not accept';
+    document.getElementById('p').textContent='Check your connection and try the link again.';
+    document.getElementById('f').style.display='block';
+  });
+</script>` +
+    `<noscript><style>#f{display:block!important}#h:after{content:" — press the button"}</style></noscript>`
   );
 }
 

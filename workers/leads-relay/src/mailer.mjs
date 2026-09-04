@@ -128,7 +128,15 @@ async function sendViaN8n(env, { to, replyTo, subject, html, leadId, event, extr
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-Relay-Secret': env.RELAY_SECRET },
       body: JSON.stringify({
-        event, leadId, to, replyTo, subject, html,
+        event,
+        /* Qualified by environment, because staging and production have
+           SEPARATE databases with independent id sequences and write to the
+           SAME sheet, matched on Lead ID. Staging lead 21 silently
+           overwrote production lead 21's row — the audit log showed a test
+           lead's state for a real enquiry, and looked entirely normal doing
+           it. A prefix makes a collision impossible rather than unlikely. */
+        leadId: (env.ENV_LABEL ? env.ENV_LABEL + '-' : '') + leadId,
+        to, replyTo, subject, html,
         /* n8n branches on this: always write the sheet row, send only when
            asked. Defaults true so an older workflow keeps behaving. */
         needsSend: needsSend !== false,

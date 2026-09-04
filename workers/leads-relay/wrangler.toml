@@ -45,6 +45,9 @@ name = "sunlogic-leads-relay-staging"
 
 [env.staging.vars]
 OFFER_TTL_MINUTES = "2"
+# Prefixes Lead ID in the sheet so staging can never overwrite a real
+# lead's row. Production deliberately has no label.
+ENV_LABEL = "staging"
 # Staging delivers everything here, so a test run never reaches Craig.
 # Production deliberately does not set this — see mailer.mjs.
 MAIL_REDIRECT_TO = "smarais.za@gmail.com"
