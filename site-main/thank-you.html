@@ -44,6 +44,9 @@
         <dl-roll item-class="sl-btn sl-btn--emphasis" items='[{"text":"+27 (82) 655 5371","href":"tel:+27826555371","icon":"phone"},{"text":"+27 (82) 443 7799","href":"tel:+27824437799","icon":"phone"}]'></dl-roll>
         <dl-button variant="outline" href="index.html">Back to the Site</dl-button>
       </dl-actions>
+      <!-- Returns the visitor to the page they enquired from. Cancels on
+           any interaction — see DlReturn in shared/components.js. -->
+      <dl-return seconds="5" href="index.html"></dl-return>
     </dl-stack>
   </dl-reveal>
 </dl-section>

@@ -761,6 +761,86 @@ class DlDock extends SLElement {
 }
 customElements.define('dl-dock', DlDock);
 
+/* --- Return timer — the thank-you page sends you back --------
+   Counts down and returns the visitor to where they came from. The
+   wording and the five seconds match the claim page's closing countdown,
+   so the two automated "we are done here" moments on this estate behave
+   the same way.
+
+   Back, not home: the form submit was a normal navigation
+   (forms.js sets location.href), so the previous entry is the page they
+   were reading when they decided to get in touch — the contact page, or
+   whichever page they opened the enquiry modal from. Sending them to the
+   home page instead would be a worse guess than the one the browser
+   already holds. It only does that when history cannot answer: a
+   bookmarked or directly-opened thank-you page has nowhere to go back to,
+   and following its history would take them off the site entirely.
+
+   ANY interaction cancels it, permanently.
+   ------------------------------------------------------------------
+   This page continues below the fold — three steps, and articles worth
+   reading. Navigating away from someone who has started reading is
+   hostile, and an unstoppable timed redirect fails WCAG 2.2.1 outright.
+   So scrolling cancels it, a keypress cancels it, a click cancels it, and
+   there is a button that says so in words. The countdown is for the
+   person who submitted the form and is now looking at a page they did not
+   ask for; it gets out of the way of anyone doing anything else. */
+class DlReturn extends SLElement {
+  render() {
+    const secs = Math.max(1, parseInt(this.getAttribute('seconds'), 10) || 5);
+    const fallback = SL_ATTR(this, 'href', 'index.html');
+    this.innerHTML =
+      '<div class="sl-return">' +
+      '<p class="sl-return__text" id="sl-return-text" role="status" aria-live="polite">' +
+      'Taking you back in ' + secs + ' seconds</p>' +
+      '<button type="button" class="sl-return__stay">Stay on this page</button>' +
+      '</div>';
+
+    const text = this.querySelector('#sl-return-text');
+    const stay = this.querySelector('.sl-return__stay');
+    let left = secs;
+    let live = true;
+
+    const stop = (spoken) => {
+      if (!live) return;
+      live = false;
+      clearInterval(timer);
+      this.querySelector('.sl-return').innerHTML =
+        '<p class="sl-return__text">' + (spoken || 'Staying here. Take your time.') + '</p>';
+    };
+
+    const goBack = () => {
+      /* Only a same-origin previous page is ours to return to. Without
+         this a directly-opened thank-you page would send the visitor back
+         to wherever they came from — a search engine, or another site. */
+      let sameOrigin = false;
+      try {
+        sameOrigin = !!document.referrer &&
+          new URL(document.referrer).origin === window.location.origin;
+      } catch (e) { sameOrigin = false; }
+      if (sameOrigin && window.history.length > 1) window.history.back();
+      else window.location.href = fallback;
+    };
+
+    const timer = setInterval(() => {
+      left -= 1;
+      if (left > 0) {
+        text.textContent = 'Taking you back in ' + left + ' second' + (left === 1 ? '' : 's');
+        return;
+      }
+      clearInterval(timer);
+      if (live) goBack();
+    }, 1000);
+
+    stay.addEventListener('click', () => stop());
+    /* Reading counts as interacting. A scroll is the clearest signal that
+       somebody wants the rest of the page. */
+    ['scroll', 'keydown', 'wheel', 'touchstart'].forEach((ev) =>
+      window.addEventListener(ev, () => stop(), { once: true, passive: true }));
+  }
+}
+customElements.define('dl-return', DlReturn);
+
 /* Back-to-top: appears once a quarter of the page has gone past.
    ------------------------------------------------------------------
    A percentage rather than a pixel threshold, because these pages differ

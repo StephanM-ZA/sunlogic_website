@@ -934,6 +934,26 @@ body:has(.sl-modal[open]) .sl-dock { display: none; }
 .sl-consent__btn--yes:hover { background: var(--color-orange-text); border-color: var(--color-orange-text); }
 .sl-consent-open .sl-dock, .sl-consent-open .sl-totop { display: none; }
 
+/* Return timer on the thank-you page. Quiet by design: it is a notice,
+   not a call to action, and the emphasis on that page belongs to the phone
+   number. The cancel is a real button at the 44px floor, because opting
+   out of a timed redirect must not be harder than being redirected. */
+.sl-return { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 24px; }
+.sl-return__text {
+  margin: 0; font-family: var(--font-mono); font-size: 13px;
+  letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-secondary);
+}
+.sl-return__stay {
+  min-height: 44px; padding: 0 16px;
+  font-family: var(--font-mono); font-size: 13px; font-weight: 600;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  background: transparent; color: var(--text-primary);
+  border: 1px solid var(--border-warm); border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color var(--dur-hover) ease-out;
+}
+.sl-return__stay:hover { border-color: var(--color-orange); }
+
 .sl-footer__socials { display: flex; gap: 4px; margin-top: 12px; }
 .sl-footer__social {
   width: 44px; height: 44px;
