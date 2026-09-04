@@ -832,6 +832,48 @@ A `workers.dev` URL in an email to a director reads as phishing and may be filte
 
 ---
 
+## Test results so far — against deployed staging, real emails
+
+| # | Test | Result |
+|---|---|---|
+| 1 | Submit → offer to one director | ✅ Resend carried it, clock started |
+| 2 | Accept → full details | ✅ `claimed_by` set, mail sent |
+| 3 | Lapse → expiry notice + reassign to the other | ✅ r1 expired, r2 to the other director |
+| 4 | Second lapse → both revived and alerted | running |
+| 5 | Accept from a revived link | pending 4 |
+| 6 | Accept twice | ✅ "Someone got there first" |
+| 7 | Scanner GETs the link | ✅ state unchanged — **the design holds** |
+| 8 | Two submissions at once | ✅ after a real bug was fixed — see below |
+| 9 | Relay down → clock does not start | ✅ offers sat `pending_send`, no expiry set |
+| 10 | Real mailbox, not spam | blocked — Xneelo receiving was down |
+
+### Two bugs these found that code review had not
+
+**The rotation raced.** Two concurrent submissions both went to craig. The
+pointer was read, then written — and two requests arriving together both read
+the stale value. Every local test passed throughout, because the local
+emulator serialises requests, so the race cannot occur there. Fixed by making
+the database flip and return the value in one statement. Four concurrent
+submissions now split two each.
+
+**The fallback was dead.** n8n answered 403 to every call. The entire
+justification for "API primary, n8n fallback" had never carried a single
+message, and it would have been discovered during a Resend outage — the one
+moment it has to work. Diagnosed by making the Worker report n8n's own words
+("Authorization data is wrong!") rather than a status code, then resolved by
+rotating the shared secret to a known value in all three places.
+
+Neither was visible in the code. Both needed real infrastructure to fail
+against, which is the argument for the staging environment existing.
+
+### Production
+
+One clearly-marked test row, `lead#12`, created to confirm production still
+reached n8n after the secret rotation. It did. That row and its sheet entry
+need deleting.
+
+---
+
 ## Task 11: Staging run — the ten tests
 
 `OFFER_TTL_MINUTES=2` so the timing paths are exercisable in one sitting. Every one of these is from the spec.
