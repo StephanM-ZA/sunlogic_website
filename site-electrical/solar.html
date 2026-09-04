@@ -25,7 +25,7 @@
 <link rel="preload" href="shared/fonts/JetBrainsMono-700-latin.woff2" as="font" type="font/woff2" crossorigin/>
 <link rel="stylesheet" href="shared/sunlogic.css?v=34"/>
 <script src="shared/icons.js?v=2" defer></script>
-<script src="shared/components.js?v=39" defer></script>
+<script src="shared/components.js?v=40" defer></script>
 <script src="shared/sunlogic-check.js?v=5" defer></script>
 <script src="plugins/calculator/assumptions.js?v=5"></script>
 <script src="plugins/calculator/calculator-math.js?v=3"></script>
@@ -136,7 +136,7 @@
     <div style="max-width:600px;margin-inline:auto">
       <dl-card id="calculator-home" tone="white" heading="What Would Solar Cost at Your House?"
         body="Answer a few questions about your home and your bill.">
-        <plugin-calculator mode="residential" webhook="https://sunlogic-leads-relay.smarais-za.workers.dev/leads/calculator"></plugin-calculator>
+        <plugin-calculator mode="residential" webhook="https://leads.sunlogic.co.za/leads/calculator"></plugin-calculator>
       </dl-card>
     </div>
   </dl-reveal>
@@ -194,7 +194,7 @@
     <dl-reveal>
       <dl-card id="calculator-business" tone="white" heading="What Could Solar Do For Your Business?"
         body="Tell us roughly what you spend on electricity a month.">
-        <plugin-calculator mode="sme" webhook="https://sunlogic-leads-relay.smarais-za.workers.dev/leads/calculator"></plugin-calculator>
+        <plugin-calculator mode="sme" webhook="https://leads.sunlogic.co.za/leads/calculator"></plugin-calculator>
       </dl-card>
     </dl-reveal>
   </dl-grid>

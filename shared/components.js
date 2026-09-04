@@ -416,7 +416,7 @@ customElements.define('dl-field', DlField);
    NOTE: contact.html still has its own copy of this form inline. That
    is one lead form defined twice, which is one too many — that page
    should render <dl-contact-form> when it is next worked on. */
-const SL_CONTACT_WEBHOOK = 'https://sunlogic-leads-relay.smarais-za.workers.dev/leads/contact';
+const SL_CONTACT_WEBHOOK = 'https://leads.sunlogic.co.za/leads/contact';
 
 class DlContactForm extends SLElement {
   render() {

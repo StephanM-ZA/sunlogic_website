@@ -6,7 +6,7 @@ compatibility_date = "2026-08-31"
 # 1440 = 24 hours. Set to 2 for a staging run of the timing paths; putting
 # it back is the last step of that run.
 OFFER_TTL_MINUTES = "1440"
-CLAIM_BASE_URL = "https://sunlogic-leads-relay.smarais-za.workers.dev"
+CLAIM_BASE_URL = "https://leads.sunlogic.co.za"
 N8N_WEBHOOK_URL = "https://n8n.digitaloperations.co.za/webhook/sunlogic-leads"
 
 [[d1_databases]]
