@@ -211,22 +211,43 @@ async function main() {
 
   const findings = [];
   let checks = 0;
-  try {
-    for (const p of pages) {
-      for (const width of widths) {
-        const page = await browser.newPage({ viewport: { width, height: 900 } });
-        try {
-          await page.goto(server.urlFor(p.url), { waitUntil: 'load' });
-          await page.addStyleTag({ content: '*,*::before,*::after{transition:none !important;animation:none !important}' });
-          await page.waitForTimeout(120);
-          const found = await page.evaluate(auditInPage);
-          checks++;
-          for (const f of found) findings.push(Object.assign({ page: p.url, width }, f));
-        } finally {
-          await page.close();
-        }
+
+  /* Every combination is independent, so they run in a small pool rather
+     than one after another. Sequentially this was 113s on top of the
+     conformance gate's 85s, and it runs once per Pages project plus once in
+     Actions — enough added wall-clock per push to make someone want to turn
+     it off, which is the real failure mode for a check like this. The pool
+     keeps the full breakpoint coverage and spends the time in parallel.
+
+     Six is deliberate: each page is a real browser tab rendering photographs,
+     and past roughly this the builder starts swapping and the wall-clock
+     stops improving. */
+  const queue = [];
+  for (const p of pages) for (const width of widths) queue.push({ p, width });
+
+  const CONCURRENCY = 6;
+  let cursor = 0;
+
+  async function worker() {
+    for (;;) {
+      const job = queue[cursor++];
+      if (!job) return;
+      const page = await browser.newPage({ viewport: { width: job.width, height: 900 } });
+      try {
+        await page.goto(server.urlFor(job.p.url), { waitUntil: 'load' });
+        await page.addStyleTag({ content: '*,*::before,*::after{transition:none !important;animation:none !important}' });
+        await page.waitForTimeout(120);
+        const found = await page.evaluate(auditInPage);
+        checks++;
+        for (const f of found) findings.push(Object.assign({ page: job.p.url, width: job.width }, f));
+      } finally {
+        await page.close();
       }
     }
+  }
+
+  try {
+    await Promise.all(Array.from({ length: CONCURRENCY }, worker));
   } finally {
     await browser.close();
     await server.close();

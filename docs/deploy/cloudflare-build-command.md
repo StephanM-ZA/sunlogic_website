@@ -10,12 +10,41 @@ behaviour: a violation does not publish.
 
 | Project | Build command | Output |
 |---|---|---|
-| `sunlogic-energy` | `npx --no-install playwright install chromium && npm run build && npm test && npm run conformance && npm run build:energy` | `dist/energy` |
+| `sunlogic-energy` | `npx --no-install playwright install chromium && npm run build && npm test && npm run conformance && npm run sweep && npm run build:energy` | `dist/energy` |
 | `sunlogic-electrical` | same, ending `npm run build:electrical` | `dist/electrical` |
 | `sunlogic-main` | same, ending `npm run build:main` | `dist/main` |
 
 Set on all three on 2026-09-03. Each one's first gated build passed: 28 tests,
 34/34 pages at 412x823 and 1440x900, 0 fails 0 warns.
+
+`npm run sweep` was added to all three on 2026-09-04, by the API method at the
+foot of this file.
+
+## The two halves of the gate
+
+They answer different questions and neither substitutes for the other.
+
+| Step | Question | Catches |
+|---|---|---|
+| `npm run conformance` | Is this in the design system? | off-palette colour, a third typeface, a shadow, Title-Cased prose, two adjacent bands sharing a ground, a fifth nav link |
+| `npm run sweep` | Does the page hold together? | sideways scroll, an element past the viewport, boxes drawn over each other, text clipped by a fixed height, a collapsed child |
+
+A heading can be perfectly on-palette while sitting on top of the logo, which
+is why conformance passing is not evidence the page is fine. The sweep was
+written on 2026-09-04 and immediately found a horizontal scroll of ~250px on
+both division home pages below 768px, and another on `legal.html` at 320 and
+360 — all three had been shipping for weeks with the conformance gate green.
+
+It opens every page at every breakpoint the stylesheet itself declares, on both
+sides of each boundary, so a new media query is swept the day it is added and
+nobody has to remember to add it here.
+
+### Cost
+
+About 28s on top of the existing gate, for 450 page/width combinations. It runs
+six pages concurrently for that reason — sequentially the same sweep took 113s,
+and this runs once per Pages project plus once in Actions. A check slow enough
+to resent is a check that gets switched off.
 
 ## Rollback
 
@@ -28,6 +57,9 @@ else needs undoing.
 | `sunlogic-energy` | `npm run build:energy` |
 | `sunlogic-electrical` | `npm run build:electrical` |
 | `sunlogic-main` | `npm run build:main` |
+
+To drop only the layout sweep and keep the design gate, remove
+`&& npm run sweep` from the command and leave the rest alone.
 
 ## Where GitHub Actions fits now
 

@@ -18,6 +18,11 @@ on:
       - 'scripts/conformance.js'
       - 'scripts/site-pages.js'
       - 'scripts/lighthouse.js'
+      # The gate's own machinery. A change to the sweep or to the server both
+      # it and conformance run on alters what passes, so it has to be able to
+      # trigger the workflow that enforces it.
+      - 'scripts/layout-sweep.js'
+      - 'scripts/static-server.js'
       - 'test/**'
       - 'package.json'
       - 'package-lock.json'
@@ -68,6 +73,16 @@ jobs:
 
       - name: Design-system conformance
         run: npm run conformance
+
+      # The other half of the gate. Conformance answers "is this in the
+      # system?" — palette, type, case, band rhythm. It says nothing about
+      # whether the page holds together, and a heading can be perfectly
+      # on-palette while sitting on top of the logo. This opens every page at
+      # every breakpoint the stylesheet declares, both sides of each boundary,
+      # and fails on overflow, overlap, clipping or collapse. It found a
+      # horizontal scroll on two home pages that had been shipping for weeks.
+      - name: Layout sweep
+        run: npm run sweep
 
       - name: Lighthouse budgets
         run: node scripts/lighthouse.js
