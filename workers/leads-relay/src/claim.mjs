@@ -42,7 +42,21 @@ function page(inner) {
 
 /* Every non-claimable outcome says which one it is. "This did not work" with
    no reason turns a director into a support ticket. */
-function outcome(state) {
+/* `claimed` distinguishes the two ways an offer stops being claimable, which
+   look identical in the database and mean opposite things to the person
+   holding the link. An offer that timed out really did move to the other
+   director. An offer expired because someone accepted a sibling did not —
+   telling that person "it went to the other director" is both wrong and
+   confusing, since they ARE the other director. */
+function outcome(state, claimedBy) {
+  if (state === 'expired' && claimedBy) {
+    return page(`<p class="e">Already taken</p><h1>Someone got there first</h1>
+      <p>This enquiry has already been accepted. Nothing more to do.</p>`);
+  }
+  return outcomeByState(state);
+}
+
+function outcomeByState(state) {
   if (state === 'accepted') {
     return page(`<p class="e">Already taken</p><h1>Someone got there first</h1>
       <p>This enquiry has already been accepted. Nothing more to do.</p>`);
@@ -65,7 +79,7 @@ function outcome(state) {
 async function loadOffer(env, token) {
   return env.DB.prepare(
     'SELECT o.id, o.lead_id, o.assignee, o.round, o.state, o.expires_at, ' +
-    '       l.division, l.type, l.created_at ' +
+    '       l.division, l.type, l.created_at, l.claimed_by ' +
     'FROM offers o JOIN leads l ON l.id = o.lead_id WHERE o.token = ?'
   ).bind(token).first();
 }
@@ -73,12 +87,12 @@ async function loadOffer(env, token) {
 /* Read-only. This function must never write. */
 export async function handleClaimGet(env, token) {
   const offer = await loadOffer(env, token);
-  if (!offer) return outcome(null);
-  if (offer.state !== 'offered') return outcome(offer.state);
+  if (!offer) return outcome(null, null);
+  if (offer.state !== 'offered') return outcome(offer.state, offer.claimed_by);
   if (offer.expires_at && new Date(offer.expires_at.replace(' ', 'T') + 'Z') <= new Date()) {
     /* Past its expiry but the sweeper has not run yet — up to five minutes.
        Report it as expired rather than letting the POST fail confusingly. */
-    return outcome('expired');
+    return outcome('expired', offer.claimed_by);
   }
 
   const label = divisionLabel(offer.division);
@@ -109,7 +123,7 @@ export async function handleClaimPost(env, token, onAccepted) {
 
   if (res.meta.changes !== 1) {
     const offer = await loadOffer(env, token);
-    return outcome(offer ? offer.state : null);
+    return outcome(offer ? offer.state : null, offer ? offer.claimed_by : null);
   }
 
   const offer = await loadOffer(env, token);

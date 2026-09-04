@@ -266,14 +266,27 @@ async function alertUnclaimed(env, onlyLeadId) {
     "WHERE state='offered' AND expires_at IS NULL " +
     (onlyLeadId ? "AND lead_id=? " : "") +
     "GROUP BY lead_id";
-  const stmt = onlyLeadId
-    ? env.DB.prepare(sql).bind(onlyLeadId)
-    : env.DB.prepare(sql);
+  const stmt = onlyLeadId ? env.DB.prepare(sql).bind(onlyLeadId) : env.DB.prepare(sql);
   const { results } = await stmt.all();
 
   for (const row of results) {
     if (row.last && Date.parse(row.last.replace(' ', 'T') + 'Z') > Date.now() - 86400000) continue;
-    await notify(env, row.lead_id, 'unclaimed', 'both', null);
+
+    /* One email per director, each carrying THEIR OWN token.
+       ------------------------------------------------------------------
+       This was a single mail to both with no token, which rendered the
+       Accept button as href="" — a dead link in the one message whose
+       entire purpose is "both links are live, whoever clicks first gets
+       it". Caught by reading a sent email in the sheet; invisible from
+       the database, where the row looked completely normal. */
+    const live = await env.DB.prepare(
+      "SELECT assignee, token FROM offers WHERE lead_id=? AND state='offered'"
+    ).bind(row.lead_id).all();
+
+    for (const offer of live.results) {
+      await notify(env, row.lead_id, 'unclaimed', offer.assignee, offer.token);
+    }
+
     await env.DB.prepare(
       "UPDATE offers SET alerted_at=datetime('now') WHERE lead_id=? AND state='offered'"
     ).bind(row.lead_id).run();
