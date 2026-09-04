@@ -28,8 +28,43 @@ browser form
 The Worker never sends email. n8n does, on the iMac. `emails/*.html` are the
 reviewable source for the templates, pasted into n8n by hand.
 
-That division of labour stays: the Worker owns **state**, n8n owns **sending**.
-No new email vendor, no change to SMTP.
+## Sending: the iMac is not allowed to be a single point of failure
+
+That division of labour does **not** stay. Every notification in this design
+was going to be sent by n8n on the iMac, and the Worker's retry queue gives up
+after 20 attempts at a 5-minute cron — **100 minutes**. An iMac off overnight,
+over a weekend, or through a power cut means any lead arriving in that window
+is retried, marked `failed`, and never mentioned again. The row survives in
+D1; nobody is ever told. That is the exact failure this feature exists to
+prevent, one layer down.
+
+So sending moves:
+
+| | |
+|---|---|
+| **Primary** | The Worker sends directly through an HTTP email API. Cloudflare Workers cannot open an SMTP connection to Xneelo, so this must be an API — Resend or Postmark. Leads flow with the iMac unplugged. |
+| **Fallback** | If the API call fails, the Worker posts to n8n as it does today and n8n sends. |
+| **Logging** | n8n keeps writing the Google Sheet. A late sheet row costs nothing; a late email costs a lead. |
+| **Retries** | The ceiling rises from 20 attempts to cover 48 hours, so even both paths being down delivers late rather than never. |
+
+**One copy of every template.** Two senders is two places for email HTML to
+live, and they would drift — that is the obvious way this arrangement rots.
+The Worker owns the templates, imported from `emails/` at build time, and
+renders the final HTML itself. The n8n fallback is a dumb relay: it receives
+already-rendered HTML and a recipient, and sends it. n8n never contains a
+template again.
+
+### What this needs that does not exist yet
+
+- An account with an email API provider, and its key as a Worker secret
+  (`wrangler secret put EMAIL_API_KEY`, never committed).
+- **DNS on `sunlogic.co.za`: an SPF include and DKIM records for the new
+  sender.** This does not touch MX and does not change where mail is
+  *received* — Xneelo keeps that. It authorises a second sender for outbound.
+  Getting it wrong sends lead notifications to spam, so it is verified before
+  cutover, not after.
+- The current SPF is `v=spf1 mx a include:spf.host-h.net ~all` and gains one
+  include. Xneelo's own sending is unaffected.
 
 ## Decisions taken
 
@@ -239,7 +274,8 @@ write fails, the enquiry still flows and the row is rebuildable from D1.
 | `workers/leads-relay/schema.sql` | `offers`, `rotation`, two columns on `leads` |
 | `workers/leads-relay/src/index.js` | assignment on submit, `/claim/<token>` GET+POST, expiry sweep in the existing cron |
 | `emails/` | three new templates, one retired |
-| `n8n/sunlogic-leads-relay.json` | new branches per email kind; Sheets node Append -> Append or Update on Lead ID. Version-controlled, so this is edited in the repo and re-imported, not rebuilt by hand in the UI |
+| `workers/leads-relay/src/mailer.mjs` *(new)* | renders a template and sends via the email API, falling back to n8n |
+| `n8n/sunlogic-leads-relay.json` | becomes a relay: send the HTML it is given, and log to the Sheet. No templates, no per-email branches |
 | Google Sheet | six columns added to the existing "Sunlogic Leads" sheet. No new sheet, no new credential |
 | Worker webhook payload | include `leadId`, so the Sheet row can be found and updated |
 

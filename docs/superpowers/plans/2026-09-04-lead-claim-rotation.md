@@ -20,6 +20,7 @@
 - **No bare `npx`.** Use `npx --no-install`, or a path into `node_modules/.bin`.
 - **The n8n workflow runs on the iMac.** Editing it is an iMac change: it routes through the serverMonitor control plane and needs a `change-log.jsonl` entry.
 - **`OFFER_TTL_MINUTES`** defaults to `1440`. Never hard-code 24 hours.
+- **The Worker sends email; n8n is the fallback and the Sheet logger.** The iMac must not be able to stop a lead notification. Exactly one copy of each template exists, in `emails/`, rendered by the Worker.
 - Every Worker deploy is `npx --no-install wrangler deploy` from `workers/leads-relay/`, and is a **production** deploy of the live lead pipeline — the human decides when.
 
 ---
@@ -700,49 +701,87 @@ Counts for the last 24 hours: leads received, accepted, still unclaimed and for 
 
 ---
 
-## Task 8: Email templates
+## Task 8: Email templates and the mailer
+
+The Worker renders and sends. n8n is a fallback relay only. **One copy of
+every template**, in `emails/`, imported by the Worker at build time — the
+whole point of the fallback arrangement is defeated the moment a second copy
+of the HTML exists.
 
 **Files:**
 - Create: `emails/offer-notification.html`, `emails/assignment-full.html`, `emails/offer-expired.html`, `emails/unclaimed-alert.html`, `emails/daily-digest.html`
+- Create: `workers/leads-relay/src/mailer.mjs`
 - Modify: `emails/README.md`
 - Delete: `emails/sales-notification.html`
 
-- [ ] **Step 1: Copy `sales-notification.html` to `assignment-full.html`** and change only the addressing line. The field table is already right.
+- [ ] **Step 1: Set up the email provider**
 
-- [ ] **Step 2: Write `offer-notification.html`**
+Create the account, add `sunlogic.co.za` as a sending domain, and take the
+SPF include and DKIM records it gives you. **Do not deploy anything until
+those records are live and the provider reports the domain verified** — a
+notification that lands in spam is indistinguishable from one that was never
+sent.
 
-Same navy header, same tokens. Body is the division, the date, and the button. **Assert by reading it: no `{{ $json.name }}`, `.email`, `.phone`, `.suburb`, `.message` or `.property-type` anywhere in the file.**
+```bash
+npx --no-install wrangler secret put EMAIL_API_KEY
+```
 
-- [ ] **Step 3: Write the remaining three** in the same style.
+- [ ] **Step 2: Write the templates**
+
+Same navy header and tokens as the existing pair. They use `{{name}}`-style
+placeholders rendered by the Worker, **not** n8n expression syntax — n8n no
+longer interprets these.
+
+- [ ] **Step 3: Write `mailer.mjs`**
+
+`render(template, values)` does the substitution. `send({to, subject, html})`
+calls the API, and on any non-2xx or thrown error posts to n8n with the
+already-rendered HTML instead. Both outcomes are recorded so the digest can
+report which path was used.
 
 - [ ] **Step 4: Prove the teaser leaks nothing**
 
 ```bash
-grep -nE '\$json\.(name|email|phone|suburb|message|property)' emails/offer-notification.html emails/offer-expired.html emails/unclaimed-alert.html
+grep -nE '\{\{ *(name|email|phone|suburb|message|property)' emails/offer-notification.html emails/offer-expired.html emails/unclaimed-alert.html
 ```
 
-Expected: no output. Any hit is a data leak before acceptance.
+Expected: no output. Any hit is customer data leaving before anyone accepted.
 
-- [ ] **Step 5: Update `emails/README.md`** — five templates, which node sends which, and that `sales-notification.html` is retired.
+- [ ] **Step 5: Prove the fallback actually works**
 
-- [ ] **Step 6: Commit**
+Point `EMAIL_API_KEY` at a deliberately wrong value, submit a lead, and
+confirm the email still arrives via n8n and the path is recorded. A fallback
+that has never been exercised is not a fallback.
+
+- [ ] **Step 6: Raise the retry ceiling**
+
+`attempts < 20` covers 100 minutes. Change to cover 48 hours so both paths
+being down delivers late rather than never.
+
+- [ ] **Step 7: Update `emails/README.md`** — the Worker renders these now;
+n8n holds no templates.
+
+- [ ] **Step 8: Commit**
 
 ---
 
-## Task 9: n8n workflow
+## Task 9: n8n becomes a relay
 
-**iMac change.** Route through the serverMonitor control plane and append a `change-log.jsonl` entry.
+**iMac change.** Routes through the serverMonitor control plane and needs a
+`change-log.jsonl` entry.
 
 **Files:**
 - Modify: `n8n/sunlogic-leads-relay.json`, `docs/n8n-workflows.md`
 
-- [ ] **Step 1: Add a Switch on `event`** — `offer`, `accepted`, `expired`, `unclaimed`, `digest` — each to its own Send Email node with the matching template.
-- [ ] **Step 2: Point the offer/expired/unclaimed nodes at `{{ $json.assignee }}@sunlogic.co.za`**, and `accepted` at the accepter. Never `sales@` as a recipient.
-- [ ] **Step 3: Switch the Sheets node to Append or Update, matching `Lead ID`.**
-- [ ] **Step 4: Add the six columns** to the "Sunlogic Leads" sheet: `Lead ID`, `Assigned To`, `Accepted At`, `Reassigned To`, `Reassigned Accepted At`, `Status`.
-- [ ] **Step 5: Import, publish, confirm active.**
-- [ ] **Step 6: Log the change** in `serverMonitor/change-log.jsonl`.
-- [ ] **Step 7: Commit the JSON and the doc.**
+- [ ] **Step 1: Replace the per-email branches with one Send Email node** that
+  sends the `html`, `subject` and `to` it is given. No templates in n8n.
+- [ ] **Step 2: Switch the Sheets node to Append or Update, matching `Lead ID`.**
+- [ ] **Step 3: Add the six columns** to the "Sunlogic Leads" sheet: `Lead ID`,
+  `Assigned To`, `Accepted At`, `Reassigned To`, `Reassigned Accepted At`,
+  `Status`.
+- [ ] **Step 4: Import, publish, confirm active.**
+- [ ] **Step 5: Log the change** in `serverMonitor/change-log.jsonl`.
+- [ ] **Step 6: Commit the JSON and the doc.**
 
 ---
 
