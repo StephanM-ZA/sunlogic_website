@@ -2,7 +2,7 @@ import {
   normaliseDivision, nextAssignee, newToken, expiryFrom, sqliteNow, OTHER,
 } from './logic.mjs';
 import { handleClaimGet, handleClaimPost } from './claim.mjs';
-import { compose, recipients, send } from './mailer.mjs';
+import { compose, recipients, send, ADDRESS_OF } from './mailer.mjs';
 import { divisionLabel } from './logic.mjs';
 
 /* Any Sunlogic host over https, rather than a list.
@@ -74,14 +74,37 @@ async function insertLead(db, type, payload) {
    'offered', so a pending_send offer simply waits. */
 async function createOffer(env, leadId, round, forcedAssignee) {
   const token = newToken();
-  const cur = await env.DB.prepare('SELECT last_offered_to FROM rotation WHERE id = 1').first();
-  const assignee = forcedAssignee || nextAssignee(cur && cur.last_offered_to);
-  await env.DB.batch([
-    env.DB.prepare('UPDATE rotation SET last_offered_to = ? WHERE id = 1').bind(assignee),
-    env.DB.prepare(
-      "INSERT INTO offers (lead_id, assignee, round, token, state) VALUES (?, ?, ?, ?, 'pending_send')"
-    ).bind(leadId, assignee, round, token),
-  ]);
+  let assignee = forcedAssignee;
+
+  if (!assignee) {
+    /* The database decides, not this Worker.
+       ------------------------------------------------------------------
+       Reading the pointer and then writing it is two steps, and two
+       requests arriving together both read the same value and both write
+       the same answer — verified failing on real D1, where two concurrent
+       submissions both went to craig. Miniflare serialises requests, so a
+       local test passes and tells you nothing.
+
+       Flipping and returning in ONE statement makes the two updates
+       serialise against each other in SQLite: whichever lands second sees
+       the first one's write, so the two callers get different names. */
+    const row = await env.DB.prepare(
+      "UPDATE rotation SET last_offered_to = " +
+      "CASE WHEN last_offered_to = 'stephan' THEN 'craig' ELSE 'stephan' END " +
+      "WHERE id = 1 RETURNING last_offered_to"
+    ).first();
+    assignee = (row && row.last_offered_to) || 'stephan';
+  } else {
+    /* A forced assignee (the sweeper handing a lapsed lead to the other
+       director) still moves the pointer, so alternation stays by-offer. */
+    await env.DB.prepare('UPDATE rotation SET last_offered_to = ? WHERE id = 1')
+      .bind(assignee).run();
+  }
+
+  await env.DB.prepare(
+    "INSERT INTO offers (lead_id, assignee, round, token, state) VALUES (?, ?, ?, ?, 'pending_send')"
+  ).bind(leadId, assignee, round, token).run();
+
   return { assignee, token };
 }
 
@@ -171,7 +194,7 @@ async function handleLeadRoute(request, env, ctx, type) {
   const { leadId, division } = await insertLead(env.DB, type, body);
   const { assignee, token } = await createOffer(env, leadId, 1, null);
 
-  ctx.waitUntil(deliverToN8n(env, leadId, type, body, { division, assignee, token }));
+  ctx.waitUntil(notify(env, leadId, 'offer', assignee, token));
 
   return jsonResponse({ ok: true }, 200, origin);
 }
@@ -281,8 +304,8 @@ async function notify(env, leadId, event, assignee, token) {
     : safe;
 
   const result = await send(env, {
-    to: recipients(assignee),
-    replyTo: assignee === 'both' ? undefined : recipients(assignee)[0],
+    to: recipients(env, assignee),
+    replyTo: assignee === 'both' ? undefined : ADDRESS_OF[assignee],
     subject: SUBJECTS[event] || 'Sunlogic enquiry',
     html: compose(event, values),
     leadId,
@@ -290,12 +313,23 @@ async function notify(env, leadId, event, assignee, token) {
     extra: { division: lead.division, assignee, status: event },
   });
 
-  if (!result.ok) {
-    await env.DB.prepare(
-      "UPDATE leads SET last_error=?, last_attempt_at=datetime('now') WHERE id=?"
-    ).bind(('send failed: ' + result.why).slice(0, 400), leadId).run();
+  if (result.ok) {
+    /* The offer is the one event that moves the lead out of the queue and
+       starts the director's 24 hours. The others are notifications about a
+       lead whose state is already settled. */
+    if (event === 'offer') {
+      await env.DB.prepare(
+        "UPDATE leads SET status='sent', last_attempt_at=datetime('now') WHERE id=?"
+      ).bind(leadId).run();
+      if (token) await markOffered(env, token);
+    }
+    return true;
   }
-  return result.ok;
+
+  await env.DB.prepare(
+    "UPDATE leads SET attempts = attempts + 1, last_error = ?, last_attempt_at = datetime('now') WHERE id = ?"
+  ).bind(('send failed: ' + result.why).slice(0, 400), leadId).run();
+  return false;
 }
 
 /* ---- The daily digest --------------------------------------------------
@@ -369,8 +403,9 @@ async function retryPendingLeads(env) {
     const offer = await env.DB.prepare(
       "SELECT assignee, token FROM offers WHERE lead_id=? AND state='pending_send' ORDER BY id DESC LIMIT 1"
     ).bind(row.id).first();
-    const delivered = await deliverToN8n(env, row.id, row.type, payload,
-      offer ? { division: row.division, assignee: offer.assignee, token: offer.token } : null);
+    const delivered = offer
+      ? await notify(env, row.id, 'offer', offer.assignee, offer.token)
+      : false;
     if (!delivered) {
       const current = await env.DB
         .prepare('SELECT attempts FROM leads WHERE id = ?')
@@ -402,13 +437,7 @@ export default {
       if (request.method === 'GET') return handleClaimGet(env, token);
       if (request.method === 'POST') {
         return handleClaimPost(env, token, async (offer) => {
-          const lead = await env.DB.prepare('SELECT type, payload_json FROM leads WHERE id = ?')
-            .bind(offer.lead_id).first();
-          ctx.waitUntil(deliverToN8n(
-            env, offer.lead_id, lead.type, JSON.parse(lead.payload_json),
-            { division: offer.division, assignee: offer.assignee, token },
-            'accepted',
-          ));
+          ctx.waitUntil(notify(env, offer.lead_id, 'accepted', offer.assignee, null));
         });
       }
       return new Response('method not allowed', { status: 405 });

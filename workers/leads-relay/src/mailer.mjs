@@ -38,6 +38,15 @@ const ADDRESS = {
   craig: 'craig@sunlogic.co.za',
 };
 
+/* Every recipient collapses to this address when set. Staging uses it so a
+   test run cannot put automated mail in Craig's inbox, and it is the switch
+   to turn off at cutover — not a permanent feature. Production must never
+   carry it: with it set, only one director is ever told anything, and the
+   rotation would look like it was working while nobody else heard a word. */
+function redirect(env, list) {
+  return env.MAIL_REDIRECT_TO ? [env.MAIL_REDIRECT_TO] : list;
+}
+
 /* [a-zA-Z0-9_] and not [a-zA-Z_]: the digest's placeholders are named
    arrived_24h and accepted_24h. A pattern without digits leaves those two
    in the sent email as literal {{arrived_24h}}, which looks like a bug to
@@ -56,9 +65,15 @@ export function compose(event, values) {
 /* Recipients. 'both' is the unclaimed alert; everything else is one director.
    Reply-To is the director the lead belongs to, so a reply threads to the
    person who owns it rather than into the shared mailbox. */
-export function recipients(assignee) {
-  if (assignee === 'both') return [ADDRESS.stephan, ADDRESS.craig];
-  return ADDRESS[assignee] ? [ADDRESS[assignee]] : [ADDRESS.stephan, ADDRESS.craig];
+/* Reply-To always uses the real address, even when delivery is redirected —
+   otherwise a staging reply would go to the test mailbox. */
+export const ADDRESS_OF = ADDRESS;
+
+export function recipients(env, assignee) {
+  const list = assignee === 'both'
+    ? [ADDRESS.stephan, ADDRESS.craig]
+    : (ADDRESS[assignee] ? [ADDRESS[assignee]] : [ADDRESS.stephan, ADDRESS.craig]);
+  return redirect(env, list);
 }
 
 async function sendViaResend(env, { to, replyTo, subject, html }) {
