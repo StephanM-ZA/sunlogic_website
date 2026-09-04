@@ -199,6 +199,91 @@ function toExtensionless(text) {
     .replace(/(https:\/\/[a-z0-9.-]*sunlogic\.co\.za)\/([a-z0-9-]+)\.html/g, '$1/$2');
 }
 
+/* Absolute URLs point at whichever host the page was authored for, and every
+   page of all three sites was authored as sunlogic.co.za — they began as
+   copies of the single site. Left alone, energy.sunlogic.co.za/solar declares
+   <link rel="canonical" href="https://sunlogic.co.za/solar">, which is an
+   instruction to index a different host instead of itself; since the apex
+   cleanup that target is a 301 back to the page making the claim.
+
+   Fixed here rather than in the source for the same reason the extensionless
+   rewrite is: the source stays one readable set of pages, and a site added to
+   sites.config.js tomorrow gets correct canonicals without anyone editing 34
+   files. On the apex, domain IS the apex, so this is a no-op.
+
+   The logo is a second, smaller case. The JSON-LD company logo is written as
+   /images/sl_logo_main_blue.svg, which exists only on the apex — swapping the
+   host alone would turn it into a 404 on both division sites. Each site
+   declares its own lockup in sites.config.js, so use that. */
+const APEX_ORIGIN = 'https://sunlogic.co.za';
+
+function rewriteAbsoluteUrls(text, site) {
+  let out = text;
+  if (site.domain && site.domain !== APEX_ORIGIN) {
+    out = out.split(APEX_ORIGIN + '/').join(site.domain + '/');
+  }
+  if (site.logo && site.logo !== 'images/sl_logo_main_blue.svg') {
+    /* Leading slash on purpose: this must hit absolute URLs only. Relative
+       references are rendered from window.SL_SITE.logo and are already
+       per-site. */
+    out = out.split('/images/sl_logo_main_blue.svg').join('/' + site.logo);
+  }
+  return out;
+}
+
+function rewriteHost(dir, site) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      rewriteHost(full, site);
+    } else if (/\.(html|xml|txt|js|json)$/.test(entry.name)) {
+      const src = fs.readFileSync(full, 'utf8');
+      const out = rewriteAbsoluteUrls(src, site);
+      if (out !== src) fs.writeFileSync(full, out);
+    }
+  }
+}
+
+/* Every absolute URL on a site's own host must resolve to something that site
+   actually ships. This is the assertion the canonical bug needed and did not
+   have: a wrong host is invisible in a build log and only shows up months
+   later as pages missing from the index. Checked against the built tree, so a
+   page deleted during a content split fails the build that deletes it. */
+function verifyAbsoluteUrls(outDir, site) {
+  const origin = site.domain;
+  if (!origin) return [];
+  const broken = [];
+  const seen = new Set();
+
+  const resolves = (urlPath) => {
+    const clean = urlPath.split('#')[0].split('?')[0];
+    if (clean === '' || clean === '/') return fs.existsSync(path.join(outDir, 'index.html'));
+    const rel = clean.replace(/^\//, '');
+    return fs.existsSync(path.join(outDir, rel)) ||
+           fs.existsSync(path.join(outDir, rel + '.html'));
+  };
+
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) { walk(full); continue; }
+      if (!/\.(html|xml|txt|json)$/.test(entry.name)) continue;
+      const text = fs.readFileSync(full, 'utf8');
+      const re = new RegExp(origin.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(/[^"\'<>\\s)]*)?', 'g');
+      let m;
+      while ((m = re.exec(text)) !== null) {
+        const urlPath = m[1] || '/';
+        const key = urlPath;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        if (!resolves(urlPath)) broken.push(origin + urlPath);
+      }
+    }
+  };
+  walk(outDir);
+  return broken;
+}
+
 function rewriteToExtensionless(dir) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
@@ -249,9 +334,20 @@ async function buildSite(site, build) {
   copyRecursive(SHARED, path.join(out, 'shared'));
   const renameMap = await optimizeImages(out);
   rewriteImageReferences(out, renameMap);
+  /* Before the extensionless pass, so that pass sees the final hosts. */
+  rewriteHost(out, site);
   rewriteToExtensionless(out);
   stampBuildInfo(out, build, site);
   await walkAndMinify(out);
+
+  const broken = verifyAbsoluteUrls(out, site);
+  if (broken.length) {
+    throw new Error(
+      site.key + ': ' + broken.length + ' absolute URL(s) on its own host do not resolve ' +
+      'in ' + site.out + ':\n  ' + broken.join('\n  ') +
+      '\nA canonical or og:url pointing at a page this site does not ship is worse ' +
+      'than none — fix the reference or ship the page.');
+  }
 }
 
 /* Builds every site in sites.config.js, or just one if a key is passed:
