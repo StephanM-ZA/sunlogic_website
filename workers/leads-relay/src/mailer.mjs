@@ -78,6 +78,19 @@ export function recipients(env, assignee) {
   return redirect(env, list);
 }
 
+/* While mail is redirected, say so IN the email. A redirect is meant to be
+   temporary and is trivially forgotten; a banner on every message is the
+   reminder that cannot be ignored, and it deletes itself the moment the
+   variable comes off. */
+function redirectBanner(env, html) {
+  if (!env.MAIL_REDIRECT_TO) return html;
+  const bar = '<div style="background:#B85300;color:#fff;padding:10px 16px;' +
+    'font:600 13px/1.4 -apple-system,Helvetica,Arial,sans-serif;text-align:center;">' +
+    'TEST MODE — redirected to ' + env.MAIL_REDIRECT_TO +
+    '. The directors are not receiving their own mail.</div>';
+  return html.replace(/(<body[^>]*>)/i, '$1' + bar);
+}
+
 async function sendViaResend(env, { to, replyTo, subject, html }) {
   /* A deliberate way to exercise the fallback without destroying the real
      key. A fallback nobody has run is not a fallback, and the only honest
@@ -97,7 +110,7 @@ async function sendViaResend(env, { to, replyTo, subject, html }) {
         to,
         ...(replyTo ? { reply_to: replyTo } : {}),
         subject,
-        html,
+        html: redirectBanner(env, html),
       }),
     });
     if (res.ok) return { ok: true, via: 'resend' };

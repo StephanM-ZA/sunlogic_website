@@ -446,6 +446,30 @@ async function sendDailyDigest(env) {
     " (SELECT COUNT(*) FROM leads) AS total"
   ).first();
 
+  /* Per-director figures, 30 days.
+     ------------------------------------------------------------------
+     Offers alone look fair even when the work is not: strict alternation
+     by offer guarantees an even split of OFFERS, and says nothing about who
+     actually does the jobs. A director who lets offers lapse hands the
+     other one the work while the offer counts stay identical — 100 offers
+     each, 100 jobs to one person.
+     Both people believing they are right is how that becomes an argument,
+     so the digest reports both numbers side by side. Not to police anyone:
+     to make it a fact rather than a suspicion. */
+  const per = await env.DB.prepare(
+    "SELECT assignee, " +
+    " COUNT(*) AS offered, " +
+    " SUM(CASE WHEN state='accepted' THEN 1 ELSE 0 END) AS accepted, " +
+    " SUM(CASE WHEN state='expired' THEN 1 ELSE 0 END) AS lapsed " +
+    "FROM offers WHERE created_at >= datetime('now','-30 day') GROUP BY assignee"
+  ).all();
+  const byPerson = {};
+  for (const r of per.results) byPerson[r.assignee] = r;
+  const line = (who) => {
+    const r = byPerson[who] || { offered: 0, accepted: 0, lapsed: 0 };
+    return who + ': ' + r.accepted + ' accepted of ' + r.offered + ' offered (' + r.lapsed + ' lapsed)';
+  };
+
   /* The oldest thing nobody has taken. A count alone does not convey "this
      has been sitting for three days". */
   const oldest = await env.DB.prepare(
@@ -463,6 +487,15 @@ async function sendDailyDigest(env) {
     total_leads: row.total,
     oldest_open_lead: oldest ? oldest.lead_id : null,
     oldest_open_hours: oldest ? oldest.hours : null,
+    split_30d: line('stephan') + ' · ' + line('craig'),
+    /* Loud, and it removes itself: the line only exists while the variable
+       does. A redirect left on by accident means one director is told
+       everything while the rotation appears to work — this is the thing
+       that says so, every morning, until it is taken off. */
+    redirect_notice: env.MAIL_REDIRECT_TO
+      ? 'TEST MODE — all mail is being redirected to ' + env.MAIL_REDIRECT_TO +
+        '. Neither director is receiving their own notifications. Remove MAIL_REDIRECT_TO to end this.'
+      : '',
   };
 
   try {

@@ -7,7 +7,13 @@ compatibility_date = "2026-08-31"
 # it back is the last step of that run.
 OFFER_TTL_MINUTES = "1440"
 CLAIM_BASE_URL = "https://leads.sunlogic.co.za"
-N8N_WEBHOOK_URL = "https://n8n.digitaloperations.co.za/webhook/sunlogic-leads"
+# TEMPORARY — set 2026-09-04 while Xneelo mail is down, so the directors'
+# notifications are visible somewhere. REMOVE THIS once Xneelo is back.
+# While it is set, only this address is told anything and the rotation looks
+# like it is working when nobody else is hearing about a lead. Every email
+# carries a banner saying so, and the daily digest leads with it.
+MAIL_REDIRECT_TO = "smarais.za@gmail.com"
+N8N_WEBHOOK_URL = "https://hooks.digitaloperations.co.za/webhook/sunlogic-leads"
 
 [[d1_databases]]
 binding = "DB"
@@ -43,7 +49,7 @@ OFFER_TTL_MINUTES = "2"
 # Production deliberately does not set this — see mailer.mjs.
 MAIL_REDIRECT_TO = "smarais.za@gmail.com"
 CLAIM_BASE_URL = "https://sunlogic-leads-relay-staging.smarais-za.workers.dev"
-N8N_WEBHOOK_URL = "https://n8n.digitaloperations.co.za/webhook/sunlogic-leads"
+N8N_WEBHOOK_URL = "https://hooks.digitaloperations.co.za/webhook/sunlogic-leads"
 
 # One cron on staging, not two. The account is on the Workers Free plan,
 # which caps cron triggers at five ACROSS the account — production's two
