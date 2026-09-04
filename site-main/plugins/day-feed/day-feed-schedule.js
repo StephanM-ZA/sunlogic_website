@@ -64,13 +64,40 @@
     return pick(rand, list);
   }
 
-  function fillTokens(text, rand, pools) {
+  /* System size has to match the time the job was given.
+     ------------------------------------------------------------------
+     Sizes used to be drawn from the whole pool regardless of the job, so a
+     30 kW carport and an 8.2 kW rooftop could both come out of the same
+     "1 to 3 days" line. Nobody fits 30 kW in a day, and the panel is only
+     worth reading if the numbers on it are the kind of numbers the crews
+     actually work to.
+
+     Bands are kW thresholds rather than slices of the array, so they do not
+     silently change meaning when an entry is added to the pool or the list
+     is reordered. A job with no `size` draws from everything, which is right
+     for the office lines where the size is incidental to the task. An empty
+     band falls back to the whole pool: a mis-typed size should render a
+     plausible number, not nothing. */
+  const SIZE_BANDS = { small: [0, 7], mid: [7, 14], large: [14, Infinity] };
+
+  function sizedArrays(arrays, size) {
+    const band = SIZE_BANDS[size];
+    if (!band) return arrays;
+    const out = arrays.filter(function (a) {
+      const kw = parseFloat(a.panels);
+      return kw >= band[0] && kw < band[1];
+    });
+    return out.length ? out : arrays;
+  }
+
+  function fillTokens(text, rand, pools, size) {
     const seen = Object.create(null);
+    const arrays = sizedArrays(pools.arrays, size);
     return text.replace(/\{(\w+)\}/g, function (_, token) {
       if (token === 'suburb') return pickDistinct(rand, pools.suburbs, seen);
       if (token === 'municipality') return pickDistinct(rand, pools.municipalities, seen);
       if (token === 'board') return pickDistinct(rand, pools.boards, seen);
-      const a = pick(rand, pools.arrays);
+      const a = pick(rand, arrays);
       if (token === 'array') return a.panels + ' + ' + a.battery;
       if (token === 'panels') return a.panels;
       if (token === 'battery') return a.battery;
@@ -144,7 +171,13 @@
           dur: job.dur,
           allDay: job.dur === 'allday',
           span: span,
-          text: fillTokens(job.text, rand, pools),
+          /* Carried so composeDay can keep a weekday-only job off the
+             Saturday board. buildStarts already refuses to START one on a
+             Saturday; without this the flag was lost and a multi-day job
+             reappeared as a continuation on the very day it says it does
+             not run. */
+          weekend: job.weekend,
+          text: fillTokens(job.text, rand, pools, job.size),
         });
         placed++;
 
@@ -189,6 +222,12 @@
         if (free !== undefined && offset > free) return; /* crew was busy */
         if (job.span > 1 || job.allDay) freeFrom[job.crew] = offset - job.span;
         if (job.span <= offset) return; /* ran out before today */
+
+        /* A job that does not run weekends does not run this weekend
+           either, continuation or not. The crew stays committed to it —
+           freeFrom is already set above — so it simply is not on the
+           board today and picks up again on Monday. */
+        if (isSaturday(date) && job.weekend === false) return;
 
         const dayEnd = isSaturday(date) ? SAT_END : DAY_END;
         if (offset === 0) {

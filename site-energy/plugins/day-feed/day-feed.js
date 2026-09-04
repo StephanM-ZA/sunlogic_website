@@ -319,6 +319,14 @@
         this._mode = null;
       }
 
+      /* A working day can legitimately compose to nothing: on a Saturday
+         where every crew on shift is committed to weekday-only work that
+         started midweek, there is no board to show. Rare, but a bare panel
+         reads as broken rather than quiet, and this component's whole
+         stance is that it rests rather than inventing activity. So it
+         rests. */
+      if (!this._rows.length) return this._renderRest(now, day, hour, true);
+
       /* Three buckets, split on when a job ends rather than only when it
          starts: finished above, running now in the band, not yet started
          below. A two-hour inspection therefore stays in the band for two
@@ -480,15 +488,19 @@
       return 'tomorrow';
     }
 
-    _renderRest(now, day, hour) {
+    _renderRest(now, day, hour, quiet) {
       if (this._mode === 'rest') return this._paintClock(now);
       this._mode = 'rest';
       this._sig = null;
       const rest = this._pools.rest || {};
       /* Before the day starts is not the same as after it ends — the
          evening wording ("tools down", "tomorrow") is plainly wrong at
-         06:00, when the crews roll out within the hour. */
-      const template = day === 0
+         06:00, when the crews roll out within the hour. `quiet` is a third
+         case again: it is the middle of a working day and the crews are
+         simply all out on longer jobs, so neither wording fits. */
+      const template = quiet
+        ? (rest.quiet || rest.evening || '')
+        : day === 0
         ? (rest.sunday || rest.evening || '')
         : (hour < this._restUntil ? (rest.morning || rest.evening || '') : (rest.evening || ''));
       const text = template

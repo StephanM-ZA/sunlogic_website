@@ -1,9 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import {
   normaliseDivision, divisionLabel, nextAssignee, newToken,
   expiryFrom, sqliteNow, OTHER, estimateValues,
 } from '../src/logic.mjs';
+
+const REPO = fileURLToPath(new URL('../../../', import.meta.url));
 
 /* --- divisions ---------------------------------------------------------- */
 
@@ -11,7 +15,16 @@ test('current division names normalise to themselves', () => {
   assert.strictEqual(normaliseDivision('Energy', 'contact'), 'energy');
   assert.strictEqual(normaliseDivision('Electrical', 'contact'), 'electrical');
   assert.strictEqual(normaliseDivision('Smart Solutions', 'contact'), 'smart');
+  assert.strictEqual(normaliseDivision('Servicing', 'contact'), 'servicing');
   assert.strictEqual(normaliseDivision('Not sure yet', 'contact'), 'unsure');
+});
+
+test('servicing is a division of its own, not folded into a trade', () => {
+  // It must never resolve to energy or electrical: a director accepting a
+  // call-out on somebody else's installation needs to know that up front.
+  assert.strictEqual(normaliseDivision('Servicing', 'contact'), 'servicing');
+  assert.strictEqual(normaliseDivision('service', 'contact'), 'servicing');
+  assert.strictEqual(divisionLabel('servicing'), 'Servicing');
 });
 
 test('historic names still normalise — 11 live rows say these', () => {
@@ -40,14 +53,50 @@ test('labels are what a director actually reads', () => {
   assert.strictEqual(divisionLabel('energy'), 'Energy');
   assert.strictEqual(divisionLabel('electrical'), 'Electrical');
   assert.strictEqual(divisionLabel('smart'), 'Smart Solutions');
+  assert.strictEqual(divisionLabel('servicing'), 'Servicing');
   assert.strictEqual(divisionLabel('unsure'), 'Not sure yet');
   assert.strictEqual(divisionLabel('nonsense'), 'Not sure yet');
 });
 
 test('every division a form can produce has a label', () => {
-  for (const need of ['Energy', 'Electrical', 'Smart Solutions', 'Not sure yet', 'Solar', 'Energy management']) {
+  for (const need of ['Energy', 'Electrical', 'Smart Solutions', 'Servicing', 'Not sure yet', 'Solar', 'Energy management']) {
     const d = normaliseDivision(need, 'contact');
     assert.ok(divisionLabel(d) !== undefined, need + ' has no label');
+  }
+});
+
+/* The assertion that ties the form to the Worker.
+   ------------------------------------------------------------------
+   The option list a visitor picks from and the map that turns their answer
+   into a division live in different files, in different runtimes, deployed
+   by different pipelines. Adding an option to the form and forgetting the
+   Worker does not error: the lead is accepted, stored as "unsure", and the
+   director is told an enquiry arrived without being told what kind. It
+   looks exactly like a visitor who ticked "Not sure yet".
+   So the test reads the real option list out of the real file rather than
+   restating it — a copy here would drift the same way. */
+function formOptions() {
+  const src = readFileSync(REPO + 'shared/components.js', 'utf8');
+  const m = src.match(/name="need"[^]*?options="([^"]+)"/);
+  assert.ok(m, 'could not find the need field options in shared/components.js');
+  return m[1].split('|').map((s) => s.trim()).filter(Boolean);
+}
+
+test('every option in the contact form maps to a real division', () => {
+  const options = formOptions();
+  assert.ok(options.length >= 4, 'suspiciously short option list: ' + options.join(', '));
+  const unmapped = options.filter((o) => normaliseDivision(o, 'contact') === 'unsure' && o !== 'Not sure yet');
+  assert.deepStrictEqual(unmapped, [],
+    'these form options fall through to "unsure" — add them to DIVISIONS in logic.mjs: ' + unmapped.join(', '));
+});
+
+test('the three contact pages offer the same options as the modal', () => {
+  const expected = formOptions().join('|');
+  for (const site of ['site-main', 'site-energy', 'site-electrical']) {
+    const html = readFileSync(REPO + site + '/contact.html', 'utf8');
+    const m = html.match(/name="need"[^]*?options="([^"]+)"/);
+    assert.ok(m, site + '/contact.html has no need field');
+    assert.strictEqual(m[1], expected, site + '/contact.html offers a different list to the modal');
   }
 });
 

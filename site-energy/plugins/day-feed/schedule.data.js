@@ -38,6 +38,10 @@
              close (15:30-17:45)
      dur     "30m" | "1h" | "2h" | "half" | "allday"
      span    [min, max] working days. Omit for a single day.
+     size    small (<7 kW) | mid (7-14 kW) | large (14 kW+) — restricts
+             which entries in `arrays` the {array}/{panels}/{battery}
+             tokens may draw, so a job's quoted system fits the days it
+             was given. Omit where the size is incidental (office lines).
      weekend false keeps a job off the Saturday half-day.           */
 
 window.PLUGIN_DAY_FEED = {
@@ -104,22 +108,23 @@ window.PLUGIN_DAY_FEED = {
   jobs: [
 
     /* --- energy: the long ones, which is where multi-day comes from -- */
-    { kind: "energy", band: "open", dur: "allday", span: [2, 4], text: "{array} install · {suburb}" },
-    { kind: "energy", band: "open", dur: "allday", span: [2, 3], text: "{panels} rooftop install · {suburb}" },
-    { kind: "energy", band: "open", dur: "allday", span: [1, 2], weekend: false, text: "{panels} carport array · {suburb}" },
-    { kind: "energy", band: "open", dur: "half", text: "panel mounting · {panels} · {suburb}" },
-    { kind: "energy", band: "open", dur: "allday", span: [2, 3], weekend: false, text: "{panels} ground mount · {suburb}" },
+    { kind: "energy", band: "open", dur: "allday", span: [2, 4], size: "mid", text: "{array} install · {suburb}" },
+    { kind: "energy", band: "open", dur: "allday", span: [2, 3], size: "mid", text: "{panels} rooftop install · {suburb}" },
+    { kind: "energy", band: "open", dur: "allday", span: [1, 2], size: "small", weekend: false, text: "{panels} carport array · {suburb}" },
+    { kind: "energy", band: "open", dur: "half", size: "small", text: "panel mounting · {panels} · {suburb}" },
+    { kind: "energy", band: "open", dur: "allday", span: [3, 4], size: "large", weekend: false, text: "{panels} ground mount · {suburb}" },
+    { kind: "energy", band: "open", dur: "allday", span: [4, 5], size: "large", weekend: false, text: "{panels} commercial install · {suburb}" },
     { kind: "energy", band: "morning", dur: "half", span: [1, 2], text: "cable runs and DC isolators · {suburb}" },
-    { kind: "energy", band: "morning", dur: "half", text: "inverter and battery fit · {battery}" },
+    { kind: "energy", band: "morning", dur: "half", size: "small", text: "inverter and battery fit · {battery}" },
     { kind: "energy", band: "open", dur: "2h", text: "roof survey · {suburb}" },
     { kind: "energy", band: "morning", dur: "2h", text: "site assessment · {suburb}" },
     { kind: "energy", band: "midday", dur: "1h", text: "second site visit · {suburb}" },
-    { kind: "energy", band: "afternoon", dur: "1h", text: "commissioning · {array}" },
+    { kind: "energy", band: "afternoon", dur: "1h", size: "mid", text: "commissioning · {array}" },
     { kind: "energy", band: "afternoon", dur: "1h", text: "changeover tested · {suburb}" },
     { kind: "energy", band: "afternoon", dur: "30m", text: "monitoring brought online · {array}" },
     { kind: "energy", band: "close", dur: "1h", text: "handover walkthrough · {suburb}" },
     { kind: "energy", band: "morning", dur: "2h", text: "scaffold and safety set-up · {suburb}" },
-    { kind: "energy", band: "midday", dur: "2h", text: "battery added to existing array · {battery}" },
+    { kind: "energy", band: "midday", dur: "2h", size: "small", text: "battery added to existing array · {battery}" },
     { kind: "energy", band: "afternoon", dur: "2h", text: "backup circuits split to essentials board · {suburb}" },
 
     /* --- smart solutions, seen from Energy --------------------------
@@ -137,7 +142,7 @@ window.PLUGIN_DAY_FEED = {
     { kind: "smart", band: "midday", dur: "1h", text: "HotBot added to a solar geyser · {suburb}" },
     { kind: "smart", band: "afternoon", dur: "1h", text: "self-consumption reviewed after month one · {suburb}" },
     { kind: "smart", band: "afternoon", dur: "30m", text: "monitoring linked to the app · {suburb}" },
-    { kind: "smart", band: "afternoon", dur: "2h", text: "controllers set up alongside a new array · {panels}" },
+    { kind: "smart", band: "afternoon", dur: "2h", size: "small", text: "controllers set up alongside a new array · {panels}" },
     { kind: "smart", band: "close", dur: "30m", text: "first month's savings walked through · {suburb}" },
     { kind: "smart", band: "open", dur: "half", weekend: false, text: "complex rollout: scheduling set per unit · {suburb}" },
 
@@ -169,5 +174,9 @@ window.PLUGIN_DAY_FEED = {
     evening: "Tools down for the day. Resting up, so we can manage your requirements better {next}.",
     morning: "Still resting up, so we can manage your requirements better. Crews roll out at {start}.",
     sunday: "Sunday. Resting up, so we can manage your requirements better {next}.",
+    /* Shown on a working day that composes to nothing — every crew on
+       shift already committed to a job that runs through the week. See
+       _renderRest in day-feed.js. */
+    quiet: "Every crew is out on work that started earlier in the week. Back to a full board on Monday.",
   },
 };

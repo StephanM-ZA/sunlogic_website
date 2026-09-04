@@ -38,6 +38,10 @@
              close (15:30-17:45)
      dur     "30m" | "1h" | "2h" | "half" | "allday"
      span    [min, max] working days. Omit for a single day.
+     size    small (<7 kW) | mid (7-14 kW) | large (14 kW+) — restricts
+             which entries in `arrays` the {array}/{panels}/{battery}
+             tokens may draw, so a job's quoted system fits the days it
+             was given. Unused here; see site-energy's copy.
      weekend false keeps a job off the Saturday half-day.           */
 
 window.PLUGIN_DAY_FEED = {
@@ -81,10 +85,12 @@ window.PLUGIN_DAY_FEED = {
     "City of Cape Town", "Stellenbosch", "Drakenstein", "Overstrand",
   ],
 
-  /* Only the smart controllers reference a battery on this site, but the
-     pool stays whole: the token resolver reads pools.arrays directly and
-     would throw on a missing one, so a future {array} or {panels} line
-     cannot break the panel with no error to show for it. */
+  /* No job on this site uses {array}, {panels} or {battery} — the electrical
+     and smart work here is boards, circuits and controllers, not system
+     sizes. The pool stays anyway: sizedArrays() filters pools.arrays on
+     every line it fills, so removing it would throw on the first job rather
+     than degrade, and a future line that does quote a system would have
+     nothing to draw from. */
   arrays: [
     { panels: "3.6 kW", battery: "5.1 kWh" },
     { panels: "4.4 kW", battery: "5.1 kWh" },
@@ -168,5 +174,9 @@ window.PLUGIN_DAY_FEED = {
     evening: "Tools down for the day. Resting up, so we can manage your requirements better {next}.",
     morning: "Still resting up, so we can manage your requirements better. Crews roll out at {start}.",
     sunday: "Sunday. Resting up, so we can manage your requirements better {next}.",
+    /* Shown on a working day that composes to nothing — every crew on
+       shift already committed to a job that runs through the week. See
+       _renderRest in day-feed.js. */
+    quiet: "Every crew is out on work that started earlier in the week. Back to a full board on Monday.",
   },
 };

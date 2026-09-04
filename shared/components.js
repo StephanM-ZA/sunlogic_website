@@ -33,6 +33,17 @@ const SL_EMAIL = { text: 'sales@sunlogic.co.za', href: 'mailto:sales@sunlogic.co
 const SL_PHONES = [SL_PHONE_1, SL_PHONE_2];
 const SL_CONTACTS = [SL_PHONE_1, SL_PHONE_2, SL_EMAIL];
 
+/* The three social accounts, written out once for the same reason as the
+   numbers above. They were already in two places per site — the contact
+   page's quicklinks and the JSON-LD `sameAs` — and in neither case in the
+   footer, which is where people look for them. Three copies across three
+   sites is nine chances to change a handle in eight of them. */
+const SL_SOCIALS = [
+  { name: 'LinkedIn', href: 'https://www.linkedin.com/company/sunlogic-sa', icon: 'linkedin' },
+  { name: 'Facebook', href: 'https://www.facebook.com/sunlogicsa', icon: 'facebook' },
+  { name: 'Instagram', href: 'https://www.instagram.com/sunlogic_sa', icon: 'instagram' },
+];
+
 /* Base class: renders once, never on re-parent. */
 class SLElement extends HTMLElement {
   connectedCallback() {
@@ -464,7 +475,7 @@ class DlContactForm extends SLElement {
       '<dl-field label="Phone number" name="phone" type="tel" required></dl-field>' +
       '<dl-field label="Suburb" name="suburb" required></dl-field>' +
       '<dl-field label="What you need" name="need" required placeholder="Select an option" ' +
-        'options="Energy|Electrical|Smart Solutions|Not sure yet"></dl-field>' +
+        'options="Energy|Electrical|Smart Solutions|Servicing|Not sure yet"></dl-field>' +
       '<dl-field label="Property type" name="property-type" required placeholder="Select an option" ' +
         'options="Home|Small business|Larger site"></dl-field>' +
       '<div class="sl-field"><label class="sl-label" for="sl-modal-message">Message</label>' +
@@ -731,14 +742,71 @@ class DlDock extends SLElement {
   render() {
     const label = SL_ATTR(this, 'action', 'Get a quote');
     const href = SL_ATTR(this, 'href', 'contact.html');
+    /* Back-to-top ships with the dock rather than as its own element.
+       ------------------------------------------------------------------
+       It is wanted on all three sites and every page, and <dl-dock> is
+       already on all 31 of them — so rendering it here gives complete
+       coverage with no per-page markup, and no way for a new page to be
+       added later without it. It is a sibling of .sl-dock, not a child:
+       the dock is a centred pill that hides itself on mobile scroll-down,
+       and this must neither inherit that nor sit inside its flex row. */
     this.innerHTML =
       '<div class="sl-dock">' +
       '<dl-roll item-class="sl-dock__phone" items=\'' + JSON.stringify(SL_CONTACTS) + '\'></dl-roll>' +
       '<a class="sl-dock__cta" href="' + href + '"><span>' + label + '</span>' + SL_ICON('arrow-right', 16) + '</a>' +
-      '</div>';
+      '</div>' +
+      '<button type="button" class="sl-totop" aria-label="Back to top" hidden>' +
+      SL_ICON('arrow-up', 20) + '</button>';
   }
 }
 customElements.define('dl-dock', DlDock);
+
+/* Back-to-top: appears once a quarter of the page has gone past.
+   ------------------------------------------------------------------
+   A percentage rather than a pixel threshold, because these pages differ
+   by an order of magnitude in length — 800px on a thank-you page against
+   8,400px on a division home page. A fixed "after 600px" would put the
+   button on screen almost immediately on the short ones, where there is
+   nothing to go back up to.
+   `hidden` is the resting state and is set in the markup, so the button
+   is absent for a reader who never scrolls and for one whose JavaScript
+   never arrives — rather than being painted and then hidden. */
+(function () {
+  const SHOW_AFTER = 0.25;
+  let ticking = false;
+
+  function update() {
+    ticking = false;
+    const btn = document.querySelector('.sl-totop');
+    if (!btn) return;
+    const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+    /* A page shorter than its viewport has nothing to return from, and
+       dividing by zero here would show the button on every one of them. */
+    if (scrollable < 240) { btn.hidden = true; return; }
+    btn.hidden = (window.scrollY / scrollable) < SHOW_AFTER;
+  }
+
+  document.addEventListener('click', function (e) {
+    const btn = e.target.closest && e.target.closest('.sl-totop');
+    if (!btn) return;
+    /* Honouring the OS setting rather than assuming: a long smooth scroll
+       is exactly the kind of motion prefers-reduced-motion exists for. */
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: still ? 'auto' : 'smooth' });
+    /* Send focus back with the reader. Without this, keyboard focus stays
+       on a button that is about to hide itself, and the next Tab resumes
+       from the bottom of a page they have just left. */
+    const skip = document.querySelector('.sl-skip-link');
+    if (skip) skip.focus({ preventScroll: true });
+  });
+
+  window.addEventListener('scroll', function () {
+    if (!ticking) { ticking = true; requestAnimationFrame(update); }
+  }, { passive: true });
+  window.addEventListener('resize', update, { passive: true });
+  document.addEventListener('DOMContentLoaded', update);
+  update();
+})();
 
 /* --- Placeholder — labelled empty state, never stock --------- */
 class DlMediaBg extends SLElement {
@@ -1014,7 +1082,14 @@ class DlFooter extends SLElement {
       '<dl-roll item-class="sl-footer__plain" items=\'' + JSON.stringify(SL_PHONES) + '\'></dl-roll>' +
       '<a class="sl-footer__plain" href="mailto:sales@sunlogic.co.za">sales@sunlogic.co.za</a>' +
       '<p class="sl-footer__strapline">9 Chesham Road, Claremont, Cape Town</p>' +
-      '<p class="sl-footer__strapline">08:00 – 18:00, weekdays</p></div>' +
+      '<p class="sl-footer__strapline">08:00 – 18:00, weekdays</p>' +
+      /* Icon-only, so each carries its account name as the accessible
+         label rather than leaving a screen reader to announce "link". */
+      '<div class="sl-footer__socials">' +
+      SL_SOCIALS.map((s) =>
+        '<a class="sl-footer__social" href="' + s.href + '" target="_blank" rel="noopener" ' +
+        'aria-label="' + s.name + ' — opens in a new tab">' + SL_ICON(s.icon, 20) + '</a>').join('') +
+      '</div></div>' +
       '</div><div class="sl-footer__rule">' +
       '<p class="sl-footer__strapline">Both directors run the teams and the projects · Certificate of Compliance on every installation</p>' +
       SL_BUILD_LINE() +

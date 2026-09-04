@@ -24,6 +24,13 @@ const DIVISIONS = {
   'smart solutions': 'smart',
   'smart': 'smart',
   'energy management': 'smart',
+  /* Servicing is work on something already installed — a fault call, a
+     scheduled service, a COC on an existing system — rather than a fourth
+     trade. It is its own division here because a director needs to know
+     which kind of enquiry has arrived before deciding to accept it, and
+     "Energy" would be a lie for a call-out on someone else's install. */
+  'servicing': 'servicing',
+  'service': 'servicing',
   'not sure yet': 'unsure',
 };
 
@@ -34,6 +41,7 @@ const LABELS = {
   energy: 'Energy',
   electrical: 'Electrical',
   smart: 'Smart Solutions',
+  servicing: 'Servicing',
   unsure: 'Not sure yet',
 };
 

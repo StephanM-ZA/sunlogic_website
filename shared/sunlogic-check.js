@@ -35,6 +35,7 @@
     copy: 'headings are Title Case and prose sub-heads are sentence case; capitals belong to the mono face at label size',
     rhythm: 'a reader should never meet the same band colour twice running — the alternation is what separates sections without a rule line',
     limit: 'the nav caps at four links, because a fifth turns a route into a menu',
+    escape: 'every page offers a way back to the top, because a reader who has reached the foot of an 8,000px page should not have to scroll all the way back to reach the nav',
     a11y: 'anything you tap should be at least 44px tall, and every image either says what it shows or is a labelled empty state — but this rule does not catch every sub-44px control: inline text is exempt because it is not a control, and the footer/nav link lists are exempt by a separate standing decision that dense navigation is not a tap target',
   };
 
@@ -193,6 +194,17 @@
 
     /* 11 — Placeholders are visible, not invented. Informational. */
     const placeholders = (document.body.innerText.match(/\[[^\]]*(pending|placeholder)[^\]]*\]/gi) || []).length;
+
+    /* 12 — Every page offers a way back to the top.
+       It is rendered by dl-dock rather than written into each page, so this
+       cannot fail through a page forgetting the markup — it fails when a
+       page has no dock at all, which is the thing worth catching: a long
+       page that strands the reader at the bottom. Checked for existence,
+       not visibility: it is `hidden` until a quarter of the page has gone
+       past, and every page is at scroll position 0 when the gate runs. */
+    if (!document.querySelector('.sl-totop')) {
+      fail('escape', 'no back-to-top button on this page', document.body);
+    }
 
     return { fails, warns, info: { placeholders } };
   }

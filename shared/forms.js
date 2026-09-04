@@ -95,6 +95,7 @@ function dlPrefillFromQuery() {
     'Energy': 'solar and backup power',
     'Electrical': 'electrical work',
     'Smart Solutions': 'smart energy management',
+    'Servicing': 'a service on an existing installation',
   };
   const message = document.querySelector('textarea[name="message"]');
   if (message && !message.value && INTEREST[need]) {

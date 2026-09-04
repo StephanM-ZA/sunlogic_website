@@ -12,9 +12,10 @@
 <link rel="preload" href="shared/fonts/HankenGrotesk-900-latin.woff2" as="font" type="font/woff2" crossorigin/>
 <link rel="preload" href="shared/fonts/JetBrainsMono-400-latin.woff2" as="font" type="font/woff2" crossorigin/>
 <link rel="preload" href="shared/fonts/JetBrainsMono-700-latin.woff2" as="font" type="font/woff2" crossorigin/>
-<link rel="stylesheet" href="shared/sunlogic.css?v=38"/>
-<script src="shared/icons.js?v=2" defer></script>
-<script src="shared/components.js?v=41" defer></script>
+<link rel="stylesheet" href="shared/sunlogic.css?v=42"/>
+<script src="shared/icons.js?v=3" defer></script>
+<script src="shared/components.js?v=43" defer></script>
+<script src="shared/analytics.js?v=2" defer></script>
 <style>
   body { padding: 0; }
   .ci { max-width: 1152px; margin: 0 auto; padding: 0 var(--gutter); }
@@ -427,8 +428,21 @@
       <tr><td>Button wipe</td><td><code>240ms expo-out</code></td><td>Every button, bottom to top</td></tr>
       <tr><td>Link hover</td><td><code>100ms ease-out</code></td><td>Opacity 0.7. Never a scale.</td></tr>
       <tr><td>Press</td><td><code>translateY(1px)</code></td><td>All buttons. Never a shrink.</td></tr>
+      <tr><td>Return to top</td><td><code>smooth</code>, or instant</td><td>Back-to-top only. Honours reduced motion.</td></tr>
     </tbody>
   </table>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Getting back to the top</h3>
+  <p class="ci-lede" style="margin-bottom:20px">Every page carries a back-to-top button, rendered by
+    <code>dl-dock</code> so no page can be added without one. It appears once a quarter of the page has
+    scrolled past &mdash; a percentage, not a pixel count, because these pages run from 800px to
+    8,400px and &ldquo;after 600px&rdquo; would put it on screen immediately on the short ones, where
+    there is nothing to go back up to. A page shorter than its own viewport never shows it.</p>
+  <p class="ci-lede" style="margin-bottom:40px">It sits above the dock on mobile and takes the
+    bottom-right corner on desktop: the dock is centred and grows to nearly the full width on a narrow
+    screen, so the corner is not free until there is room for both. The scroll is smooth unless the
+    reader has asked for reduced motion, and focus returns to the skip link so the next Tab resumes at
+    the top of the page rather than the bottom of one they have just left.</p>
 
   <h3 class="sl-title" style="margin-bottom:16px">The hero needs all five layers</h3>
   <p class="ci-lede" style="margin-bottom:20px">Photograph, 14s gradient drift, 9s light sweep, side scrim,
@@ -480,7 +494,8 @@
     <tbody>
       <tr><td><code>dl-nav-bar</code></td><td>Sticky 72px header. Four links plus the quote button.</td></tr>
       <tr><td><code>dl-subnav</code></td><td>Sticky anchor row. Only on pages serving several audiences in one scroll.</td></tr>
-      <tr><td><code>dl-dock</code></td><td>The fixed action pill: phone and quote. Not a second nav.</td></tr>
+      <tr><td><code>dl-dock</code></td><td>The fixed action pill: phone and quote. Not a second nav. Also renders the back-to-top button.</td></tr>
+      <tr><td><code>.sl-totop</code></td><td>Back to top. Appears after a quarter of the page. Every page has one — enforced by rule 12.</td></tr>
       <tr><td><code>dl-hero</code></td><td>Five-layer hero. All five layers required.</td></tr>
       <tr><td><code>dl-section</code></td><td>Section band. <code>bg</code> = page, alt or inverse.</td></tr>
       <tr><td><code>dl-statement</code></td><td>Full-bleed band, one large line, gradient behind. Breaks up long copy.</td></tr>

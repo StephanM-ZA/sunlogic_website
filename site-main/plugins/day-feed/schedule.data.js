@@ -130,5 +130,9 @@ window.PLUGIN_DAY_FEED = {
     evening: "Tools down for the day. Resting up, so we can manage your requirements better {next}.",
     morning: "Still resting up, so we can manage your requirements better. Crews roll out at {start}.",
     sunday: "Sunday. Resting up, so we can manage your requirements better {next}.",
+    /* Shown on a working day that composes to nothing — every crew on
+       shift already committed to a job that runs through the week. See
+       _renderRest in day-feed.js. */
+    quiet: "Every crew is out on work that started earlier in the week. Back to a full board on Monday.",
   },
 };

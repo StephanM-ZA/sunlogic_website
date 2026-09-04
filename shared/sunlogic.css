@@ -623,9 +623,12 @@ dl-nav-bar { position: sticky; top: 0; z-index: var(--z-sticky); min-height: 72p
 .sl-nav__links .sl-nav__link + .sl-nav__link { position: relative; }
 .sl-nav__links .sl-nav__link + .sl-nav__link::before {
   content: "";
-  position: absolute; left: -16px; top: 50%;
+  /* -17, not -16: the gap is 32px and the rule is 2px wide, so half its
+     own width comes off the midpoint to keep it centred between the two
+     labels rather than sitting a pixel toward the one on the right. */
+  position: absolute; left: -17px; top: 50%;
   transform: translateY(-50%);
-  width: 1px; height: 14px;
+  width: 2px; height: 14px;
   background: var(--border-hairline);
 }
 .sl-nav--dark .sl-nav__link + .sl-nav__link::before { background: var(--border-inverse); }
@@ -859,6 +862,74 @@ body:has(.sl-modal[open]) .sl-dock { display: none; }
 .sl-footer__link:hover { color: var(--color-orange); opacity: 1; }
 .sl-footer__plain { display: block; color: rgba(255,255,255,0.85); font-size: 15px; padding: 2px 0; }
 .sl-footer__plain:hover { color: var(--color-orange); opacity: 1; }
+/* Social row. 44px targets, which is the floor in sunlogic-check.js — the
+   footer link exemption there covers dense text navigation, and these are
+   icon-only controls with nothing else to aim at, so they earn the size
+   rather than inherit the exemption. */
+/* Consent banner. Bottom bar, full width, above everything else that
+   lives down there — and it hides the dock and back-to-top while it is up,
+   because all three occupy the same corner of the viewport and stacking
+   them would make the one decision the visitor has to make the hardest
+   thing on screen to reach. */
+.sl-consent {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  z-index: var(--z-drawer);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 16px;
+  padding: 16px var(--gutter);
+  background: var(--surface-inverse); color: var(--text-inverse);
+  border-top: 1px solid var(--border-inverse);
+}
+.sl-consent { flex-direction: column; align-items: stretch; }
+.sl-consent__row { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.sl-consent__text {
+  flex: 1 1 320px; margin: 0;
+  font-size: 14px; line-height: 1.5; color: rgba(255,255,255,0.82);
+}
+/* The toggles, revealed by Choose. Two columns where there is room, so a
+   short list does not look like a long form. */
+.sl-consent__panel {
+  display: grid; gap: 12px;
+  padding-top: 16px; margin-top: 4px;
+  border-top: 1px solid var(--border-inverse);
+}
+@media (min-width: 768px) { .sl-consent__panel { grid-template-columns: 1fr 1fr auto; align-items: start; } }
+.sl-consent__opt {
+  display: flex; gap: 10px; align-items: flex-start;
+  font-size: 14px; color: rgba(255,255,255,0.82); cursor: pointer;
+  min-height: 44px;
+}
+.sl-consent__opt input { margin-top: 3px; width: 18px; height: 18px; accent-color: var(--color-orange); }
+.sl-consent__opt input:disabled { cursor: not-allowed; }
+.sl-consent__opt strong { display: block; color: var(--text-inverse); font-weight: 700; }
+.sl-consent__note { display: block; font-size: 13px; color: rgba(255,255,255,0.62); }
+.sl-consent__panel[hidden] { display: none; }
+.sl-consent__text a { color: var(--color-orange); text-decoration: underline; }
+.sl-consent__actions { display: flex; gap: 8px; flex: 0 0 auto; }
+.sl-consent__btn {
+  min-height: 44px; padding: 0 20px;
+  font-family: var(--font-mono); font-size: 13px; font-weight: 600;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  background: transparent; color: var(--color-white);
+  border: 1px solid var(--border-inverse);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color var(--dur-hover) ease-out, background var(--dur-hover) ease-out;
+}
+.sl-consent__btn:hover { border-color: rgba(255,255,255,0.6); }
+.sl-consent__btn--yes { background: var(--color-orange); border-color: var(--color-orange); }
+.sl-consent__btn--yes:hover { background: var(--color-orange-text); border-color: var(--color-orange-text); }
+.sl-consent-open .sl-dock, .sl-consent-open .sl-totop { display: none; }
+
+.sl-footer__socials { display: flex; gap: 4px; margin-top: 12px; }
+.sl-footer__social {
+  width: 44px; height: 44px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.85);
+  border: 1px solid var(--border-inverse);
+  border-radius: var(--radius-sm);
+  transition: color var(--dur-hover) ease-out, border-color var(--dur-hover) ease-out;
+}
+.sl-footer__social:hover { color: var(--color-orange); border-color: var(--color-orange); opacity: 1; }
 .sl-footer__rule { max-width: var(--container-used); margin: 48px auto 0; border-top: 1px solid var(--border-inverse); padding-top: 20px; }
 .sl-footer__strapline { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
 /* A commit SHA is a literal, and uppercasing it produces a string that no
@@ -1153,6 +1224,39 @@ dl-subnav { position: sticky; top: 72px; z-index: 30; }
 }
 /* Toggled by the scroll-away script in components.js (mobile only) — see there for why. */
 .sl-dock--hidden { transform: translateX(-50%) translateY(calc(100% + 24px)); opacity: 0; pointer-events: none; }
+/* Back-to-top. Same surface as the dock so the two read as one system.
+   ------------------------------------------------------------------
+   Placement is the whole problem here. The dock is centred and grows to
+   max-width: calc(100vw - 24px), so on a narrow screen it reaches almost
+   both edges — a button in the bottom-right corner would sit on top of it.
+   So below the nav breakpoint this sits ABOVE the dock, and only takes the
+   corner on wider screens where the dock is a narrow centred pill and the
+   two cannot meet.
+   48px, over the 44px floor in sunlogic-check.js, and square: it is a
+   single-purpose control with an icon and no label. */
+.sl-totop {
+  position: fixed; right: 16px; bottom: 84px;
+  z-index: var(--z-base-fixed);
+  width: 48px; height: 48px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(8,22,25,0.92);
+  color: var(--color-white);
+  border: 1px solid var(--border-inverse);
+  border-radius: var(--radius-sm);
+  backdrop-filter: var(--glass-blur);
+  cursor: pointer;
+  transition: background var(--dur-hover) ease-out, border-color var(--dur-hover) ease-out;
+}
+@media (min-width: 768px) { .sl-totop { right: 20px; bottom: 20px; } }
+.sl-totop:hover { background: var(--color-orange); border-color: var(--color-orange); }
+/* [hidden] loses to a display rule of the same specificity, and this one
+   sets display — so say it explicitly rather than relying on order. */
+.sl-totop[hidden] { display: none; }
+/* The drawer and an open modal already hide the dock; the same applies
+   here, or the button floats over both. */
+.sl-drawer-open .sl-totop { display: none; }
+body:has(.sl-modal[open]) .sl-totop { display: none; }
+
 .sl-dock__phone {
   display: inline-flex; align-items: center; gap: 8px;
   height: 44px; padding: 0 16px 0 18px;
