@@ -125,7 +125,7 @@ Verified in a browser across all three sites: the dropdown offers
 `Energy | Electrical | Smart Solutions | Not sure yet`, and all four
 `?need=` values select correctly with the right message.
 
-## Task 2: Schema — DONE except Step 4 (live DB)
+## Task 2: Schema — DONE
 
 **Files:**
 - Modify: `workers/leads-relay/schema.sql`
@@ -187,7 +187,7 @@ npx --no-install wrangler d1 execute sunlogic-leads --local --command "SELECT na
 
 Expected: `leads`, `offers`, `rotation`.
 
-- [ ] **Step 4: Apply to the live database**
+- [x] **Step 4: Apply to the live database**
 
 This touches production data. Confirm with the human first.
 
@@ -198,14 +198,15 @@ npx --no-install wrangler d1 execute sunlogic-leads --remote --json --command "S
 
 Expected: still 11. `ALTER TABLE ADD COLUMN` does not touch existing rows.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ---
 
 ### Task 2 status
 
-Steps 1-3 done. **Step 4 (live database) deliberately not run** — that is a
-human decision and the plan says so.
+All steps done. Step 4 was run by the human against production; verified
+afterwards: 11 leads, 11 sent, 11 valid payloads, 0 offers, 1 rotation row,
+both new columns. Production matches the tested copy exactly.
 
 Verified beyond what the plan asked, because "apply it to an empty local db"
 proves very little about a database with real rows in it:
@@ -234,7 +235,7 @@ npx --no-install wrangler d1 execute sunlogic-leads --remote --json --command "S
 
 Expected: still 11.
 
-## Task 3: Pure logic, with tests
+## Task 3: Pure logic, with tests — DONE
 
 The rotation, token and division rules are where a subtle bug is most expensive and hardest to see. They go in their own module with no I/O so they can be tested exhaustively.
 
@@ -245,7 +246,7 @@ The rotation, token and division rules are where a subtle bug is most expensive 
 **Interfaces:**
 - Produces: `normaliseDivision(need, type)`, `divisionLabel(division)`, `nextAssignee(lastOfferedTo)`, `newToken()`, `expiryFrom(iso, ttlMinutes)`, `OTHER`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `workers/leads-relay/test/logic.test.js`:
 
@@ -317,7 +318,7 @@ test('expiry is ttl minutes after the given instant, in SQLite format', () => {
 });
 ```
 
-- [ ] **Step 2: Run it and watch it fail**
+- [x] **Step 2: Run it and watch it fail**
 
 ```bash
 node --test workers/leads-relay/test/
@@ -325,7 +326,7 @@ node --test workers/leads-relay/test/
 
 Expected: `Cannot find module '../src/logic.js'`.
 
-- [ ] **Step 3: Write `src/logic.js`**
+- [x] **Step 3: Write `src/logic.js`**
 
 ```js
 'use strict';
@@ -395,7 +396,7 @@ module.exports = {
 };
 ```
 
-- [ ] **Step 4: Run the tests until green**
+- [x] **Step 4: Run the tests until green**
 
 ```bash
 node --test workers/leads-relay/test/
@@ -403,7 +404,7 @@ node --test workers/leads-relay/test/
 
 Expected: 10 pass, 0 fail.
 
-- [ ] **Step 5: Add the worker tests to the repo's test script**
+- [x] **Step 5: Add the worker tests to the repo's test script**
 
 `package.json`: `"test": "node --test"` already discovers `**/test/*.test.js`, but confirm the worker tests are picked up:
 
@@ -413,9 +414,40 @@ npm test 2>&1 | grep -E '^# (tests|pass|fail)'
 
 Expected: 43 tests (33 existing + 10 new), 0 fail.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ---
+
+### Two corrections to this task as planned
+
+**The file is `logic.mjs`, not `logic.js`, and uses `export` rather than
+`module.exports`.** The plan had it as CommonJS, which would not have worked
+cleanly: `workers/leads-relay/src/index.js` is an ES module (`export default`)
+while the repo's `package.json` has no `"type"` field, so Node treats a bare
+`.js` as CommonJS. A CommonJS logic file would have been importable by the
+Worker only through esbuild's interop — it would have worked, silently, until
+it did not. `.mjs` on both the module and its test makes the format explicit
+for both consumers. The test file is `logic.test.mjs` for the same reason.
+
+**`node --test workers/leads-relay/test/` does not work on Node 22** — it
+reads the path as a module specifier and fails with "Cannot find module".
+Use the bare `npm test`, which discovers `**/*.test.mjs` and now reports
+**51 tests** (33 site + 18 logic), or name the file directly:
+
+```bash
+node --test workers/leads-relay/test/logic.test.mjs
+```
+
+### What the 18 tests actually pin down
+
+Beyond the plan's list: casing and whitespace in the form value, that every
+division a form can produce has a label, that twenty consecutive offers split
+exactly ten each, that tokens survive a URL round trip without escaping, that
+expiry crosses midnight, a month end and a leap day, that expiry is UTC with
+no local offset leaking in, and that an unparseable time throws instead of
+silently producing `Invalid Date`. The timezone one matters most: if that ever
+shifts by the machine's offset, every offer expires at the wrong time and
+nothing anywhere errors.
 
 ## Task 4: Assign on submit
 
