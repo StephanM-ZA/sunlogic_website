@@ -325,15 +325,38 @@ async function sendVisitorReport(env, leadId, payload) {
    both rather than creating a third. */
 async function assignmentState(env, leadId) {
   const { results } = await env.DB.prepare(
-    'SELECT round, assignee, accepted_at FROM offers WHERE lead_id=? ORDER BY round'
+    'SELECT round, assignee, state, offered_at, expires_at, accepted_at ' +
+    'FROM offers WHERE lead_id=? ORDER BY round'
   ).bind(leadId).all();
   const r1 = results.find((r) => r.round === 1);
   const r2 = results.find((r) => r.round === 2);
+
+  /* A plain-language account of where this lead went and why.
+     ------------------------------------------------------------------
+     The columns say who and when; this says what happened, in order, in
+     one cell. It exists so a question about a lead has a factual answer
+     rather than two recollections — and it is deliberately neutral about
+     the reason. "Not accepted within 24 hours" is what the system knows.
+     Why nobody accepted is not something a database can tell you, and
+     pretending otherwise would put words in someone's mouth. */
+  const cap = (w) => w.charAt(0).toUpperCase() + w.slice(1);
+  const steps = [];
+  for (const o of results) {
+    if (o.offered_at) steps.push('Offered to ' + cap(o.assignee) + ' ' + formatSast(o.offered_at));
+    if (o.state === 'accepted') steps.push('Accepted by ' + cap(o.assignee) + ' ' + formatSast(o.accepted_at));
+    else if (o.state === 'expired' && o.expires_at) steps.push('Not accepted within 24 hours');
+    else if (o.state === 'expired') steps.push('Closed when the other offer was accepted');
+  }
+  if (!results.some((o) => o.state === 'accepted') && results.some((o) => o.expires_at === null && o.state === 'offered')) {
+    steps.push('Open to both — first to accept takes it');
+  }
+
   return {
     assignedTo: r1 ? r1.assignee : '',
     acceptedAt: r1 && r1.accepted_at ? r1.accepted_at : '',
     reassignedTo: r2 ? r2.assignee : '',
     reassignedAcceptedAt: r2 && r2.accepted_at ? r2.accepted_at : '',
+    history: steps.join(' → '),
   };
 }
 
@@ -465,9 +488,14 @@ async function sendDailyDigest(env) {
   ).all();
   const byPerson = {};
   for (const r of per.results) byPerson[r.assignee] = r;
+  const cap = (w) => w.charAt(0).toUpperCase() + w.slice(1);
   const line = (who) => {
     const r = byPerson[who] || { offered: 0, accepted: 0, lapsed: 0 };
-    return who + ': ' + r.accepted + ' accepted of ' + r.offered + ' offered (' + r.lapsed + ' lapsed)';
+    /* Counts, stated flatly. Deliberately not a ratio or a percentage —
+       an enquiry nobody accepted is a fact about the enquiry, not a mark
+       against a person, and the numbers are here to answer a question if
+       one is asked rather than to keep score. */
+    return cap(who) + ' ' + r.accepted + ' accepted, ' + r.offered + ' offered';
   };
 
   /* The oldest thing nobody has taken. A count alone does not convey "this
