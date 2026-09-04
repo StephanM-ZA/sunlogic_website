@@ -10,15 +10,50 @@ behaviour: a violation does not publish.
 
 | Project | Build command | Output |
 |---|---|---|
-| `sunlogic-energy` | `npx --no-install playwright install chromium && npm run build && npm test && npm run conformance && npm run sweep && npm run build:energy` | `dist/energy` |
-| `sunlogic-electrical` | same, ending `npm run build:electrical` | `dist/electrical` |
-| `sunlogic-main` | same, ending `npm run build:main` | `dist/main` |
+| `sunlogic-main` | `npx --no-install playwright install chromium && npm run build:main && npm test && npm run conformance:main && npm run sweep:main` | `dist/main` |
+| `sunlogic-energy` | same, with `energy` throughout | `dist/energy` |
+| `sunlogic-electrical` | same, with `electrical` throughout | `dist/electrical` |
 
-Set on all three on 2026-09-03. Each one's first gated build passed: 28 tests,
-34/34 pages at 412x823 and 1440x900, 0 fails 0 warns.
+Build caching is **on** for all three.
 
-`npm run sweep` was added to all three on 2026-09-04, by the API method at the
-foot of this file.
+## Why each project only builds and checks its own site
+
+Until 2026-09-04 every project ran the full thing: `npm run build` (all three
+sites, including image conversion), then `npm test`, then `conformance` and
+`sweep` across all 25 pages, then `npm run build:<site>` — which rebuilt its
+own site a second time. Three projects doing that is the same work three times
+over, and on the free plan Cloudflare builds one project at a time, so they
+queue behind each other.
+
+Measured on a real deployment before changing anything:
+
+    queued      400s      <- two other projects ahead of it
+    initialize    2s
+    clone_repo    2s
+    build       187s
+    deploy        6s
+    TOTAL       598s
+
+The queue was the larger number, and the only way to shrink it is to shorten
+the builds feeding it. Timed locally, same machine, back to back:
+
+    full chain, as it was      142s
+    scoped to one site          70s
+
+Coverage is not reduced, and this is the part worth understanding rather than
+taking on trust. The gate exists because a change to `shared/` can break a site
+whose own source was untouched — so scoping it per project would be wrong IF a
+shared change only rebuilt one project. It does not: every project's path
+filter includes `shared/*`, `scripts/*`, `sites.config.js` and the lockfiles,
+so a shared change triggers all three, and each one gates its own output.
+Between them all three sites are still checked. A change to `site-energy/`
+alone triggers only the energy project, which is correct — nothing else moved.
+
+## The artifact is the build, not a rebuild
+
+`build:<site>` now runs first and `conformance`/`sweep` audit what it produced,
+rather than the site being built twice with the checks in between. Both read
+`dist/` and neither writes to it, so what ships is exactly what was gated.
 
 ## The two halves of the gate
 
@@ -41,8 +76,8 @@ nobody has to remember to add it here.
 
 ### Cost
 
-About 28s on top of the existing gate, for 450 page/width combinations. It runs
-six pages concurrently for that reason — sequentially the same sweep took 113s,
+About 28s for all 450 page/width combinations, or roughly 13s for one site's
+share of them. It runs six pages concurrently for that reason — sequentially the same sweep took 113s,
 and this runs once per Pages project. A check slow enough to resent is a check
 that gets switched off.
 

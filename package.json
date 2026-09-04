@@ -10,7 +10,10 @@
     "sweep": "node scripts/layout-sweep.js",
     "conformance:main": "node scripts/conformance.js main",
     "conformance:energy": "node scripts/conformance.js energy",
-    "conformance:electrical": "node scripts/conformance.js electrical"
+    "conformance:electrical": "node scripts/conformance.js electrical",
+    "sweep:main": "node scripts/layout-sweep.js main",
+    "sweep:energy": "node scripts/layout-sweep.js energy",
+    "sweep:electrical": "node scripts/layout-sweep.js electrical"
   },
   "dependencies": {
     "playwright": "^1.62.1"
