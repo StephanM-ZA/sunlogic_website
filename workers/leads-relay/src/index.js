@@ -1,6 +1,7 @@
 import {
   normaliseDivision, nextAssignee, newToken, expiryFrom, sqliteNow, OTHER,
 } from './logic.mjs';
+import { handleClaimGet, handleClaimPost } from './claim.mjs';
 
 /* Any Sunlogic host over https, rather than a list.
    The list this replaces held sunlogic.co.za and www.sunlogic.co.za — correct
@@ -100,7 +101,7 @@ function claimUrl(env, token) {
   return base.replace(/\/+$/, '') + '/claim/' + token;
 }
 
-async function deliverToN8n(env, leadId, type, payload, offer) {
+async function deliverToN8n(env, leadId, type, payload, offer, event) {
   try {
     const res = await fetch(env.N8N_WEBHOOK_URL, {
       method: 'POST',
@@ -113,7 +114,7 @@ async function deliverToN8n(env, leadId, type, payload, offer) {
          fields are absent on a retry that could not find one, and n8n is
          expected to cope rather than error. */
       body: JSON.stringify({
-        event: 'offer',
+        event: event || 'offer',
         leadId,
         type,
         ...payload,
@@ -129,7 +130,7 @@ async function deliverToN8n(env, leadId, type, payload, offer) {
         "UPDATE leads SET status = 'sent', last_attempt_at = datetime('now') WHERE id = ?"
       ).bind(leadId).run();
       /* Only now does the director's 24 hours begin. R1. */
-      if (offer && offer.token) await markOffered(env, offer.token);
+      if (offer && offer.token && (!event || event === 'offer')) await markOffered(env, offer.token);
       return true;
     }
     await env.DB.prepare(
@@ -209,6 +210,28 @@ export default {
     if (url.pathname === '/leads/calculator') {
       return handleLeadRoute(request, env, ctx, 'calculator');
     }
+
+    /* /claim/<token>. GET renders, POST accepts — see claim.mjs for why that
+       split is not optional. No CORS here on purpose: this is opened by a
+       human clicking a link in an email, not called by the site. */
+    const claim = url.pathname.match(/^\/claim\/([A-Za-z0-9_-]{43})$/);
+    if (claim) {
+      const token = claim[1];
+      if (request.method === 'GET') return handleClaimGet(env, token);
+      if (request.method === 'POST') {
+        return handleClaimPost(env, token, async (offer) => {
+          const lead = await env.DB.prepare('SELECT type, payload_json FROM leads WHERE id = ?')
+            .bind(offer.lead_id).first();
+          ctx.waitUntil(deliverToN8n(
+            env, offer.lead_id, lead.type, JSON.parse(lead.payload_json),
+            { division: offer.division, assignee: offer.assignee, token },
+            'accepted',
+          ));
+        });
+      }
+      return new Response('method not allowed', { status: 405 });
+    }
+
     return new Response('not found', { status: 404 });
   },
 

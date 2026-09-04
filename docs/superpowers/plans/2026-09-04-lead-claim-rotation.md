@@ -450,7 +450,7 @@ silently producing `Invalid Date`. The timezone one matters most: if that ever
 shifts by the machine's offset, every offer expires at the wrong time and
 nothing anywhere errors.
 
-## Task 4: Assign on submit
+## Task 4: Assign on submit — DONE
 
 **Files:**
 - Modify: `workers/leads-relay/src/index.js`
@@ -459,7 +459,7 @@ nothing anywhere errors.
 - Consumes: `logic.js` exports; `offers`, `rotation` from Task 2.
 - Produces: webhook payload now carries `leadId`, `division`, `divisionLabel`, `assignee`, `claimUrl`, `event: 'offer'`.
 
-- [ ] **Step 1: Create the offer atomically with the pointer flip**
+- [x] **Step 1: Create the offer atomically with the pointer flip**
 
 R5. Both statements in one `batch()` so two simultaneous submissions cannot read the same pointer:
 
@@ -480,7 +480,7 @@ async function createOffer(env, leadId, round, forcedAssignee) {
 
 `forcedAssignee` is used by the sweeper, which must hand the lead to the *other* person rather than whoever the pointer happens to name.
 
-- [ ] **Step 2: Mark the offer sent only once n8n confirms**
+- [x] **Step 2: Mark the offer sent only once n8n confirms**
 
 R1. `expires_at` is computed from the moment of the successful send, not from insert:
 
@@ -494,15 +494,15 @@ async function markOffered(env, token) {
 }
 ```
 
-- [ ] **Step 3: Extend the n8n payload and call `markOffered` on success**
+- [x] **Step 3: Extend the n8n payload and call `markOffered` on success**
 
 In `deliverToN8n`, include the new fields and, when `res.ok` and the event is an offer, call `markOffered`. The existing `leads` status update stays as it is.
 
-- [ ] **Step 4: Store the division on the lead**
+- [x] **Step 4: Store the division on the lead**
 
 `insertLead` gains a `division` column value from `normaliseDivision(payload.need, type)`.
 
-- [ ] **Step 5: Test against the local D1**
+- [x] **Step 5: Test against the local D1**
 
 ```bash
 cd workers/leads-relay
@@ -515,7 +515,7 @@ npx --no-install wrangler d1 execute sunlogic-leads --local --json \
 
 Expected: one lead, `division` `electrical`, one offer, `round` 1, `state` `pending_send` (no n8n locally, so it never reaches `offered` — which is R1 behaving correctly).
 
-- [ ] **Step 6: Submit twice in the same second and confirm one each**
+- [x] **Step 6: Submit twice in the same second and confirm one each**
 
 ```bash
 for i in 1 2; do curl -s -X POST localhost:8787/leads/contact -H 'Content-Type: application/json' \
@@ -526,17 +526,35 @@ npx --no-install wrangler d1 execute sunlogic-leads --local --json \
 
 Expected: one offer each, not two to the same person.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ---
 
-## Task 5: The claim endpoint
+## Task 5: The claim endpoint — DONE
+
+Built as `src/claim.mjs`. Verified with a live local Worker:
+
+| Check | Result |
+|---|---|
+| GET on a live token | page rendered, state still `offered` |
+| POST | Accepted, `accepted_at` set, `leads.claimed_by` set |
+| POST a second time | "Someone got there first" |
+| Unknown token | "That link is not valid" |
+| Malformed token | 404, never reaches the handler |
+| Three simultaneous POSTs | exactly 1 accepted, 2 rejected |
+
+Two things beyond the plan. Every non-claimable outcome says *which* — already
+taken, expired, not sent yet, or unknown — because "this did not work" with no
+reason turns a director into a support ticket. And accepting expires any
+sibling offer for the same lead rather than deleting it, so the log can still
+show it existed and who it went to.
+
 
 **Files:**
 - Create: `workers/leads-relay/src/claim.js`
 - Modify: `workers/leads-relay/src/index.js`
 
-- [ ] **Step 1: The page**
+- [x] **Step 1: The page**
 
 `GET` renders this; the inline script submits it immediately. A fetcher that does not run JavaScript sees the `<noscript>` button and changes nothing.
 
@@ -555,7 +573,7 @@ border-radius:4px;padding:16px 28px;min-height:44px;cursor:pointer}</style></hea
 }
 ```
 
-- [ ] **Step 2: `GET /claim/<token>` — render, never mutate**
+- [x] **Step 2: `GET /claim/<token>` — render, never mutate**
 
 Look the offer up read-only. If it is claimable, render the auto-submitting form:
 
@@ -568,7 +586,7 @@ const form = `<h1>${label} enquiry</h1><p>Received ${dateStr}.</p>
 
 If it is already accepted, expired or unknown, render that instead — and send no email.
 
-- [ ] **Step 3: `POST /claim/<token>` — the conditional accept**
+- [x] **Step 3: `POST /claim/<token>` — the conditional accept**
 
 ```js
 const res = await env.DB.prepare(
@@ -584,7 +602,7 @@ ctx.waitUntil(deliverToN8n(env, leadId, type, payload, 'accepted'));
 
 `changes !== 1` covers expired, already accepted and unknown token in one check, and guarantees exactly one full email even if both directors click simultaneously.
 
-- [ ] **Step 4: Prove a scanner cannot accept**
+- [x] **Step 4: Prove a scanner cannot accept**
 
 ```bash
 TOKEN=$(npx --no-install wrangler d1 execute sunlogic-leads --local --json \
@@ -596,14 +614,14 @@ npx --no-install wrangler d1 execute sunlogic-leads --local --json \
 
 Expected: still `offered`. **If this says `accepted`, stop — the GET is mutating and the whole design is unsound.**
 
-- [ ] **Step 5: Confirm POST accepts, and only once**
+- [x] **Step 5: Confirm POST accepts, and only once**
 
 ```bash
 curl -s -X POST "localhost:8787/claim/$TOKEN" | grep -o 'Accepted' 
 curl -s -X POST "localhost:8787/claim/$TOKEN" | grep -o 'already'
 ```
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ---
 
