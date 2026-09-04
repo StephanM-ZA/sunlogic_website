@@ -53,6 +53,27 @@ module.exports = {
         formFactor: 'mobile',
         screenEmulation: { mobile: true, width: 412, height: 823, deviceScaleFactor: 1.75, disabled: false },
         onlyCategories: ['performance', 'accessibility', 'best-practices', 'seo'],
+        /* CI only: Chrome cannot start its sandbox on the runner.
+           ------------------------------------------------------------
+           GitHub's Ubuntu image restricts unprivileged user namespaces, so
+           the Playwright-installed Chromium aborts at launch with "No usable
+           sandbox!" and Lighthouse never connects. Every deploy-site run
+           from 2026-09-03 onwards failed here. Nothing was wrong with the
+           pages: the browser died before it opened one.
+
+           The conformance gate and the layout sweep were unaffected because
+           Playwright launches Chromium with these flags already — only
+           Lighthouse, which launches Chrome itself, needed telling.
+
+           Guarded on CI so a local run keeps the sandbox. --no-sandbox on a
+           throwaway runner auditing its own build output is the accepted
+           trade; on a developer's machine it is a pointless one.
+
+           This is also why the run failed rather than passing green: the
+           assertion-count guard in scripts/lighthouse.js refused to report a
+           pass over zero audited pages. Without it, nine builds would have
+           reported success while measuring nothing. */
+        ...(process.env.CI ? { chromeFlags: '--no-sandbox --disable-dev-shm-usage' } : {}),
       },
     },
     assert: {
