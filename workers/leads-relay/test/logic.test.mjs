@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert';
 import {
   normaliseDivision, divisionLabel, nextAssignee, newToken,
-  expiryFrom, sqliteNow, OTHER,
+  expiryFrom, sqliteNow, OTHER, estimateValues,
 } from '../src/logic.mjs';
 
 /* --- divisions ---------------------------------------------------------- */
@@ -128,4 +128,36 @@ test('sqliteNow matches the format expiryFrom consumes', () => {
   const now = sqliteNow(new Date(Date.UTC(2026, 8, 4, 8, 0, 0)));
   assert.strictEqual(now, '2026-09-04 08:00:00');
   assert.strictEqual(expiryFrom(now, 1440), '2026-09-05 08:00:00');
+});
+
+/* --- the calculator estimate ------------------------------------------- */
+
+test('residential estimate: monthly saving and payback', () => {
+  const v = estimateValues({ mode: 'residential', inputs: { bill: 3000 },
+    results: { panelKw: 7.4, inverterKw: 6, batteryKwh: 10, systemCost: 210000,
+      firstYearSavings: 28000, paybackYearsLow: 7, paybackYearsHigh: 8,
+      annualCo2Kg: 6200, treesEquivalent: 100 } });
+  assert.match(v.savingsBlock, /Estimated monthly saving/);
+  assert.match(v.savingsBlock, /payback period/);
+  assert.strictEqual(v.co2Tons, '6.2');
+  assert.strictEqual(v.trees, 100);
+  assert.strictEqual(v.panelKw, 7.4);
+});
+
+test('sme estimate answers a different question — cash flow, not payback', () => {
+  const v = estimateValues({ mode: 'sme', inputs: { bill: 20000 },
+    results: { monthlySavings: 9000, monthlyInstallment: 7000, pivot: 2000,
+      annualCo2Kg: 41000, treesEquivalent: 660 } });
+  assert.match(v.savingsBlock, /cash flow/);
+  assert.match(v.savingsBlock, /instalment/);
+  assert.ok(!/payback/.test(v.savingsBlock), 'sme must not mention payback');
+});
+
+test('a missing or malformed result set produces text, never NaN or undefined', () => {
+  const v = estimateValues({ mode: 'residential' });
+  for (const [k, val] of Object.entries(v)) {
+    assert.ok(!String(val).includes('NaN'), k + ' contains NaN');
+    assert.ok(!String(val).includes('undefined'), k + ' contains undefined');
+  }
+  assert.strictEqual(v.panelKw, '—');
 });

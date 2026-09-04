@@ -1,5 +1,5 @@
 import {
-  normaliseDivision, nextAssignee, newToken, expiryFrom, sqliteNow, OTHER,
+  normaliseDivision, nextAssignee, newToken, expiryFrom, sqliteNow, OTHER, estimateValues,
 } from './logic.mjs';
 import { handleClaimGet, handleClaimPost } from './claim.mjs';
 import { compose, recipients, send, ADDRESS_OF } from './mailer.mjs';
@@ -196,6 +196,16 @@ async function handleLeadRoute(request, env, ctx, type) {
 
   ctx.waitUntil(notify(env, leadId, 'offer', assignee, token));
 
+  /* The calculator also owes the visitor their estimate. This used to be a
+     plain-text node inside n8n, which meant a customer-facing email depended
+     on a machine in an office being switched on. It goes through the same
+     Resend-first path as everything else now. Sent independently of the
+     offer: a director's notification failing must not cost the visitor the
+     thing they actually asked for. */
+  if (type === 'calculator' && typeof body.email === 'string') {
+    ctx.waitUntil(sendVisitorReport(env, leadId, body));
+  }
+
   return jsonResponse({ ok: true }, 200, origin);
 }
 
@@ -274,6 +284,27 @@ async function alertUnclaimed(env, onlyLeadId) {
 /* One way out of this Worker for every non-offer notification. Task 8
    replaces the body with the Resend call and keeps n8n as the fallback;
    until then everything goes through the existing relay. */
+async function sendVisitorReport(env, leadId, payload) {
+  const result = await send(env, {
+    to: [payload.email],
+    replyTo: 'sales@sunlogic.co.za',
+    subject: 'Your Sunlogic solar estimate',
+    html: compose('visitor_report', {
+      ...estimateValues(payload),
+      preheader: 'Your Sunlogic solar estimate',
+      footnote: 'Sunlogic SA &middot; sunlogic.co.za',
+    }),
+    leadId,
+    event: 'visitor_report',
+  });
+  if (!result.ok) {
+    await env.DB.prepare(
+      "UPDATE leads SET last_error=? WHERE id=?"
+    ).bind(('visitor report failed: ' + result.why).slice(0, 400), leadId).run();
+  }
+  return result.ok;
+}
+
 async function notify(env, leadId, event, assignee, token) {
   const lead = await env.DB.prepare('SELECT type, payload_json, division, created_at FROM leads WHERE id=?')
     .bind(leadId).first();

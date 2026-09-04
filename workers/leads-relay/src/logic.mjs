@@ -90,3 +90,39 @@ export function sqliteNow(date) {
 }
 
 export { OTHER, LABELS };
+
+/* The calculator's estimate email used to be a plain-text node inside n8n,
+   with its conditional branches written as an inline ternary in an n8n
+   expression. Moving it into the Worker means the numbers are worked out in
+   JavaScript where they can be read and tested, and the template stays flat
+   substitution.
+
+   Residential and SME answer different questions. A homeowner wants the
+   monthly saving and how long until it pays for itself; a business wants the
+   saving against the instalment, because the number that decides it is
+   whether the system is cash-flow positive from day one. */
+export function estimateValues(payload) {
+  const r = (payload && payload.results) || {};
+  const inputs = (payload && payload.inputs) || {};
+  const rand = (n) => Math.round(Number(n) || 0).toLocaleString('en-ZA');
+
+  const savingsBlock = payload.mode === 'sme'
+    ? 'Estimated monthly saving: <strong>R' + rand(r.monthlySavings) + '</strong><br/>' +
+      'Estimated monthly instalment: <strong>R' + rand(r.monthlyInstallment) + '</strong><br/>' +
+      'Estimated monthly cash flow: <strong>R' + rand(r.pivot) + '</strong>'
+    : 'Estimated monthly saving: <strong>R' + rand((Number(r.firstYearSavings) || 0) / 12) + '</strong><br/>' +
+      'Typical payback period: <strong>' +
+      Math.round(Number(r.paybackYearsLow) || 0) + '\u2013' + Math.round(Number(r.paybackYearsHigh) || 0) +
+      ' years</strong>';
+
+  return {
+    bill: rand(inputs.bill),
+    panelKw: r.panelKw ?? '—',
+    inverterKw: r.inverterKw ?? '—',
+    batteryKwh: r.batteryKwh ?? '—',
+    systemCost: rand(r.systemCost),
+    savingsBlock,
+    co2Tons: ((Number(r.annualCo2Kg) || 0) / 1000).toFixed(1),
+    trees: Math.round(Number(r.treesEquivalent) || 0),
+  };
+}

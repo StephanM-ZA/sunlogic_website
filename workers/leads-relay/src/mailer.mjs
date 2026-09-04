@@ -18,6 +18,7 @@ import bodyFull from '../../../emails/body-assignment-full.html';
 import bodyExpired from '../../../emails/body-offer-expired.html';
 import bodyUnclaimed from '../../../emails/body-unclaimed-alert.html';
 import bodyDigest from '../../../emails/body-daily-digest.html';
+import bodyVisitor from '../../../emails/body-visitor-report.html';
 
 const BODIES = {
   offer: bodyOffer,
@@ -25,6 +26,7 @@ const BODIES = {
   expired: bodyExpired,
   unclaimed: bodyUnclaimed,
   digest: bodyDigest,
+  visitor_report: bodyVisitor,
 };
 
 /* From a subdomain, deliberately. sunlogic.co.za's own SPF, DKIM and sending
@@ -114,7 +116,11 @@ async function sendViaN8n(env, { to, replyTo, subject, html, leadId, event, extr
       headers: { 'Content-Type': 'application/json', 'X-Relay-Secret': env.RELAY_SECRET },
       body: JSON.stringify({ event, leadId, to, replyTo, subject, html, ...(extra || {}) }),
     });
-    return res.ok ? { ok: true, via: 'n8n' } : { ok: false, why: 'n8n ' + res.status };
+    if (res.ok) return { ok: true, via: 'n8n' };
+    /* Carry n8n's own words. "n8n 403" is a status; "Authorization data is
+       wrong!" is a diagnosis, and the difference is an afternoon. */
+    const detail = await res.text().catch(() => '');
+    return { ok: false, why: 'n8n ' + res.status + ' ' + detail.replace(/\s+/g, ' ').slice(0, 160) };
   } catch (err) {
     return { ok: false, why: 'n8n threw: ' + String(err) };
   }

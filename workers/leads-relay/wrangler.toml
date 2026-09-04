@@ -42,7 +42,6 @@ OFFER_TTL_MINUTES = "2"
 # Staging delivers everything here, so a test run never reaches Craig.
 # Production deliberately does not set this — see mailer.mjs.
 MAIL_REDIRECT_TO = "stephan@sunlogic.co.za"
-FORCE_FALLBACK = "1"
 CLAIM_BASE_URL = "https://sunlogic-leads-relay-staging.smarais-za.workers.dev"
 N8N_WEBHOOK_URL = "https://n8n.digitaloperations.co.za/webhook/sunlogic-leads"
 
