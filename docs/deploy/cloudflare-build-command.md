@@ -43,8 +43,8 @@ nobody has to remember to add it here.
 
 About 28s on top of the existing gate, for 450 page/width combinations. It runs
 six pages concurrently for that reason — sequentially the same sweep took 113s,
-and this runs once per Pages project plus once in Actions. A check slow enough
-to resent is a check that gets switched off.
+and this runs once per Pages project. A check slow enough to resent is a check
+that gets switched off.
 
 ## The leads Worker
 
@@ -113,17 +113,52 @@ else needs undoing.
 To drop only the layout sweep and keep the design gate, remove
 `&& npm run sweep` from the command and leave the rest alone.
 
-## Where GitHub Actions fits now
+## GitHub is the repository, and nothing else
 
-`.github/workflows/deploy-site.yml` still runs the same gate on every push and
-still publishes to GitHub Pages — but nothing points at GitHub Pages since the
-apex cutover. It is kept deliberately, as the rollback target for the DNS
-change: restoring the four A records (185.199.108-111.153, DNS only) puts a
-current, gated build back in service. Retire it only when that rollback is no
-longer wanted.
+There are no GitHub Actions workflows. Both were removed on 2026-09-04:
+`deploy-site.yml`, which published to GitHub Pages, and `lighthouse-ci.yml`,
+which ran the performance budgets. Everything that builds, checks or deploys
+runs on Cloudflare — three Pages projects and one Workers Builds project — and
+no Cloudflare credential is stored in GitHub at all.
 
-Until then the gate runs twice per push, once in Actions and once per Pages
-project. That is redundant, not wrong.
+Two things were given up with them. Both were deliberate, and both are written
+here so nobody re-discovers them as surprises.
+
+### The GitHub Pages rollback target is gone
+
+`deploy-site.yml` was kept after the apex cutover as somewhere to roll back to:
+restore the four A records and a current, gated build is serving again.
+
+The replacement is better, and was always available: **Cloudflare Pages keeps
+every previous deployment**. Workers & Pages → the project → Deployments →
+"Rollback to this deployment" puts an earlier build back immediately, with no
+DNS change and no propagation wait. It rolls back the *build*, which is the
+thing that is usually wrong, rather than moving the whole apex to a different
+host.
+
+### Lighthouse budgets are no longer enforced automatically
+
+`npm run lighthouse` still works and `lighthouserc.js` is unchanged; nothing
+about the budgets was deleted, only the thing that ran them on every push.
+
+    npm run lighthouse
+
+Run it before a release, or after a change that touches images, fonts or
+anything in the critical path. It needs Chrome — locally, point `CHROME_PATH`
+at a `chrome-headless-shell` binary; `scripts/lighthouse.js` explains where it
+looks and errors with instructions if it cannot find one.
+
+This was measured, not assumed: the Lighthouse workflow took **7 to 14
+minutes**. Folding it into the Pages build command would have added that to
+every deployment, on each of the three projects — recreating exactly the
+sixteen-minute wait the build command was trimmed to avoid. A check that slow
+gets switched off, and a check that has been switched off is worse than one
+that was never automated, because the repository still looks like it has one.
+
+The assertion-count guard in `scripts/lighthouse.js` stays regardless: it
+refuses to report a pass when zero pages were audited. It is what caught
+Lighthouse "auditing" this site for weeks while opening nothing, and it is
+worth just as much on a run somebody starts by hand.
 
 ## Why `npm run build` runs before the per-site build
 
