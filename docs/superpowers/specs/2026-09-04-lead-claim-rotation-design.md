@@ -223,6 +223,83 @@ write fails, the enquiry still flows and the row is rebuildable from D1.
 | Google Sheet | six columns added to the existing "Sunlogic Leads" sheet. No new sheet, no new credential |
 | Worker webhook payload | include `leadId`, so the Sheet row can be found and updated |
 
+## Reliability requirements
+
+The business risk here is not a crash — it is silence. Every dangerous failure
+in this design ends with a lead sitting in a database that nobody is looking
+at, and no error anywhere. These are requirements, not nice-to-haves, and each
+one names the failure it prevents.
+
+**R1 — The 24-hour clock starts when the offer email is sent, not when the
+lead arrives.** If n8n is down for six hours, the Worker's retry queue will
+deliver the offer eventually, but a clock started at insert has already eaten
+a quarter of the window. Stephan then gets 18 hours and is judged on 24.
+`expires_at` is therefore set when n8n confirms the send, not at INSERT — the
+row is created with `expires_at NULL` and the sweeper ignores NULL.
+
+**R2 — Nagging does not stop.** The chosen behaviour after two timeouts is
+"alert both, keep it open". As written that is a single alert: if both are on
+site and clear their inbox at six, the enquiry is never mentioned again and
+dies quietly. The unclaimed alert repeats every 24 hours until someone
+accepts. An enquiry cannot fall out of the system by being ignored.
+
+**R3 — A daily digest, sent whether or not anything is wrong.** One email
+each morning: how many leads arrived, how many are unclaimed and for how long,
+and anything that failed to send. This is a dead-man's switch — if the digest
+stops arriving, the pipeline is broken, and that is the only signal that
+survives every other component failing. Without it, a silently broken relay
+looks exactly like a quiet week.
+
+**R4 — Retries must not double-send or double-log.** The Worker already
+retries the webhook up to 20 times, and today a retry after a failed SMTP send
+would send the email twice and append the sheet row twice. Every webhook call
+carries `leadId` and an `event` key; n8n's Sheets node uses Append-or-Update
+on `Lead ID`, and each email node checks the corresponding D1 state before
+sending. At-least-once delivery must produce exactly-once effects.
+
+**R5 — Offer creation and the rotation flip are one atomic step.** Two
+submissions arriving together must not read the same pointer and both go to
+Craig. D1 `batch()` wraps the pointer update and the offer INSERT, and the
+INSERT takes the assignee from the updated pointer rather than a value read
+earlier.
+
+**R6 — Nothing is deleted, ever.** Offers are state-transitioned, never
+removed. The Sheet is a mirror; D1 is the record. If the Sheet is edited by
+hand or a row is lost, it is rebuildable.
+
+### Failure modes and what happens
+
+| If this fails | What happens now | Visible where |
+|---|---|---|
+| n8n is down at submission | Lead is durable in D1; cron retries for ~100 minutes. Clock has not started (R1) | Digest (R3) |
+| SMTP rejects the offer email | n8n does not return 200, Worker retries, no duplicate on success (R4) | Digest |
+| Both directors ignore everything | Re-alerted every 24h, indefinitely (R2) | Digest, daily |
+| A director's mailbox bounces silently | Offer expires, passes to the other, normal path | Sheet, Status column |
+| Two submissions at the same instant | Atomic pointer, one each (R5) | Sheet |
+| Two accept clicks at the same instant | Conditional UPDATE, exactly one wins | Sheet |
+| A scanner renders JS and auto-accepts | Accepted by someone who did not mean to | Sheet — an accept nobody remembers |
+| Worker is down | Form shows an error to the visitor; nothing is silently swallowed | Visitor sees it |
+| D1 is down | Same — the submission fails loudly rather than vanishing | Visitor sees it |
+
+### What must be tested before this goes live
+
+The 24-hour window makes the important paths untestable in a working day, so
+the window is an env var (`OFFER_TTL_MINUTES`, default 1440) and the staging
+run sets it to 2 minutes. Test list:
+
+1. Submit → offer to A only, teaser contains no name, email, phone or message.
+2. Accept → full details to A, and only to A.
+3. Let it lapse → expiry notice to A, fresh offer to B, sheet shows both.
+4. Let that lapse → both alerted; alert repeats on the next sweep.
+5. Accept from the round-1 link after the round-2 alert → still works, B's
+   link then reports "already taken".
+6. Click an accept link twice → second click says already accepted, one email.
+7. `curl` the claim URL (simulating a scanner) → no acceptance, no email.
+8. Two submissions in the same second → one to each director.
+9. n8n stopped, submit, restart n8n → offer arrives, clock starts then.
+10. Full round trip with real mailboxes, confirming the emails do not land in
+    spam — this is the one that cannot be simulated.
+
 ## Risks and things to decide
 
 1. **The n8n workflow runs on the iMac.** Editing it is an iMac change and
