@@ -917,7 +917,7 @@ class DlFooter extends SLElement {
       '<p class="sl-footer__strapline">9 Chesham Road, Claremont, Cape Town</p>' +
       '<p class="sl-footer__strapline">08:00 – 18:00, weekdays</p></div>' +
       '</div><div class="sl-footer__rule">' +
-      '<p class="sl-footer__strapline">Registered electrical contractor · Certificate of Compliance on every installation</p>' +
+      '<p class="sl-footer__strapline">Both directors run the teams and the projects · Certificate of Compliance on every installation</p>' +
       SL_BUILD_LINE() +
       SL_CREDIT_LINE() +
       '</div></footer>';
