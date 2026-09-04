@@ -33,7 +33,7 @@ const SITES = [
          build's extensionless rewrite only matches quoted paths in HTML and
          single-quoted paths in JS, so it would not touch these. */
       { href: '/', key: 'home', label: 'Home' },
-      { href: 'https://energy.sunlogic.co.za', key: 'solar', label: 'Solar' },
+      { href: 'https://energy.sunlogic.co.za', key: 'energy', label: 'Energy' },
       { href: 'https://electrical.sunlogic.co.za', key: 'electrical', label: 'Electrical', accent: 'navy' },
     ],
     /* Columns of [label, href]. No Energy and no Worth knowing: energy-management
