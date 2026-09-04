@@ -839,13 +839,13 @@ A `workers.dev` URL in an email to a director reads as phishing and may be filte
 | 1 | Submit → offer to one director | ✅ Resend carried it, clock started |
 | 2 | Accept → full details | ✅ `claimed_by` set, mail sent |
 | 3 | Lapse → expiry notice + reassign to the other | ✅ r1 expired, r2 to the other director |
-| 4 | Second lapse → both revived and alerted | running |
-| 5 | Accept from a revived link | pending 4 |
+| 4 | Second lapse → both revived and alerted | ✅ both revived, both alerted, repeat confirmed |
+| 5 | Accept from a revived link | ✅ first click wins, other link closes |
 | 6 | Accept twice | ✅ "Someone got there first" |
 | 7 | Scanner GETs the link | ✅ state unchanged — **the design holds** |
 | 8 | Two submissions at once | ✅ after a real bug was fixed — see below |
 | 9 | Relay down → clock does not start | ✅ offers sat `pending_send`, no expiry set |
-| 10 | Real mailbox, not spam | blocked — Xneelo receiving was down |
+| 10 | Real mailbox, not spam | ✅ delivered to Gmail and clicked through — Xneelo was down, so it was redirected via MAIL_REDIRECT_TO, and Gmail is the stricter test |
 
 ### Two bugs these found that code review had not
 
