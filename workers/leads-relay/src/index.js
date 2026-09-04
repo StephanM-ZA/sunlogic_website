@@ -1,10 +1,20 @@
-const ALLOWED_ORIGINS = new Set([
-  'https://sunlogic.co.za',
-  'https://www.sunlogic.co.za',
-]);
+/* Any Sunlogic host over https, rather than a list.
+   The list this replaces held sunlogic.co.za and www.sunlogic.co.za — correct
+   while there was one site. When the environment grew to three, the contact
+   forms on energy.sunlogic.co.za and electrical.sunlogic.co.za kept posting
+   here and the browser blocked every one of them: no D1 row, no n8n call, no
+   log, and nothing on this side to notice. The visitor saw an error; nobody
+   else saw anything.
+
+   A pattern rather than a longer list, because the longer list is the same bug
+   with a later date on it — a fourth site would repeat it exactly. Scoped to
+   our own registrable domain, so it grants nothing to anyone else.
+   Anchored at both ends, dots escaped: 'https://evil-sunlogic.co.za' and
+   'https://sunlogic.co.za.evil.com' both fail. */
+const SUNLOGIC_ORIGIN = /^https:\/\/([a-z0-9-]+\.)?sunlogic\.co\.za$/;
 
 function corsHeaders(origin) {
-  const allow = ALLOWED_ORIGINS.has(origin) ? origin : '';
+  const allow = SUNLOGIC_ORIGIN.test(origin) ? origin : '';
   return {
     'Access-Control-Allow-Origin': allow,
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
