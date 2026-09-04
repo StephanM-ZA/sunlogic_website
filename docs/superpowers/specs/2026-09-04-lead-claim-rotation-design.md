@@ -107,16 +107,28 @@ side of the alternation.
 
 ## The claim endpoint
 
-`GET /claim/<token>` → an HTML page naming the division and the date, with a
-single **Accept this enquiry** button.
-`POST /claim/<token>` → performs the accept.
+One click for the human, and still safe against link prefetching.
 
-**The GET must not accept, and this is the part most likely to be got wrong.**
-Mail security scanners, link previewers and some clients fetch every URL in an
-incoming email before a human sees it. A GET that assigns would hand every
-enquiry to whichever mailbox scans hardest, silently, and the log would say a
-human accepted it. The two-step is not ceremony; it is the only thing standing
-between this design and an auto-accept bug that looks like normal operation.
+`GET /claim/<token>` → a page that immediately submits a `POST` to itself via
+a two-line inline script, with a plain **Accept this enquiry** button inside
+`<noscript>`.
+`POST /claim/<token>` → performs the accept, and the page becomes
+"Accepted — the details are on their way."
+
+**The GET must never accept on its own.** Mail security scanners, link
+previewers and some clients fetch every URL in an incoming email before a
+human sees it. If the GET assigned, every enquiry would go to whichever
+mailbox scans hardest, silently, and the log would record a human accepting
+it. Scanners issue the GET but do not execute page JavaScript, so the
+auto-submit is what separates a person from a fetcher while still costing the
+person a single click.
+
+Residual risk, stated rather than hidden: a scanner that renders with a real
+headless browser would execute the script and accept. That is a far smaller
+population than plain fetchers, and it would be visible in the log as an
+accept nobody remembers making. Removing the risk entirely means making the
+human press the button — one extra click. The one-click version is the choice
+here.
 
 Accept is a conditional update:
 
@@ -168,23 +180,37 @@ with no division. Needs a decision before build.
 
 ## Logging
 
-n8n appends one row per event to a Google Sheet:
+The sheet and the credential already exist and are in use — "Sunlogic Leads",
+id `1V2JNVOV4CqVevuDD1ECcWjpEAEPVJ7JVNR5-CcYnyOo`, written by the workflow's
+`Log Contact Lead` / `Log Calculator Lead` nodes through the existing Google
+Sheets OAuth2 credential. Current header:
 
 ```
-timestamp | lead_id | division | event | assignee | round | note
+Timestamp | Type | Name | Email | Phone | Need | Bill | Mode |
+Payback/Pivot System | Cost | Raw JSON
 ```
 
-`event` is one of `offered`, `accepted`, `expired`, `reassigned`,
-`unclaimed`. Every question asked — who was it assigned to, did they accept,
-was it reassigned, did that person accept — is answered by filtering
-`lead_id`.
+That is one row per lead, which is also the shape the four questions want
+answered — who was it assigned to, did they accept, was it reassigned, did
+that person accept, all on one line. So extend the existing sheet rather than
+add an events tab:
 
-D1 remains authoritative for the logic; the Sheet is a read-only mirror for
-humans. If the Sheet write fails the enquiry still flows, and the row is
-recoverable from D1.
+```
+… existing columns … | Lead ID | Assigned To | Accepted At |
+Reassigned To | Reassigned Accepted At | Status
+```
 
-Requires a Google Sheets credential in n8n and a sheet to write to — neither
-exists yet.
+`Status` is one of `offered`, `accepted`, `reassigned`, `unclaimed`. The
+Google Sheets node switches from Append to **Append or Update**, matching on
+`Lead ID`, so the row is written once at submission and updated in place as
+the enquiry moves.
+
+This needs `Lead ID` to reach n8n, which it does not today: the Worker posts
+`{type, ...payload}` with no id. Adding it is a one-line change and is also
+what lets any later event find its row.
+
+D1 stays authoritative for the logic. The Sheet is the human view — if a Sheet
+write fails, the enquiry still flows and the row is rebuildable from D1.
 
 ## What changes where
 
@@ -193,8 +219,9 @@ exists yet.
 | `workers/leads-relay/schema.sql` | `offers`, `rotation`, two columns on `leads` |
 | `workers/leads-relay/src/index.js` | assignment on submit, `/claim/<token>` GET+POST, expiry sweep in the existing cron |
 | `emails/` | three new templates, one retired |
-| n8n workflow | new branches per email kind, Sheets node |
-| Google Sheet | new, plus an n8n credential |
+| `n8n/sunlogic-leads-relay.json` | new branches per email kind; Sheets node Append -> Append or Update on Lead ID. Version-controlled, so this is edited in the repo and re-imported, not rebuilt by hand in the UI |
+| Google Sheet | six columns added to the existing "Sunlogic Leads" sheet. No new sheet, no new credential |
+| Worker webhook payload | include `leadId`, so the Sheet row can be found and updated |
 
 ## Risks and things to decide
 
@@ -205,13 +232,17 @@ exists yet.
    in an email to a director looks like phishing and may be filtered. A custom
    domain (`leads.sunlogic.co.za`) is a Pages/Workers route away and worth
    doing as part of this.
-3. **Cron resolution is 5 minutes**, so 24 hours is 24h ± 5min. Fine, but the
+3. **The email `From:` stays `sales@sunlogic.co.za`.** That is the Xneelo SMTP
+   credential n8n sends through. Only the recipients change; nobody has to
+   stop monitoring that mailbox for this to work, and replies still land
+   there.
+4. **Cron resolution is 5 minutes**, so 24 hours is 24h ± 5min. Fine, but the
    expiry email should not claim a precise time.
-4. **No unsubscribe / no bounce handling.** If a director's mailbox rejects,
+5. **No unsubscribe / no bounce handling.** If a director's mailbox rejects,
    the offer silently sits until it expires and moves on — which is arguably
    the correct behaviour, but it is not visible anywhere except the Sheet.
-5. **"Not sure yet"** division label, above.
-6. **Testing the 24h path** means either waiting a day or making the window
+6. **"Not sure yet"** division label, above.
+7. **Testing the 24h path** means either waiting a day or making the window
    configurable. Propose an env var defaulting to 24h so it can be set to
    minutes on a staging run.
 
