@@ -39,7 +39,7 @@ No new email vendor, no change to SMTP.
 | Second timeout | Alert both, keep the enquiry open. Both claim links stay live, first click wins. No auto-escalation to sales@. |
 | Audit log | Google Sheet, appended by n8n. |
 | Scope | Both the contact form and the calculator. |
-| Teaser content | Division only — "a solar enquiry" or "an electrical enquiry". No name, no contact details, no message. |
+| Teaser content | The chosen division only — Energy, Electrical, Smart or Not sure yet, verbatim. No name, no contact details, no message. |
 
 ## Flow
 
@@ -49,7 +49,7 @@ submission
    ├─ Worker: INSERT lead
    ├─ Worker: pick next assignee (flip rotation pointer), create offer #1,
    │          token, expires_at = now + 24h
-   ├─ n8n: OFFER email  → assignee   ("a solar enquiry has come in" + Accept)
+   ├─ n8n: OFFER email  → assignee   ("an Energy enquiry has come in" + Accept)
    └─ n8n: CONFIRM email → visitor    (unchanged)
 
 assignee clicks Accept
@@ -98,8 +98,9 @@ CREATE TABLE rotation (
 );
 ```
 
-`leads` gains `division TEXT` (solar | electrical | general) and
-`claimed_by TEXT`.
+`leads` gains `division TEXT` (energy | electrical | smart | unsure) and
+`claimed_by TEXT`. Stored normalised and lower-case; the display label comes
+from it, so a future rename is one table, not four HTML files.
 
 The rotation pointer is a single row, updated in the same statement that
 creates an offer, so a burst of submissions cannot hand two people the same
@@ -153,7 +154,7 @@ Existing style, header and tokens throughout. Five templates in `emails/`:
 
 | File | To | Says |
 |---|---|---|
-| `offer-notification.html` *(new)* | assignee | "A solar enquiry has come in." Division, date, Accept button. **Nothing identifying.** |
+| `offer-notification.html` *(new)* | assignee | "An Energy enquiry has come in." Division, date, Accept button. **Nothing identifying.** |
 | `assignment-full.html` *(new)* | accepter | Every field. This is today's `sales-notification.html`, re-addressed. |
 | `offer-expired.html` *(new)* | the lapsed | "24 hours has passed. This enquiry has been sent to the next person." |
 | `unclaimed-alert.html` *(new)* | both | "Enquiry #N is still unclaimed." Both links live. |
