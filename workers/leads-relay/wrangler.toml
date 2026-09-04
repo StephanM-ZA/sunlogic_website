@@ -45,6 +45,14 @@ MAIL_REDIRECT_TO = "smarais.za@gmail.com"
 CLAIM_BASE_URL = "https://sunlogic-leads-relay-staging.smarais-za.workers.dev"
 N8N_WEBHOOK_URL = "https://n8n.digitaloperations.co.za/webhook/sunlogic-leads"
 
+# One cron on staging, not two. The account is on the Workers Free plan,
+# which caps cron triggers at five ACROSS the account — production's two
+# plus staging's two plus the deadman's two does not fit, and the deploy
+# that discovers this succeeds at uploading the code while silently
+# failing to schedule anything. Staging has no use for a daily digest.
+[env.staging.triggers]
+crons = ["*/5 * * * *"]
+
 [[env.staging.d1_databases]]
 binding = "DB"
 database_name = "sunlogic-leads-staging"
