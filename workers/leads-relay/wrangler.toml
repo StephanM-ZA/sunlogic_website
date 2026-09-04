@@ -28,3 +28,26 @@ crons = ["*/5 * * * *", "0 5 * * *"]
 type = "Text"
 globs = ["**/*.html"]
 fallthrough = true
+
+# --- staging -------------------------------------------------------------
+# A separate Worker and a separate database, so the timing paths can be
+# exercised with a 2-minute expiry without a real lead ever being subject to
+# it. Production is never run with a shortened TTL; that is the entire reason
+# this environment exists.
+[env.staging]
+name = "sunlogic-leads-relay-staging"
+
+[env.staging.vars]
+OFFER_TTL_MINUTES = "2"
+CLAIM_BASE_URL = "https://sunlogic-leads-relay-staging.smarais-za.workers.dev"
+N8N_WEBHOOK_URL = "https://n8n.digitaloperations.co.za/webhook/sunlogic-leads"
+
+[[env.staging.d1_databases]]
+binding = "DB"
+database_name = "sunlogic-leads-staging"
+database_id = "9251e67a-9ae5-4d3f-9b89-3aeed2a75e7a"
+
+[[env.staging.rules]]
+type = "Text"
+globs = ["**/*.html"]
+fallthrough = true
