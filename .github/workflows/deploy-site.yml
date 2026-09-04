@@ -18,11 +18,15 @@ on:
       - 'scripts/conformance.js'
       - 'scripts/site-pages.js'
       - 'scripts/lighthouse.js'
-      # The gate's own machinery. A change to the sweep or to the server both
-      # it and conformance run on alters what passes, so it has to be able to
-      # trigger the workflow that enforces it.
+      # The gate's own machinery. A change to the sweep, to the server both it
+      # and conformance run on, or to the Lighthouse budgets alters what
+      # passes, so each has to be able to trigger the workflow that enforces
+      # it. lighthouserc.js was missing here until 2026-09-04: the commit that
+      # fixed Lighthouse's Chrome launch could not trigger the workflow whose
+      # only failing step was Lighthouse.
       - 'scripts/layout-sweep.js'
       - 'scripts/static-server.js'
+      - 'lighthouserc.js'
       - 'test/**'
       - 'package.json'
       - 'package-lock.json'
