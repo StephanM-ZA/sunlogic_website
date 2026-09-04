@@ -301,6 +301,20 @@ dl-section.sl-section--hero-follow .sl-section { padding-top: 40px; }
 
 .sl-cols { display: grid; grid-template-columns: 1fr; gap: 32px; align-items: center; }
 @media (min-width: 768px) { .sl-cols { grid-template-columns: 1fr 1fr; gap: 56px; } }
+/* Grid children must be allowed to shrink.
+   ------------------------------------------------------------------
+   `1fr` is minmax(auto, 1fr), and that `auto` minimum is the child's
+   MIN-CONTENT width — so one child that cannot get narrower makes the
+   whole track wider than the page, and every sibling stretches with it.
+   That is what was happening here: the day-feed panel's rows are
+   white-space: nowrap, giving it a min-content width around 600px, and
+   below 768px the home pages scrolled sideways by ~250px with the
+   compliance copy dragged out to 604px alongside it.
+   min-width: 0 opts the children out of that automatic minimum. The
+   panel then ellipsises its rows, which is what its own CSS was always
+   written to do. Applied to the grid rows generally, because any of them
+   can be handed a wide child. */
+.sl-cols > *, .sl-grid-2 > *, .sl-grid-3 > * { min-width: 0; }
 /* Center-alignment reads well for the usual two-text-block pairing this
    grid is built for, but on contact.html one side is a short form and
    the other a details card plus a much taller map — centering pushed
@@ -594,6 +608,28 @@ dl-nav-bar { position: sticky; top: 0; z-index: var(--z-sticky); min-height: 72p
 .sl-nav--dark .sl-nav__link--navy[aria-current="page"] { color: var(--color-beige); }
 .sl-nav__links[data-has-active="true"] .sl-nav__link:not([aria-current="page"]) { color: var(--text-secondary); opacity: 1; }
 .sl-nav__links[data-has-active="true"] .sl-nav__link:not([aria-current="page"]):hover { color: var(--color-orange-text); }
+/* A divider between nav items, sat in the middle of the 32px gap.
+   ------------------------------------------------------------------
+   Drawn as a 1px rule rather than a literal "|" character for two
+   reasons: a pseudo-element's text content is announced by some screen
+   readers, so a real pipe would have the menu read as "Home pipe Energy
+   pipe Smart Solutions"; and a character would inherit the link's colour
+   and flick orange as each item is hovered. A rule in a fixed hairline
+   colour is silent and holds still.
+
+   Desktop only, because it is the only horizontal menu. The drawer is a
+   vertical stack already separated by a border-bottom on each row, and
+   the footer columns are vertical for the same reason. */
+.sl-nav__links .sl-nav__link + .sl-nav__link { position: relative; }
+.sl-nav__links .sl-nav__link + .sl-nav__link::before {
+  content: "";
+  position: absolute; left: -16px; top: 50%;
+  transform: translateY(-50%);
+  width: 1px; height: 14px;
+  background: var(--border-hairline);
+}
+.sl-nav--dark .sl-nav__link + .sl-nav__link::before { background: var(--border-inverse); }
+
 .sl-nav__toggle { width: 48px; height: 48px; }
 
 .sl-drawer {
@@ -673,6 +709,40 @@ dl-hero { display: block; min-height: 964px; }
   align-items: flex-end; justify-content: space-between;
 }
 @media (min-width: 768px) { .sl-hero__inner { padding: 120px var(--gutter) 64px; } }
+/* --- Division promo — the other division's hero, as a card -----
+   Same photo, same five layers, same drift and sweep as a real hero;
+   what changes is that it is inset, rounded and shorter, because it
+   closes a page rather than opening one.
+
+   Selectors are doubled (.sl-hero.sl-hero--promo) on purpose: .sl-hero
+   sets min-height twice, once at each breakpoint, and a single-class
+   modifier would only win by sitting later in the file. Two classes wins
+   on specificity instead, so this keeps working if the file is
+   reordered. */
+.sl-hero.sl-hero--promo {
+  min-height: 420px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+@media (min-width: 768px) { .sl-hero.sl-hero--promo { min-height: 480px; } }
+/* The hero's inner padding is sized to clear a fixed nav bar. Nothing
+   overlaps this one, so it gets the card's own padding instead. */
+.sl-hero--promo .sl-hero__inner { padding: 48px 32px 40px; max-width: none; }
+@media (min-width: 768px) { .sl-hero--promo .sl-hero__inner { padding: 64px 56px 56px; } }
+/* The side scrim runs left-to-right for a hero whose text sits left. In a
+   narrower card the falloff lands too early and the last words of a
+   heading lose their ground, so it is held darker for longer. */
+.sl-hero--promo .sl-hero__scrim-side {
+  background: linear-gradient(100deg, rgba(13,32,40,.92) 0%, rgba(13,32,40,.74) 46%, rgba(13,32,40,.28) 80%, rgba(13,32,40,.06) 100%);
+}
+/* Electrical is navy wherever it appears, so its promo cools the dawn
+   gradient rather than running the orange one over a navy division. */
+.sl-hero--promo-navy .sl-hero__gradient {
+  background: linear-gradient(96deg, #0D2028 0%, #1D4E63 45%, #4C8FA8 100%);
+  opacity: 0.55;
+}
+.sl-section--promo { padding-top: 0; }
+
 .sl-hero__col { flex: 0 0 300px; display: flex; flex-direction: column; gap: 16px; }
 .sl-hero__col-note { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.05em; color: currentColor; opacity: 0.55; }
 .sl-hero__text { flex: 1 1 480px; max-width: 640px; }
@@ -867,6 +937,13 @@ body:has(.sl-modal[open]) .sl-dock { display: none; }
 /* Prose — long-form editorial column. */
 .sl-prose { display: grid; gap: 16px; max-width: 640px; }
 .sl-prose--wide { max-width: 780px; }
+/* Same automatic-minimum trap as .sl-cols above: this is a grid, so its
+   children carry a min-content floor. The legal page's lists have a 40px
+   indent on top of their text, which pushed the track to 355px inside a
+   320px screen and scrolled the whole page sideways. break-word covers
+   the other cause — a long unbroken token in legal copy, which is where
+   registration numbers and URLs live. */
+.sl-prose > * { min-width: 0; overflow-wrap: break-word; }
 .sl-prose p { margin: 0; font-size: 16px; line-height: 1.5; color: var(--text-secondary); }
 .sl-prose p strong { color: var(--text-primary); font-weight: 700; }
 .sl-prose h3 { margin: 16px 0 0; font-family: var(--font-display); font-size: 24px; font-weight: 700; line-height: 1.333; color: var(--text-primary); }

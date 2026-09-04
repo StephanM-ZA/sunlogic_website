@@ -224,6 +224,38 @@ customElements.define('dl-grid', DlGrid);
    50px (sm: 38px) · 4px radius · Hanken 700/14 · press translateY(1px)
    variant: primary (navy) | emphasis (orange) | secondary | outline | ghost
    MAX ONE emphasis button in view. */
+/* A link to another Sunlogic site opens in a new tab.
+   ------------------------------------------------------------------
+   Sunlogic is three hosts that read as one company, and crossing between
+   them is a sideways move, not leaving: a visitor comparing the two
+   divisions should still have the page they came from. Decided once here
+   rather than spelled out at each link, because these now appear in the
+   nav, the footer, the home page's cross-sell buttons and the closing
+   promo — four places that would drift, and a missing target is
+   invisible until someone loses their place.
+
+   Scoped to our own hosts on purpose. It does NOT fire for an ordinary
+   outbound link (a manufacturer, a government page): forcing a new tab
+   on every external link takes the choice away from the reader for no
+   reason. Same-host links are untouched.
+
+   The aria-label says so out loud, matching SL_CREDIT_LINE — a new tab
+   that is announced is a navigation, one that is not is a surprise. */
+function SL_CROSS_SITE(href, label) {
+  if (!href) return '';
+  let url;
+  try {
+    url = new URL(href, window.location.href);
+  } catch (e) {
+    return '';                                   /* not a URL we can judge */
+  }
+  if (url.host === window.location.host) return '';
+  if (!/(^|\.)sunlogic\.co\.za$/i.test(url.host)) return '';
+  const name = String(label == null ? url.host : label).replace(/"/g, '');
+  return ' target="_blank" rel="noopener" aria-label="' + name +
+    ' — opens in a new tab"';
+}
+
 class DlButton extends SLElement {
   render() {
     const href = this.getAttribute('href');
@@ -249,7 +281,12 @@ class DlButton extends SLElement {
        (an external booking flow, a Google review link). */
     const target = href && this.getAttribute('target') ? ' target="' + this.getAttribute('target') + '"' : '';
     const rel = href && this.getAttribute('rel') ? ' rel="' + this.getAttribute('rel') + '"' : '';
-    const attrs = href ? ' href="' + href + '"' + target + rel : ' type="' + SL_ATTR(this, 'type', 'button') + '"';
+    /* A cross-site link gets the new tab automatically — but only if the
+       host has not already said what it wants, so an explicit target or
+       rel on the element still wins. */
+    const cross = href && !target && !rel
+      ? SL_CROSS_SITE(href, this.textContent.trim()) : '';
+    const attrs = href ? ' href="' + href + '"' + target + rel + cross : ' type="' + SL_ATTR(this, 'type', 'button') + '"';
     this.innerHTML =
       '<' + tag + attrs + ' class="sl-btn sl-btn--' + v + size + full + dark + wipe + '">' +
       '<span>' + this.innerHTML + '</span>' + (icon ? SL_ICON(icon, 18) : '') + '</' + tag + '>';
@@ -725,41 +762,100 @@ customElements.define('dl-media', class extends DlMediaBg {});
    the sweep is what makes motion legible over a photograph. The
    side scrim is what holds text contrast against a bright image.
    Do not remove any of them. */
+/* The five painted layers, in order: photo, 14s gradient drift, 9s light
+   sweep, side scrim, bottom scrim. Shared by dl-hero and
+   dl-division-promo, which is a hero wearing a card.
+   ------------------------------------------------------------------
+   Written once because the promo's whole job is to look like the other
+   division's hero. Two copies of this stack would agree on the day they
+   were written and quietly diverge on the first tweak to either — and a
+   promo that no longer matches the hero it advertises is a bug nobody
+   files, because both pages look fine on their own. */
+const SL_HERO_LAYERS =
+  '<div class="sl-hero__layer sl-hero__gradient"></div>' +
+  '<div class="sl-hero__layer sl-hero__sweep"></div>' +
+  '<div class="sl-hero__layer sl-hero__scrim-side"></div>' +
+  '<div class="sl-hero__layer sl-hero__scrim-bottom"></div>';
+
+/* Photo with optional responsive srcset, or the labelled empty state.
+   `eager` is the hero: it is the LCP element and must not be lazy. The
+   promo sits at the foot of the page, so it loads lazily instead.
+
+   Opt-in responsive srcset: only pages whose photo has matching
+   "-{width}w" derivatives on disk pass srcset-widths, e.g.
+   srcset-widths="640,1024,1920" for photo="images/hero.webp" expects
+   images/hero-640w.webp and images/hero-1024w.webp to exist alongside
+   the full-size original (used as the largest/fallback size). */
+function SL_HERO_MEDIA(el, eager) {
+  const photo = el.getAttribute('photo');
+  const alt = SL_ATTR(el, 'alt', '[Hero photography pending]');
+  const fit = el.getAttribute('fit') === 'contain' ? ' sl-hero__image--contain' : '';
+  const srcsetWidths = el.getAttribute('srcset-widths');
+  let srcsetAttr = '';
+  if (photo && srcsetWidths) {
+    const dot = photo.lastIndexOf('.');
+    const base = photo.slice(0, dot);
+    const ext = photo.slice(dot);
+    const widths = srcsetWidths.split(',').map((w) => w.trim());
+    const maxWidth = widths[widths.length - 1];
+    const entries = widths.map((w) =>
+      (w === maxWidth ? photo : base + '-' + w + 'w' + ext) + ' ' + w + 'w');
+    srcsetAttr = ' srcset="' + entries.join(', ') + '" sizes="100vw"';
+  }
+  if (!photo) {
+    return '<div class="sl-placeholder sl-placeholder--inverse sl-hero__empty">' + alt + '</div>';
+  }
+  const loading = eager
+    ? ' fetchpriority="high" decoding="async"'
+    : ' loading="lazy" decoding="async"';
+  return '<img class="sl-hero__image' + fit + '" src="' + photo + '"' + srcsetAttr +
+    ' alt="' + alt + '"' + loading + ' />';
+}
+
 class DlHero extends SLElement {
   render() {
-    const photo = this.getAttribute('photo');
-    const alt = SL_ATTR(this, 'alt', '[Hero photography pending]');
-    const fit = this.getAttribute('fit') === 'contain' ? ' sl-hero__image--contain' : '';
-    /* Opt-in responsive srcset: only pages whose photo has matching
-       "-{width}w" derivatives on disk pass srcset-widths, e.g.
-       srcset-widths="640,1024,1920" for photo="images/hero.webp" expects
-       images/hero-640w.webp and images/hero-1024w.webp to exist alongside
-       the full-size original (used as the largest/fallback size). */
-    const srcsetWidths = this.getAttribute('srcset-widths');
-    let srcsetAttr = '';
-    if (photo && srcsetWidths) {
-      const dot = photo.lastIndexOf('.');
-      const base = photo.slice(0, dot);
-      const ext = photo.slice(dot);
-      const widths = srcsetWidths.split(',').map((w) => w.trim());
-      const maxWidth = widths[widths.length - 1];
-      const entries = widths.map((w) =>
-        (w === maxWidth ? photo : base + '-' + w + 'w' + ext) + ' ' + w + 'w');
-      srcsetAttr = ' srcset="' + entries.join(', ') + '" sizes="100vw"';
-    }
-    const media = photo
-      ? '<img class="sl-hero__image' + fit + '" src="' + photo + '"' + srcsetAttr + ' alt="' + alt + '" fetchpriority="high" decoding="async" />'
-      : '<div class="sl-placeholder sl-placeholder--inverse sl-hero__empty">' + alt + '</div>';
+    /* photo, alt, fit and the opt-in responsive srcset are all read by
+       SL_HERO_MEDIA — see that function. */
     this.innerHTML =
-      '<section class="sl-hero">' + media +
-      '<div class="sl-hero__layer sl-hero__gradient"></div>' +
-      '<div class="sl-hero__layer sl-hero__sweep"></div>' +
-      '<div class="sl-hero__layer sl-hero__scrim-side"></div>' +
-      '<div class="sl-hero__layer sl-hero__scrim-bottom"></div>' +
+      '<section class="sl-hero">' + SL_HERO_MEDIA(this, true) + SL_HERO_LAYERS +
       '<div class="sl-hero__inner">' + this.innerHTML + '</div></section>';
   }
 }
 customElements.define('dl-hero', DlHero);
+
+/* --- Division promo — the other division's hero, as a card ----
+   The closing pitch on each division site: energy.sunlogic.co.za ends by
+   showing Electrical, and electrical.sunlogic.co.za ends by showing
+   Energy. It wears the destination's own hero — that site's photograph,
+   the same five layers, the same drift and sweep — so the promo looks
+   like the place it sends you rather than like an advert for it.
+
+   Two things it deliberately is NOT:
+
+   1. Not a full-bleed band. It renders inside a .sl-section, and the
+      rhythm rule in sunlogic-check.js already exempts "a .sl-hero inside
+      a section" as a card wearing the hero's layer stack. Nesting is what
+      keeps it out of the band alternation instead of breaking it.
+
+   2. Not counted against the accent budget. Its button IS an emphasis
+      button — orange, retracting to the glass treatment on hover, the
+      same as the hero's — but rule 5 in sunlogic-check.js exempts
+      .sl-hero--promo the way it already exempts the drawer and a dialog:
+      this sits below the closing CTA, so the two are never in one view.
+      The reasoning is written out at that rule; it was amended on
+      purpose, not worked around. */
+class DlDivisionPromo extends SLElement {
+  render() {
+    const accent = this.getAttribute('accent') === 'navy' ? ' sl-hero--promo-navy' : '';
+    this.innerHTML =
+      '<section class="sl-section sl-section--promo"><div class="sl-container">' +
+      '<div class="sl-hero sl-hero--promo' + accent + '">' +
+      SL_HERO_MEDIA(this, false) + SL_HERO_LAYERS +
+      '<div class="sl-hero__inner">' + this.innerHTML + '</div>' +
+      '</div></div></section>';
+  }
+}
+customElements.define('dl-division-promo', DlDivisionPromo);
 
 /* --- CTA block — the closing call to action ------------------
    Navy, 16px radius, the dawn gradient drifting behind at 38%.
@@ -855,9 +951,11 @@ class DlNavBar extends SLElement {
     const hasActive = links.some((l) => l.key === active);
     const navLinks = links.map((l) => '<a class="sl-nav__link' +
       (l.accent === 'navy' ? ' sl-nav__link--navy' : '') + '" href="' + l.href + '"' +
+      SL_CROSS_SITE(l.href, l.label) +
       (l.key === active ? ' aria-current="page"' : '') + '>' + l.label + '</a>').join('');
     const drawerLinks = links.map((l) => '<a class="sl-drawer__link' +
       (l.accent === 'navy' ? ' sl-drawer__link--navy' : '') + '" href="' + l.href + '"' +
+      SL_CROSS_SITE(l.href, l.label) +
       (l.key === active ? ' aria-current="page"' : '') + '>' +
       l.label + SL_ICON('arrow-right', 18) + '</a>').join('');
 
@@ -894,7 +992,8 @@ customElements.define('dl-nav-bar', DlNavBar);
 class DlFooter extends SLElement {
   render() {
     const col = (links) => '<div class="sl-footer__col">' + links.map((l) =>
-      '<a class="sl-footer__link" href="' + l[1] + '">' + l[0] + '</a>').join('') + '</div>';
+      '<a class="sl-footer__link" href="' + l[1] + '"' + SL_CROSS_SITE(l[1], l[0]) +
+      '>' + l[0] + '</a>').join('') + '</div>';
     /* Link columns come from the site config, the same way the nav's do, so the
        apex can point at the two subdomains while each division site points at
        its own pages. Falls back to the full single-site list for any page built

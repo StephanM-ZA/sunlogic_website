@@ -28,10 +28,13 @@
 /electrical.html            https://electrical.sunlogic.co.za/electrical        301
 
 # --- Blog, split by subject to the division that owns it -------------------
-# Both division sites currently carry all seven posts, so every target below
-# resolves today. The split is by what the post is about: bills, batteries and
-# off-grid to Energy; compliance, EV charging and the electrical checks to
-# Electrical. The index goes to Energy because four of the seven do.
+# The split is by what the post is about: bills, batteries and off-grid to
+# Energy; compliance, EV charging and the electrical checks to Electrical. The
+# index goes to Energy because four of the seven do.
+#
+# Each post now lives on exactly one division site — the two sites no longer
+# carry each other's pages — so every target below is the post's only home,
+# and each division's own _redirects catches the copy it used to serve.
 /blog                             https://energy.sunlogic.co.za/blog                              301
 /blog.html                        https://energy.sunlogic.co.za/blog                              301
 /blog-why-your-bill-went-up       https://energy.sunlogic.co.za/blog-why-your-bill-went-up        301

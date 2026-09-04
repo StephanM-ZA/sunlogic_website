@@ -1,24 +1,32 @@
-# Sunlogic SA
+# Sunlogic Electrical
 
-> Solar and certified electrical contracting for homes and businesses in Cape Town, South Africa. One team designs, installs and certifies each system — solar, electrical work, or the smart HotBot/SolarBot energy controllers — with council registration and Certificate of Compliance handled as part of the job, not an extra.
+> Certified electrical contracting for homes and businesses in Cape Town and the Western Cape: rewiring, distribution boards, fault finding, compliance inspections, surge protection, EV charger installation, emergency lighting and maintenance. A Certificate of Compliance is issued as part of the job, not as an extra.
 
-Sunlogic SA (Pty) Ltd, registration 2022/651654/07. Based at 9 Chesham Road, Claremont, Cape Town, 7708. Phone +27 (82) 655 5371, email sales@sunlogic.co.za.
+Sunlogic SA (Pty) Ltd, registration 2022/651654/07. 9 Chesham Road, Claremont, Cape Town, 7708, South Africa. Phone +27 (82) 655 5371, email sales@sunlogic.co.za. Office hours 08:00–18:00 weekdays (SAST, UTC+2). Both directors run the teams and the projects.
+
+electrical.sunlogic.co.za is the Electrical division. Solar, batteries and backup power are a separate division on its own site; the link is at the bottom of this file. Every URL below is a page this site actually serves — nothing here is a redirect or a stub.
 
 ## Services
 
-- [Solar](https://sunlogic.co.za/solar.html): Solar sized to actual usage for homes, small businesses and larger sites, installed and certified in-house.
-- [Electrical](https://sunlogic.co.za/electrical.html): Certified electrical work — rewiring, compliance certificates, surge protection, EV chargers.
-- [Energy management](https://sunlogic.co.za/energy-management.html): HotBot and SolarBot smart controllers (Plentify hardware) for geyser and solar/battery systems.
-- [Contact](https://sunlogic.co.za/contact.html): Free site assessment booking, office details, and the people who do the work.
+- [Electrical](https://sunlogic.co.za/electrical.html): Certified electrical contracting for homes, small businesses and larger sites. Rewiring and first fix, distribution board upgrades and rebuilds, fault finding and earth leakage tracing, compliance inspections and Certificates of Compliance, surge protection, generator changeover wiring, emergency lighting, shopfits, EV charger installation, and scheduled maintenance across one site or many.
+- [Smart Solutions](https://sunlogic.co.za/energy-management.html): HotBot and SolarBot, the Plentify controllers. HotBot learns when a household actually uses hot water and heats the geyser to suit instead of running to a fixed timer, and flags a leak early. SolarBot decides when to charge and when to draw on the battery, and can heat water from your own generation rather than bought electricity. R849 per device once off, R149 a month for the app, monitoring and support. One device per geyser. Fitted and certified by the same team that does the electrical work.
+- [Contact](https://sunlogic.co.za/contact.html): Books a free site assessment, and carries the office address, phone numbers and email.
 
-## Worth knowing (blog)
+## Worth knowing
 
-- [The Two-Year Certificate Myth](https://sunlogic.co.za/blog-coc-two-year-myth.html): A Certificate of Compliance does not expire on its own — the two-year rule only applies to property transfer.
-- [Why Your Electricity Bill Went Up](https://sunlogic.co.za/blog-why-your-bill-went-up.html): NERSA-approved South African tariff increases and the shift toward fixed charges.
-- [Thinking About an Electric Car?](https://sunlogic.co.za/blog-ev-home-charging.html): What home EV charging actually requires electrically in South Africa.
-- [Rent-to-Own](https://sunlogic.co.za/blog-rent-to-own.html), [Off the Grid vs. Grid-tied](https://sunlogic.co.za/blog-off-grid-vs-grid-tied.html), [Five Tips to Beat Load Shedding](https://sunlogic.co.za/blog-five-tips-load-shedding.html), [Three Essential Electrical Checks](https://sunlogic.co.za/blog-3-essential-checks.html)
+Articles on compliance, safety and what an electrical installation actually has to satisfy. Written for South African regulation — the Electrical Installation Regulations, Certificates of Compliance, and local supply conditions.
 
-## Other
+- [Worth knowing (index)](https://sunlogic.co.za/blog.html): All Electrical division articles.
+- [The Two-Year Certificate Myth](https://sunlogic.co.za/blog-coc-two-year-myth.html): A Certificate of Compliance does not expire on its own. The two-year rule applies on property transfer, not to the certificate itself — what it covers, and when a new one is genuinely needed.
+- [Three Essential Electrical Checks to Make Your Home Season-Ready](https://sunlogic.co.za/blog-3-essential-checks.html): Geyser timers, surge protection and backup power for a security system — three checks worth making before leaving a property unattended.
+- [Thinking About an Electric Car?](https://sunlogic.co.za/blog-ev-home-charging.html): What home EV charging actually takes electrically in South Africa — charger types, whether a distribution board can carry the load, the Certificate of Compliance an installation requires, and what happens during an outage.
 
-- [Legal & Policies](https://sunlogic.co.za/legal.html): Terms, privacy policy, warranty statement, company details.
+## Other pages
+
+- [Legal & Policies](https://sunlogic.co.za/legal.html): Terms of service, privacy policy, warranty statement, energy management subscription terms, company details.
 - [Sitemap](https://sunlogic.co.za/sitemap.xml)
+
+## Elsewhere in Sunlogic
+
+- [Sunlogic Energy](https://energy.sunlogic.co.za): The energy division — solar sized on real usage, batteries, backup power and the Plentify smart controllers. Its own services and articles are listed in https://energy.sunlogic.co.za/llms.txt
+- [Sunlogic SA](https://sunlogic.co.za): The company page, which routes to both divisions.

@@ -1,0 +1,243 @@
+<title>Sunlogic Lead Assignment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+
+<style>
+  :root{
+    --ground:#FFF7E9; --card:#FFFFFF; --ink:#0D2028; --dim:#5A544B;
+    --label:#A09B93; --rule:#F0E5CF; --accent:#B85300; --accent-bright:#F66F00;
+    --warm:#F7EED9; --edge:#DACAB6;
+    --sans:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#0B1519; --card:#111F25; --ink:#F3EDE2; --dim:#A9A296;
+      --label:#7C766C; --rule:#1E3038; --accent:#F66F00; --accent-bright:#F66F00;
+      --warm:#152329; --edge:#24383F;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#0B1519; --card:#111F25; --ink:#F3EDE2; --dim:#A9A296;
+    --label:#7C766C; --rule:#1E3038; --accent:#F66F00; --accent-bright:#F66F00;
+    --warm:#152329; --edge:#24383F;
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);
+    font:400 17px/1.65 var(--sans);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:760px;margin:0 auto;padding:72px 24px 96px}
+  @media(max-width:600px){.wrap{padding:44px 20px 64px}}
+
+  .eyebrow{font:700 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);margin:0 0 14px}
+  h1{font:800 42px/1.1 var(--sans);letter-spacing:-.02em;margin:0 0 16px;text-wrap:balance}
+  @media(max-width:600px){h1{font-size:32px}}
+  .lede{font-size:19px;color:var(--dim);margin:0 0 8px;max-width:60ch}
+  h2{font:800 24px/1.25 var(--sans);letter-spacing:-.01em;margin:64px 0 8px;text-wrap:balance}
+  h3{font:700 17px/1.35 var(--sans);margin:0 0 6px}
+  p{margin:0 0 16px;max-width:66ch}
+  strong{font-weight:700;color:var(--ink)}
+  a{color:var(--accent)}
+  hr{border:0;border-top:1px solid var(--rule);margin:56px 0 0}
+
+  .rule{height:4px;background:var(--accent-bright);border-radius:2px;width:56px;margin:0 0 32px}
+
+  /* stages */
+  .stage{display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start;
+    padding:22px 0;border-top:1px solid var(--rule)}
+  .stage:last-of-type{border-bottom:1px solid var(--rule)}
+  .num{font:700 12px/28px var(--mono);width:28px;height:28px;border-radius:50%;
+    text-align:center;background:var(--accent-bright);color:#fff;flex:0 0 28px}
+  .stage p{margin:0;color:var(--dim)}
+  .when{font:700 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+    color:var(--label);margin-top:8px;display:block}
+
+  /* fact cards */
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:24px 0 0}
+  @media(max-width:600px){.cards{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--edge);border-radius:10px;padding:20px}
+  .card p{margin:0;font-size:15px;color:var(--dim)}
+
+  /* tables */
+  .tw{overflow-x:auto;margin:20px 0 0;-webkit-overflow-scrolling:touch}
+  table{border-collapse:collapse;width:100%;min-width:460px;font-size:15px}
+  th{font:700 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+    color:var(--label);text-align:left;padding:0 14px 10px 0;white-space:nowrap}
+  td{padding:11px 14px 11px 0;border-top:1px solid var(--rule);vertical-align:top;color:var(--dim)}
+  td:first-child{color:var(--ink);font-weight:500;white-space:nowrap}
+  code{font:400 13.5px var(--mono);background:var(--warm);padding:2px 6px;
+    border-radius:4px;color:var(--ink)}
+
+  .quote{background:var(--warm);border-left:3px solid var(--accent-bright);
+    border-radius:0 8px 8px 0;padding:18px 20px;margin:24px 0 0}
+  .quote p{margin:0;font:400 15px/1.6 var(--mono);color:var(--ink);max-width:none;
+    overflow-wrap:anywhere}
+
+  .note{color:var(--dim);font-size:15px}
+  .foot{margin-top:72px;padding-top:24px;border-top:1px solid var(--rule);
+    font:400 13px/1.6 var(--mono);color:var(--label)}
+</style>
+
+<div class="wrap">
+
+  <p class="eyebrow">Sunlogic SA · Internal reference</p>
+  <h1>How a lead reaches a director</h1>
+  <div class="rule"></div>
+  <p class="lede">Every enquiry from the website is offered to one director at a time.
+    Nothing is shared until someone actively accepts it, nothing is lost if nobody does,
+    and every step is recorded.</p>
+
+  <h2>The three stages</h2>
+  <p>Enquiries alternate strictly between the two directors. Each offer is exclusive —
+    the other person is told nothing while it stands.</p>
+
+  <div class="stage">
+    <div class="num">1</div>
+    <div>
+      <h3>Offered to one director</h3>
+      <p>Whoever is next in the rotation receives an email saying an enquiry has arrived,
+        its division, and the time it came in. No name, no contact details, no message.
+        A single button accepts it.</p>
+      <span class="when">Exclusive for 24 hours</span>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="num">2</div>
+    <div>
+      <h3>Passed to the other director</h3>
+      <p>If it isn't accepted, the first director is told that 24 hours has passed and
+        the enquiry has moved on. It is then offered to the other director, alone, on the
+        same terms.</p>
+      <span class="when">Exclusive for a further 24 hours</span>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="num">3</div>
+    <div>
+      <h3>Opened to both</h3>
+      <p>After 48 hours with no acceptance, both directors are emailed and both links
+        become live. Whoever clicks first takes it. This alert repeats every day until
+        somebody does.</p>
+      <span class="when">Repeats daily until accepted</span>
+    </div>
+  </div>
+
+  <h2>What the enquirer's details are protected by</h2>
+  <p>The offer email deliberately carries only the division and the arrival time. The
+    customer's name, phone number, email address, suburb and message are sent
+    <strong>only to the person who accepts</strong>, and only once they have.</p>
+  <p class="note">Accepting is a deliberate action, not a side effect of opening the email.
+    The link shows a page that performs the acceptance — a mail scanner following links in
+    the background cannot claim an enquiry.</p>
+
+  <h2>Guarantees</h2>
+  <div class="cards">
+    <div class="card">
+      <h3>Nothing is lost</h3>
+      <p>An unaccepted enquiry is never dropped. The reminder repeats daily, indefinitely,
+        until a person takes it.</p>
+    </div>
+    <div class="card">
+      <h3>Offers are strictly even</h3>
+      <p>The rotation alternates on every offer. Neither director can receive two first
+        offers in a row.</p>
+    </div>
+    <div class="card">
+      <h3>One owner, never two</h3>
+      <p>If both click at the same moment, exactly one acceptance is recorded. The other
+        is told someone got there first.</p>
+    </div>
+    <div class="card">
+      <h3>Nothing is deleted</h3>
+      <p>Offers change state, they are never removed. Every enquiry keeps its full history.</p>
+    </div>
+  </div>
+
+  <h2>The record</h2>
+  <p>Every enquiry occupies one row in the <strong>Sunlogic Leads</strong> spreadsheet,
+    updated in place as it moves. Four columns answer the questions that get asked:</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>Column</th><th>Answers</th></tr></thead>
+      <tbody>
+        <tr><td>Assigned To</td><td>Who it was offered to first</td></tr>
+        <tr><td>Accepted At</td><td>Whether they took it, and when</td></tr>
+        <tr><td>Reassigned To</td><td>Who it passed to, if it wasn't accepted</td></tr>
+        <tr><td>Reassigned Accepted At</td><td>Whether that person took it, and when</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p style="margin-top:24px">A <strong>History</strong> column carries the whole sequence in
+    plain language, so a question about any enquiry has a factual answer:</p>
+
+  <div class="quote">
+    <p>Offered to Stephan 4 Sep 2026 at 10:36 SAST → Not accepted within 24 hours →
+      Offered to Craig 5 Sep 2026 at 10:36 SAST → Accepted by Craig 5 Sep 2026 at 11:02 SAST</p>
+  </div>
+
+  <p class="note" style="margin-top:20px">It records what happened, never why. Whether
+    someone was on a roof, on leave, or simply hadn't seen it is not something the system
+    knows, and it does not guess.</p>
+
+  <h2>A daily summary</h2>
+  <p>Every morning at 07:00 an email reports the last 24 hours: enquiries received,
+    accepted, still unclaimed and for how long, and anything that failed to send. It is sent
+    <strong>whether or not anything needs attention</strong>.</p>
+  <p class="note">That is deliberate. A summary that only appears when there is a problem
+    is indistinguishable from one that has stopped working — and “no enquiries today” would
+    look identical to “the system has been down since Tuesday”. If the summary stops
+    arriving, something is wrong.</p>
+
+  <h2>How it is built</h2>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Part</th><th>Runs on</th></tr></thead>
+      <tbody>
+        <tr><td>Website forms</td><td>Cloudflare Pages — sunlogic.co.za and the two division sites</td></tr>
+        <tr><td>Assignment &amp; records</td><td>Cloudflare Workers and D1, Western Europe</td></tr>
+        <tr><td>Accept links</td><td><code>leads.sunlogic.co.za</code></td></tr>
+        <tr><td>Email delivery</td><td>Resend, from <code>leads@send.sunlogic.co.za</code></td></tr>
+        <tr><td>Backup delivery &amp; logging</td><td>n8n, on the office iMac</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note" style="margin-top:20px">Enquiries do not depend on any office equipment.
+    If the iMac is off, leads still arrive, are still assigned, and directors are still
+    emailed — only the spreadsheet row waits. If email delivery fails entirely, the enquiry
+    is held and retried for 48 hours rather than discarded.</p>
+
+  <h2>Known limits</h2>
+  <p>Stated plainly, because a reference that only lists strengths is not a reference.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Limit</th><th>What it means</th></tr></thead>
+      <tbody>
+        <tr><td>The clock starts on sending</td>
+          <td>The 24 hours is measured from when the email is sent, not when it is read. A
+            long outage at the receiving mailbox could consume part of a window.</td></tr>
+        <tr><td>Timing is accurate to five minutes</td>
+          <td>Expiry is checked every five minutes, so “24 hours” means 24 hours give or
+            take a few minutes.</td></tr>
+        <tr><td>Even offers, not even work</td>
+          <td>The rotation guarantees an equal split of <em>offers</em>. If one director
+            accepts less often, the other does more of the work while the offer counts stay
+            identical. The daily summary reports both figures.</td></tr>
+        <tr><td>Anyone with the link can accept</td>
+          <td>Access to the mailbox is the authentication, as with a password reset link.
+            A forwarded offer email could be accepted by the recipient.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="foot">
+    Sunlogic SA · lead assignment · documented 4 September 2026<br>
+    Divisions: Energy · Electrical · Smart Solutions · Not sure yet
+  </div>
+
+</div>

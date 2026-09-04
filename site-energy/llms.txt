@@ -1,24 +1,33 @@
-# Sunlogic SA
+# Sunlogic Energy
 
-> Solar and certified electrical contracting for homes and businesses in Cape Town, South Africa. One team designs, installs and certifies each system — solar, electrical work, or the smart HotBot/SolarBot energy controllers — with council registration and Certificate of Compliance handled as part of the job, not an extra.
+> Solar sized to what a property actually uses, with batteries, backup power and the Plentify smart controllers, for homes, small businesses and larger sites in Cape Town and the Western Cape. One team designs, installs, commissions and registers the system: council SSEG registration and the Certificate of Compliance are part of the job, not an extra line on the invoice.
 
-Sunlogic SA (Pty) Ltd, registration 2022/651654/07. Based at 9 Chesham Road, Claremont, Cape Town, 7708. Phone +27 (82) 655 5371, email sales@sunlogic.co.za.
+Sunlogic SA (Pty) Ltd, registration 2022/651654/07. 9 Chesham Road, Claremont, Cape Town, 7708, South Africa. Phone +27 (82) 655 5371, email sales@sunlogic.co.za. Office hours 08:00–18:00 weekdays (SAST, UTC+2). Both directors run the teams and the projects.
+
+energy.sunlogic.co.za is the Energy division. Electrical contracting is a separate division on its own site; the link is at the bottom of this file. Every URL below is a page this site actually serves — nothing here is a redirect or a stub.
 
 ## Services
 
-- [Solar](https://sunlogic.co.za/solar.html): Solar sized to actual usage for homes, small businesses and larger sites, installed and certified in-house.
-- [Electrical](https://sunlogic.co.za/electrical.html): Certified electrical work — rewiring, compliance certificates, surge protection, EV chargers.
-- [Energy management](https://sunlogic.co.za/energy-management.html): HotBot and SolarBot smart controllers (Plentify hardware) for geyser and solar/battery systems.
-- [Contact](https://sunlogic.co.za/contact.html): Free site assessment booking, office details, and the people who do the work.
+- [Energy](https://sunlogic.co.za/solar.html): Grid-tied, hybrid and off-grid solar sized on the property's real consumption rather than a package tier. Covers panels, inverter, battery storage and backup changeover, for homes, small businesses and larger sites. Includes the roof survey, the design, council SSEG registration, commissioning and handover.
+- [Smart Solutions](https://sunlogic.co.za/energy-management.html): HotBot and SolarBot, the Plentify controllers. HotBot learns when a household actually uses hot water and heats the geyser to suit instead of running to a fixed timer, and flags a leak early. SolarBot decides when to charge and when to draw on the battery, and can heat water from your own generation rather than bought electricity. R849 per device once off, R149 a month for the app, monitoring and support. One device per geyser.
+- [Contact](https://sunlogic.co.za/contact.html): Books a free site assessment, and carries the office address, phone numbers and email.
 
-## Worth knowing (blog)
+## Worth knowing
 
-- [The Two-Year Certificate Myth](https://sunlogic.co.za/blog-coc-two-year-myth.html): A Certificate of Compliance does not expire on its own — the two-year rule only applies to property transfer.
-- [Why Your Electricity Bill Went Up](https://sunlogic.co.za/blog-why-your-bill-went-up.html): NERSA-approved South African tariff increases and the shift toward fixed charges.
-- [Thinking About an Electric Car?](https://sunlogic.co.za/blog-ev-home-charging.html): What home EV charging actually requires electrically in South Africa.
-- [Rent-to-Own](https://sunlogic.co.za/blog-rent-to-own.html), [Off the Grid vs. Grid-tied](https://sunlogic.co.za/blog-off-grid-vs-grid-tied.html), [Five Tips to Beat Load Shedding](https://sunlogic.co.za/blog-five-tips-load-shedding.html), [Three Essential Electrical Checks](https://sunlogic.co.za/blog-3-essential-checks.html)
+Articles on running cost, system choice and what actually changes a bill. Written for South African conditions — NERSA tariffs, load shedding, municipal registration.
 
-## Other
+- [Worth knowing (index)](https://sunlogic.co.za/blog.html): All Energy division articles.
+- [Why Your Electricity Bill Went Up](https://sunlogic.co.za/blog-why-your-bill-went-up.html): Why a South African electricity bill keeps climbing even when usage falls — NERSA-approved tariff increases and the shift toward fixed charges — and what that does to solar payback.
+- [Rent-to-Own](https://sunlogic.co.za/blog-rent-to-own.html): Rent-to-own and rented solar systems tailored to a home or business without a full upfront payment, and how the arrangement compares to buying outright.
+- [Off the Grid vs. Grid-tied](https://sunlogic.co.za/blog-off-grid-vs-grid-tied.html): The real costs and benefits of going fully off-grid against staying connected with a grid-tied system.
+- [Five Tips to Beat Load Shedding](https://sunlogic.co.za/blog-five-tips-load-shedding.html): Practical steps for managing outages, from charging devices ahead of time through to alternative power.
 
-- [Legal & Policies](https://sunlogic.co.za/legal.html): Terms, privacy policy, warranty statement, company details.
+## Other pages
+
+- [Legal & Policies](https://sunlogic.co.za/legal.html): Terms of service, privacy policy, warranty statement, energy management subscription terms, company details.
 - [Sitemap](https://sunlogic.co.za/sitemap.xml)
+
+## Elsewhere in Sunlogic
+
+- [Sunlogic Electrical](https://electrical.sunlogic.co.za): The electrical division — rewiring, distribution boards, compliance certificates, surge protection, EV chargers, maintenance. Its own services and articles are listed in https://electrical.sunlogic.co.za/llms.txt
+- [Sunlogic SA](https://sunlogic.co.za): The company page, which routes to both divisions.

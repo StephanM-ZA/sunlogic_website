@@ -32,7 +32,11 @@ const SITES = [
       /* Real URLs, not filenames: this list is injected as JSON and the
          build's extensionless rewrite only matches quoted paths in HTML and
          single-quoted paths in JS, so it would not touch these. */
-      { href: '/', key: 'home', label: 'Home' },
+      /* Labelled About, not Home: the apex is the company page and the two
+         divisions are the destinations, so the first tab describes what it
+         is rather than where it sits. The key stays `home` — it is the
+         route's identity, matched against each page's active= attribute. */
+      { href: '/', key: 'home', label: 'About' },
       { href: 'https://energy.sunlogic.co.za', key: 'energy', label: 'Energy' },
       { href: 'https://electrical.sunlogic.co.za', key: 'electrical', label: 'Electrical', accent: 'navy' },
     ],
@@ -59,8 +63,32 @@ const SITES = [
     domain: 'https://energy.sunlogic.co.za',
     src: 'site-energy',
     out: 'dist/energy',
-    nav: null,
-    footer: null,
+    /* Each division site leads with its own division and carries exactly one
+       link across to the other, listed last, so the site reads as that
+       division's rather than as a shared two-trade site.
+       ------------------------------------------------------------------
+       Until now both division sites had nav: null and fell through to the
+       fallback list in shared/components.js — Home · Solar · Electrical ·
+       Energy. That single shared default is why each site carried the other
+       division's pages at all, and it still used the pre-rename names. A
+       real list per site is what actually separates them.
+
+       Four links, not five: shared/sunlogic-check.js fails a nav with more
+       than four ("a fifth turns a route into a menu"), so the blog stays a
+       footer link — Worth knowing — exactly where it already was. */
+    nav: [
+      { href: 'index.html', key: 'home', label: 'Home' },
+      { href: 'solar.html', key: 'solar', label: 'Energy' },
+      { href: 'energy-management.html', key: 'smart', label: 'Smart Solutions' },
+      /* Absolute, so the build's extensionless rewrite leaves it alone and it
+         crosses to the other host. Navy wherever Electrical appears. */
+      { href: 'https://electrical.sunlogic.co.za', key: 'electrical', label: 'Electrical', accent: 'navy' },
+    ],
+    footer: [
+      [['Energy', 'solar.html'], ['Smart Solutions', 'energy-management.html'],
+       ['Worth knowing', 'blog.html'], ['Electrical', 'https://electrical.sunlogic.co.za']],
+      [['Contact', 'contact.html'], ['Legal', 'legal.html']],
+    ],
     logo: 'images/sl_logo_energy_blue.svg',
     logoWhite: 'images/sl_logo_white.svg',
     logoVertical: 'images/sl_logo_verticle_energy_white.svg',
@@ -71,8 +99,19 @@ const SITES = [
     domain: 'https://electrical.sunlogic.co.za',
     src: 'site-electrical',
     out: 'dist/electrical',
-    nav: null,
-    footer: null,
+    /* Mirror of the energy site's list — own division first, one link across
+       to the other last. See that entry for why these exist at all. */
+    nav: [
+      { href: 'index.html', key: 'home', label: 'Home' },
+      { href: 'electrical.html', key: 'electrical', label: 'Electrical', accent: 'navy' },
+      { href: 'energy-management.html', key: 'smart', label: 'Smart Solutions' },
+      { href: 'https://energy.sunlogic.co.za', key: 'energy', label: 'Energy' },
+    ],
+    footer: [
+      [['Electrical', 'electrical.html'], ['Smart Solutions', 'energy-management.html'],
+       ['Worth knowing', 'blog.html'], ['Energy', 'https://energy.sunlogic.co.za']],
+      [['Contact', 'contact.html'], ['Legal', 'legal.html']],
+    ],
     logo: 'images/sl_logo_electrical_blue.svg',
     logoWhite: 'images/sl_logo_white.svg',
     logoVertical: 'images/sl_logo_verticle_electrical_white.svg',

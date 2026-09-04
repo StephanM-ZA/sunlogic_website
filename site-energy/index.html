@@ -23,12 +23,12 @@
 <link rel="preload" href="shared/fonts/HankenGrotesk-900-latin.woff2" as="font" type="font/woff2" crossorigin/>
 <link rel="preload" href="shared/fonts/JetBrainsMono-400-latin.woff2" as="font" type="font/woff2" crossorigin/>
 <link rel="preload" href="shared/fonts/JetBrainsMono-700-latin.woff2" as="font" type="font/woff2" crossorigin/>
-<link rel="stylesheet" href="shared/sunlogic.css?v=34"/>
+<link rel="stylesheet" href="shared/sunlogic.css?v=38"/>
 <script src="shared/icons.js?v=2" defer></script>
-<script src="shared/components.js?v=40" defer></script>
+<script src="shared/components.js?v=41" defer></script>
 <script src="shared/forms.js?v=4" defer></script>
-<script src="shared/sunlogic-check.js?v=5" defer></script>
-<script src="plugins/day-feed/schedule.data.js?v=1" defer></script>
+<script src="shared/sunlogic-check.js?v=6" defer></script>
+<script src="plugins/day-feed/schedule.data.js?v=2" defer></script>
 <script src="plugins/day-feed/day-feed-schedule.js?v=1" defer></script>
 <script src="plugins/day-feed/day-feed.js?v=1" defer></script>
 <script type="application/ld+json">
@@ -112,38 +112,38 @@
     <dl-grid cols="3">
       <dl-card icon="sun" heading="At Home">
         <div class="sl-split-copy">
-          <p class="sl-split-copy__label">Solar</p>
+          <p class="sl-split-copy__label">Energy</p>
           <p class="sl-body">A smaller electricity bill, and far less of it outside your control.</p>
           <p class="sl-split-copy__label">Electrical</p>
           <p class="sl-body">Rewiring, tripping circuits, plug points, surge protection, EV chargers and compliance certificates.</p>
         </div>
         <dl-actions>
-          <dl-button variant="outline" wipe="orange" href="solar.html#at-home">Solar</dl-button>
-          <dl-button variant="outline" wipe="navy" href="electrical.html#at-home">Electrical</dl-button>
+          <dl-button variant="outline" wipe="orange" href="solar.html#at-home">Energy</dl-button>
+          <dl-button variant="outline" wipe="navy" href="https://electrical.sunlogic.co.za/electrical#at-home">Electrical</dl-button>
         </dl-actions>
       </dl-card>
       <dl-card icon="wrench-screwdriver" heading="For Small Business">
         <div class="sl-split-copy">
-          <p class="sl-split-copy__label">Solar</p>
+          <p class="sl-split-copy__label">Energy</p>
           <p class="sl-body">Your business runs during the day, which is exactly when solar produces. That usually makes the numbers work well.</p>
           <p class="sl-split-copy__label">Electrical</p>
           <p class="sl-body">Shopfits, new equipment, lighting and compliance, scheduled around your trading hours.</p>
         </div>
         <dl-actions>
-          <dl-button variant="outline" wipe="orange" href="solar.html#small-business">Solar</dl-button>
-          <dl-button variant="outline" wipe="navy" href="electrical.html#small-business">Electrical</dl-button>
+          <dl-button variant="outline" wipe="orange" href="solar.html#small-business">Energy</dl-button>
+          <dl-button variant="outline" wipe="navy" href="https://electrical.sunlogic.co.za/electrical#small-business">Electrical</dl-button>
         </dl-actions>
       </dl-card>
       <dl-card icon="chart-bar" heading="For Larger Sites">
         <div class="sl-split-copy">
-          <p class="sl-split-copy__label">Solar</p>
+          <p class="sl-split-copy__label">Energy</p>
           <p class="sl-body">Sized properly on what your site actually uses, with the savings worked out honestly.</p>
           <p class="sl-split-copy__label">Electrical</p>
           <p class="sl-body">Maintenance, backup power, emergency lighting and compliance across one site or many.</p>
         </div>
         <dl-actions>
-          <dl-button variant="outline" wipe="orange" href="solar.html#larger-sites">Solar</dl-button>
-          <dl-button variant="outline" wipe="navy" href="electrical.html#larger-sites">Electrical</dl-button>
+          <dl-button variant="outline" wipe="orange" href="solar.html#larger-sites">Energy</dl-button>
+          <dl-button variant="outline" wipe="navy" href="https://electrical.sunlogic.co.za/electrical#larger-sites">Electrical</dl-button>
         </dl-actions>
       </dl-card>
     </dl-grid>
@@ -250,16 +250,16 @@
 <dl-section bg="page" id="from-the-blog">
   <dl-reveal>
     <dl-stack eyebrow="From the blog" heading="Worth |Knowing"
-      body="Straight answers on what solar costs, what changed on your bill, and what a compliance certificate actually covers.">
+      body="Straight answers on what solar costs, what changed on your bill, and whether going off-grid is worth it.">
       <dl-button variant="outline" href="blog.html">Read all posts</dl-button>
     </dl-stack>
   </dl-reveal>
   <dl-reveal>
     <dl-grid cols="3">
-      <dl-card heading="Three Essential Electrical Checks"
-        body="Geyser timers, surge protection and backup power for your security system before you go away.">
+      <dl-card heading="Why Your Electricity Bill Went Up"
+        body="The NERSA-approved tariff increases behind a bill that keeps climbing even when you use less.">
         <dl-actions>
-          <dl-button variant="outline" icon="arrow-right" href="blog-3-essential-checks.html">Read</dl-button>
+          <dl-button variant="outline" icon="arrow-right" href="blog-why-your-bill-went-up.html">Read</dl-button>
         </dl-actions>
       </dl-card>
       <dl-card heading="Rent-to-Own"
@@ -287,6 +287,24 @@
     action="Book a Free Site Assessment"
     href="contact.html"
     phone></dl-cta>
+</dl-reveal>
+
+<!-- Cross-division promo — wears the destination's own hero. See
+     DlDivisionPromo in shared/components.js for why it is nested in a
+     section and why its button is not an emphasis button. -->
+<dl-reveal>
+  <dl-division-promo photo="images/hero.webp" srcset-widths="640,1024,1440,1920"
+    alt="A home at dusk, lit from inside, with an electric vehicle charging in the carport" accent="navy">
+    <div class="sl-hero__text">
+      <dl-stack level="hero" eyebrow="The other half of Sunlogic"
+        heading="Certified Electrical |Contracting"
+        body="The same team, the same compliance certificate, the other trade. Rewiring, distribution boards, fault finding, surge protection and EV chargers across the Western Cape.">
+        <dl-actions>
+          <dl-button variant="emphasis" icon="arrow-right" href="https://electrical.sunlogic.co.za">See Sunlogic Electrical</dl-button>
+        </dl-actions>
+      </dl-stack>
+    </div>
+  </dl-division-promo>
 </dl-reveal>
 
 </main>

@@ -1,25 +1,26 @@
 # Sunlogic SA
 
-> Solar and certified electrical contracting for homes and businesses in Cape Town, South Africa. One team designs, installs and certifies each system — solar, electrical work, or the smart HotBot/SolarBot energy controllers — with council registration and Certificate of Compliance handled as part of the job, not an extra.
+> Solar and certified electrical contracting for homes and businesses in Cape Town and the Western Cape, South Africa. One team designs, installs and certifies each system — solar and storage, electrical work, or the Plentify HotBot/SolarBot smart controllers — with council registration and the Certificate of Compliance handled as part of the job, not an extra.
 
-Sunlogic SA (Pty) Ltd, registration 2022/651654/07. Based at 9 Chesham Road, Claremont, Cape Town, 7708. Phone +27 (82) 655 5371, email sales@sunlogic.co.za.
+Sunlogic SA (Pty) Ltd, registration 2022/651654/07. 9 Chesham Road, Claremont, Cape Town, 7708, South Africa. Phone +27 (82) 655 5371, email sales@sunlogic.co.za. Office hours 08:00–18:00 weekdays (SAST, UTC+2). Both directors run the teams and the projects.
 
-sunlogic.co.za is the company page. The work itself lives on two division sites, each with its own services and blog.
+sunlogic.co.za is the company page: it introduces Sunlogic and routes to the two divisions. The services, articles and booking flows live on the division sites, each of which publishes its own llms.txt listing every page it serves.
 
 ## Divisions
 
-- [Sunlogic Energy](https://energy.sunlogic.co.za): Solar sized to actual usage, batteries, backup power, and the HotBot/SolarBot smart controllers (Plentify hardware) for geyser and solar/battery systems. For homes, small businesses and larger sites.
-- [Sunlogic Electrical](https://electrical.sunlogic.co.za): Certified electrical work — rewiring, compliance certificates, surge protection, EV chargers, maintenance, and council registration.
+- [Sunlogic Energy](https://energy.sunlogic.co.za): Solar sized on a property's real consumption, battery storage, backup power, and the Plentify smart controllers for geyser and solar/battery systems. Homes, small businesses and larger sites. Full page list: https://energy.sunlogic.co.za/llms.txt
+- [Sunlogic Electrical](https://electrical.sunlogic.co.za): Certified electrical contracting — rewiring, distribution boards, fault finding, compliance inspections and Certificates of Compliance, surge protection, EV chargers, emergency lighting and maintenance. Full page list: https://electrical.sunlogic.co.za/llms.txt
 
 ## On this site
 
-- [Contact](https://sunlogic.co.za/contact.html): Free site assessment booking, office details, and the people who do the work.
-- [Legal & Policies](https://sunlogic.co.za/legal.html): Terms, privacy policy, warranty statement, company details.
+- [About Sunlogic](https://sunlogic.co.za/): The company page — who Sunlogic is, what the two divisions cover, and how a job runs from first visit to compliance certificate.
+- [Contact](https://sunlogic.co.za/contact.html): Books a free site assessment, and carries the office address, phone numbers and email.
+- [Legal & Policies](https://sunlogic.co.za/legal.html): Terms of service, privacy policy, warranty statement, energy management subscription terms, company details.
 - [Sitemap](https://sunlogic.co.za/sitemap.xml)
 
-## Worth knowing (blog)
+## Worth knowing (articles)
 
-The blog moved to the division sites. Each post is listed in that site's own llms.txt.
+Each division carries the articles that belong to it. Nothing is published on this domain.
 
 - Bills, batteries, off-grid and load shedding: https://energy.sunlogic.co.za/blog
-- Compliance certificates, EV charging and electrical checks: https://electrical.sunlogic.co.za/blog
+- Compliance certificates, EV charging and electrical safety checks: https://electrical.sunlogic.co.za/blog

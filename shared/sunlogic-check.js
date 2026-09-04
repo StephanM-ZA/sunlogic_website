@@ -93,8 +93,21 @@
     /* 5 — One emphasis button in view (the closing CTA is the allowed second).
        "In view" is the point, so the drawer is excluded — and a dialog for the
        same reason: it is its own view with its own emphasis budget, and while
-       it is open the page behind it is inert. */
-    const emph = document.querySelectorAll('.sl-btn--emphasis:not(.sl-drawer .sl-btn):not(dialog .sl-btn)');
+       it is open the page behind it is inert.
+
+       The division promo is excluded on the same grounds, and this one was a
+       deliberate amendment rather than an oversight. It is a full-width card
+       below the closing CTA carrying another site's hero: by the time it is
+       on screen the CTA has scrolled away, so the two never compete for the
+       same glance. The rule protects against several orange buttons fighting
+       within one view, not against a page having three across its whole
+       length — and a promo for the other division that does not look
+       clickable fails at the only thing it exists to do.
+
+       Note what is NOT exempt: an emphasis button anywhere else on the page
+       still counts, so this cannot be used to smuggle a fourth in. */
+    const emph = document.querySelectorAll(
+      '.sl-btn--emphasis:not(.sl-drawer .sl-btn):not(dialog .sl-btn):not(.sl-hero--promo .sl-btn)');
     if (emph.length > 2) fail('accent', emph.length + ' emphasis buttons on the page; the limit is one, plus the closing CTA', emph[2]);
 
     /* 6 — Case. Headings are Title Case; prose sub-heads are sentence case. */

@@ -1,0 +1,33 @@
+# Cloudflare Pages redirect map for energy.sunlogic.co.za.
+#
+# This site used to carry the electrical division's pages as well: both
+# division sites were built from the same page set and shared one nav, so
+# each shipped a byte-identical copy of the other's work. They have been
+# removed so the site reads as the Energy division's rather than as a
+# two-trade site with the other trade bolted on.
+#
+# These send anything already indexed — or bookmarked, or linked from
+# someone else's site — to the division that now owns the page, rather than
+# to a 404.
+#
+# 301, not 302: the move is permanent, and only a 301 passes ranking on.
+#
+# Both spellings are listed because scripts/build-site.js rewrites links to
+# the extensionless form while Cloudflare Pages 308s /solar.html to /solar —
+# so a link written the old way lands in one hop rather than two.
+#
+# Not processed by the build: rewriteHost and rewriteToExtensionless walk
+# files by extension (.html/.xml/.txt/.js/.json) and this file has none. What
+# is written here is what ships.
+
+# --- Electrical: contracting, compliance, EV charging ----------------------
+/electrical                        https://electrical.sunlogic.co.za/electrical                  301
+/electrical.html                   https://electrical.sunlogic.co.za/electrical                  301
+
+# --- Posts that moved to Electrical ---------------------------------------
+/blog-3-essential-checks           https://electrical.sunlogic.co.za/blog-3-essential-checks     301
+/blog-3-essential-checks.html      https://electrical.sunlogic.co.za/blog-3-essential-checks     301
+/blog-coc-two-year-myth            https://electrical.sunlogic.co.za/blog-coc-two-year-myth      301
+/blog-coc-two-year-myth.html       https://electrical.sunlogic.co.za/blog-coc-two-year-myth      301
+/blog-ev-home-charging             https://electrical.sunlogic.co.za/blog-ev-home-charging       301
+/blog-ev-home-charging.html        https://electrical.sunlogic.co.za/blog-ev-home-charging       301

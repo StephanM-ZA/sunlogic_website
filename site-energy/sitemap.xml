@@ -16,11 +16,6 @@
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://sunlogic.co.za/electrical.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
     <loc>https://sunlogic.co.za/energy-management.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -34,11 +29,6 @@
     <loc>https://sunlogic.co.za/blog.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://sunlogic.co.za/blog-3-essential-checks.html</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://sunlogic.co.za/blog-rent-to-own.html</loc>
@@ -56,17 +46,7 @@
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://sunlogic.co.za/blog-coc-two-year-myth.html</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
     <loc>https://sunlogic.co.za/blog-why-your-bill-went-up.html</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://sunlogic.co.za/blog-ev-home-charging.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>

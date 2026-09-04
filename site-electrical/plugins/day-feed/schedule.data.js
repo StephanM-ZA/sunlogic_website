@@ -1,14 +1,26 @@
-/* Content pools for plugin-day-feed.
+/* Content pools for plugin-day-feed — ELECTRICAL division.
    ------------------------------------------------------------------
-   This is a company calendar, not one person's list: several crews run
-   in parallel, so two entries can share a start time. Jobs carry a
-   duration, and the longer ones carry a span in working days — a job
-   that starts on Tuesday with span 3 appears again on Wednesday and
-   Thursday marked "day 2/3".
+   This file is per site. The generator (day-feed-schedule.js) and the
+   component (day-feed.js) are byte-identical across all three sites and
+   stay that way; only this data differs, which is exactly the seam the
+   plugin was built with ("everything shown comes from schedule.data.js,
+   which is plain data — no code").
 
-   The plugin composes each day from these pools seeded by the date, so
-   a given day always looks the same to a returning visitor while no two
-   days match. Plain data on purpose — no code.
+   electrical.sunlogic.co.za shows the two divisions this site sells:
+   Electrical (contracting, compliance, EV charging) and Smart Solutions
+   (the Plentify controllers). No solar crews and no solar jobs — that
+   work is real, it just belongs to the other site, and a visitor reading
+   this panel should see the division they came for.
+
+   This is a company calendar, not one person's list: several crews run in
+   parallel, so two entries can share a start time. Jobs carry a duration,
+   and the longer ones carry a span in working days — a job that starts on
+   Tuesday with span 3 appears again on Wednesday and Thursday marked
+   "day 2/3".
+
+   The plugin composes each day from these pools seeded by the date, so a
+   given day always looks the same to a returning visitor while no two days
+   match. Plain data on purpose — no code.
 
    Tokens usable inside a job's `text`:
      {suburb}        one of `suburbs`
@@ -20,7 +32,7 @@
    Repeated tokens in one line resolve to different values.
 
    Job fields:
-     kind    solar | electrical | admin — must match a crew's kind
+     kind    electrical | smart | admin — must match a crew's kind
      band    open (07:00-09:00) · morning (09:00-12:00)
              midday (11:00-14:00) · afternoon (13:00-16:30)
              close (15:30-17:45)
@@ -31,12 +43,25 @@
 window.PLUGIN_DAY_FEED = {
 
   /* Who is out on a given day. `kind` decides which jobs they can take.
-     Weekdays run most of these; Saturday runs a couple. */
+     Five crews, so four or five run a weekday and Saturday runs two or
+     three — see buildStarts, which takes min(crews, 4 or 5).
+
+     Four field crews to one smart crew and one office on purpose. The
+     division's own work is mostly all-day and half-day, so a field crew
+     posts one or two entries where the smart crew posts four short ones;
+     with fewer field crews the panel on a division's own site reads as
+     mostly Smart Solutions and paperwork.
+
+     Measured over 343 working days, this shapes the panel to roughly
+     48% division / 29% smart / 23% office on Energy and 46/30/24 on
+     Electrical. Change the crew list and that mix moves — re-measure
+     rather than assuming. */
   crews: [
-    { id: "Solar 1", kind: "solar" },
-    { id: "Solar 2", kind: "solar" },
     { id: "Elec 1", kind: "electrical" },
     { id: "Elec 2", kind: "electrical" },
+    { id: "Elec 3", kind: "electrical" },
+    { id: "Elec 4", kind: "electrical" },
+    { id: "Smart 1", kind: "smart" },
     { id: "Office", kind: "admin" },
   ],
 
@@ -56,7 +81,10 @@ window.PLUGIN_DAY_FEED = {
     "City of Cape Town", "Stellenbosch", "Drakenstein", "Overstrand",
   ],
 
-  /* Paired so a quoted system always reads as a sensible combination. */
+  /* Only the smart controllers reference a battery on this site, but the
+     pool stays whole: the token resolver reads pools.arrays directly and
+     would throw on a missing one, so a future {array} or {panels} line
+     cannot break the panel with no error to show for it. */
   arrays: [
     { panels: "3.6 kW", battery: "5.1 kWh" },
     { panels: "4.4 kW", battery: "5.1 kWh" },
@@ -74,50 +102,60 @@ window.PLUGIN_DAY_FEED = {
 
   jobs: [
 
-    /* --- solar: the long ones, which is where multi-day comes from -- */
-    { kind: "solar", band: "open", dur: "allday", span: [2, 4], text: "{array} install · {suburb}" },
-    { kind: "solar", band: "open", dur: "allday", span: [2, 3], text: "{panels} rooftop install · {suburb}" },
-    { kind: "solar", band: "open", dur: "allday", span: [1, 2], weekend: false, text: "{panels} carport array · {suburb}" },
-    { kind: "solar", band: "open", dur: "half", text: "panel mounting · {panels} · {suburb}" },
-    { kind: "solar", band: "open", dur: "allday", span: [2, 3], weekend: false, text: "{panels} ground mount · {suburb}" },
-    { kind: "solar", band: "morning", dur: "half", span: [1, 2], text: "cable runs and DC isolators · {suburb}" },
-    { kind: "solar", band: "morning", dur: "half", text: "inverter and battery fit · {battery}" },
-    { kind: "solar", band: "open", dur: "2h", text: "roof survey · {suburb}" },
-    { kind: "solar", band: "morning", dur: "2h", text: "site assessment · {suburb}" },
-    { kind: "solar", band: "midday", dur: "1h", text: "second site visit · {suburb}" },
-    { kind: "solar", band: "afternoon", dur: "1h", text: "commissioning · {array}" },
-    { kind: "solar", band: "afternoon", dur: "1h", text: "changeover tested · {suburb}" },
-    { kind: "solar", band: "afternoon", dur: "30m", text: "monitoring brought online · {array}" },
-    { kind: "solar", band: "close", dur: "1h", text: "handover walkthrough · {suburb}" },
-    { kind: "solar", band: "morning", dur: "2h", text: "scaffold and safety set-up · {suburb}" },
-
-    /* --- electrical ------------------------------------------------ */
+    /* --- electrical: the long ones, which is where multi-day comes from */
     { kind: "electrical", band: "open", dur: "half", span: [1, 2], text: "{board} upgrade · {suburb}" },
     { kind: "electrical", band: "open", dur: "allday", span: [2, 3], weekend: false, text: "full rewire · {suburb}" },
     { kind: "electrical", band: "open", dur: "allday", span: [2, 2], weekend: false, text: "distribution board rebuild · {suburb}" },
     { kind: "electrical", band: "open", dur: "half", span: [1, 2], text: "generator changeover wiring · {suburb}" },
+    { kind: "electrical", band: "open", dur: "allday", span: [2, 3], weekend: false, text: "shopfit first fix · {suburb}" },
     { kind: "electrical", band: "morning", dur: "2h", text: "fault call · {suburb}" },
     { kind: "electrical", band: "morning", dur: "1h", text: "earth leakage traced and cleared · {suburb}" },
+    { kind: "electrical", band: "morning", dur: "half", text: "DB board replacement · {suburb}" },
+    { kind: "electrical", band: "morning", dur: "2h", text: "emergency lighting tested · {suburb}" },
     { kind: "electrical", band: "midday", dur: "1h", text: "geyser element replaced · {suburb}" },
     { kind: "electrical", band: "midday", dur: "2h", text: "circuits relabelled · {board}" },
+    { kind: "electrical", band: "midday", dur: "half", text: "EV charger installed · {suburb}" },
     { kind: "electrical", band: "afternoon", dur: "1h", text: "surge protection fitted · {suburb}" },
     { kind: "electrical", band: "afternoon", dur: "2h", text: "compliance inspection · {suburb}" },
     { kind: "electrical", band: "afternoon", dur: "30m", text: "COC issued · {suburb}" },
+    { kind: "electrical", band: "afternoon", dur: "2h", text: "load checked before EV charger · {board}" },
     { kind: "electrical", band: "close", dur: "1h", text: "snag list cleared · {suburb}" },
-    { kind: "electrical", band: "morning", dur: "half", text: "DB board replacement · {suburb}" },
+
+    /* --- smart solutions, seen from Electrical ----------------------
+       Smart Solutions is sold on both division sites, but it is not the
+       same work on each and these pools must not drift back into being
+       copies of one another. Here it is the install side: the controller
+       is an appliance on a geyser circuit, so it means isolators, board
+       capacity, testing and a certificate. What the controllers then do
+       with solar and storage lives in site-energy's copy of this file. */
+    { kind: "smart", band: "open", dur: "2h", text: "HotBot fitted to geyser · {suburb}" },
+    { kind: "smart", band: "morning", dur: "2h", text: "geyser isolator and wiring replaced before fit · {suburb}" },
+    { kind: "smart", band: "morning", dur: "1h", text: "second geyser controller fitted · {suburb}" },
+    { kind: "smart", band: "morning", dur: "1h", text: "controller wired into {board}" },
+    { kind: "smart", band: "midday", dur: "1h", text: "element and thermostat checked before fit · {suburb}" },
+    { kind: "smart", band: "midday", dur: "1h", text: "leak alert investigated on site · {suburb}" },
+    { kind: "smart", band: "afternoon", dur: "1h", text: "geyser circuit tested after fit · {suburb}" },
+    { kind: "smart", band: "afternoon", dur: "30m", text: "COC issued for controller install · {suburb}" },
+    { kind: "smart", band: "afternoon", dur: "2h", text: "board capacity checked for a second geyser · {board}" },
+    { kind: "smart", band: "close", dur: "30m", text: "app set up and handed over · {suburb}" },
+    { kind: "smart", band: "open", dur: "half", weekend: false, text: "complex rollout: geyser circuits fitted unit by unit · {suburb}" },
 
     /* --- office and paperwork -------------------------------------- */
-    { kind: "admin", band: "open", dur: "30m", text: "crews dispatched · {suburb} and {suburb}" },
-    { kind: "admin", band: "morning", dur: "30m", text: "SSEG application submitted · {municipality}" },
+    /* No admin job sits in the `open` band, and that is deliberate rather
+       than an omission. Bands are walked in order and at most once each, so
+       an office entry at 07:00 lets the office run a fifth item and pushes
+       its share of the panel up by about five points — enough to make the
+       day read as paperwork. Adding one back moves the whole mix. */
     { kind: "admin", band: "morning", dur: "30m", text: "quote issued · {suburb}" },
-    { kind: "admin", band: "morning", dur: "30m", text: "bill analysis returned · {suburb}" },
-    { kind: "admin", band: "midday", dur: "30m", text: "SSEG approval received · {municipality}" },
+    { kind: "admin", band: "morning", dur: "30m", text: "fault call logged and booked · {suburb}" },
+    { kind: "admin", band: "morning", dur: "30m", text: "test results written up · {board}" },
     { kind: "admin", band: "midday", dur: "30m", text: "council registration lodged · {municipality}" },
-    { kind: "admin", band: "midday", dur: "1h", text: "design approved · {array}" },
-    { kind: "admin", band: "afternoon", dur: "30m", text: "revised proposal sent · {panels}" },
+    { kind: "admin", band: "midday", dur: "1h", text: "compliance paperwork checked · {suburb}" },
+    { kind: "admin", band: "afternoon", dur: "30m", text: "revised proposal sent · {suburb}" },
     { kind: "admin", band: "afternoon", dur: "30m", text: "certificate of compliance issued" },
-    { kind: "admin", band: "afternoon", dur: "1h", text: "materials ordered · {panels} array" },
-    { kind: "admin", band: "close", dur: "30m", text: "commissioning record filed · {suburb}" },
+    { kind: "admin", band: "afternoon", dur: "30m", text: "controller subscription activated · {suburb}" },
+    { kind: "admin", band: "afternoon", dur: "1h", text: "materials ordered · {board}" },
+    { kind: "admin", band: "close", dur: "30m", text: "job sheet filed · {suburb}" },
     { kind: "admin", band: "close", dur: "30m", weekend: false, text: "tomorrow's runs planned" },
     { kind: "admin", band: "close", dur: "30m", weekend: false, text: "stock check · workshop" },
   ],

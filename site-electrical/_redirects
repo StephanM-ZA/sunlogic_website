@@ -1,0 +1,23 @@
+# Cloudflare Pages redirect map for electrical.sunlogic.co.za.
+#
+# Mirror of site-energy/_redirects — see that file for why these exist. This
+# site used to carry the energy division's pages too; they have been removed
+# so the site reads as the Electrical division's.
+#
+# 301, not 302: the move is permanent, and only a 301 passes ranking on.
+# Both spellings are listed so an old .html link lands in one hop.
+# Not processed by the build (no file extension); what is here is what ships.
+
+# --- Energy: solar, batteries, backup -------------------------------------
+/solar                             https://energy.sunlogic.co.za/solar                            301
+/solar.html                        https://energy.sunlogic.co.za/solar                            301
+
+# --- Posts that moved to Energy -------------------------------------------
+/blog-rent-to-own                  https://energy.sunlogic.co.za/blog-rent-to-own                 301
+/blog-rent-to-own.html             https://energy.sunlogic.co.za/blog-rent-to-own                 301
+/blog-off-grid-vs-grid-tied        https://energy.sunlogic.co.za/blog-off-grid-vs-grid-tied       301
+/blog-off-grid-vs-grid-tied.html   https://energy.sunlogic.co.za/blog-off-grid-vs-grid-tied       301
+/blog-five-tips-load-shedding      https://energy.sunlogic.co.za/blog-five-tips-load-shedding     301
+/blog-five-tips-load-shedding.html https://energy.sunlogic.co.za/blog-five-tips-load-shedding     301
+/blog-why-your-bill-went-up        https://energy.sunlogic.co.za/blog-why-your-bill-went-up       301
+/blog-why-your-bill-went-up.html   https://energy.sunlogic.co.za/blog-why-your-bill-went-up       301
