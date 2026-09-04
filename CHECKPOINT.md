@@ -133,17 +133,28 @@ constraint flagged back to the user, not fixed in code.
 5. Ran `npm run build` — clean, no errors. `dist/` is gitignored/CI-rebuilt so nothing
    there needs committing.
 
-## RESOLVED 2026-09-04 — was: deliberately not fixed
+## FIXED 2026-09-04 — was: deliberately not fixed
 
-The section below described a limitation of GitHub Pages. The apex moved to
-Cloudflare Pages on 2026-09-03 and GitHub Pages was switched off entirely on
-2026-09-04, so the constraint no longer applies: Cloudflare Pages supports a
-`_headers` file, which means asset cache lifetimes ARE now settable from this
-repo. The 574 KiB saving described below is available and has not been taken —
-adding `_headers` to each site's source directory is the outstanding work.
+The section below described a limitation of GitHub Pages: a fixed ~10 minute
+`Cache-Control` on every asset, with no way to override it. The apex moved to
+Cloudflare Pages on 2026-09-03 and GitHub Pages was switched off on
+2026-09-04, and Cloudflare Pages supports a `_headers` file — so the
+constraint is gone and the ~574 KiB has been taken.
 
-Kept rather than deleted because the reasoning explains why the site's assets
-still carry a short TTL today.
+`site-*/\_headers` now sets a year and `immutable` on fonts, images, and the
+shared and plugin CSS/JS; HTML stays `max-age=0, must-revalidate` because a
+page's URL does not change when its content does.
+
+That is only safe because asset URLs DO change: the build replaces every
+hand-written `?v=N` with eight characters of the file's own SHA-256, taken
+after minification so it describes the bytes actually served. Bumping a
+version number is no longer something anyone has to remember, which matters
+much more under a one-year TTL than it did under ten minutes — forgetting it
+used to correct itself before you noticed, and would now persist for a year
+while looking correct on the machine of whoever made the change.
+
+Kept rather than deleted because the reasoning below is why the assets were
+served the way they were.
 
 ### Original note
 

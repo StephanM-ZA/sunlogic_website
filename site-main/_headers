@@ -1,0 +1,67 @@
+# Cache lifetimes for Cloudflare Pages.
+#
+# This file could not exist while the apex was on GitHub Pages: it serves a
+# fixed ~10 minute Cache-Control on everything and offers no way to override
+# it. That was written up in CHECKPOINT.md as a limitation with no fix, and
+# the ~574 KiB of repeat-visit transfer it costs was accepted. Moving to
+# Cloudflare Pages made it fixable; this is the fix.
+#
+# Read the two rules below as one idea: a file whose URL changes when its
+# contents change can be cached forever, and a file whose URL stays the same
+# cannot be cached at all. Everything here follows from which of those a
+# given path is.
+
+# --- HTML: never cached ------------------------------------------------
+# A page's URL does not change when its content does, so a cached copy is a
+# stale copy with no way to find out. must-revalidate makes the browser ask
+# every time; the answer is usually a 304 with no body, which costs a round
+# trip and nothing else. This is also what keeps the ?v= scheme below
+# honest: the page carrying the new version number has to arrive first.
+/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+# --- Fonts: a year, immutable ------------------------------------------
+# Subset woff2 files. The name encodes the family, weight and subset, so a
+# change of content is a change of file. 390 KiB that a returning visitor
+# should never download twice.
+/shared/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# --- Images: a year, immutable -----------------------------------------
+# The largest single item — 2.2 MiB across the responsive hero derivatives,
+# blog photography and team portraits. Filenames are stable and content is
+# not edited in place: a new photograph arrives as a new file, because the
+# build generates the -640w/-1024w/-1440w derivatives from the source name.
+#
+# The one rule this imposes on future work: do NOT overwrite an image with
+# different content under the same filename. A visitor who has it cached
+# will not see the replacement for a year. Rename it instead.
+/images/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# --- Shared CSS and JS: a year, immutable ------------------------------
+# Safe only because every reference carries ?v=N and the browser caches by
+# full URL including the query string. Bumping the number is what publishes
+# a change — the same convention the plugins' own READMEs already require,
+# now load-bearing rather than advisory.
+#
+# The failure mode is worth naming: edit shared/sunlogic.css, forget the
+# bump, and returning visitors keep the old file for a year while it looks
+# correct on your machine and in any hard-refreshed browser. The short TTL
+# used to hide that mistake within ten minutes. It no longer does.
+/shared/*
+  Cache-Control: public, max-age=31536000, immutable
+/plugins/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# --- Everything a robot or a person reads directly ---------------------
+# Small, and wrong to serve stale: a sitemap that lags a deploy tells a
+# crawler about pages that have moved, and llms.txt is a description of the
+# site as it is now. An hour is long enough to matter under crawl load and
+# short enough to be self-correcting.
+/sitemap.xml
+  Cache-Control: public, max-age=3600
+/robots.txt
+  Cache-Control: public, max-age=3600
+/llms.txt
+  Cache-Control: public, max-age=3600

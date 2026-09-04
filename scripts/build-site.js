@@ -3,14 +3,16 @@
 // site-electrical — into its own dist/ directory: copies the source, folds in
 // shared/, optimises images, rewrites links to extensionless, stamps the build
 // and site config, then minifies every .css/.js in the copy. Source stays
-// hand-readable; dist/ is the artifact that actually gets published. dist/main
-// goes to GitHub Pages (see .github/workflows/deploy-site.yml); the other two
-// go to Cloudflare Pages.
+// hand-readable; dist/ is the artifact that actually gets published. All three
+// go to Cloudflare Pages — one project each, Git-connected to main. GitHub
+// hosts the repository and nothing else; see
+// docs/deploy/cloudflare-build-command.md.
 
 'use strict';
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const { execSync } = require('child_process');
 const csso = require('csso');
 const { minify: minifyJs } = require('terser');
@@ -66,14 +68,45 @@ function getBuildInfo() {
   return { sha, short: sha.slice(0, 7), repo: REPO_URL, date, prod };
 }
 
-function copyRecursive(src, dest) {
+/* What never leaves the repository.
+   ------------------------------------------------------------------
+   The build copied every file in a site directory, which meant three
+   things were being served publicly and answering 200:
+
+     CLAUDE.md    the project's own instruction file
+     SYSTEM.md    internal notes
+     README.md    including the ones inside plugins/ and shared/fonts/
+     .DS_Store    Finder metadata, in ten directories
+
+   None of them is a credential, but none of them is anyone's business
+   either, and .DS_Store discloses the names of files in a directory
+   including any that were deleted. This is an allow-by-default copy, so
+   the honest fix is to name what must not travel and to do it in the one
+   place every file passes through.
+
+   Note the asymmetry: markdown is excluded but llms.txt and robots.txt
+   are not. Those are published on purpose and are addressed to a reader.
+   A README in a plugin directory is addressed to whoever maintains it. */
+const NEVER_PUBLISH = [
+  /(^|\/)\.DS_Store$/,
+  /(^|\/)\.git(ignore|attributes|keep)?$/,
+  /\.md$/i,
+];
+
+function isPublishable(rel) {
+  return !NEVER_PUBLISH.some((re) => re.test(rel));
+}
+
+function copyRecursive(src, dest, rel) {
+  const at = rel || path.basename(src);
   const stat = fs.statSync(src);
   if (stat.isDirectory()) {
     fs.mkdirSync(dest, { recursive: true });
     for (const entry of fs.readdirSync(src)) {
-      copyRecursive(path.join(src, entry), path.join(dest, entry));
+      copyRecursive(path.join(src, entry), path.join(dest, entry), at + '/' + entry);
     }
   } else {
+    if (!isPublishable(at)) return;
     fs.copyFileSync(src, dest);
   }
 }
@@ -284,6 +317,63 @@ function verifyAbsoluteUrls(outDir, site) {
   return broken;
 }
 
+/* Asset versions, derived from content rather than remembered.
+   ------------------------------------------------------------------
+   Every page references shared and plugin assets with a hand-written
+   ?v=N, and bumping it was the documented way to publish a change. That
+   worked while Cloudflare served a ten-minute TTL: forget the bump and
+   the mistake corrected itself before you noticed.
+
+   The _headers file now sets a year, immutable, on exactly these paths —
+   which is only safe because the URL changes when the file does. Leaving
+   that to a human makes forgetting it a year-long bug that looks correct
+   on the machine of whoever made it, because their browser fetched the
+   new file. That is a worse failure than the one the caching fixes.
+
+   So the number is replaced at build time by eight characters of the
+   file's own SHA-256. The source keeps its readable ?v=44 and the output
+   carries ?v=8f3a1c2b; edit the file and the URL changes on the next
+   build, with nothing to remember. A reference to a file that does not
+   exist is left exactly as written — verifyAbsoluteUrls is the check for
+   that, and silently inventing a hash would hide it. */
+function hashAssetVersions(outDir) {
+  const cache = Object.create(null);
+
+  function versionFor(assetPath) {
+    if (assetPath in cache) return cache[assetPath];
+    const full = path.join(outDir, assetPath);
+    let v = null;
+    try {
+      if (fs.statSync(full).isFile()) {
+        v = crypto.createHash('sha256').update(fs.readFileSync(full)).digest('hex').slice(0, 8);
+      }
+    } catch (e) { v = null; }
+    cache[assetPath] = v;
+    return v;
+  }
+
+  let rewritten = 0;
+  function walk(dir) {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) { walk(full); continue; }
+      if (!/\.html$/.test(entry.name)) continue;
+      const src = fs.readFileSync(full, 'utf8');
+      const out = src.replace(
+        /(["'])((?:shared|plugins)\/[A-Za-z0-9_./-]+?\.(?:css|js))\?v=[^"']*\1/g,
+        (whole, quote, asset) => {
+          const v = versionFor(asset);
+          if (!v) return whole;              /* missing file: leave it alone */
+          rewritten++;
+          return quote + asset + '?v=' + v + quote;
+        });
+      if (out !== src) fs.writeFileSync(full, out);
+    }
+  }
+  walk(outDir);
+  return rewritten;
+}
+
 function rewriteToExtensionless(dir) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
@@ -339,6 +429,10 @@ async function buildSite(site, build) {
   rewriteToExtensionless(out);
   stampBuildInfo(out, build, site);
   await walkAndMinify(out);
+  /* After minification on purpose: the hash has to describe the bytes that
+     are actually served, not the source they were produced from. */
+  const versioned = hashAssetVersions(out);
+  console.log('  asset versions from content: ' + versioned + ' references');
 
   const broken = verifyAbsoluteUrls(out, site);
   if (broken.length) {
