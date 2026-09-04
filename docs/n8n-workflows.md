@@ -50,49 +50,78 @@ lead actually reaching a human.
 
 ```
 Webhook (POST /webhook/sunlogic-leads, Header Auth)
-  → Extract Body (Code node)
-  → Switch on {{ $json.type }}
-      ├─ "contact"    → Notify Sales — Contact (email) → Log Contact Lead (Sheet) → Respond 200 — Contact
-      └─ "calculator" → Notify Sales — Calculator (email)   ┐
-                       → Email Visitor Report (email)        ┴─ both fire in parallel from Switch
-                         → Log Calculator Lead (Sheet) → Respond 200 — Calculator
+  → Extract Body        normalise the Worker's payload
+  → Log Row             append-or-update on Lead ID, ALWAYS
+  → Needs sending?      branch on needsSend
+      true  → Relay Send → Respond 200      (Resend failed; n8n sends)
+      false →             Respond 200       (Resend already sent it)
 ```
 
-**Extract Body.** n8n's Webhook node nests the actual POST payload under
-`$json.body` in this instance's configuration rather than exposing it at
-the top level. Every downstream node expects `$json.type`, `$json.name`,
-etc. directly, so a small Code node normalizes this immediately after the
-Webhook: `return items.map(item => ({ json: item.json.body || item.json }))`.
-Skipping this step (which happened once, mid-build) makes the Switch match
-zero items on every branch — the webhook still returns `200`, just with an
-empty body instead of `{"ok":true}`, and no email/Sheet row ever happens.
-If this workflow is ever rebuilt from scratch, add this node before the
-Switch, not after.
+Six nodes, down from ten. n8n holds no templates and makes no decisions about
+content: it addresses an envelope it was handed, and it writes a row.
 
-**Why the Log nodes reference `$('Extract Body')`, not `$json`.** Both
-"Log Contact Lead" and "Log Calculator Lead" are wired directly after a
-Send Email node in their branch. n8n's Send Email node replaces the item's
-`$json` with its own SMTP response object (`accepted`, `envelope`,
-`messageId`, etc.) rather than passing the original input through — so a
-naive `{{ $json.name }}` in the Log node silently resolves to `undefined`
-(the node still succeeds, it just writes blank cells). Every lead-data
-field in both Log nodes therefore reads from `$('Extract Body').item.json.*`
-— the earliest normalized point in the graph — rather than `$json`.
+## Why it looks like this
 
-## Shared-secret contract with the Worker
+**The Worker sends; n8n is the fallback.** Every notification used to depend
+on this machine being switched on, and the Worker's retry queue gave up after
+100 minutes — an iMac off overnight silently lost leads. Sending moved to
+Resend, called directly from the Worker on Cloudflare.
 
-`workers/leads-relay/src/index.js` sends every delivery attempt (both the
-fast path and the Cron retry loop) with an `X-Relay-Secret` header set to
-its `RELAY_SECRET` binding. The Webhook node's Header Auth credential must
-hold the identical value — if they ever drift, every delivery starts
-403'ing and leads pile up in D1 with `status='pending'` until the Cron
-retry loop eventually marks them `failed` at the attempt ceiling.
+**But n8n still writes the sheet, and that nearly broke the audit trail.**
+With Resend primary, n8n is only reached when Resend *fails*. Every successful
+lead would have gone unlogged, and the sheet would have contained nothing but
+outages — empty precisely when everything was working. So a successful send is
+still announced here with `needsSend: false`: log this, do not send it.
 
-## Never called directly by a visitor's browser
+**Log Row comes before the branch, and never blocks the email.** The row is
+written whichever path the mail took, and `onError: continueRegularOutput`
+means a Sheets failure does not stop `Relay Send`. Logging is the lesser duty:
+losing a row costs a line in a spreadsheet, losing an email costs a lead.
 
-This workflow's webhook is only ever invoked by the Cloudflare Worker
-(`workers/leads-relay`) — never directly by `contact.html` or the
-calculator's report form. The Worker exists specifically so an n8n/iMac
-outage can't drop a lead: the browser always hits the Worker first, the
-Worker durably queues to D1 before attempting delivery, and only the
-Worker (not the browser) knows the shared secret.
+**`needsSend` defaults to true when absent.** An older Worker, or a replayed
+request, keeps the previous behaviour rather than silently going quiet.
+
+## The payload
+
+```json
+{ "event": "offer|accepted|expired|unclaimed|digest|visitor_report",
+  "leadId": 12, "needsSend": false,
+  "to": ["stephan@sunlogic.co.za"], "replyTo": "...",
+  "subject": "...", "html": "<!doctype html>…",
+  "type": "contact", "name": "...", "email": "...", "phone": "...",
+  "need": "...", "divisionLabel": "Energy", "assignee": "stephan",
+  "status": "offer", "raw": "{…}" }
+```
+
+`html` is what the recipient reads and, for the teaser events, contains
+nothing identifying. The `name`/`email`/`phone` fields travel alongside it for
+the sheet only — the boundary this feature defends is what a director sees
+before accepting, not what the internal log records.
+
+## The sheet
+
+`Sunlogic Leads`, id `1V2JNVOV4CqVevuDD1ECcWjpEAEPVJ7JVNR5-CcYnyOo`.
+Append-or-update matching on **Lead ID**, so one row per lead is updated as
+the enquiry moves rather than a new row per event.
+
+Columns to add to the existing header before importing:
+
+```
+Lead ID | Assigned To | Accepted At | Reassigned To | Reassigned Accepted At | Status
+```
+
+## Importing
+
+1. Open n8n → Workflows → Import from File → `n8n/sunlogic-leads-relay.json`
+2. Confirm both credentials resolved: `Sunlogic Sales SMTP` and
+   `Google Sheets account`. The Header Auth credential is on the Webhook node.
+3. Publish, and confirm the status shows **Published**.
+4. This is an iMac change — append an entry to
+   `serverMonitor/change-log.jsonl`.
+
+**Before importing, note what is being removed:** `Notify Sales — Contact`,
+`Notify Sales — Calculator` and `Email Visitor Report`. The first two are
+replaced by the Worker's own templates. The third — the customer's solar
+estimate — has moved to `emails/body-visitor-report.html` and is sent by the
+Worker; it is not simply deleted. If you import this without the Worker
+deployed, calculator users stop receiving their estimate.

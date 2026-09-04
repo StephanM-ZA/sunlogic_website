@@ -341,7 +341,23 @@ async function notify(env, leadId, event, assignee, token) {
     html: compose(event, values),
     leadId,
     event,
-    extra: { division: lead.division, assignee, status: event },
+    /* For the sheet, not for the email. The teaser's HTML is built from
+       `safe` and contains nothing identifying; these fields travel in the
+       JSON so the audit row is complete. The boundary this feature defends
+       is what a director reads before accepting — not what the internal log
+       records, which has held these columns since the first version. */
+    extra: {
+      division: lead.division,
+      divisionLabel: label,
+      assignee,
+      status: event,
+      type: lead.type,
+      name: payload.name || '',
+      email: payload.email || '',
+      phone: payload.phone || '',
+      need: payload.need || '',
+      raw: lead.payload_json,
+    },
   });
 
   if (result.ok) {

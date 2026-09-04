@@ -11,7 +11,10 @@
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
-      "position": [0, 0],
+      "position": [
+        0,
+        300
+      ],
       "id": "233f66aa-0138-408f-b626-a9e454fd5d78",
       "name": "Webhook",
       "webhookId": "20bfae05-c0f9-4466-8d40-297442faccf9",
@@ -24,143 +27,285 @@
     },
     {
       "parameters": {
-        "jsCode": "const items = $input.all();\nreturn items.map(item => ({ json: item.json.body || item.json }));"
+        "jsCode": "/* The Worker sends one shape now. Everything downstream reads these\n   fields, so normalise once and never guess again. */\nreturn $input.all().map((item) => {\n  const b = item.json.body || item.json;\n  return { json: {\n    event: b.event || 'offer',\n    leadId: b.leadId ?? '',\n    needsSend: b.needsSend !== false,\n    to: Array.isArray(b.to) ? b.to.join(', ') : (b.to || ''),\n    replyTo: b.replyTo || '',\n    subject: b.subject || 'Sunlogic',\n    html: b.html || '',\n    type: b.type || '',\n    name: b.name || '', email: b.email || '', phone: b.phone || '',\n    need: b.need || '', division: b.divisionLabel || b.division || '',\n    assignee: b.assignee || '', status: b.status || b.event || '',\n    raw: b.raw || JSON.stringify(b),\n  } };\n});"
       },
+      "id": "extract-body",
+      "name": "Extract Body",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [224, 0],
-      "id": "b1c2d3e4-f5a6-4b7c-8d9e-0f1a2b3c4d5e",
-      "name": "Extract Body"
+      "position": [
+        220,
+        300
+      ]
     },
     {
       "parameters": {
-        "rules": {
-          "values": [
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1V2JNVOV4CqVevuDD1ECcWjpEAEPVJ7JVNR5-CcYnyOo",
+          "mode": "list",
+          "cachedResultName": "Sunlogic Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1V2JNVOV4CqVevuDD1ECcWjpEAEPVJ7JVNR5-CcYnyOo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1V2JNVOV4CqVevuDD1ECcWjpEAEPVJ7JVNR5-CcYnyOo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "Lead ID"
+          ],
+          "schema": [
             {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.type }}",
-                    "rightValue": "contact",
-                    "operator": { "type": "string", "operation": "equals" },
-                    "id": "f2c45479-532f-455d-b43a-1814f4c66acf"
-                  }
-                ],
-                "combinator": "and"
-              },
-              "renameOutput": true,
-              "outputKey": "contact"
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
             },
             {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "id": "e68ff99f-5dcf-496b-b5d5-043f397b3bd9",
-                    "leftValue": "={{ $json.type }}",
-                    "rightValue": "calculator",
-                    "operator": { "type": "string", "operation": "equals", "name": "filter.operator.equals" }
-                  }
-                ],
-                "combinator": "and"
-              },
-              "renameOutput": true,
-              "outputKey": "calculator"
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Need",
+              "displayName": "Need",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Bill",
+              "displayName": "Bill",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Mode",
+              "displayName": "Mode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Payback/Pivot System",
+              "displayName": "Payback/Pivot System",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Cost",
+              "displayName": "Cost",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Raw JSON",
+              "displayName": "Raw JSON",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lead ID",
+              "displayName": "Lead ID",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Assigned To",
+              "displayName": "Assigned To",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Accepted At",
+              "displayName": "Accepted At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reassigned To",
+              "displayName": "Reassigned To",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reassigned Accepted At",
+              "displayName": "Reassigned Accepted At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
             }
-          ]
+          ],
+          "value": {
+            "Lead ID": "={{ $json.leadId }}",
+            "Timestamp": "={{ $now }}",
+            "Type": "={{ $json.type }}",
+            "Name": "={{ $json.name }}",
+            "Email": "={{ $json.email }}",
+            "Phone": "={{ $json.phone }}",
+            "Need": "={{ $json.division || $json.need }}",
+            "Status": "={{ $json.status }}",
+            "Assigned To": "={{ $json.event === 'offer' ? $json.assignee : '' }}",
+            "Accepted At": "={{ $json.event === 'accepted' ? $now : '' }}",
+            "Raw JSON": "={{ $json.raw }}"
+          }
         },
         "options": {}
       },
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3.4,
-      "position": [448, 0],
-      "id": "edfd6728-7493-403f-b65a-2e038d8f129d",
-      "name": "Switch"
+      "id": "log-row",
+      "name": "Log Row",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        440,
+        300
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "yuP9XLQoewo6A9ZC",
+          "name": "Google Sheets account"
+        }
+      },
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
-        "fromEmail": "sales@sunlogic.co.za",
-        "toEmail": "sales@sunlogic.co.za",
-        "subject": "=New enquiry — {{ $json.name }} ({{ $json.need }})",
-        "emailFormat": "text",
-        "text": "=New enquiry from the website.\n\nName:       {{ $json.name }}\nEmail:      {{ $json.email }}\nPhone:      {{ $json.phone }}\nSuburb:     {{ $json.suburb }}\nNeeds:      {{ $json.need }}\nProperty:   {{ $json[\"property-type\"] }}\n\nMessage:\n{{ $json.message }}\n\n—\nSubmitted via the contact form on sunlogic.co.za.",
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "needs-send",
+              "leftValue": "={{ $json.needsSend }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
         "options": {}
       },
+      "id": "needs-send",
+      "name": "Needs sending?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        660,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "Sunlogic Leads <leads@send.sunlogic.co.za>",
+        "toEmail": "={{ $json.to }}",
+        "subject": "={{ $json.subject }}",
+        "emailFormat": "html",
+        "html": "={{ $json.html }}",
+        "options": {
+          "replyTo": "={{ $json.replyTo }}"
+        }
+      },
+      "id": "relay-send",
+      "name": "Relay Send",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
-      "position": [368, 112],
-      "id": "5891c6c6-3489-48a7-9799-d3bbe9b6bb6f",
-      "name": "Notify Sales — Contact",
-      "webhookId": "298ce215-75ab-4b21-a39d-a20c2f08d339",
+      "position": [
+        880,
+        200
+      ],
       "credentials": {
-        "smtp": { "id": "AGpkmUnXoqrkdoD4", "name": "Sunlogic Sales SMTP" }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "append",
-        "documentId": {
-          "__rl": true,
-          "value": "1V2JNVOV4CqVevuDD1ECcWjpEAEPVJ7JVNR5-CcYnyOo",
-          "mode": "list",
-          "cachedResultName": "Sunlogic Leads",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1V2JNVOV4CqVevuDD1ECcWjpEAEPVJ7JVNR5-CcYnyOo/edit?usp=drivesdk"
-        },
-        "sheetName": {
-          "__rl": true,
-          "value": "gid=0",
-          "mode": "list",
-          "cachedResultName": "Sheet1",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1V2JNVOV4CqVevuDD1ECcWjpEAEPVJ7JVNR5-CcYnyOo/edit#gid=0"
-        },
-        "columns": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "Timestamp": "={{ $now }}",
-            "Type": "contact",
-            "Name": "={{ $('Extract Body').item.json.name }}",
-            "Email": "={{ $('Extract Body').item.json.email }}",
-            "Phone": "={{ $('Extract Body').item.json.phone }}",
-            "Need": "={{ $('Extract Body').item.json.need }}",
-            "Raw JSON": "={{ JSON.stringify($('Extract Body').item.json) }}"
-          },
-          "matchingColumns": [],
-          "schema": [
-            { "id": "Timestamp", "displayName": "Timestamp", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
-            { "id": "Type", "displayName": "Type", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
-            { "id": "Name", "displayName": "Name", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
-            { "id": "Email", "displayName": "Email", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
-            { "id": "Phone", "displayName": "Phone", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
-            { "id": "Need", "displayName": "Need", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
-            { "id": "Bill", "displayName": "Bill", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
-            { "id": "Mode", "displayName": "Mode", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
-            { "id": "Payback/Pivot System", "displayName": "Payback/Pivot System", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
-            { "id": "Cost", "displayName": "Cost", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
-            { "id": "Raw JSON", "displayName": "Raw JSON", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true }
-          ],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": false
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.googleSheets",
-      "typeVersion": 4.7,
-      "position": [496, 112],
-      "id": "b5328d84-102a-491e-81b2-fdff1a8aa70f",
-      "name": "Log Contact Lead",
-      "credentials": {
-        "googleSheetsOAuth2Api": { "id": "yuP9XLQoewo6A9ZC", "name": "Google Sheets account" }
+        "smtp": {
+          "id": "AGpkmUnXoqrkdoD4",
+          "name": "Sunlogic Sales SMTP"
+        }
       }
     },
     {
@@ -169,147 +314,78 @@
         "responseBody": "{ \"ok\": true }",
         "options": {}
       },
+      "id": "respond",
+      "name": "Respond 200",
       "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.5,
-      "position": [512, 240],
-      "id": "e3d201ed-b0da-40ed-a318-0fa1701b7a7b",
-      "name": "Respond 200 — Contact"
-    },
-    {
-      "parameters": {
-        "fromEmail": "sales@sunlogic.co.za",
-        "toEmail": "sales@sunlogic.co.za",
-        "subject": "={{ \"Calculator lead — \" + $json.mode + \", R\" + $json.inputs.bill + \"/month\" }}",
-        "emailFormat": "text",
-        "text": "=Someone ran the {{ $json.mode }} calculator and asked for their estimate emailed\nto them — this is a warm lead, not a cold form fill.\n\nTheir email:      {{ $json.email }}\nMonthly bill:     R{{ $json.inputs.bill }}\nBattery included: {{ $json.inputs.includeBattery }}\n\nTheir estimate (raw):\n{{ JSON.stringify($json.results, null, 2) }}\n\nThey've also been sent a copy of this estimate by email — worth reaching\nout while it's fresh.",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.emailSend",
-      "typeVersion": 2.1,
-      "position": [672, 96],
-      "id": "a14e95f8-0aa0-4c6c-96d5-a4eb50b2e60c",
-      "name": "Notify Sales — Calculator",
-      "webhookId": "ccc11237-e882-499c-aa6f-8ee1d3d47052",
-      "credentials": {
-        "smtp": { "id": "AGpkmUnXoqrkdoD4", "name": "Sunlogic Sales SMTP" }
-      }
-    },
-    {
-      "parameters": {
-        "fromEmail": "sales@sunlogic.co.za",
-        "toEmail": "={{ $json.email }}",
-        "subject": "Your Sunlogic solar estimate",
-        "emailFormat": "text",
-        "text": "=Hi,\n\nHere's the estimate you asked for, based on a R{{ $json.inputs.bill }}/month bill:\n\n  Recommended panels:   {{ $json.results.panelKw }} kW\n  Recommended inverter: {{ $json.results.inverterKw }} kW\n  Battery storage:      {{ $json.results.batteryKwh }} kWh\n  Estimated system cost: R{{ $json.results.systemCost }}\n\n{{ $json.mode === 'residential' ? 'Estimated monthly saving: R' + Math.round($json.results.firstYearSavings / 12) + '\\nTypical payback period: ' + $json.results.paybackYearsLow.toFixed(0) + '-' + $json.results.paybackYearsHigh.toFixed(0) + ' years' : 'Estimated monthly saving: R' + $json.results.monthlySavings.toFixed(0) + '\\nEstimated monthly installment: R' + $json.results.monthlyInstallment.toFixed(0) + '\\nEstimated monthly cash flow: R' + $json.results.pivot.toFixed(0) }}\n\n  ~{{ ($json.results.annualCo2Kg / 1000).toFixed(1) }} tons of CO2 avoided per year — roughly\n  the same as {{ Math.round($json.results.treesEquivalent) }} trees planted.\n\nFigures are indicative estimates based on typical Western Cape conditions\nand standard industry assumptions — not a formal system design or finance\noffer. A site visit turns this into an actual number, and costs you\nnothing to book.\n\nBook a free site assessment: https://sunlogic.co.za/contact.html\nOr call us directly: +27 (82) 655 5371\n\n— The Sunlogic team",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.emailSend",
-      "typeVersion": 2.1,
-      "position": [464, 352],
-      "id": "27474d72-2263-43d3-b947-bd893400fab5",
-      "name": "Email Visitor Report",
-      "webhookId": "84277852-022d-41a0-b15e-91e6f0b7cc8c",
-      "credentials": {
-        "smtp": { "id": "AGpkmUnXoqrkdoD4", "name": "Sunlogic Sales SMTP" }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "append",
-        "documentId": {
-          "__rl": true,
-          "value": "1V2JNVOV4CqVevuDD1ECcWjpEAEPVJ7JVNR5-CcYnyOo",
-          "mode": "list",
-          "cachedResultName": "Sunlogic Leads",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1V2JNVOV4CqVevuDD1ECcWjpEAEPVJ7JVNR5-CcYnyOo/edit?usp=drivesdk"
-        },
-        "sheetName": {
-          "__rl": true,
-          "value": "gid=0",
-          "mode": "list",
-          "cachedResultName": "Sheet1",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1V2JNVOV4CqVevuDD1ECcWjpEAEPVJ7JVNR5-CcYnyOo/edit#gid=0"
-        },
-        "columns": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "Timestamp": "={{ $now }}",
-            "Type": "calculator",
-            "Email": "={{ $('Extract Body').item.json.email }}",
-            "Bill": "={{ $('Extract Body').item.json.inputs.bill }}",
-            "Mode": "={{ $('Extract Body').item.json.mode }}",
-            "Payback/Pivot System": "={{ $('Extract Body').item.json.mode === 'residential' ? $('Extract Body').item.json.results.paybackYears : $('Extract Body').item.json.results.pivot }}",
-            "Cost": "={{ $('Extract Body').item.json.results.systemCost }}",
-            "Raw JSON": "={{ JSON.stringify($('Extract Body').item.json) }}"
-          },
-          "matchingColumns": [],
-          "schema": [
-            { "id": "Timestamp", "displayName": "Timestamp", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
-            { "id": "Type", "displayName": "Type", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
-            { "id": "Name", "displayName": "Name", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
-            { "id": "Email", "displayName": "Email", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
-            { "id": "Phone", "displayName": "Phone", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
-            { "id": "Need", "displayName": "Need", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
-            { "id": "Bill", "displayName": "Bill", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
-            { "id": "Mode", "displayName": "Mode", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
-            { "id": "Payback/Pivot System", "displayName": "Payback/Pivot System", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
-            { "id": "Cost", "displayName": "Cost", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
-            { "id": "Raw JSON", "displayName": "Raw JSON", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true }
-          ],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": false
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.googleSheets",
-      "typeVersion": 4.7,
-      "position": [672, 352],
-      "id": "c6e5d4f3-a2b1-4c0d-9e8f-7a6b5c4d3e2f",
-      "name": "Log Calculator Lead",
-      "credentials": {
-        "googleSheetsOAuth2Api": { "id": "yuP9XLQoewo6A9ZC", "name": "Google Sheets account" }
-      }
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "{ \"ok\": true }",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.5,
-      "position": [896, 352],
-      "id": "d7f6e5c4-b3a2-410f-8e9d-6b5c4d3e2f1a",
-      "name": "Respond 200 — Calculator"
+      "typeVersion": 1,
+      "position": [
+        1100,
+        300
+      ]
     }
   ],
   "connections": {
     "Webhook": {
-      "main": [[{ "node": "Extract Body", "type": "main", "index": 0 }]]
-    },
-    "Extract Body": {
-      "main": [[{ "node": "Switch", "type": "main", "index": 0 }]]
-    },
-    "Switch": {
       "main": [
-        [{ "node": "Notify Sales — Contact", "type": "main", "index": 0 }],
         [
-          { "node": "Notify Sales — Calculator", "type": "main", "index": 0 },
-          { "node": "Email Visitor Report", "type": "main", "index": 0 }
+          {
+            "node": "Extract Body",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
-    "Notify Sales — Contact": {
-      "main": [[{ "node": "Log Contact Lead", "type": "main", "index": 0 }]]
+    "Extract Body": {
+      "main": [
+        [
+          {
+            "node": "Log Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
-    "Log Contact Lead": {
-      "main": [[{ "node": "Respond 200 — Contact", "type": "main", "index": 0 }]]
+    "Log Row": {
+      "main": [
+        [
+          {
+            "node": "Needs sending?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
-    "Email Visitor Report": {
-      "main": [[{ "node": "Log Calculator Lead", "type": "main", "index": 0 }]]
+    "Needs sending?": {
+      "main": [
+        [
+          {
+            "node": "Relay Send",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond 200",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
-    "Log Calculator Lead": {
-      "main": [[{ "node": "Respond 200 — Calculator", "type": "main", "index": 0 }]]
+    "Relay Send": {
+      "main": [
+        [
+          {
+            "node": "Respond 200",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   }
 }
