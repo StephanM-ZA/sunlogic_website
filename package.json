@@ -6,7 +6,10 @@
     "build:energy": "node scripts/build-site.js energy",
     "build:electrical": "node scripts/build-site.js electrical",
     "test": "node --test",
-    "conformance": "node scripts/conformance.js"
+    "conformance": "node scripts/conformance.js",
+    "conformance:main": "node scripts/conformance.js main",
+    "conformance:energy": "node scripts/conformance.js energy",
+    "conformance:electrical": "node scripts/conformance.js electrical"
   },
   "dependencies": {
     "playwright": "^1.62.1"

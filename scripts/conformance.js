@@ -36,7 +36,7 @@ async function runConformance(options) {
   const distDir = opts.distDir || path.join(ROOT, 'dist');
   const viewport = opts.viewport || DEFAULT_VIEWPORT;
 
-  const pages = sitePages(distDir);          /* throws on empty */
+  const pages = sitePages(distDir, { sites: opts.sites });   /* throws on empty or unknown */
   const server = await startServer(distDir);
   const browser = await chromium.launch();
 
@@ -124,6 +124,9 @@ async function runConformance(options) {
        cleared; it is clear. */
     blocking: fails.length + warns.length,
     viewport,
+    /* Carried into the report so a narrowed run can never be mistaken for a
+       full one. "pages checked 11/11" reads identically either way. */
+    sites: opts.sites && opts.sites.length ? opts.sites.slice() : null,
   };
 }
 
@@ -157,12 +160,17 @@ function report(result) {
   lines.push('');
   lines.push('pages checked ' + result.evaluated + '/' + result.pages +
     '   fails ' + result.fails.length + '   warns ' + result.warns.length +
-    '   viewport ' + result.viewport.width + 'x' + result.viewport.height);
+    '   viewport ' + result.viewport.width + 'x' + result.viewport.height +
+    (result.sites ? '   sites ' + result.sites.join(',') + ' ONLY' : ''));
   return lines.join('\n');
 }
 
 async function main() {
   const override = process.env.SL_CONFORMANCE_OVERRIDE;
+
+  /* Bare = every site, which is what every deploy path calls. Names narrow it
+     for local iteration: `npm run conformance -- main`. */
+  const sites = process.argv.slice(2).filter((a) => !a.startsWith('-'));
 
   /* Both gated viewports, aggregated. Each is a separate runConformance()
      call — and a separate browser/server lifecycle — because the design
@@ -170,7 +178,7 @@ async function main() {
      falls back to when called bare. */
   const results = [];
   for (const viewport of GATED_VIEWPORTS) {
-    const result = await runConformance({ viewport });
+    const result = await runConformance({ viewport, sites });
     results.push(result);
     console.log(report(result));
     console.log('');
@@ -186,6 +194,9 @@ async function main() {
     ' warns ' + r.warns.length).join('   |   '));
   console.log('total fails ' + totalFails + '   total warns ' + totalWarns +
     '   total blocking ' + totalBlocking);
+  if (sites.length) {
+    console.log('PARTIAL RUN — ' + sites.join(', ') + ' only. The deploy gate runs every site.');
+  }
   console.log('================================================================');
 
   if (!totalBlocking) return;

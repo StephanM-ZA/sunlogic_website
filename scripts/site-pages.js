@@ -20,15 +20,35 @@ const path = require('path');
  * carries its own noindex while the apex rebuild is in progress. */
 const EXCLUDED_PAGES = new Set(['thank-you.html', 'ci-guide.html', 'landing-preview.html']);
 
-function sitePages(distDir) {
+/* `options.sites` narrows the set to the named site directories. It exists for
+ * local iteration only — checking 11 pages instead of 34 while editing one
+ * site. Nothing on a deploy path passes it: the Cloudflare build command and
+ * both workflows call the runner bare, which is what keeps the gate whole.
+ *
+ * An unknown name throws rather than quietly matching nothing, for the same
+ * reason this module exists at all — `sitePages(dist, {sites:['man']})`
+ * returning zero pages would report a clean run over a typo. */
+function sitePages(distDir, options) {
+  const opts = options || {};
   if (!fs.existsSync(distDir)) {
     throw new Error('site-pages: ' + distDir + ' does not exist — run `npm run build` first.');
   }
-  const sites = fs
+  const built = fs
     .readdirSync(distDir, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name)
     .sort();
+
+  let sites = built;
+  if (opts.sites && opts.sites.length) {
+    const unknown = opts.sites.filter((s) => !built.includes(s));
+    if (unknown.length) {
+      throw new Error(
+        'site-pages: unknown site(s) ' + unknown.join(', ') + '. Built sites are: ' +
+        built.join(', ') + '. Refusing to run over nothing.');
+    }
+    sites = built.filter((s) => opts.sites.includes(s));
+  }
 
   const pages = sites.flatMap((site) =>
     fs

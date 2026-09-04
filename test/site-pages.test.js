@@ -54,3 +54,36 @@ test('exports the exclusion list for consumers that need it', () => {
   assert.ok(EXCLUDED_PAGES instanceof Set);
   assert.ok(EXCLUDED_PAGES.has('thank-you.html'));
 });
+
+/* The site filter. It exists so local iteration can check one site instead of
+   all three; these guard the two ways that could go wrong — silently matching
+   nothing, and silently checking more than asked. */
+
+test('narrows to the named site', () => {
+  const dist = fixtureDist({ main: ['index.html', 'legal.html'], energy: ['index.html'], electrical: ['index.html'] });
+  assert.deepStrictEqual(sitePages(dist, { sites: ['main'] }).map((p) => p.url),
+    ['/main/index.html', '/main/legal.html']);
+});
+
+test('narrows to several named sites', () => {
+  const dist = fixtureDist({ main: ['index.html'], energy: ['index.html'], electrical: ['index.html'] });
+  assert.deepStrictEqual(sitePages(dist, { sites: ['energy', 'electrical'] }).map((p) => p.site),
+    ['electrical', 'energy']);
+});
+
+test('an unknown site name throws rather than matching nothing', () => {
+  const dist = fixtureDist({ main: ['index.html'], energy: ['index.html'] });
+  assert.throws(() => sitePages(dist, { sites: ['man'] }), /unknown site\(s\) man/);
+});
+
+test('a typo alongside a real site still throws', () => {
+  const dist = fixtureDist({ main: ['index.html'], energy: ['index.html'] });
+  assert.throws(() => sitePages(dist, { sites: ['main', 'enrgy'] }), /unknown site\(s\) enrgy/);
+});
+
+test('no filter, or an empty one, means every site', () => {
+  const dist = fixtureDist({ main: ['index.html'], energy: ['index.html'] });
+  const all = sitePages(dist).map((p) => p.url);
+  assert.deepStrictEqual(sitePages(dist, {}).map((p) => p.url), all);
+  assert.deepStrictEqual(sitePages(dist, { sites: [] }).map((p) => p.url), all);
+});
