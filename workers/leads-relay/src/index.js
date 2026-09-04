@@ -174,6 +174,149 @@ async function handleLeadRoute(request, env, ctx, type) {
   return jsonResponse({ ok: true }, 200, origin);
 }
 
+/* ---- The sweeper -------------------------------------------------------
+   Runs on the 5-minute cron. Expiry is therefore accurate to within five
+   minutes of 24 hours, which is why the expiry email never quotes a precise
+   time.
+
+   Only 'offered' rows are considered. A 'pending_send' offer is one whose
+   email has not gone out yet — expiring it would penalise a director for a
+   relay outage they were never told about (R1). */
+async function sweepExpiredOffers(env) {
+  const { results } = await env.DB.prepare(
+    "SELECT id, lead_id, assignee, round FROM offers " +
+    "WHERE state='offered' AND expires_at IS NOT NULL AND datetime('now') >= expires_at"
+  ).all();
+
+  for (const offer of results) {
+    /* Guarded on state so two overlapping cron runs cannot both expire the
+       same offer and send two notices. */
+    const done = await env.DB.prepare(
+      "UPDATE offers SET state='expired' WHERE id=? AND state='offered'"
+    ).bind(offer.id).run();
+    if (done.meta.changes !== 1) continue;
+
+    await notify(env, offer.lead_id, 'expired', offer.assignee, null);
+
+    if (offer.round === 1) {
+      /* To the OTHER director specifically, not to whoever the rotation
+         pointer happens to name — a lead that has already been past one
+         person must not be offered back to them. */
+      const next = await createOffer(env, offer.lead_id, 2, OTHER[offer.assignee]);
+      await notify(env, offer.lead_id, 'offer', next.assignee, next.token);
+    } else {
+      await reviveBothOffers(env, offer.lead_id);
+    }
+  }
+  return results.length;
+}
+
+/* Round 2 expiring does not create a round 3. Both tokens come back to life
+   with no expiry, both directors are told, and the first to click wins.
+   Deliberately not an escalation to sales@ — that was the decision taken. */
+async function reviveBothOffers(env, leadId) {
+  await env.DB.prepare(
+    "UPDATE offers SET state='offered', expires_at=NULL WHERE lead_id=? AND state='expired'"
+  ).bind(leadId).run();
+  await alertUnclaimed(env, leadId);
+}
+
+/* R2: the alert repeats, once a day, until somebody accepts.
+   A single alert would mean an enquiry both directors happened to clear from
+   their inbox one evening is never mentioned again — it would die quietly,
+   which is the failure this whole feature exists to prevent. */
+async function alertUnclaimed(env, onlyLeadId) {
+  const sql =
+    "SELECT lead_id, MAX(alerted_at) AS last FROM offers " +
+    "WHERE state='offered' AND expires_at IS NULL " +
+    (onlyLeadId ? "AND lead_id=? " : "") +
+    "GROUP BY lead_id";
+  const stmt = onlyLeadId
+    ? env.DB.prepare(sql).bind(onlyLeadId)
+    : env.DB.prepare(sql);
+  const { results } = await stmt.all();
+
+  for (const row of results) {
+    if (row.last && Date.parse(row.last.replace(' ', 'T') + 'Z') > Date.now() - 86400000) continue;
+    await notify(env, row.lead_id, 'unclaimed', 'both', null);
+    await env.DB.prepare(
+      "UPDATE offers SET alerted_at=datetime('now') WHERE lead_id=? AND state='offered'"
+    ).bind(row.lead_id).run();
+  }
+  return results.length;
+}
+
+/* One way out of this Worker for every non-offer notification. Task 8
+   replaces the body with the Resend call and keeps n8n as the fallback;
+   until then everything goes through the existing relay. */
+async function notify(env, leadId, event, assignee, token) {
+  const lead = await env.DB.prepare('SELECT type, payload_json, division FROM leads WHERE id=?')
+    .bind(leadId).first();
+  if (!lead) return false;
+  return deliverToN8n(
+    env, leadId, lead.type, JSON.parse(lead.payload_json),
+    { division: lead.division, assignee, token }, event,
+  );
+}
+
+/* ---- The daily digest --------------------------------------------------
+   R3, and the acceptance test for this whole feature.
+
+   Sent every morning whether or not anything is wrong. That is the point: a
+   digest that only appears when there is a problem is indistinguishable from
+   a digest that has stopped working, and "no leads today" then looks exactly
+   like "the relay has been dead since Tuesday". If this stops arriving,
+   something is broken — and it is the only signal that survives every other
+   component failing, because it is generated here on Cloudflare rather than
+   on the machine most likely to be off.
+
+   Deliberately not conditional on there being news. */
+async function sendDailyDigest(env) {
+  const row = await env.DB.prepare(
+    "SELECT " +
+    " (SELECT COUNT(*) FROM leads WHERE created_at >= datetime('now','-1 day')) AS arrived," +
+    " (SELECT COUNT(*) FROM offers WHERE accepted_at >= datetime('now','-1 day')) AS accepted," +
+    " (SELECT COUNT(*) FROM offers WHERE state='offered') AS open_offers," +
+    " (SELECT COUNT(*) FROM offers o WHERE o.state='offered' AND o.expires_at IS NULL) AS unclaimed," +
+    " (SELECT COUNT(*) FROM leads WHERE status='failed') AS failed," +
+    " (SELECT COUNT(*) FROM leads WHERE status='pending') AS queued," +
+    " (SELECT COUNT(*) FROM leads) AS total"
+  ).first();
+
+  /* The oldest thing nobody has taken. A count alone does not convey "this
+     has been sitting for three days". */
+  const oldest = await env.DB.prepare(
+    "SELECT lead_id, CAST((julianday('now') - julianday(MIN(created_at))) * 24 AS INTEGER) AS hours " +
+    "FROM offers WHERE state='offered' GROUP BY lead_id ORDER BY MIN(created_at) LIMIT 1"
+  ).first();
+
+  const summary = {
+    arrived_24h: row.arrived,
+    accepted_24h: row.accepted,
+    open_offers: row.open_offers,
+    unclaimed: row.unclaimed,
+    failed_all_time: row.failed,
+    queued_now: row.queued,
+    total_leads: row.total,
+    oldest_open_lead: oldest ? oldest.lead_id : null,
+    oldest_open_hours: oldest ? oldest.hours : null,
+  };
+
+  try {
+    const res = await fetch(env.N8N_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Relay-Secret': env.RELAY_SECRET },
+      body: JSON.stringify({ event: 'digest', type: 'digest', ...summary }),
+    });
+    return res.ok;
+  } catch {
+    /* Nothing to escalate to. A digest that cannot be sent is exactly the
+       situation the digest exists to reveal, and the reader learns it by not
+       receiving one. */
+    return false;
+  }
+}
+
 async function retryPendingLeads(env) {
   const { results } = await env.DB
     .prepare("SELECT id, type, payload_json, division FROM leads WHERE status = 'pending' AND attempts < 576")
@@ -235,7 +378,18 @@ export default {
     return new Response('not found', { status: 404 });
   },
 
+  /* Two crons, branched on which fired. Without the branch the digest would
+     go out every five minutes, which trains people to ignore it — and an
+     ignored dead-man's switch is not one. */
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(retryPendingLeads(env));
+    if (event.cron === '0 5 * * *') {
+      ctx.waitUntil(sendDailyDigest(env));
+      return;
+    }
+    ctx.waitUntil((async () => {
+      await retryPendingLeads(env);
+      await sweepExpiredOffers(env);
+      await alertUnclaimed(env, null);
+    })());
   },
 };

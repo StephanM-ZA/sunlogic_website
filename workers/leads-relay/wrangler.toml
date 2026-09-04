@@ -3,6 +3,10 @@ main = "src/index.js"
 compatibility_date = "2026-08-31"
 
 [vars]
+# 1440 = 24 hours. Set to 2 for a staging run of the timing paths; putting
+# it back is the last step of that run.
+OFFER_TTL_MINUTES = "1440"
+CLAIM_BASE_URL = "https://sunlogic-leads-relay.smarais-za.workers.dev"
 N8N_WEBHOOK_URL = "https://n8n.digitaloperations.co.za/webhook/sunlogic-leads"
 
 [[d1_databases]]
@@ -11,4 +15,7 @@ database_name = "sunlogic-leads"
 database_id = "3a7d8834-4e84-4fa0-9377-f2b3da573be6"
 
 [triggers]
-crons = ["*/5 * * * *"]
+# */5 sweeps expiries and retries the relay queue.
+# 0 5 UTC is 07:00 in Cape Town — the digest, every morning, whether or not
+# anything is wrong. See sendDailyDigest.
+crons = ["*/5 * * * *", "0 5 * * *"]

@@ -625,12 +625,12 @@ curl -s -X POST "localhost:8787/claim/$TOKEN" | grep -o 'already'
 
 ---
 
-## Task 6: The expiry sweeper
+## Task 6: The expiry sweeper — DONE
 
 **Files:**
 - Modify: `workers/leads-relay/src/index.js`
 
-- [ ] **Step 1: Sweep, in the cron that already exists**
+- [x] **Step 1: Sweep, in the cron that already exists**
 
 ```js
 async function sweepExpiredOffers(env) {
@@ -655,7 +655,7 @@ async function sweepExpiredOffers(env) {
 
 Round 2 expiring does not create a round 3. It revives both tokens and starts the repeating alert.
 
-- [ ] **Step 2: R2 — the alert repeats**
+- [x] **Step 2: R2 — the alert repeats**
 
 ```js
 async function alertUnclaimed(env) {
@@ -675,9 +675,9 @@ async function alertUnclaimed(env) {
 
 An enquiry cannot fall out of the system by being ignored. This keeps going until someone accepts.
 
-- [ ] **Step 3: Wire both into `scheduled()`** alongside `retryPendingLeads`.
+- [x] **Step 3: Wire both into `scheduled()`** alongside `retryPendingLeads`.
 
-- [ ] **Step 4: Test with a 2-minute TTL**
+- [x] **Step 4: Test with a 2-minute TTL**
 
 Set `OFFER_TTL_MINUTES = "2"` in `wrangler.toml` `[vars]` for the local run, submit, wait, and trigger the cron:
 
@@ -689,18 +689,34 @@ npx --no-install wrangler d1 execute sunlogic-leads --local --json \
 
 Expected: round 1 `expired`, round 2 `pending_send` for the other person.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ---
 
-## Task 7: The daily digest
+## Task 7: The daily digest — DONE
+
+Verified with `OFFER_TTL_MINUTES=2` against a live local Worker, driving a
+whole 24-hour lifecycle through in minutes:
+
+| Step | Result |
+|---|---|
+| Round 1 expires | `expired` for stephan, round 2 created for **craig** |
+| Round 2 expires | both offers revived, `expires_at NULL`, both alerted |
+| Cron fires again immediately | `alerted_at` unchanged — no daily spam |
+| 25 hours simulated | alert repeats (**R2 holds**) |
+| Digest cron | separate branch; the 5-minute cron never sends it |
+
+The reassignment goes to `OTHER[assignee]`, not to whoever the rotation
+pointer names — a lead that has already been past one director must not be
+offered back to them.
+
 
 R3, the dead-man's switch. If this stops arriving, the pipeline is broken — and it is the only signal that survives every other component failing.
 
 **Files:**
 - Modify: `workers/leads-relay/src/index.js`, `workers/leads-relay/wrangler.toml`
 
-- [ ] **Step 1: Add a daily cron**
+- [x] **Step 1: Add a daily cron**
 
 ```toml
 [triggers]
@@ -709,13 +725,13 @@ crons = ["*/5 * * * *", "0 5 * * *"]
 
 `05:00` UTC is `07:00` in Cape Town.
 
-- [ ] **Step 2: Build and send the digest**
+- [x] **Step 2: Build and send the digest**
 
 Counts for the last 24 hours: leads received, accepted, still unclaimed and for how long, and anything `failed`. Send it **whether or not anything is wrong** — a digest that only appears when there is a problem is indistinguishable from a broken digest.
 
-- [ ] **Step 3: Branch `scheduled()` on `event.cron`** so the 5-minute and daily jobs do not both run everything.
+- [x] **Step 3: Branch `scheduled()` on `event.cron`** so the 5-minute and daily jobs do not both run everything.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ---
 
