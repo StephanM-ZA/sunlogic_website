@@ -109,12 +109,18 @@ async function sendViaResend(env, { to, replyTo, subject, html }) {
 
 /* The fallback posts fully-rendered HTML. n8n decides nothing about content —
    it addresses an envelope and sends it, and writes the sheet row. */
-async function sendViaN8n(env, { to, replyTo, subject, html, leadId, event, extra }) {
+async function sendViaN8n(env, { to, replyTo, subject, html, leadId, event, extra, needsSend }) {
   try {
     const res = await fetch(env.N8N_WEBHOOK_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-Relay-Secret': env.RELAY_SECRET },
-      body: JSON.stringify({ event, leadId, to, replyTo, subject, html, ...(extra || {}) }),
+      body: JSON.stringify({
+        event, leadId, to, replyTo, subject, html,
+        /* n8n branches on this: always write the sheet row, send only when
+           asked. Defaults true so an older workflow keeps behaving. */
+        needsSend: needsSend !== false,
+        ...(extra || {}),
+      }),
     });
     if (res.ok) return { ok: true, via: 'n8n' };
     /* Carry n8n's own words. "n8n 403" is a status; "Authorization data is
@@ -126,13 +132,25 @@ async function sendViaN8n(env, { to, replyTo, subject, html, leadId, event, extr
   }
 }
 
-/* Try Resend, fall back to n8n, and report which path carried it so the
-   digest can say so. Both failing is the caller's problem to record — the
-   lead stays queued and is retried for 48 hours. */
+/* Try Resend, fall back to n8n, and report which path carried it.
+   ------------------------------------------------------------------
+   The sheet row is a separate concern from the email, and conflating them
+   was a real bug: n8n writes the Google Sheet, but with Resend primary n8n
+   is only reached when Resend FAILS. The audit trail would have recorded
+   nothing but failures — a log that is empty precisely when everything is
+   working.
+
+   So a successful Resend send is still announced to n8n, with needsSend
+   false: log this, do not send it. If that announcement fails, the email
+   has already gone and only the row is missing, which is the right way
+   round. Sending must never depend on the iMac; logging may. */
 export async function send(env, message) {
   const first = await sendViaResend(env, message);
-  if (first.ok) return first;
-  const second = await sendViaN8n(env, message);
+  if (first.ok) {
+    await sendViaN8n(env, { ...message, needsSend: false });
+    return first;
+  }
+  const second = await sendViaN8n(env, { ...message, needsSend: true });
   if (second.ok) return { ok: true, via: 'n8n', primaryFailed: first.why };
   return { ok: false, why: first.why + ' | ' + second.why };
 }
