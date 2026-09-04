@@ -133,7 +133,19 @@ constraint flagged back to the user, not fixed in code.
 5. Ran `npm run build` — clean, no errors. `dist/` is gitignored/CI-rebuilt so nothing
    there needs committing.
 
-## Deliberately NOT fixed — needs a user decision
+## RESOLVED 2026-09-04 — was: deliberately not fixed
+
+The section below described a limitation of GitHub Pages. The apex moved to
+Cloudflare Pages on 2026-09-03 and GitHub Pages was switched off entirely on
+2026-09-04, so the constraint no longer applies: Cloudflare Pages supports a
+`_headers` file, which means asset cache lifetimes ARE now settable from this
+repo. The 574 KiB saving described below is available and has not been taken —
+adding `_headers` to each site's source directory is the outstanding work.
+
+Kept rather than deleted because the reasoning explains why the site's assets
+still carry a short TTL today.
+
+### Original note
 
 **Cache lifetimes (574 KiB estimated savings, the single biggest item in the report).**
 Every asset in the report shows a flat "10m" TTL — this matches GitHub Pages' known

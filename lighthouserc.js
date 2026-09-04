@@ -1,6 +1,13 @@
-// Lighthouse CI config. Runs against the built dist/ directory locally —
-// not the live site — so it never depends on DNS/domain state and never
-// blocks the deploy workflow, which is separate.
+// Lighthouse CI config. Runs against the built dist/ directory — not the
+// live site — so it never depends on DNS or domain state.
+//
+// Started by hand: `npm run lighthouse`. It is no longer wired into any
+// pipeline. The workflow that ran it on every push was removed on
+// 2026-09-04 when deployment moved entirely to Cloudflare, because it took
+// 7-14 minutes and folding that into three Pages builds would have put it
+// on every deploy. Nothing about the budgets below changed — only how
+// often anybody looks at them, which is now a decision rather than a
+// default.
 //
 // Pages are discovered per site at config-load time, so a new page is
 // covered automatically on its first push and a fourth site would be too.
@@ -26,9 +33,12 @@ const BASE_ASSERTIONS = {
   // simulation compounds on top of that — the same page scored
   // 0.96 locally and 0.72 on a GitHub runner in back-to-back
   // tests, pure environment noise, not a regression. Real
-  // performance work for this site was verified by hand across
-  // both local and the live GitHub Pages CDN — this check just
-  // surfaces the number, it doesn't gate on it.
+  // performance work for this site was verified by hand against
+  // the live site — this check just surfaces the number, it
+  // doesn't gate on it. Since 2026-09-04 it only runs when
+  // somebody starts it (`npm run lighthouse`); the CI workflow
+  // that ran it on every push was removed when the pipeline
+  // moved entirely to Cloudflare.
   'categories:performance': ['warn', { minScore: 0.8 }],
   // 0.85 instead of a stricter number: the scroll-reveal
   // animation occasionally gets caught mid-fade by the crawler,
