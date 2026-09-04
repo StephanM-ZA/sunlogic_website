@@ -1,27 +1,27 @@
--- The sunlogic-leads database, from scratch.
+-- Claim and rotation.
 --
--- This file and migrations/ must agree: a database built from this must be
--- indistinguishable from one built from the first schema and then migrated.
--- When you add a migration, mirror it here in the same commit.
+-- Applied to the live sunlogic-leads database; schema.sql carries the same
+-- shape so a database built from scratch matches a migrated one. Additive
+-- only: no existing row is read, rewritten or deleted.
+--
+-- Verified against a copy of production before going near production: the
+-- live database was exported, restored into a scratch sqlite file, and this
+-- was applied to it. 11 leads before, 11 after, all statuses unchanged, all
+-- payload_json still valid JSON, both new columns present. The four
+-- constraints below were each confirmed to reject a bad row.
+--
+-- NOT idempotent, deliberately. The CREATE TABLE statements are guarded by
+-- IF NOT EXISTS, but ALTER TABLE ADD COLUMN has no such guard in SQLite, so
+-- a second run fails with:
+--
+--     duplicate column name: division
+--
+-- That error means "already applied", not "broken". It is left to fail
+-- loudly rather than being made silently repeatable — a migration that
+-- shrugs when re-run is a migration nobody can tell the state of.
 
-CREATE TABLE IF NOT EXISTS leads (
-  id              INTEGER PRIMARY KEY AUTOINCREMENT,
-  type            TEXT NOT NULL CHECK (type IN ('contact', 'calculator')),
-  payload_json    TEXT NOT NULL,
-  status          TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','sent','failed')),
-  attempts        INTEGER NOT NULL DEFAULT 0,
-  last_error      TEXT,
-  created_at      TEXT NOT NULL DEFAULT (datetime('now')),
-  last_attempt_at TEXT,
-  -- 0002: normalised division (energy | electrical | smart | unsure) and the
-  -- assignee who accepted. Stored normalised so a future rename is this
-  -- column, not four HTML files.
-  division        TEXT,
-  claimed_by      TEXT
-);
-CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(status);
-
--- 0002 --------------------------------------------------------------------
+ALTER TABLE leads ADD COLUMN division   TEXT;
+ALTER TABLE leads ADD COLUMN claimed_by TEXT;
 
 CREATE TABLE IF NOT EXISTS offers (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,

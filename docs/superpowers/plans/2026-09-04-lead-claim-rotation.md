@@ -125,7 +125,7 @@ Verified in a browser across all three sites: the dropdown offers
 `Energy | Electrical | Smart Solutions | Not sure yet`, and all four
 `?need=` values select correctly with the right message.
 
-## Task 2: Schema
+## Task 2: Schema — DONE except Step 4 (live DB)
 
 **Files:**
 - Modify: `workers/leads-relay/schema.sql`
@@ -134,7 +134,7 @@ Verified in a browser across all three sites: the dropdown offers
 **Interfaces:**
 - Produces: tables `offers`, `rotation`; columns `leads.division`, `leads.claimed_by`. Every later task reads these names.
 
-- [ ] **Step 1: Write the migration**
+- [x] **Step 1: Write the migration**
 
 `workers/leads-relay/migrations/0002-claim-rotation.sql`:
 
@@ -173,11 +173,11 @@ INSERT OR IGNORE INTO rotation (id, last_offered_to) VALUES (1, NULL);
 
 Note `state` starts at `pending_send`, not `offered`. That is R1: the row exists before the email is sent, and only becomes `offered` — with `expires_at` set — once n8n confirms the send. The sweeper ignores `pending_send`, so a lead waiting on a down n8n is not burning its 24 hours.
 
-- [ ] **Step 2: Mirror the same shape into `schema.sql`**
+- [x] **Step 2: Mirror the same shape into `schema.sql`**
 
 Append the two `CREATE TABLE` blocks and add `division TEXT` and `claimed_by TEXT` to the existing `leads` definition, so a fresh database matches a migrated one.
 
-- [ ] **Step 3: Apply locally first**
+- [x] **Step 3: Apply locally first**
 
 ```bash
 cd workers/leads-relay
@@ -201,6 +201,38 @@ Expected: still 11. `ALTER TABLE ADD COLUMN` does not touch existing rows.
 - [ ] **Step 5: Commit**
 
 ---
+
+### Task 2 status
+
+Steps 1-3 done. **Step 4 (live database) deliberately not run** — that is a
+human decision and the plan says so.
+
+Verified beyond what the plan asked, because "apply it to an empty local db"
+proves very little about a database with real rows in it:
+
+- The live database was exported read-only, restored into a scratch sqlite
+  file, and the migration applied to that. **11 leads before, 11 after**, all
+  `sent`, all `payload_json` still valid JSON, both new columns present, both
+  new tables created.
+- Each of the four constraints was confirmed to reject a bad row: an assignee
+  who is not stephan or craig, an unknown state, a duplicate token, and a
+  second rotation row.
+- A new offer defaults to `state='pending_send'` with `expires_at NULL`,
+  so R1 is enforced by the schema rather than relying on the Worker to
+  remember.
+- Re-running the migration fails with `duplicate column name: division`.
+  That is "already applied", not "broken", and is now documented at the top
+  of the migration file.
+
+To apply to production when the human says so:
+
+```bash
+cd workers/leads-relay
+npx --no-install wrangler d1 execute sunlogic-leads --remote --file migrations/0002-claim-rotation.sql
+npx --no-install wrangler d1 execute sunlogic-leads --remote --json --command "SELECT COUNT(*) AS leads FROM leads;"
+```
+
+Expected: still 11.
 
 ## Task 3: Pure logic, with tests
 
