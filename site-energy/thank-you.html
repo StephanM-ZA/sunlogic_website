@@ -39,7 +39,7 @@
   <dl-reveal>
     <dl-stack level="hero" eyebrow="Message received"
       heading="Thank You. We Have |Your Details"
-      body="Someone will be in touch to arrange a time that suits you. If it is urgent, phoning is faster than waiting for a reply.">
+      body="Someone will be in touch to arrange a time that suits you. If it's urgent, phoning is faster than waiting for a reply.">
       <dl-actions>
         <dl-roll item-class="sl-btn sl-btn--emphasis" items='[{"text":"+27 (82) 655 5371","href":"tel:+27826555371","icon":"phone"},{"text":"+27 (82) 443 7799","href":"tel:+27824437799","icon":"phone"}]'></dl-roll>
         <dl-button variant="outline" href="index.html">Back to the Site</dl-button>
@@ -62,7 +62,7 @@
       <dl-step step="02" heading="We Come and Look"
         body="A proper site visit: your roof, your board, and your recent bills."></dl-step>
       <dl-step step="03" heading="You Get a Straight Answer" tone="inverse"
-        body="What it would take, what it would cost, and what it would save. If it is not worth doing yet, we will say so."></dl-step>
+        body="What it would take, what it would cost, and what it would save. If it isn't worth doing yet, we'll say so."></dl-step>
     </dl-grid>
   </dl-reveal>
 </dl-section>
@@ -77,12 +77,27 @@
   </dl-reveal>
   <dl-reveal>
     <dl-grid cols="3">
-      <dl-card heading="Why Your Bill Went Up"
-        body="Even though you used less. The fixed monthly charge has been rising faster than the rate per unit."></dl-card>
-      <dl-card heading="Should You Get a Battery?"
-        body="The simple way to work it out, without being sold one."></dl-card>
-      <dl-card heading="How to Read a Solar Quote"
-        body="Which rate a proposal values your solar at, and why that one choice changes everything."></dl-card>
+      <!-- These were three invented teasers. Two of the three articles do not
+           exist and never did, and none of the three was a link, so a reader
+           who had just converted was shown headlines they could not reach.
+           Replaced with the three posts that are actually published, titled
+           exactly as each post titles itself and dated from each post's own
+           datePublished. -->
+      <dl-card photo="images/blog/grid-tied-home.jpeg" photo-alt="A home with rooftop solar, still connected to the grid"
+        date="2026-08-30" heading="Why Your Electricity Bill Went Up"
+        body="The NERSA-approved tariff increases behind a bill that keeps climbing even when you use less.">
+        <dl-actions><dl-button variant="outline" icon="arrow-right" href="blog-why-your-bill-went-up.html">Read</dl-button></dl-actions>
+      </dl-card>
+      <dl-card photo="images/blog/rent-to-own-solar.jpeg" photo-alt="Solar panels on a rooftop"
+        date="2022-09-09" heading="Rent-to-Own"
+        body="Solar tailored to your home or business, without a full upfront payment.">
+        <dl-actions><dl-button variant="outline" icon="arrow-right" href="blog-rent-to-own.html">Read</dl-button></dl-actions>
+      </dl-card>
+      <dl-card photo="images/blog/off-grid-home.jpg" photo-alt="A home running fully off-grid on solar power"
+        date="2022-08-25" heading="Off the Grid vs. Grid-tied"
+        body="The costs and benefits of going fully off-grid versus staying connected.">
+        <dl-actions><dl-button variant="outline" icon="arrow-right" href="blog-off-grid-vs-grid-tied.html">Read</dl-button></dl-actions>
+      </dl-card>
     </dl-grid>
   </dl-reveal>
 </dl-section>
