@@ -978,6 +978,35 @@ dl-hero { display: block; min-height: 964px; }
    fail contrast for thirty seconds in every sixty. */
 .sl-hero__dusk { background: var(--color-navy-deep); opacity: 0; }
 
+/* 3b — interior lights, Electrical's hero feature. <dl-hero lights>.
+   A warm wash rising from the lower half of the frame, the way interior
+   light spills out of a house at dusk. Energy's flare dims the scene over
+   its dark half; this does the opposite, which is the point: that division
+   sells generation, this one sells the lights being on.
+
+   Sits BELOW both scrims in source order, same as the dusk layer, so the
+   heading and buttons keep their contrast for the whole cycle instead of
+   losing it every time the wash peaks.
+
+   70s to match the flare's rhythm: 8s up, 40s lit, 8s down, then dark.
+   screen blend rather than opacity on a solid, so it warms the photograph
+   underneath instead of veiling it. */
+.sl-hero__lights {
+  background:
+    radial-gradient(58% 44% at 32% 74%, rgba(255,178,84,0.30) 0%, rgba(255,178,84,0) 70%),
+    radial-gradient(42% 36% at 68% 70%, rgba(255,150,52,0.22) 0%, rgba(255,150,52,0) 72%);
+  mix-blend-mode: screen;
+  opacity: 0;
+  animation: sl-lights 70s ease-in-out infinite;
+}
+@keyframes sl-lights {
+  0%   { opacity: 0; }
+  11%  { opacity: 1; }
+  68%  { opacity: 1; }
+  80%  { opacity: 0; }
+  100% { opacity: 0; }
+}
+
 /* 4 — side scrim. A bottom-only scrim loses contrast on a bright photo. */
 .sl-hero__scrim-side { background: linear-gradient(100deg, rgba(13,32,40,.88) 0%, rgba(13,32,40,.62) 38%, rgba(13,32,40,.12) 72%, rgba(13,32,40,0) 100%); }
 /* 5 — bottom scrim */
@@ -1765,6 +1794,25 @@ body:has(.sl-modal[open]) .sl-totop { display: none; }
 }
 .sl-dock__phone svg { color: var(--color-orange); }
 .sl-dock__phone:hover { color: var(--color-white); background: rgba(255,255,255,0.10); opacity: 1; }
+/* WhatsApp sits between the rolling contact detail and the quote button:
+   it is an action, so it gets a button's height and hit area, but it is the
+   secondary action, so it stays ghost rather than competing with the CTA.
+   Craig's review calls this the cheapest conversion win on the site. */
+.sl-dock__wa {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 44px; padding: 0 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255,255,255,0.22);
+  font-family: var(--font-body); font-size: 14px; font-weight: 700;
+  color: rgba(255,255,255,0.92); white-space: nowrap;
+  transition: color var(--dur-hover) ease-out, background-color var(--dur-hover) ease-out,
+              border-color var(--dur-hover) ease-out;
+}
+.sl-dock__wa svg { color: var(--color-orange); }
+.sl-dock__wa:hover {
+  color: var(--color-white); background: rgba(255,255,255,0.10);
+  border-color: rgba(255,255,255,0.38); opacity: 1;
+}
 /* The dock's button is a real button: same 4px corner, same wipe. */
 .sl-dock__cta {
   position: relative; overflow: hidden;
@@ -1795,6 +1843,7 @@ body:has(.sl-modal[open]) .sl-totop { display: none; }
 .sl-dock__cta:active { transform: translateY(1px); }
 .sl-dock__cta > span, .sl-dock__cta > svg { position: relative; z-index: 1; }
 /* On a narrow phone the number collapses to the icon alone. */
+@media (max-width: 560px) { .sl-dock__wa-label { display: none; } .sl-dock__wa { padding: 0 13px; } }
 @media (max-width: 420px) { .sl-dock__phone span { display: none; } .sl-dock__phone { padding: 0 14px; } }
 /* Dock clearance goes on the footer, so the navy runs to the bottom of
    the document rather than leaving a beige strip under it. */
@@ -1883,6 +1932,9 @@ dl-reveal-lines.is-armed.is-visible { opacity: 1; transform: none; }
      components.js checks the same query and never starts its loop. */
   .sl-flare { --flare-x: 77.1% !important; --flare-y: 23.5% !important; --flare-fade: 1 !important; }
   .sl-hero__dusk { opacity: 0 !important; }
+  /* Held lit rather than switched off: the wash is part of how the
+     photograph is lit, not decoration on top of it. */
+  .sl-hero__lights { animation: none !important; opacity: 1 !important; }
   .sl-badge--live::before { opacity: 1 !important; }
 }
 

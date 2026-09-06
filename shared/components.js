@@ -30,6 +30,12 @@ const SL_ACCENT = (text) => {
 const SL_PHONE_1 = { text: '+27 (82) 655 5371', href: 'tel:+27826555371', icon: 'phone' };
 const SL_PHONE_2 = { text: '+27 (82) 443 7799', href: 'tel:+27824437799', icon: 'phone' };
 const SL_EMAIL = { text: 'sales@sunlogic.co.za', href: 'mailto:sales@sunlogic.co.za', icon: 'envelope' };
+/* WhatsApp is how South Africans contact a trades business, and Craig's
+   review calls it the cheapest conversion win on his list. It uses
+   PHONE_1's number: change it here and the dock on all three sites
+   follows. No prefilled message, deliberately, since the right opening
+   line differs by page and a canned one reads as a bot. */
+const SL_WHATSAPP = { text: 'WhatsApp', href: 'https://wa.me/27826555371', icon: 'whatsapp' };
 const SL_PHONES = [SL_PHONE_1, SL_PHONE_2];
 const SL_CONTACTS = [SL_PHONE_1, SL_PHONE_2, SL_EMAIL];
 
@@ -793,6 +799,7 @@ class DlDock extends SLElement {
     this.innerHTML =
       '<div class="sl-dock">' +
       '<dl-roll item-class="sl-dock__phone" items=\'' + JSON.stringify(SL_CONTACTS) + '\'></dl-roll>' +
+      '<a class="sl-dock__wa" href="' + SL_WHATSAPP.href + '" target="_blank" rel="noopener" aria-label="Message us on WhatsApp, opens in a new tab">' + SL_ICON('whatsapp', 18) + '<span class="sl-dock__wa-label">WhatsApp</span></a>' +
       '<a class="sl-dock__cta" href="' + href + '"><span>' + label + '</span>' + SL_ICON('arrow-right', 16) + '</a>' +
       '</div>' +
       '<button type="button" class="sl-totop" aria-label="Back to top" hidden>' +
@@ -1081,9 +1088,23 @@ function SL_FLARE_REGISTER(hero, preset) {
   SL_FLARE_RIGS.push({ flare, dusk, pts });
 }
 
-function SL_HERO_LAYERS(flare) {
+/* `lights` is the Electrical division's answer to Energy's sunrise flare.
+   CHECKPOINT recorded that Electrical was earmarked for "a different feature
+   later" and it was never decided or built.
+
+   Deliberately NOT a second flare rig. The flare tracks a sun along a path
+   read off one specific photograph, which means it is welded to that image
+   and misaligns the moment the photo changes. This is a warm interior wash
+   over the whole frame instead: it reads as the lights coming up on a
+   dimmer, it cannot misalign with anything, and it survives a new hero
+   photo without retuning.
+
+   Pure CSS, no rAF loop and nothing per-frame in JS, so it costs nothing
+   the flare costs. Held off entirely under prefers-reduced-motion. */
+function SL_HERO_LAYERS(flare, lights) {
   return '<div class="sl-hero__layer sl-hero__gradient"></div>' +
     (flare ? SL_FLARE_MARKUP : '<div class="sl-hero__layer sl-hero__sweep"></div>') +
+    (lights ? '<div class="sl-hero__layer sl-hero__lights"></div>' : '') +
     '<div class="sl-hero__layer sl-hero__scrim-side"></div>' +
     '<div class="sl-hero__layer sl-hero__scrim-bottom"></div>';
 }
@@ -1129,8 +1150,9 @@ class DlHero extends SLElement {
        SL_HERO_MEDIA — see that function. `flare` names a path preset in
        SL_FLARE_PATHS and swaps the sweep for the sunrise cycle. */
     const flare = this.getAttribute('flare');
+    const lights = this.hasAttribute('lights');
     this.innerHTML =
-      '<section class="sl-hero">' + SL_HERO_MEDIA(this, true) + SL_HERO_LAYERS(flare) +
+      '<section class="sl-hero">' + SL_HERO_MEDIA(this, true) + SL_HERO_LAYERS(flare, lights) +
       '<div class="sl-hero__inner">' + this.innerHTML + '</div></section>';
     if (flare) SL_FLARE_REGISTER(this, flare);
   }
@@ -1263,7 +1285,7 @@ class DlDivisionPromo extends SLElement {
     this.innerHTML =
       '<section class="sl-section sl-section--promo"><div class="sl-container">' +
       '<div class="sl-hero sl-hero--promo' + accent + '">' +
-      SL_HERO_MEDIA(this, false) + SL_HERO_LAYERS(false) +
+      SL_HERO_MEDIA(this, false) + SL_HERO_LAYERS(false, false) +
       '<div class="sl-hero__inner">' + this.innerHTML + '</div>' +
       '</div></div></section>';
     SL_PROMO_FLOAT(this.querySelector('.sl-hero--promo'));
