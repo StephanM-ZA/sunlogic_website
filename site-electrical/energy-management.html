@@ -3,19 +3,19 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Smart Control For Your Geyser and Solar | Sunlogic SA</title>
-<meta name="description" content="HotBot and SolarBot smart controllers for your geyser and solar system, installed by Sunlogic SA. Real-time monitoring, less wasted energy, one app."/>
+<title>Smart Wiring, Load Control and Sub-Metering | Sunlogic SA</title>
+<meta name="description" content="Smart on an electrical site is the board, not the app. Load control, sub-metering and the wiring that makes any of it work, installed and certified by Sunlogic SA."/>
 <link rel="canonical" href="https://sunlogic.co.za/energy-management.html"/>
 <meta property="og:type" content="website"/>
 <meta property="og:site_name" content="Sunlogic SA"/>
-<meta property="og:title" content="Smart Control For Your Geyser and Solar | Sunlogic SA"/>
-<meta property="og:description" content="HotBot and SolarBot smart controllers for your geyser and solar system, installed by Sunlogic SA. Real-time monitoring, less wasted energy, one app."/>
+<meta property="og:title" content="Smart Wiring, Load Control and Sub-Metering | Sunlogic SA"/>
+<meta property="og:description" content="Smart on an electrical site is the board, not the app. Load control, sub-metering and the wiring that makes any of it work, installed and certified by Sunlogic SA."/>
 <meta property="og:url" content="https://sunlogic.co.za/energy-management.html"/>
-<meta property="og:image" content="https://sunlogic.co.za/images/energy-hero.webp"/>
+<meta property="og:image" content="https://sunlogic.co.za/images/electrical-hero.webp"/>
 <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:title" content="Smart Control For Your Geyser and Solar | Sunlogic SA"/>
-<meta name="twitter:description" content="HotBot and SolarBot smart controllers for your geyser and solar system, installed by Sunlogic SA. Real-time monitoring, less wasted energy, one app."/>
-<meta name="twitter:image" content="https://sunlogic.co.za/images/energy-hero.webp"/>
+<meta name="twitter:title" content="Smart Wiring, Load Control and Sub-Metering | Sunlogic SA"/>
+<meta name="twitter:description" content="Smart on an electrical site is the board, not the app. Load control, sub-metering and the wiring that makes any of it work, installed and certified by Sunlogic SA."/>
+<meta name="twitter:image" content="https://sunlogic.co.za/images/electrical-hero.webp"/>
 <link rel="icon" type="image/png" href="images/fav_icon.png"/>
 <link rel="preload" href="shared/fonts/HankenGrotesk-400-latin.woff2" as="font" type="font/woff2" crossorigin/>
 <link rel="preload" href="shared/fonts/HankenGrotesk-700-latin.woff2" as="font" type="font/woff2" crossorigin/>
@@ -28,128 +28,157 @@
 <script src="shared/components.js?v=44" defer></script>
 <script src="shared/analytics.js?v=5" defer></script>
 <script src="shared/sunlogic-check.js?v=7" defer></script>
-<link rel="preload" as="image" href="images/energy-hero.webp" fetchpriority="high"/>
+<link rel="preload" as="image" href="images/electrical-hero.webp" fetchpriority="high"/>
 </head>
 <body data-topic="Smart Solutions">
 <a class="sl-skip-link" href="#main-content">Skip to main content</a>
 <dl-nav-bar active="energy"></dl-nav-bar>
 <main id="main-content">
 
-<dl-hero photo="images/energy-hero.webp" fit="contain" alt="HotBot and SolarBot connected to the monitoring app and dashboard">
+<!-- Rewritten 6 Sep 2026. What stood here was the ENERGY division's smart page,
+     unchanged: two Plentify geyser and solar controllers, opening on "Your geyser
+     is the single biggest user of electricity in most homes" and closing on "Two
+     Devices, and a Smaller Bill". Nothing on it was electrical.
+
+     Plentify does not move here. Hot water is the Energy division's first pillar
+     and it stays there; this page cross-links rather than duplicating it. The
+     cancellation terms that page had right have already been carried across to
+     the Energy Smart page, so nothing is lost by removing them here.
+
+     The argument: on an electrical site, smart is the board rather than the app.
+     Anyone can sell a device. The value is being the people who wire it and
+     certify it, which is the same claim the rest of this division makes. -->
+<dl-hero photo="images/electrical-hero.webp" alt="A distribution board with labelled circuit breakers">
   <div class="sl-hero__text">
     <dl-reveal>
-      <dl-stack level="hero" eyebrow="Energy management"
-        heading="Smart Control For Your |Geyser and Solar"
-        body="Two small devices that quietly make your home cheaper to run.">
+      <dl-stack level="hero" eyebrow="Smart solutions"
+        heading="The Clever Part Is |Behind the Wall"
+        body="Anyone can sell you a device with an app. What decides whether it does anything useful is the wiring behind it, which is the part we do. Load control at the board, metering that tells you who used what, and the certificate that says it was done properly.">
         <dl-actions>
-          <dl-button variant="emphasis" icon="arrow-right" href="contact.html">Get Started</dl-button>
-          <dl-button variant="ghost" on-dark href="#products">See the Devices</dl-button>
+          <dl-button variant="emphasis" icon="arrow-right" href="contact.html">Book Your Free Site Visit</dl-button>
+          <dl-button variant="ghost" on-dark href="#load-control">See What This Covers</dl-button>
         </dl-actions>
       </dl-stack>
     </dl-reveal>
   </div>
 </dl-hero>
 
-<dl-reveal>
-  <dl-statement warm eyebrow="Why it matters"
-    text="Your geyser is the single biggest user of electricity |in most homes">
-    <div style="display:grid;gap:16px;max-width:720px">
-      <p class="sl-body sl-body--lg">It heats water on a timer whether you're going to use it or not, and it carries on doing that all year.</p>
-      <p class="sl-body sl-body--lg">These two controllers fix that, and they're managed from one app on your phone.</p>
-    </div>
-  </dl-statement>
-</dl-reveal>
+<dl-subnav items="Load control=#load-control|Metering=#metering|Charging=#charging|The rest=#the-rest"></dl-subnav>
 
-<!-- Products -->
-<dl-section bg="page" id="products">
+<dl-section bg="page" id="start-here">
   <dl-reveal>
-    <dl-stack eyebrow="The devices" heading="Two Controllers, |One App"></dl-stack>
+    <dl-stack eyebrow="Start here" heading="A Device Without Wiring |Is a Remote Control"
+      body="Smart home gets sold as products. On a building it is mostly electrical work."></dl-stack>
   </dl-reveal>
   <dl-reveal>
-    <div style="display:flex;flex-wrap:wrap;gap:12px">
-      <dl-tag>Intelligent</dl-tag>
-      <dl-tag>Easy</dl-tag>
-      <dl-tag>Clean</dl-tag>
-      <dl-tag>Cheap</dl-tag>
-    </div>
+    <dl-prose>
+      <p class="sl-body sl-body--lg">A relay that switches your geyser is a few hundred rand. What it costs to make that relay useful is a circuit run to it, a board with room in it, and somebody deciding what it should be told to do. That's the job, and it's the reason this sits with the trade rather than in an app store.</p>
+      <p class="sl-body sl-body--lg">Which also means we're the ones who have to say when it isn't worth it.</p>
+    </dl-prose>
   </dl-reveal>
   <dl-reveal>
-    <dl-grid cols="2">
-      <dl-card>
-        <div style="position:relative;aspect-ratio:4/3">
-          <dl-media src="images/HotBot.webp" alt="The HotBot smart geyser controller and its app"></dl-media>
-        </div>
-        <div class="sl-card__stack">
-          <div><dl-badge>Hot water</dl-badge></div>
-          <h3 class="sl-title">HotBot</h3>
-          <p class="sl-hint">by <a href="https://plentify.io" target="_blank" rel="noopener">Plentify</a> · R849 once off · R149 a month</p>
-          <p class="sl-body">HotBot learns when your household actually uses hot water and heats the geyser to suit, instead of running to a fixed schedule. It also picks up a leak early, which is the difference between a plumber and a new ceiling.</p>
-          <p class="sl-body">It works with electric and solar geysers. A home with two geysers needs one for each.</p>
-        </div>
-      </dl-card>
-      <dl-card>
-        <div style="position:relative;aspect-ratio:4/3">
-          <dl-media src="images/SolarBot_01.webp" alt="The SolarBot solar and battery controller and its app"></dl-media>
-        </div>
-        <div class="sl-card__stack">
-          <div><dl-badge>Solar and battery</dl-badge></div>
-          <h3 class="sl-title">SolarBot</h3>
-          <p class="sl-hint">by <a href="https://plentify.io" target="_blank" rel="noopener">Plentify</a> · R849 once off · R149 a month</p>
-          <p class="sl-body">If you already have solar, SolarBot decides when to charge and when to draw on the battery, leans on your own power rather than the grid wherever it can, and can heat your water off your solar instead of buying electricity to do it.</p>
-          <p class="sl-body">Since a unit you use yourself is worth considerably more than one you sell back, anything that shifts more of your usage onto your own power is working on the right problem.</p>
-        </div>
-      </dl-card>
-    </dl-grid>
+    <dl-callout icon="check-circle">
+      <p class="sl-split-copy__label">Where this is actually worth doing</p>
+      <p class="sl-body">On a house, when you're already opening the board for something else. Adding load control while the cover is off is a fraction of what it costs as its own visit.</p>
+      <p class="sl-body">On a business or a body corporate, when you're paying for electricity you can't attribute to anyone. That one usually pays for itself, and it's the clearest case on this page.</p>
+      <p class="sl-body">Not worth doing on its own, for its own sake, on a board that's about to be replaced anyway.</p>
+    </dl-callout>
   </dl-reveal>
 </dl-section>
 
-<!-- Subscription -->
-<dl-section bg="alt" id="subscription">
-  <dl-grid cols="split">
-    <dl-reveal>
-      <dl-stack eyebrow="How the subscription works" heading="What You Pay, |and For What"
-        body="R849 buys the device. R149 a month covers the app, the monitoring and support."></dl-stack>
-    </dl-reveal>
-    <dl-reveal>
-      <dl-card tone="white">
-        <div class="sl-card__stack">
-          <h3 class="sl-title">Cancellation</h3>
-          <p class="sl-body">During the first 24 months, cancelling costs R750 per device. After that, cancel any time with 20 business days' notice, no fee.</p>
-          <p class="sl-body">Full terms apply: see the <a href="legal.html#energy-management-terms">energy management terms</a> for the complete agreement.</p>
-        </div>
-      </dl-card>
-    </dl-reveal>
-  </dl-grid>
+<dl-sector num="01" of="03" name="Load control" note="At the board"></dl-sector>
+<dl-section bg="alt" id="load-control">
   <dl-reveal>
-    <dl-figures items="R849=Device, once off|R149=Per month, per device|1 app=Both controllers"></dl-figures>
-  </dl-reveal>
-</dl-section>
-
-<!-- Proof — Plentify's own published results, not Sunlogic's. Attributed
-     by name throughout so nothing here reads as a Sunlogic customer claim. -->
-<dl-section bg="page" id="results">
-  <dl-reveal>
-    <dl-stack eyebrow="What Plentify's customers report" heading="Plentify's Own |Case Studies"
-      body="These are Plentify's published results, not Sunlogic's. We install the hardware, Plentify builds it.">
-      <dl-actions>
-        <dl-button variant="outline" icon="arrow-right" href="https://plentify.io" target="_blank" rel="noopener">See Plentify's Case Studies</dl-button>
-      </dl-actions>
-    </dl-stack>
+    <dl-stack eyebrow="One, load control" heading="Deciding What Runs, |and When"
+      body="A smart switch at the board sits between your supply and an appliance and decides when it's allowed to run. Put them on the big loads and you control the things that actually cost money. Put them on lamps and you've bought a light switch you can reach from the couch."></dl-stack>
   </dl-reveal>
   <dl-reveal>
     <dl-grid cols="3">
-      <dl-stat label="Average bill drop" value="R2 000/mo" sub="Lee-ann, Cape Town, SolarBot customer"></dl-stat>
-      <dl-stat label="Lower electricity usage" value="30%" sub="Brandon Jardine, Legaro Property Development"></dl-stat>
-      <dl-stat label="Backup battery runtime" value="3.5 → 5.5 hrs" sub="Brandon Jardine, Legaro Property Development"></dl-stat>
+      <dl-card icon="scale" heading="Stop Them Fighting">
+        <p class="sl-body">Geyser, pool pump, oven, air conditioning and a car charger will cheerfully all start at once and trip your main between them.</p>
+        <p class="sl-body">Given an order, they take turns. That's the end of the nuisance tripping, and it's often cheaper than upgrading the supply to carry the peak.</p>
+      </dl-card>
+      <dl-card icon="bolt" heading="Shed Load on a Failure">
+        <p class="sl-body">When the grid drops and a building runs on battery or generator, the last thing you want is the geyser deciding to heat.</p>
+        <p class="sl-body">The big loads drop on the changeover and come back staggered afterwards, so the backup lasts as long as it was sized to.</p>
+      </dl-card>
+      <dl-card icon="sun" heading="Run It on Your Own Power">
+        <p class="sl-body">If there's solar on the roof, the switch can ask whether there's spare power right now rather than what time it is.</p>
+        <p class="sl-body">That's the <a href="https://energy.sunlogic.co.za/energy-management.html#switching">Energy division's switching pillar</a>, and it's the same work at the same board.</p>
+      </dl-card>
+    </dl-grid>
+  </dl-reveal>
+  <dl-reveal>
+    <dl-callout icon="clipboard-document-check">
+      <p class="sl-split-copy__label">What it costs</p>
+      <p class="sl-body">On quote, and it has to be. This is electrical work rather than a box with a price on it, so what you pay depends on how many loads you want controlled, whether there's room at the board, and how much of the wiring is already in place. We price it once we have looked.</p>
+    </dl-callout>
+  </dl-reveal>
+</dl-section>
+
+<dl-sector num="02" of="03" name="Metering" note="Who used what"></dl-sector>
+<dl-section bg="page" id="metering">
+  <dl-reveal>
+    <dl-stack eyebrow="Two, metering" heading="You Cannot Argue With |a Meter Reading"
+      body="Sub-metering gets sold to landlords as a way to make money. Legally it's a way to allocate a cost fairly, and that's a better reason to fit it: it ends the argument about who used what."></dl-stack>
+  </dl-reveal>
+  <dl-reveal>
+    <dl-grid cols="2">
+      <dl-card tone="white" icon="chart-bar" heading="Landlords and Bodies Corporate">
+        <p class="sl-body">A meter per unit, read remotely, so a tenant's bill reflects a tenant's usage rather than a share of the total. It also shows you the common-area load, which is the number most buildings have never actually seen.</p>
+        <p class="sl-body">The rules on what you may recover are stricter than most people expect, and getting the metering and the paperwork right is what keeps you out of a dispute. We've set that out on the <a href="electrical.html#larger-sites">larger sites section</a>.</p>
+      </dl-card>
+      <dl-card tone="white" icon="building-office-2" heading="Businesses With Several Areas">
+        <p class="sl-body">Kitchen, workshop, cold room, office. Once each has its own meter you can see which part of the operation is expensive, rather than guessing from one bill at the end of the month.</p>
+        <p class="sl-body">That's usually where the surprises are. Refrigeration and compressors run when nobody is watching.</p>
+      </dl-card>
     </dl-grid>
   </dl-reveal>
 </dl-section>
 
+<dl-sector num="03" of="03" name="Charging" note="Scheduled, not just plugged in"></dl-sector>
+<dl-section bg="alt" id="charging">
+  <dl-reveal>
+    <dl-stack eyebrow="Three, charging" heading="A Charger That Knows |What Else Is On"
+      body="A car charger is the largest single load most homes will ever add, and it arrives after the board was designed. Whether that's a problem depends entirely on what else is running when it starts."></dl-stack>
+  </dl-reveal>
+  <dl-reveal>
+    <dl-prose>
+      <p class="sl-body sl-body--lg">A charger on its own circuit with nothing telling it what else is happening will draw what it wants, when it's plugged in. Given load control it waits for the oven, or charges overnight, or takes what the solar is producing and no more. Same charger, different outcome, and the difference is wiring and a decision rather than a more expensive unit.</p>
+      <p class="sl-body sl-body--lg">Installing the charger is on the <a href="electrical.html#at-home">electrical page</a>. This is what you can do with it once it's in.</p>
+    </dl-prose>
+  </dl-reveal>
+</dl-section>
+
+<!-- House rule: an unresolved fact ships as a VISIBLE bracketed placeholder.
+     Craig's own document flags this exact gap: "[List needed: what else is
+     already being installed and supported, so the division launches with real
+     substance rather than two subscriptions.]" Access control, video intercoms
+     and lighting control are listed in that document as room to GROW into, not
+     as current capability, so none of them is claimed here. -->
+<dl-section bg="page" id="the-rest">
+  <dl-reveal>
+    <dl-stack eyebrow="And the rest" heading="Everything Else Is |Wiring Too"
+      body="Lighting control, access control, intercoms and the rest of what gets called smart all come down to a circuit, a board with room in it, and somebody who will certify the work."></dl-stack>
+  </dl-reveal>
+  <dl-reveal>
+    <dl-prose>
+      <p class="sl-note">[The full list of smart systems Sunlogic already installs and supports, beyond load control, sub-metering and charging. Owner to supply, so this section names what is actually offered rather than what could be.]</p>
+    </dl-prose>
+  </dl-reveal>
+  <dl-reveal>
+    <dl-callout icon="share">
+      <p class="sl-split-copy__label">Hot water and solar monitoring</p>
+      <p class="sl-body">Geyser control and solar monitoring belong to the Energy division rather than this one, and they're covered properly on <a href="https://energy.sunlogic.co.za/energy-management.html">Sunlogic Energy's Smart Solutions page</a>. Same team, same certificate, different trade.</p>
+    </dl-callout>
+  </dl-reveal>
+</dl-section>
+
 <dl-reveal>
-  <dl-cta eyebrow="Get started"
-    heading="Two Devices, and a |Smaller Bill"
-    body="Fitted and set up by the same team that does your solar and electrical work."
-    action="Get Started"
+  <dl-cta eyebrow="Book a visit"
+    heading="Worth Doing, or |Not Worth Doing"
+    body="An hour at your property settles which, and whether any of it is worth doing on yours yet."
+    action="Book Your Free Site Visit"
     href="contact.html"></dl-cta>
 </dl-reveal>
 
