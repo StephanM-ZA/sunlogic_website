@@ -119,7 +119,13 @@
     <dl-grid cols="2">
       <dl-card tone="white" photo="images/HotBot.webp" photo-alt="The HotBot geyser controller"
         fit="contain" heading="HotBot">
-        <p class="sl-body">Learns when your household actually uses hot water and heats to suit, instead of running to a clock. It picks up a leak early, which is the difference between a plumber and a new ceiling, and it handles power cuts and holidays on its own.</p>
+        <!-- Every claim here is checked against Plentify's own product pages,
+             6 Sep 2026. An earlier version said the unit "learns" a household's
+             hot water usage. It does not: their words are "Input your routine
+             and we'll optimise your system to suit your needs", so the customer
+             supplies the pattern. Leak flagging, the load shedding and away
+             modes, and the supported geyser types are all theirs verbatim. -->
+        <p class="sl-body">You tell it when your household actually wants hot water, and it heats to suit that instead of running to a clock. It flags a leak early, which is the difference between a plumber and a new ceiling, and it has modes for load shedding and for when the house is empty.</p>
         <p class="sl-body">Works with electric geysers, and with solar geysers that circulate on their own. It doesn't work with pumped solar or gas. A home with two geysers needs one for each.</p>
         <div class="sl-price">
           <span class="sl-price__amount">R849 once off, then R149 a month</span>
@@ -128,8 +134,14 @@
       </dl-card>
       <dl-card tone="white" photo="images/SolarBot_01.webp" photo-alt="The SolarBot solar controller"
         fit="contain" heading="SolarBot">
-        <p class="sl-body">For a house that already has solar and a battery. It reads the weather forecast, the load shedding schedule and how your household actually behaves, then decides when to charge and when to draw, and it can heat your water off your panels instead of buying electricity to do it.</p>
-        <p class="sl-body">Works with Sunsynk, Deye and Sungrow inverters on a standard household supply.</p>
+        <!-- An earlier version had this reading the weather forecast, the load
+             shedding schedule and household behaviour. None of those three
+             appear anywhere on Plentify's SolarBot page and none were cut back
+             to something they do claim, so they are gone. What survives is
+             theirs: "Optimises when to charge and discharge batteries" and
+             "Channel extra solar energy to your geyser". -->
+        <p class="sl-body">For a house that already has solar and a battery. It decides when to charge the battery and when to draw on it, and it can push spare solar into your geyser instead of buying electricity to heat water.</p>
+        <p class="sl-body">Works with Sunsynk, Deye and Sungrow inverters, single phase or three phase.</p>
         <div class="sl-price">
           <span class="sl-price__amount">R849 once off, then R149 a month</span>
           <span class="sl-price__note">Including VAT &middot; extra units R99 a month</span>
@@ -137,10 +149,17 @@
       </dl-card>
     </dl-grid>
   </dl-reveal>
-  <!-- Cancellation terms are deliberately absent. The old page, the legal page
-       and Plentify's published terms give three different answers, and the
-       legal page uses "the Free Trial" as a defined term it never defines.
-       Nothing goes here until those three agree. See docs/copy/energy-smart-v1.md. -->
+  <!-- Cancellation. The subscription is Plentify's, not ours, so their term is
+       quoted verbatim and linked rather than restated. Their sentence is
+       genuinely ambiguous about whether the fee applies to a cancellation
+       inside sixty days or after, and it is not ours to resolve, so the page
+       sends the reader to the source instead of picking a reading. Checked
+       6 Sep 2026. -->
+  <dl-reveal>
+    <dl-prose>
+      <p class="sl-note">The subscription is Plentify's rather than ours. Their published terms say: &ldquo;Sign up for your subscription and cancel anytime. After 60 days a fee will be charged.&rdquo; Worth reading on <a href="https://plentify.io/solar-households/" target="_blank" rel="noopener">their own page</a> before you sign up.</p>
+    </dl-prose>
+  </dl-reveal>
 </dl-section>
 
 <!-- Pillar two. Sunlogic's own work, and it had no presence on the site at all
