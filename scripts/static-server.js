@@ -1,8 +1,11 @@
 'use strict';
 
-/* A minimal static file server on an ephemeral port. Used by the conformance
- * runner and by the tests, and by nothing else — it exists so those two do not
- * each grow their own copy. */
+/* A minimal static file server. Used by the conformance runner, the tests and
+ * the browser preview — it exists so those do not each grow their own copy.
+ *
+ * Ephemeral port by default, which is what the automated callers want: they
+ * run concurrently and must never collide. The preview passes a fixed port
+ * instead, because a person has to be able to type the URL. */
 
 const http = require('http');
 const fs = require('fs');
@@ -22,11 +25,17 @@ const MIME = {
   '.woff2': 'font/woff2',
 };
 
-function startServer(rootDir) {
+function startServer(rootDir, options) {
   const root = path.resolve(rootDir);
+  const opts = options || {};
+  /* 0 means "any free port", which is the default and what the runners use. */
+  const port = opts.port || 0;
   return new Promise((resolve, reject) => {
     const server = http.createServer((req, res) => {
-      const rel = decodeURIComponent(req.url.split('?')[0]);
+      let rel = decodeURIComponent(req.url.split('?')[0]);
+      /* Only the preview asks for directory indexes. The runners address every
+         page by its full filename, so they never reach this. */
+      if (opts.index && rel.endsWith('/')) rel += 'index.html';
       const file = path.resolve(path.join(root, rel));
       /* Refuse anything that escapes the root — this serves a repo directory. */
       if (!file.startsWith(root) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) {
@@ -38,7 +47,7 @@ function startServer(rootDir) {
       fs.createReadStream(file).pipe(res);
     });
     server.on('error', reject);
-    server.listen(0, '127.0.0.1', () => {
+    server.listen(port, '127.0.0.1', () => {
       const { port } = server.address();
       resolve({
         port,

@@ -44,3 +44,16 @@ design-inspiration/design-system/
 # in site-energy/images/ would be published as a converted asset nobody asks
 # for. Compressed, correctly-sized variants are committed instead.
 design-inspiration/source-images/
+
+# Never committed, and now enforced rather than remembered. Each of these was
+# a standing "do not commit" instruction carried in session notes, which is one
+# careless `git add .` away from being broken.
+#
+# Local Claude Code config (launch.json, settings). Machine-specific.
+.claude/
+# Client documents: feedback decisions and the source copy manuscripts. These
+# are the client's, not the site's, and several are unreviewed.
+Sunlogic_Feedback_Decisions.*
+copy/Sunlogic_*
+# One-off screenshot scratch left by an earlier session.
+_shot.js

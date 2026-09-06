@@ -91,6 +91,12 @@ const NEVER_PUBLISH = [
   /(^|\/)\.DS_Store$/,
   /(^|\/)\.git(ignore|attributes|keep)?$/,
   /\.md$/i,
+  /* Plugin test harnesses. Development pages: they load the plugin in
+     isolation with fake data, carry no nav, no footer and no analytics,
+     and were being published to all three live sites. Found while
+     sweeping the build for em dashes, because their headings contain
+     them and they had no business being in the sweep at all. */
+  /(^|\/)test(-[a-z]+)?\.html$/i,
 ];
 
 function isPublishable(rel) {
