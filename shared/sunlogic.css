@@ -57,6 +57,15 @@
   --surface-sunk: var(--color-beige-2);
   --surface-inverse: var(--color-navy);
   --surface-accent: var(--color-orange);
+  /* Highlight — the callout surface. Beige with roughly 7% orange mixed
+     in, its border with 28%, and a rule at 60%. Not the accent colour
+     itself: a block of --color-orange competes with the emphasis button
+     and there is only one of those per page. This is a tint that lifts a
+     block off a beige band, which --surface-card-warm at #F7EED9 on a
+     #FFF7E9 page never did. */
+  --surface-highlight: #FEEDD9;
+  --border-highlight: #F5D6AE;
+  --accent-highlight: #F0A050;
 
   --text-primary: var(--color-navy);
   --text-secondary: var(--color-grey-strong);
@@ -85,12 +94,16 @@
   --type-hero-ls: -0.02em;
 
   --unit: 8px;
-  --section-gap-desktop: 120px;
-  --section-gap-mobile: 64px;
+  --section-gap-desktop: 96px;
+  --section-gap-mobile: 56px;
   --gutter-desktop: 24px;
   --gutter-mobile: 16px;
   --container-used: 1152px;
   --section-pad-y: var(--section-gap-mobile);
+  /* Space between an inset panel and the edge of its band. The
+     panel's own padding carries the rest, so panel bands and
+     full-bleed sections land on the same rhythm. */
+  --panel-gap: 24px;
   --gutter: var(--gutter-mobile);
   --grid-gap: 24px;
 
@@ -129,7 +142,7 @@
 }
 
 @media (min-width: 768px) {
-  :root { --section-pad-y: var(--section-gap-desktop); --gutter: var(--gutter-desktop); }
+  :root { --section-pad-y: var(--section-gap-desktop); --gutter: var(--gutter-desktop); --panel-gap: 40px; }
 }
 @media (max-width: 767px) {
   :root { --type-section-ls: normal; --type-section-lh: 1.25; --type-hero-ls: -0.01em; }
@@ -306,6 +319,10 @@ dl-section.sl-section--hero-follow .sl-section { padding-top: 40px; }
 
 .sl-cols { display: grid; grid-template-columns: 1fr; gap: 32px; align-items: center; }
 @media (min-width: 768px) { .sl-cols { grid-template-columns: 1fr 1fr; gap: 56px; } }
+/* A split with one child is not a split, it is half an empty band. This
+   happens whenever a column is removed and its wrapper is left behind.
+   Fix the markup; this only stops it looking broken in the meantime. */
+.sl-cols:has(> *:only-child) { grid-template-columns: 1fr; }
 /* Grid children must be allowed to shrink.
    ------------------------------------------------------------------
    `1fr` is minmax(auto, 1fr), and that `auto` minimum is the child's
@@ -399,20 +416,55 @@ dl-section.sl-section--hero-follow .sl-section { padding-top: 40px; }
 .sl-btn--full { width: 100%; }
 
 .sl-btn--primary   { background: var(--color-navy); color: var(--color-white); }
-.sl-btn--secondary { background: var(--color-beige); color: var(--color-navy); }
-.sl-btn--outline   { background: transparent; color: var(--text-primary); border-color: var(--border-warm); }
+/* .sl-btn--secondary is retired. It was cream on beige, which measured 1.09:1
+   against its own ground: a button you cannot see is not a button. No page
+   ever used it, it existed only as a specimen in the CI guide, and the
+   navy-at-rest rule below makes it a contradiction rather than an option. */
+/* Outline on a light ground is NAVY at rest and wipes to ORANGE on hover.
+   It used to be a transparent box with a warm hairline, which on cream is
+   light on light: the control did not read as a control until you went
+   looking for it, and it sat on the same page as a solid navy dock button
+   that did. A button has to announce itself before it can be pressed.
+
+   NEVER a light-on-light button at rest. On cream, blue at rest, orange on
+   hover. That is the rule, it is global, and it is why this variant now
+   carries a fill instead of a hairline.
+
+   The wipe is the system's own: --btn-wipe rises from the bottom edge on
+   hover, so this is the same mechanism .sl-btn--primary already used, not a
+   bespoke hover. Which means outline and primary now render identically and
+   one of them is redundant. Nine pages use primary against seventy one using
+   outline, so the merge is a separate job, deliberately not done here: this
+   change is the treatment, not the refactor. */
+.sl-btn--outline   { background: var(--color-navy); color: var(--color-white);
+  border-color: var(--color-navy); --btn-wipe: var(--color-orange); }
 .sl-btn--outline:hover:not(:disabled) { border-color: var(--color-orange); }
-/* Emphasis is already orange, so it runs the wipe backwards: the orange IS the
-   resting state and retracts on hover, the same way .sl-dock__cta does it. You
-   cannot paint "transparent" over a solid fill, so the orange has to be the
-   layer that moves, and what it uncovers is whatever the button sits on. */
-.sl-btn--emphasis  { background: transparent; border-color: var(--color-orange);
-  color: var(--color-navy); --btn-wipe: var(--color-orange); }
-.sl-btn--emphasis::before { height: 100%; }
-.sl-btn--emphasis:hover:not(:disabled)::before { height: 0; }
-/* On beige or white the cleared label has to be #B85300: #F66F00 as text there
-   is 2.7:1 and fails AA. */
-.sl-btn--emphasis:hover:not(:disabled) { color: var(--color-orange-text); }
+/* Emphasis, and the one place the light-on-light rule was still being broken.
+
+   It used to run the wipe BACKWARDS on every ground: orange at rest, retracting
+   on hover to uncover whatever was behind it. On a dark hero that uncovers the
+   ghost-on-dark treatment and reads well, which is why nobody looked at it
+   again. On cream it uncovered cream, so the site's loudest control became an
+   orange hairline on beige for as long as your pointer was on it: the same
+   failure the outline variant was just fixed for, arriving on hover instead of
+   at rest, which is exactly why a resting-state check (rule 18) never caught it.
+
+   Now it depends on the ground, because the right answer genuinely does.
+
+   LIGHT ground: orange at rest, wipes FORWARD to navy, label navy to white.
+   The exact inverse of .sl-btn--outline, so the two read as a pair and neither
+   is ever light on light.
+
+   DARK ground: unchanged. It keeps the backwards wipe, because there the thing
+   uncovered is a deliberate treatment rather than the page's own beige.
+
+   The two behaviours share one mechanism instead of duplicating it: --emph-rest
+   and --emph-hover drive the same ::before, so the dark list below sets two
+   values rather than restating the whole animation. */
+.sl-btn--emphasis  { background: var(--color-orange); border-color: var(--color-orange);
+  color: var(--color-navy); --btn-wipe: var(--color-navy); --btn-wipe-ink: var(--color-white); }
+.sl-btn--emphasis::before { height: var(--emph-rest, 0); }
+.sl-btn--emphasis:hover:not(:disabled)::before { height: var(--emph-hover, 100%); }
 /* On a dark ground it takes the ghost-on-dark treatment instead — 0.16 fill,
    0.35 border, white label. Same surface swap the stylesheet already makes for
    .sl-eyebrow and .sl-body, and for the same reason: the light-surface value
@@ -421,11 +473,15 @@ dl-section.sl-section--hero-follow .sl-section { padding-top: 40px; }
 .sl-section--inverse .sl-btn--emphasis,
 .sl-card--inverse .sl-btn--emphasis,
 .sl-cta .sl-btn--emphasis,
-.sl-drawer .sl-btn--emphasis { background: rgba(255,255,255,0.16); }
+.sl-statement:not(.sl-statement--warm) .sl-btn--emphasis,
+.sl-drawer .sl-btn--emphasis { background: rgba(255,255,255,0.16);
+  --btn-wipe: var(--color-orange); --btn-wipe-ink: var(--color-white);
+  --emph-rest: 100%; --emph-hover: 0%; }
 .sl-hero .sl-btn--emphasis:hover:not(:disabled),
 .sl-section--inverse .sl-btn--emphasis:hover:not(:disabled),
 .sl-card--inverse .sl-btn--emphasis:hover:not(:disabled),
 .sl-cta .sl-btn--emphasis:hover:not(:disabled),
+.sl-statement:not(.sl-statement--warm) .sl-btn--emphasis:hover:not(:disabled),
 .sl-drawer .sl-btn--emphasis:hover:not(:disabled) {
   color: var(--color-white); border-color: rgba(255,255,255,0.35); }
 .sl-btn--ghost     { background: transparent; color: inherit; }
@@ -482,9 +538,20 @@ dl-section.sl-section--hero-follow .sl-section { padding-top: 40px; }
 /* Hover is the hairline alone — the border warms, nothing else moves.
    No fill change, no lift, no shadow, no scale. A card that is itself a
    link takes the accent edge instead. */
-.sl-card:hover { border-color: var(--border-warm); }
-.sl-card--warm:hover, .sl-card--sunk:hover { border-color: var(--color-grey); }
-.sl-card--inverse:hover, .sl-card--glass:hover { border-color: rgba(255,255,255,0.34); }
+/* Hover is a promise that something happens. A card you cannot act on
+   must not make it.
+
+   Every card used to warm its hairline, so a static content card behaved
+   exactly like one carrying a button. A reader learns in about three
+   cards that the signal means nothing, and then stops reading it on the
+   cards where it does.
+
+   So: a card hovers only if it IS a link or CONTAINS one. */
+.sl-card:has(a, button, summary):hover { border-color: var(--border-warm); }
+.sl-card--warm:has(a, button, summary):hover,
+.sl-card--sunk:has(a, button, summary):hover { border-color: var(--color-grey); }
+.sl-card--inverse:has(a, button, summary):hover,
+.sl-card--glass:has(a, button, summary):hover { border-color: rgba(255,255,255,0.34); }
 a.sl-card:hover, .sl-card:has(> a:hover) { border-color: var(--color-orange); }
 .sl-card--warm    { background: var(--surface-card-warm); border-color: var(--border-warm); }
 .sl-card--sunk    { background: var(--surface-sunk); border-color: var(--border-warm); }
@@ -495,6 +562,14 @@ a.sl-card:hover, .sl-card:has(> a:hover) { border-color: var(--color-orange); }
    edges since .sl-card has uniform padding, rounded to match the card. */
 .sl-card__media { margin: -28px -28px 0; border-radius: var(--radius-md) var(--radius-md) 0 0; overflow: hidden; aspect-ratio: 16 / 9; }
 .sl-card__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Publish date on an article card. Mono, label size, above the heading
+   with the tag, because when a post was written is part of deciding
+   whether to read it. */
+.sl-card__date {
+  margin: 0; font-family: var(--font-mono); font-size: 12px;
+  letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-secondary);
+}
+.sl-card--inverse .sl-card__date, .sl-section--inverse .sl-card__date { color: rgba(255,255,255,0.6); }
 
 /* ---- Badge / Tag ------------------------------------------- */
 .sl-badge {
@@ -704,6 +779,175 @@ dl-hero { display: block; min-height: 964px; }
   animation: daylight-gradient-drift 9s linear infinite;
   mix-blend-mode: screen;
 }
+/* 3b — the sunrise flare, opt in with <dl-hero flare="sunrise">.
+   REPLACES the sweep on the heroes that carry it; the two never run
+   together, because both are the same job done two ways.
+
+   A full cycle is sixty seconds: thirty of the sun tracking a path
+   across the frame, then thirty with it gone while the scene dims and
+   lifts. Everything is driven from four custom properties set by
+   SL_FLARE in components.js:
+     --flare-x / --flare-y   where the sun is, as a percentage of the hero
+     --flare-fade            0 to 1, brings the whole rig in and out
+     (the dusk layer's opacity is set directly)
+
+   Position moves on a TRANSFORM, never on left/top. The blurs here run
+   to 118px and re-laying-out a blurred element every frame is the one
+   thing that would make this expensive. Translating a composited layer
+   is not. The blurs themselves never change, so the browser rasterises
+   each once and reuses it for the whole cycle. */
+.sl-flare {
+  --flare-x: 95.5%; --flare-y: 41.9%; --flare-fade: 0;
+  --flare-i: .45;                       /* master intensity */
+  --flare-bb: 60px;                     /* bloom blur */
+  --flare-bs: 10px;                     /* streak blur */
+  --flare-bg: 5px;                      /* ghost blur */
+  --flare-br: 2px;                      /* ring blur */
+  --flare-bl: 1px;                      /* spike blur */
+  --flare-hz: 1;                        /* haze amount */
+  --flare-sm: .3;                       /* smear amount */
+  --flare-I: calc(var(--flare-i) * var(--flare-fade));
+  mix-blend-mode: screen;
+  overflow: hidden;
+}
+/* Everything the sun itself emits rides on this one wrapper. */
+.sl-flare__sun { position: absolute; inset: 0; transform: translate(var(--flare-x), var(--flare-y)); }
+.sl-flare__sun > i { position: absolute; left: 0; top: 0; display: block; }
+
+.sl-flare__core {
+  width: 13vmin; height: 13vmin; transform: translate(-50%,-50%);
+  background: radial-gradient(circle at 50% 50%,
+    rgba(255,255,255,1) 0%, rgba(255,250,236,.95) 9%,
+    rgba(255,206,138,.72) 24%, rgba(246,111,0,.30) 48%, rgba(246,111,0,0) 74%);
+  opacity: calc(var(--flare-I) * 1.6);
+}
+.sl-flare__bloom {
+  width: 62vmin; height: 62vmin; transform: translate(-50%,-50%);
+  background: radial-gradient(circle at 50% 50%,
+    rgba(255,186,98,.34) 0%, rgba(246,111,0,.12) 32%, rgba(246,111,0,0) 66%);
+  filter: blur(var(--flare-bb));
+  opacity: calc(var(--flare-I) * 1.1);
+}
+/* Atmosphere. No edge anywhere, it only fills the frame. */
+.sl-flare__haze {
+  width: 120vmin; height: 120vmin; transform: translate(-50%,-50%);
+  background: radial-gradient(circle at 50% 50%,
+    rgba(255,196,116,.30) 0%, rgba(246,111,0,.11) 38%, rgba(246,111,0,0) 70%);
+  filter: blur(calc(28px + var(--flare-bb) * 1.5));
+  opacity: calc(var(--flare-I) * var(--flare-hz) * 2.2);
+}
+/* The smudge on the front element catching the light. */
+.sl-flare__smear {
+  width: 96vmin; height: 24vmin; transform: translate(-50%,-50%) rotate(-19deg);
+  background: linear-gradient(92deg,
+    rgba(255,214,150,0) 0%, rgba(255,214,150,.22) 30%,
+    rgba(255,238,204,.34) 50%, rgba(255,214,150,.20) 70%, rgba(255,214,150,0) 100%);
+  filter: blur(calc(20px + var(--flare-bs)));
+  opacity: calc(var(--flare-I) * var(--flare-sm) * 2.4);
+}
+/* Sixteen spikes, plus a shorter offset set so the lengths read
+   uneven. A conic gradient at 0.35deg aliases into a staircase on the
+   diagonals; 1px of blur is what takes that off. */
+.sl-flare__burst, .sl-flare__burst2 {
+  transform: translate(-50%,-50%);
+  background: repeating-conic-gradient(from 0deg,
+    rgba(255,244,214,.95) 0deg .35deg, rgba(255,244,214,0) .35deg 22.5deg);
+  filter: blur(var(--flare-bl));
+  animation: flare-spin 150s linear infinite;
+}
+.sl-flare__burst {
+  width: 74vmin; height: 74vmin;
+  -webkit-mask-image: radial-gradient(circle, #000 2%, rgba(0,0,0,.45) 22%, transparent 62%);
+          mask-image: radial-gradient(circle, #000 2%, rgba(0,0,0,.45) 22%, transparent 62%);
+  opacity: calc(var(--flare-I) * 1.25);
+}
+.sl-flare__burst2 {
+  width: 34vmin; height: 34vmin;
+  background: repeating-conic-gradient(from 11.25deg,
+    rgba(255,236,196,.9) 0deg .6deg, rgba(255,236,196,0) .6deg 22.5deg);
+  -webkit-mask-image: radial-gradient(circle, #000 4%, transparent 68%);
+          mask-image: radial-gradient(circle, #000 4%, transparent 68%);
+  opacity: calc(var(--flare-I) * 1.05);
+  animation-direction: reverse;
+}
+.sl-flare__streak {
+  width: 165%; height: 3px; transform: translate(-50%,-50%);
+  background: linear-gradient(90deg,
+    rgba(255,186,98,0) 0%, rgba(255,196,116,.30) 22%,
+    rgba(255,236,196,.80) 44%, rgba(255,255,255,1) 50%,
+    rgba(255,236,196,.80) 56%, rgba(255,196,116,.30) 78%, rgba(255,186,98,0) 100%);
+  filter: blur(calc(1.4px + var(--flare-bs) * .08));
+  opacity: calc(var(--flare-I) * 1.35);
+}
+.sl-flare__streak-soft {
+  width: 150%; height: 30px; transform: translate(-50%,-50%);
+  background: linear-gradient(90deg,
+    rgba(255,168,74,0) 0%, rgba(255,186,98,.22) 32%,
+    rgba(255,214,150,.32) 50%, rgba(255,186,98,.22) 68%, rgba(255,168,74,0) 100%);
+  filter: blur(var(--flare-bs));
+  opacity: calc(var(--flare-I) * 1.1);
+}
+/* Iris rings. Each gets its own hero-sized wrapper so its offset from
+   the sun is a percentage of the FRAME, the way it was tuned, rather
+   than a percentage of the ring's own diameter. */
+.sl-flare__ring { position: absolute; inset: 0; }
+.sl-flare__ring u {
+  position: absolute; left: 0; top: 0; display: block;
+  border-radius: 50%; transform: translate(-50%,-50%);
+  filter: blur(var(--flare-br));
+}
+.sl-flare__ring--a { transform: translate(-7%, 7%); }
+.sl-flare__ring--a u {
+  width: 40vmin; height: 40vmin;
+  box-shadow: inset 0 0 0 1.5px rgba(150,205,120,.42),
+              inset 0 0 26px 3px rgba(150,205,120,.10),
+              0 0 22px 1px rgba(210,160,60,.14);
+  opacity: calc(var(--flare-I) * 1.2);
+}
+.sl-flare__ring--b { transform: translate(-17%, 15%); }
+.sl-flare__ring--b u {
+  width: 27vmin; height: 27vmin;
+  box-shadow: inset 0 0 0 1.5px rgba(150,140,225,.40),
+              inset 0 0 22px 3px rgba(150,140,225,.10),
+              0 0 18px 1px rgba(200,150,90,.12);
+  opacity: calc(var(--flare-I) * 1.15);
+}
+.sl-flare__ring--c { transform: translate(-2%, 2%); }
+.sl-flare__ring--c u {
+  width: 52vmin; height: 52vmin;
+  box-shadow: inset 0 0 0 1px rgba(214,90,60,.24);
+  opacity: calc(var(--flare-I) * .9);
+}
+/* Ghosts are artefacts on the glass, not objects in the scene, so they
+   stay where they are while the sun travels. */
+.sl-flare__ghosts { position: absolute; inset: 0; }
+.sl-flare__ghosts u {
+  position: absolute; display: block; transform: translate(-50%,-50%);
+  opacity: calc(var(--flare-I) * 1.7);
+}
+.sl-flare__ghosts u.is-orb { border-radius: 50%; filter: blur(var(--flare-bg)); }
+.sl-flare__ghosts u.is-hex {
+  clip-path: polygon(25% 4%, 75% 4%, 100% 50%, 75% 96%, 25% 96%, 0% 50%);
+  filter: blur(calc(var(--flare-bg) * .4));
+}
+.sl-flare__g1 { left: 62%; top: 44%; width: 62px;  height: 62px;  background: radial-gradient(circle, rgba(255,214,150,.34), rgba(255,214,150,.06) 70%, transparent 78%); }
+.sl-flare__g2 { left: 55%; top: 49%; width: 108px; height: 108px; background: radial-gradient(circle, rgba(255,196,116,.20), rgba(255,196,116,.04) 68%, transparent 76%); }
+.sl-flare__g3 { left: 47%; top: 54%; width: 150px; height: 150px; background: radial-gradient(circle, rgba(246,111,0,.13), rgba(246,111,0,.03) 66%, transparent 74%); }
+.sl-flare__g4 { left: 39%; top: 59%; width: 44px;  height: 40px;  background: rgba(190,190,200,.16); }
+.sl-flare__g5 { left: 31%; top: 64%; width: 30px;  height: 27px;  background: rgba(190,190,200,.13); }
+.sl-flare__g6 { left: 24%; top: 69%; width: 20px;  height: 18px;  background: rgba(190,190,200,.10); }
+
+@keyframes flare-spin {
+  from { transform: translate(-50%,-50%) rotate(0deg); }
+  to   { transform: translate(-50%,-50%) rotate(360deg); }
+}
+
+/* The dusk half of the cycle. Sits ABOVE the photo and the flare but
+   BELOW both scrims, so the scene dims while the heading and buttons
+   hold exactly the contrast they had. A dusk layer over the copy would
+   fail contrast for thirty seconds in every sixty. */
+.sl-hero__dusk { background: var(--color-navy-deep); opacity: 0; }
+
 /* 4 — side scrim. A bottom-only scrim loses contrast on a bright photo. */
 .sl-hero__scrim-side { background: linear-gradient(100deg, rgba(13,32,40,.88) 0%, rgba(13,32,40,.62) 38%, rgba(13,32,40,.12) 72%, rgba(13,32,40,0) 100%); }
 /* 5 — bottom scrim */
@@ -749,7 +993,35 @@ dl-hero { display: block; min-height: 964px; }
   background: linear-gradient(96deg, #0D2028 0%, #1D4E63 45%, #4C8FA8 100%);
   opacity: 0.55;
 }
-.sl-section--promo { padding-top: 0; }
+/* The promo continues the closing CTA's band rather than starting its own.
+   It already had padding-top: 0 so the two read as one block; the ground
+   now matches too, because a colour change under a card that is supposed
+   to be floating draws a line exactly where the float should be.
+   Together they are one band from the CTA down to the footer. */
+.sl-section--promo { padding-top: 0; background: var(--surface-sunk); }
+
+/* --- The promo floats ----------------------------------------
+   Flat system, so no shadow. A card reads as lifted here from three
+   things instead: it sits proud of its own band, it drifts toward a
+   pointer that comes near it, and it presses under a finger.
+
+   --promo-dx/dy are written by SL_PROMO_FLOAT in components.js as a
+   pointer approaches. The transition is deliberately long: the point is
+   that it *starts* moving as you come near, not that it tracks you. */
+.sl-hero.sl-hero--promo {
+  transform: translate3d(var(--promo-dx, 0px), calc(var(--promo-dy, 0px) - var(--promo-lift, 6px)), 0);
+  transition: transform 900ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: transform;
+}
+/* Touch has no hover and no approach, so the whole gesture is the press:
+   it lifts further and snaps back, faster than the pointer drift. */
+.sl-hero.sl-hero--promo.is-pressed {
+  --promo-lift: 14px;
+  transition-duration: 220ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sl-hero.sl-hero--promo { transform: none; transition: none; }
+}
 
 .sl-hero__col { flex: 0 0 300px; display: flex; flex-direction: column; gap: 16px; }
 .sl-hero__col-note { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.05em; color: currentColor; opacity: 0.55; }
@@ -839,7 +1111,18 @@ body:has(.sl-modal[open]) .sl-dock { display: none; }
 .sl-terminal__time { flex: 0 0 44px; color: var(--text-disabled); }
 
 /* ---- CTABlock — the only centred type in the system -------- */
-.sl-cta-wrap { padding: var(--section-pad-y) var(--gutter); }
+/* The closing CTA sits on the sunk tint, not on the page ground. On the
+   page ground its gutter matched whatever section came before it, so the
+   panel appeared to float inside that section instead of closing the
+   page.
+
+   Sunk rather than alt, and the choice is structural. Sections only ever
+   use page and alt, so a CTA on alt lands against an alt section on
+   eleven of our pages and reproduces the same seam there. Sunk is the
+   third warm ground already in the token set: it can never collide with
+   either, and being the deepest of the three it reads as the page
+   ending. */
+.sl-cta-wrap { padding: var(--panel-gap) var(--gutter); background: var(--surface-sunk); }
 .sl-cta {
   position: relative; overflow: hidden;
   max-width: var(--container-used); margin-inline: auto;
@@ -860,7 +1143,21 @@ body:has(.sl-modal[open]) .sl-dock { display: none; }
 
 /* ---- Footer ------------------------------------------------ */
 .sl-footer { background: var(--surface-inverse); color: var(--text-inverse); padding: 64px var(--gutter) 40px; }
-.sl-footer__groups { max-width: var(--container-used); margin-inline: auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 48px; }
+/* A grid, not wrapped flex. `justify-content: space-between` on a wrapping
+   flex row puts the columns wherever the last line happens to break, so
+   the footer rearranged itself differently at almost every width and the
+   contact block landed somewhere new each time. Three states instead, and
+   nothing moves between them:
+     under 560   one column, in source order
+     560 to 899  two columns
+     900 and up  brand wide on the left, the rest even beside it */
+.sl-footer__groups {
+  max-width: var(--container-used); margin-inline: auto;
+  display: grid; gap: 40px 32px; grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+}
+@media (min-width: 560px) { .sl-footer__groups { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 900px) { .sl-footer__groups { grid-template-columns: minmax(0, 1.3fr) repeat(auto-fit, minmax(140px, 1fr)); gap: 48px 32px; } }
 .sl-footer__link { display: block; color: rgba(255,255,255,0.7); font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; padding: 4px 0; transition: color var(--dur-hover) ease-out; }
 .sl-footer__link::before { content: "["; margin-right: 4px; }
 .sl-footer__link::after  { content: "]"; margin-left: 4px; }
@@ -1018,7 +1315,34 @@ body:has(.sl-modal[open]) .sl-dock { display: none; }
 @media (max-width: 479px) { .sl-actions { flex-direction: column; } .sl-actions .sl-btn { width: 100%; } }
 .sl-card__stack { display: flex; flex-direction: column; gap: 12px; }
 .sl-card__icon { display: inline-flex; }
-.sl-callout { display: flex; gap: 16px; align-items: flex-start; }
+/* Callout — THE highlight block. A callout exists to interrupt, so the
+   tint is not a variant you opt into: a callout that does not stand out
+   is a bug, not a quieter choice. Surface, border and the left rule all
+   come from the highlight tokens; the icon and any label keep the full
+   orange, so the block reads warm without a second solid accent
+   competing with the page's one emphasis button. */
+.sl-callout {
+  /* ROW, explicitly. .sl-card sets flex-direction: column, and this rule
+     inherited it, so the 28px icon stacked above the copy and spent a
+     whole row plus a 16px gap announcing itself. It was written to sit
+     beside the text and never did. */
+  display: flex; flex-direction: row; gap: 16px; align-items: flex-start;
+  background: var(--surface-highlight);
+  border-color: var(--border-highlight);
+  border-left: 3px solid var(--accent-highlight);
+}
+/* A callout is always emphasis, never long-form, so its copy matches the
+   lead paragraph under a section heading (.sl-body--lg) rather than the
+   16px default. At 16px it read as a footnote to the thing it was
+   supposed to be interrupting. */
+.sl-callout .sl-body { font-size: 18px; line-height: 1.555; }
+/* Nothing about a callout is clickable, so it takes no hover. The generic
+   card hover set border-color on every side and took the accent edge with
+   it, which is where the grey left bar came from. */
+.sl-callout:hover {
+  border-color: var(--border-highlight);
+  border-left-color: var(--accent-highlight);
+}
 .sl-media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-lg); }
 .sl-hero__empty { position: absolute; inset: 0; border-radius: 0; align-items: flex-start; justify-content: flex-end; padding: 24px; }
 .sl-badge--bare { background: transparent; padding: 0; }
@@ -1050,6 +1374,10 @@ body:has(.sl-modal[open]) .sl-dock { display: none; }
    registration numbers and URLs live. */
 .sl-prose > * { min-width: 0; overflow-wrap: break-word; }
 .sl-prose p { margin: 0; font-size: 16px; line-height: 1.5; color: var(--text-secondary); }
+/* A lead paragraph keeps its size inside prose. `.sl-prose p` is a class
+   plus an element and outranks the bare `.sl-body--lg`, so asking for a
+   lead here silently got the 16px body instead. Matched specificity. */
+.sl-prose p.sl-body--lg { font-size: 18px; line-height: 1.555; }
 .sl-prose p strong { color: var(--text-primary); font-weight: 700; }
 .sl-prose h3 { margin: 16px 0 0; font-family: var(--font-display); font-size: 24px; font-weight: 700; line-height: 1.333; color: var(--text-primary); }
 /* The grid's own 16px gap already separates a heading from what precedes
@@ -1083,6 +1411,16 @@ a.sl-contact:hover .sl-contact__value { color: var(--color-orange); }
 .sl-card--inverse .sl-contact__value, .sl-card--glass .sl-contact__value { color: var(--text-inverse); }
 
 /* Person card. */
+/* A person card's email is a real mailto link, but it rendered in body colour
+   with no underline and no hover: the rule above only matches the .sl-contact
+   ROW wrapper, not the bare anchor dl-person emits, so the selector never
+   applied. It looked like plain text and read as plain text. A control has to
+   announce itself, which is the same rule the buttons just changed for. */
+a.sl-contact__value { color: var(--color-navy); text-decoration: underline;
+  text-underline-offset: 3px; text-decoration-thickness: 1px;
+  text-decoration-color: var(--border-warm); }
+a.sl-contact__value:hover { color: var(--color-orange); text-decoration-color: var(--color-orange); }
+
 .sl-person { display: grid; gap: 8px; justify-items: start; }
 .sl-person__avatar { width: 64px; height: 64px; border-radius: var(--radius-pill);
   background: var(--surface-sunk); border: 1px solid var(--border-warm);
@@ -1137,9 +1475,104 @@ a.sl-contact:hover .sl-contact__value { color: var(--color-orange); }
 }
 .sl-cta__phone:hover { color: var(--color-orange); opacity: 1; }
 
-/* Statement — one large line breaking up long-form copy. */
+/* ---- Sector marker -------------------------------------------
+   A page that serves three audiences in one scroll has to tell a reader
+   when they have crossed from one to the next. The sub nav says where
+   you are; this says you have just arrived. Full bleed, one line tall,
+   on the sunk ground so it reads as a seam rather than a section.
+
+   The number is not decoration. The three sectors run in order of scale,
+   home to business to site, so 01 of 03 tells a reader both where they
+   are and how much is left. */
+.sl-sector {
+  padding: 18px var(--gutter);
+  background: var(--surface-sunk);
+  border-top: 1px solid var(--border-warm);
+}
+.sl-sector__inner {
+  max-width: var(--container-used); margin-inline: auto;
+  display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+}
+.sl-sector__num {
+  font-family: var(--font-mono); font-size: 12px; font-weight: 700;
+  letter-spacing: 0.1em; color: var(--color-orange-text);
+}
+.sl-sector__name {
+  font-family: var(--font-mono); font-size: 12px; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-primary);
+}
+/* THE ONE SPACING MODEL, and the reason it needs stating.
+
+   Every full-bleed band pads itself by --section-pad-y, so any two
+   adjacent bands put 2x that between their content. That is the rhythm.
+
+   A sector marker is the exception, and it is a deliberate one: the
+   marker BELONGS to the section it introduces, so the two are one unit
+   and the full rhythm between them would read as a gap inside a heading.
+   It takes three quarters. Both extremes were tried on the page: a full
+   rhythm looked disconnected, half looked cramped.
+
+   The ratio, not a pixel value, so it holds at every breakpoint. */
+dl-sector + dl-section > .sl-section,
+dl-sector + dl-reveal > dl-statement > .sl-statement-wrap {
+  padding-top: calc(var(--section-pad-y) * 0.75);
+}
+.sl-sector__note {
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+
+/* ---- Collapsible calculator ----------------------------------
+   The calculator is tall and the column beside it was not, so every
+   sector ended on a long form next to a short one. It is closed by
+   default now: the copy makes the argument, and a reader opens the
+   tool when they want the arithmetic rather than scrolling past it
+   three times. Full width when open, so nothing sits beside it. */
+.sl-calc { border: 1px solid var(--border-warm); border-radius: var(--radius-lg);
+  background: var(--surface-card); overflow: hidden; }
+.sl-calc__summary {
+  display: flex; align-items: center; gap: 14px; cursor: pointer;
+  padding: 22px 24px; list-style: none; min-height: 44px;
+}
+.sl-calc__summary::-webkit-details-marker { display: none; }
+.sl-calc__summary:hover { background: var(--surface-highlight); }
+.sl-calc__summary:focus-visible { outline: 2px solid var(--color-orange); outline-offset: -2px; }
+.sl-calc__icon { flex: 0 0 auto; color: var(--color-orange); display: flex; }
+.sl-calc__text { flex: 1 1 auto; display: grid; gap: 3px; }
+.sl-calc__title { font-family: var(--font-display); font-size: 20px; font-weight: 700;
+  line-height: 1.3; color: var(--text-primary); }
+.sl-calc__sub { font-size: 15px; color: var(--text-secondary); }
+.sl-calc__chev { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; color: var(--color-orange-text);
+  font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; }
+/* An icon, never a typed character. See rule 16. */
+.sl-calc__chev svg { width: 16px; height: 16px; transition: transform 140ms ease-out; }
+.sl-calc[open] .sl-calc__chev svg { transform: rotate(180deg); }
+/* 32px, not 22px. The first row pairs an 18px label with a 50px input,
+   centred on each other, so the input overhangs the label by 16px and
+   reaches the rule above while the label still looks correctly spaced.
+   Clearance is measured from the TALLEST thing in the row. */
+.sl-calc__body { padding: 32px 24px 26px; border-top: 1px solid var(--border-hairline); }
+/* The panel is full width so nothing sits beside it, but the controls
+   inside it must not stretch with it: a slider running 1,200px with a
+   small number box at the end reads as an empty row. Content holds a
+   measure and centres; the panel keeps the width. */
+.sl-calc__body > * { max-width: 880px; margin-inline: auto; }
+@media (max-width: 479px) { .sl-calc__summary { padding: 18px; } .sl-calc__body { padding: 24px 18px 20px; } }
+
+/* Statement — one large line breaking up long-form copy.
+
+   Inset and rounded, NOT full bleed. Every other dark block on a page
+   (the CTA, the promo card, an inverse card) is a 16px-radius panel
+   sitting inside the gutter. A statement running edge to edge with
+   square corners read as a different system on the same page, so it
+   now wears the same shape as its neighbours. The wrapper carries the
+   page padding; the panel carries the colour and the radius. */
+.sl-statement-wrap { padding: var(--panel-gap) var(--gutter); }
 .sl-statement {
-  padding: var(--section-pad-y) var(--gutter);
+  max-width: var(--container-used); margin-inline: auto;
+  padding: clamp(40px, 5vw, 56px) clamp(24px, 4vw, 56px);
+  border-radius: var(--radius-lg);
   background: var(--surface-inverse); color: var(--text-inverse);
   position: relative; overflow: hidden;
 }
@@ -1151,7 +1584,7 @@ a.sl-contact:hover .sl-contact__value { color: var(--color-orange); }
   opacity: 0.28;
 }
 .sl-statement__inner {
-  position: relative; max-width: var(--container-used); margin-inline: auto;
+  position: relative;
   display: grid; gap: 20px;
 }
 .sl-statement__text {
@@ -1414,6 +1847,12 @@ dl-reveal-lines.is-armed.is-visible { opacity: 1; transform: none; }
     background-position: 50% 50% !important;
     background-size: 100% 100% !important;
   }
+  /* The flare holds still, part way up the arc, at full strength. It
+     stays visible rather than disappearing: it is part of how the hero
+     is composed, not decoration laid on top. The driver in
+     components.js checks the same query and never starts its loop. */
+  .sl-flare { --flare-x: 77.1% !important; --flare-y: 23.5% !important; --flare-fade: 1 !important; }
+  .sl-hero__dusk { opacity: 0 !important; }
   .sl-badge--live::before { opacity: 1 !important; }
 }
 
@@ -1439,6 +1878,12 @@ dl-reveal-lines.is-armed.is-visible { opacity: 1; transform: none; }
 :root {
   --plugin-calc-accent: var(--color-orange);
   --plugin-calc-bg: var(--color-white);
+  /* The disclosure bar inside the calculator uses the same tint as a
+     callout. It was a color-mix() before, which is a colour the palette
+     check has never heard of, and the gate said so. */
+  --plugin-calc-highlight: var(--surface-highlight);
+  --plugin-calc-highlight-edge: var(--border-highlight);
+  --plugin-calc-highlight-hover: var(--color-beige-2);
   --plugin-calc-text-color: var(--text-primary);
   --plugin-calc-text-muted: var(--text-secondary);
   --plugin-calc-radius: var(--radius-md);

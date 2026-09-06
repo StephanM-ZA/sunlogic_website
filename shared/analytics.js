@@ -74,7 +74,7 @@
      than implying a longer one exists. */
   const CATEGORIES = [
     { key: 'essential', label: 'Essential', locked: true,
-      note: 'Makes the site work — your form entries and this choice. No tracking.' },
+      note: 'Makes the site work: your form entries and this choice. No tracking.' },
     { key: 'analytics', label: 'Analytics', locked: false,
       note: 'Which pages get used and which links get clicked, so we can improve them. Google Analytics.' },
   ];

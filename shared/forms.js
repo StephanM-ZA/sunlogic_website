@@ -25,7 +25,7 @@ function dlFormError(form) {
   p.className = 'sl-body sl-hint--error';
   p.setAttribute('data-dl-form-error', '');
   p.setAttribute('role', 'alert');
-  p.textContent = 'Something went wrong — please call us instead.';
+  p.textContent = 'Something went wrong. Please call us instead.';
   form.appendChild(p);
 }
 

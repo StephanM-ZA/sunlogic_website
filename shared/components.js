@@ -264,7 +264,7 @@ function SL_CROSS_SITE(href, label) {
   if (!/(^|\.)sunlogic\.co\.za$/i.test(url.host)) return '';
   const name = String(label == null ? url.host : label).replace(/"/g, '');
   return ' target="_blank" rel="noopener" aria-label="' + name +
-    ' — opens in a new tab"';
+    ', opens in a new tab"';
 }
 
 class DlButton extends SLElement {
@@ -297,7 +297,21 @@ class DlButton extends SLElement {
        rel on the element still wins. */
     const cross = href && !target && !rel
       ? SL_CROSS_SITE(href, this.textContent.trim()) : '';
-    const attrs = href ? ' href="' + href + '"' + target + rel + cross : ' type="' + SL_ATTR(this, 'type', 'button') + '"';
+    /* Announcing the new tab is a SEPARATE concern from choosing it, and
+       conflating the two cost us one. SL_CROSS_SITE carries target, rel AND
+       the aria-label together, and it is skipped whenever the author set
+       target explicitly — which is right for target and rel, since the author
+       should win, but it silently dropped the announcement as well. The
+       reviews button on the apex home page opened a new tab with nothing said
+       about it, while the footer socials two blocks below announced theirs
+       properly. So: whatever decided the target, if the result is _blank and
+       the author has not written their own label, say so. */
+    const authorLabel = this.getAttribute('aria-label');
+    const opensNewTab = /target="_blank"/.test(target + cross);
+    const spoken = opensNewTab && !authorLabel && !/aria-label=/.test(cross)
+      ? ' aria-label="' + this.textContent.trim().replace(/"/g, '') + ', opens in a new tab"'
+      : (authorLabel ? ' aria-label="' + authorLabel.replace(/"/g, '') + '"' : '');
+    const attrs = href ? ' href="' + href + '"' + target + rel + cross + spoken : ' type="' + SL_ATTR(this, 'type', 'button') + '"';
     this.innerHTML =
       '<' + tag + attrs + ' class="sl-btn sl-btn--' + v + size + full + dark + wipe + '">' +
       '<span>' + this.innerHTML + '</span>' + (icon ? SL_ICON(icon, 18) : '') + '</' + tag + '>';
@@ -315,6 +329,19 @@ customElements.define('dl-actions', DlActions);
    tone: white | warm | sunk | inverse | glass
    Optional icon / heading / body attributes render the standard
    service-card composition; children render below. */
+/* "2026-08-30" -> "30 August 2026". Parsed by hand rather than through
+   Date, because new Date("2026-08-30") is UTC midnight and prints as the
+   29th for anyone west of Greenwich. */
+const SL_MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'];
+function SL_DATE(iso) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso).trim());
+  if (!m) return iso;
+  const month = SL_MONTHS[Number(m[2]) - 1];
+  if (!month) return iso;
+  return Number(m[3]) + ' ' + month + ' ' + m[1];
+}
+
 class DlCard extends SLElement {
   render() {
     const tone = SL_ATTR(this, 'tone', 'white');
@@ -331,9 +358,17 @@ class DlCard extends SLElement {
     const tagEl = this.querySelector('dl-tag');
     const tagHtml = tagEl ? tagEl.outerHTML : '';
     if (tagEl) tagEl.remove();
+    /* An article card takes date="2026-08-30" and prints it above the
+       heading beside the tag. When a post was written is part of
+       deciding whether to read it, so it belongs in the scan line, not
+       hidden inside the post. */
+    const date = this.getAttribute('date');
+    const dateHtml = date
+      ? '<p class="sl-card__date"><time datetime="' + date + '">' + SL_DATE(date) + '</time></p>'
+      : '';
     const head =
       (icon ? '<span class="sl-card__icon">' + SL_ICON(icon, 28) + '</span>' : '') +
-      tagHtml +
+      tagHtml + dateHtml +
       (heading ? '<h3 class="sl-title">' + heading + '</h3>' : '') +
       (body ? '<p class="sl-body">' + body + '</p>' : '');
     const inner = head ? '<div class="sl-card__stack">' + head + '</div>' + this.innerHTML : this.innerHTML;
@@ -485,7 +520,7 @@ class DlContactForm extends SLElement {
       '<label for="sl-modal-website" style="position:absolute;left:-9999px">Website</label>' +
       '<input id="sl-modal-website" type="text" name="website" tabindex="-1" autocomplete="off" ' +
         'aria-hidden="true" style="position:absolute;left:-9999px"/>' +
-      '<dl-button variant="emphasis" icon="arrow-right" type="submit" full>Send Message</dl-button>' +
+      '<dl-button variant="outline" icon="arrow-right" type="submit" full>Send Message</dl-button>' +
       '</form>';
   }
 }
@@ -644,7 +679,7 @@ class DlPerson extends SLElement {
     const photo = this.getAttribute('photo');
     const avatar = photo
       ? '<img class="sl-person__avatar sl-person__avatar--photo" src="' + photo + '" alt="' + SL_ATTR(this, 'name') + '" />'
-      : '<div class="sl-person__avatar">' + SL_ATTR(this, 'initials', '—') + '</div>';
+      : '<div class="sl-person__avatar">' + SL_ATTR(this, 'initials', '\u2013') + '</div>';
     this.innerHTML =
       '<div class="sl-card sl-person">' +
       avatar +
@@ -668,11 +703,12 @@ class DlStatement extends SLElement {
     const text = SL_ATTR(this, 'text');
     const eyebrow = this.getAttribute('eyebrow');
     this.innerHTML =
-      '<section class="sl-statement' + warm + '"><div class="sl-statement__grad"></div>' +
+      '<section class="sl-statement-wrap"><div class="sl-statement' + warm + '">' +
+      '<div class="sl-statement__grad"></div>' +
       '<div class="sl-statement__inner">' +
       (eyebrow ? '<p class="sl-eyebrow' + (warm ? '' : ' sl-eyebrow--inverse') + '">' + eyebrow + '</p>' : '') +
       '<p class="sl-statement__text">' + SL_ACCENT(text) + '</p>' +
-      this.innerHTML + '</div></section>';
+      this.innerHTML + '</div></div></section>';
   }
 }
 customElements.define('dl-statement', DlStatement);
@@ -933,11 +969,120 @@ customElements.define('dl-media', class extends DlMediaBg {});
    were written and quietly diverge on the first tweak to either — and a
    promo that no longer matches the hero it advertises is a bug nobody
    files, because both pages look fine on their own. */
-const SL_HERO_LAYERS =
-  '<div class="sl-hero__layer sl-hero__gradient"></div>' +
-  '<div class="sl-hero__layer sl-hero__sweep"></div>' +
-  '<div class="sl-hero__layer sl-hero__scrim-side"></div>' +
-  '<div class="sl-hero__layer sl-hero__scrim-bottom"></div>';
+
+/* --- Sunrise flare — opt in with <dl-hero flare="sunrise"> ----
+   Replaces the sweep on the heroes that carry it. The two are the same
+   job done two ways and must never run together.
+
+   Layer geometry, blur values and the reason position moves on a
+   transform are all written out at .sl-flare in shared/sunlogic.css.
+   This file owns the timeline only. */
+const SL_FLARE_MARKUP =
+  '<div class="sl-hero__layer sl-flare">' +
+    '<div class="sl-flare__sun">' +
+      '<i class="sl-flare__haze"></i>' +
+      '<i class="sl-flare__bloom"></i>' +
+      '<i class="sl-flare__ring sl-flare__ring--c"><u></u></i>' +
+      '<i class="sl-flare__ring sl-flare__ring--a"><u></u></i>' +
+      '<i class="sl-flare__ring sl-flare__ring--b"><u></u></i>' +
+      '<i class="sl-flare__smear"></i>' +
+      '<i class="sl-flare__streak-soft"></i>' +
+      '<i class="sl-flare__burst"></i>' +
+      '<i class="sl-flare__burst2"></i>' +
+      '<i class="sl-flare__core"></i>' +
+      '<i class="sl-flare__streak"></i>' +
+    '</div>' +
+    '<div class="sl-flare__ghosts">' +
+      '<u class="is-orb sl-flare__g1"></u><u class="is-orb sl-flare__g2"></u>' +
+      '<u class="is-orb sl-flare__g3"></u><u class="is-hex sl-flare__g4"></u>' +
+      '<u class="is-hex sl-flare__g5"></u><u class="is-hex sl-flare__g6"></u>' +
+    '</div>' +
+  '</div>' +
+  '<div class="sl-hero__layer sl-hero__dusk"></div>';
+
+/* Read off the hero photograph, in percentages of the frame: up out of
+   the trees on the right, across the panelled roof, out at the top. The
+   last point sits on the frame edge so the sun leaves rather than
+   dissolving in mid air. A different photograph needs a different path. */
+const SL_FLARE_PATHS = {
+  sunrise: [[95.5, 41.9], [87.3, 34.7], [77.1, 23.5], [65.4, 11.1], [50.1, 0.1]],
+};
+const SL_FLARE_RISE = 30000;   /* sun up and travelling */
+const SL_FLARE_DARK = 46000;   /* gone, scene dims, HOLDS, then lifts */
+const SL_FLARE_DUSK = 0.42;    /* how far down the scene goes */
+const SL_FLARE_IN = 0.24;      /* fraction of the rise spent appearing */
+const SL_FLARE_OUT = 0.34;     /* fraction spent leaving */
+
+/* Catmull-Rom through the points, so the arc is smooth rather than
+   hinged at every one of them. */
+function SL_FLARE_AT(pts, t) {
+  const n = pts.length - 1;
+  const f = Math.min(0.999999, Math.max(0, t)) * n;
+  const i = Math.floor(f), u = f - i, u2 = u * u, u3 = u2 * u;
+  const p0 = pts[Math.max(0, i - 1)], p1 = pts[i];
+  const p2 = pts[i + 1], p3 = pts[Math.min(n, i + 2)];
+  const cr = (a, b, c, d) =>
+    0.5 * ((2 * b) + (-a + c) * u + (2 * a - 5 * b + 4 * c - d) * u2 + (-a + 3 * b - 3 * c + d) * u3);
+  return [cr(p0[0], p1[0], p2[0], p3[0]), cr(p0[1], p1[1], p2[1], p3[1])];
+}
+
+const SL_SMOOTH = (t) => t * t * (3 - t - t);
+
+/* One loop for every flare on the page, started once. */
+let SL_FLARE_RIGS = null;
+function SL_FLARE_REGISTER(hero, preset) {
+  const pts = SL_FLARE_PATHS[preset] || SL_FLARE_PATHS.sunrise;
+  const flare = hero.querySelector('.sl-flare');
+  const dusk = hero.querySelector('.sl-hero__dusk');
+  if (!flare) return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    return;   /* the CSS holds it still at full strength instead */
+  }
+  if (!SL_FLARE_RIGS) {
+    SL_FLARE_RIGS = [];
+    const total = SL_FLARE_RISE + SL_FLARE_DARK;
+    const t0 = performance.now();
+    const frame = (now) => {
+      const e = (now - t0) % total;
+      for (const r of SL_FLARE_RIGS) {
+        if (e < SL_FLARE_RISE) {
+          const u = e / SL_FLARE_RISE;
+          const p = SL_FLARE_AT(r.pts, SL_SMOOTH(u));
+          r.flare.style.setProperty('--flare-x', p[0].toFixed(2) + '%');
+          r.flare.style.setProperty('--flare-y', p[1].toFixed(2) + '%');
+          const fade = Math.min(
+            SL_FLARE_IN > 0 ? u / SL_FLARE_IN : 1,
+            SL_FLARE_OUT > 0 ? (1 - u) / SL_FLARE_OUT : 1, 1);
+          r.flare.style.setProperty('--flare-fade', SL_SMOOTH(fade).toFixed(3));
+          if (r.dusk) r.dusk.style.opacity = '0';
+        } else {
+          r.flare.style.setProperty('--flare-fade', '0');
+          /* Down, HOLD, up. A plain sine spends only an instant at full
+             dark and reads as a dip rather than a night. The middle 46%
+             of the dark half sits flat at full depth instead. */
+          const w = (e - SL_FLARE_RISE) / SL_FLARE_DARK;
+          const ramp = 0.27;
+          const k = w < ramp ? w / ramp
+            : w > 1 - ramp ? (1 - w) / ramp
+            : 1;
+          if (r.dusk) {
+            r.dusk.style.opacity = (SL_SMOOTH(Math.min(1, k)) * SL_FLARE_DUSK).toFixed(3);
+          }
+        }
+      }
+      requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+  }
+  SL_FLARE_RIGS.push({ flare, dusk, pts });
+}
+
+function SL_HERO_LAYERS(flare) {
+  return '<div class="sl-hero__layer sl-hero__gradient"></div>' +
+    (flare ? SL_FLARE_MARKUP : '<div class="sl-hero__layer sl-hero__sweep"></div>') +
+    '<div class="sl-hero__layer sl-hero__scrim-side"></div>' +
+    '<div class="sl-hero__layer sl-hero__scrim-bottom"></div>';
+}
 
 /* Photo with optional responsive srcset, or the labelled empty state.
    `eager` is the hero: it is the LCP element and must not be lazy. The
@@ -977,10 +1122,13 @@ function SL_HERO_MEDIA(el, eager) {
 class DlHero extends SLElement {
   render() {
     /* photo, alt, fit and the opt-in responsive srcset are all read by
-       SL_HERO_MEDIA — see that function. */
+       SL_HERO_MEDIA — see that function. `flare` names a path preset in
+       SL_FLARE_PATHS and swaps the sweep for the sunrise cycle. */
+    const flare = this.getAttribute('flare');
     this.innerHTML =
-      '<section class="sl-hero">' + SL_HERO_MEDIA(this, true) + SL_HERO_LAYERS +
+      '<section class="sl-hero">' + SL_HERO_MEDIA(this, true) + SL_HERO_LAYERS(flare) +
       '<div class="sl-hero__inner">' + this.innerHTML + '</div></section>';
+    if (flare) SL_FLARE_REGISTER(this, flare);
   }
 }
 customElements.define('dl-hero', DlHero);
@@ -1006,15 +1154,115 @@ customElements.define('dl-hero', DlHero);
       this sits below the closing CTA, so the two are never in one view.
       The reasoning is written out at that rule; it was amended on
       purpose, not worked around. */
+/* --- Promo float ---------------------------------------------
+   The card drifts toward a pointer that comes within range of it, and
+   lifts under a finger. Geometry only: everything here writes two
+   custom properties and lets the 900ms transition in the stylesheet do
+   the easing, so nothing animates per frame.
+
+   RANGE is generous on purpose. The card should already be moving by
+   the time a reader notices they are heading for it; a tight radius
+   reads as a hover state, which is a different thing.
+
+   One listener for the whole page, attached once, passive, and read
+   inside rAF so a pointermove never touches layout. */
+const SL_PROMO_RANGE = 520;   /* px from the card's edge box */
+const SL_PROMO_PULL = 10;     /* px of drift at the closest point */
+let SL_PROMO_CARDS = null;
+
+function SL_PROMO_FLOAT(card) {
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  card.addEventListener('touchstart', () => card.classList.add('is-pressed'), { passive: true });
+  ['touchend', 'touchcancel'].forEach((e) =>
+    card.addEventListener(e, () => card.classList.remove('is-pressed'), { passive: true }));
+
+  if (!SL_PROMO_CARDS) {
+    SL_PROMO_CARDS = [];
+    let pending = false;
+    let px = 0;
+    let py = 0;
+    const apply = () => {
+      pending = false;
+      for (const el of SL_PROMO_CARDS) {
+        const r = el.getBoundingClientRect();
+        if (!r.width) continue;
+        /* Distance from the pointer to the card's box, zero when inside it. */
+        const dx = Math.max(r.left - px, 0, px - r.right);
+        const dy = Math.max(r.top - py, 0, py - r.bottom);
+        const dist = Math.hypot(dx, dy);
+        if (dist > SL_PROMO_RANGE) {
+          el.style.setProperty('--promo-dx', '0px');
+          el.style.setProperty('--promo-dy', '0px');
+          continue;
+        }
+        /* Squared falloff, so nothing happens until you are properly near. */
+        const near = (1 - dist / SL_PROMO_RANGE) ** 2;
+        const cx = r.left + r.width / 2;
+        const cy = r.top + r.height / 2;
+        const len = Math.hypot(px - cx, py - cy) || 1;
+        el.style.setProperty('--promo-dx', ((px - cx) / len * SL_PROMO_PULL * near).toFixed(2) + 'px');
+        el.style.setProperty('--promo-dy', ((py - cy) / len * SL_PROMO_PULL * near).toFixed(2) + 'px');
+      }
+    };
+    window.addEventListener('pointermove', (e) => {
+      if (e.pointerType === 'touch') return;   /* touch gets the press, not the drift */
+      px = e.clientX; py = e.clientY;
+      if (!pending) { pending = true; requestAnimationFrame(apply); }
+    }, { passive: true });
+  }
+  SL_PROMO_CARDS.push(card);
+}
+
+/* --- Sector marker -------------------------------------------
+   <dl-sector num="02" of="03" name="For business" note="Shops, offices, workshops"></dl-sector>
+   The seam between two audiences on a page that serves three. See
+   .sl-sector in shared/sunlogic.css for why it is numbered. */
+class DlSector extends SLElement {
+  render() {
+    const note = this.getAttribute('note');
+    this.innerHTML =
+      '<div class="sl-sector"><div class="sl-sector__inner">' +
+      '<span class="sl-sector__num">' + SL_ATTR(this, 'num', '01') +
+        ' / ' + SL_ATTR(this, 'of', '03') + '</span>' +
+      '<span class="sl-sector__name">' + SL_ATTR(this, 'name') + '</span>' +
+      (note ? '<span class="sl-sector__note">' + note + '</span>' : '') +
+      '</div></div>';
+  }
+}
+customElements.define('dl-sector', DlSector);
+
+/* --- Collapsible calculator ----------------------------------
+   <dl-calc title="..." sub="..."><plugin-calculator .../></dl-calc>
+   A <details> so it works with no JavaScript of its own and the
+   keyboard and screen reader behaviour comes free. Closed by default:
+   see .sl-calc in shared/sunlogic.css. */
+class DlCalc extends SLElement {
+  render() {
+    this.innerHTML =
+      '<details class="sl-calc"' + (this.hasAttribute('open') ? ' open' : '') + '>' +
+      '<summary class="sl-calc__summary">' +
+      '<span class="sl-calc__icon">' + SL_ICON('calculator', 28) + '</span>' +
+      '<span class="sl-calc__text">' +
+      '<span class="sl-calc__title">' + SL_ATTR(this, 'title') + '</span>' +
+      '<span class="sl-calc__sub">' + SL_ATTR(this, 'sub') + '</span></span>' +
+      '<span class="sl-calc__chev">Work it out' + SL_ICON('chevron-down', 16) + '</span>' +
+      '</summary>' +
+      '<div class="sl-calc__body">' + this.innerHTML + '</div></details>';
+  }
+}
+customElements.define('dl-calc', DlCalc);
+
 class DlDivisionPromo extends SLElement {
   render() {
     const accent = this.getAttribute('accent') === 'navy' ? ' sl-hero--promo-navy' : '';
     this.innerHTML =
       '<section class="sl-section sl-section--promo"><div class="sl-container">' +
       '<div class="sl-hero sl-hero--promo' + accent + '">' +
-      SL_HERO_MEDIA(this, false) + SL_HERO_LAYERS +
+      SL_HERO_MEDIA(this, false) + SL_HERO_LAYERS(false) +
       '<div class="sl-hero__inner">' + this.innerHTML + '</div>' +
       '</div></div></section>';
+    SL_PROMO_FLOAT(this.querySelector('.sl-hero--promo'));
   }
 }
 customElements.define('dl-division-promo', DlDivisionPromo);
@@ -1182,7 +1430,7 @@ class DlFooter extends SLElement {
       '<div class="sl-footer__socials">' +
       SL_SOCIALS.map((s) =>
         '<a class="sl-footer__social" href="' + s.href + '" target="_blank" rel="noopener" ' +
-        'aria-label="' + s.name + ' — opens in a new tab">' + SL_ICON(s.icon, 20) + '</a>').join('') +
+        'aria-label="' + s.name + ', opens in a new tab">' + SL_ICON(s.icon, 20) + '</a>').join('') +
       '</div></div>' +
       '</div><div class="sl-footer__rule">' +
       '<p class="sl-footer__strapline">Both directors run the teams and the projects · Certificate of Compliance on every installation</p>' +
@@ -1312,23 +1560,54 @@ if (SL_TOPIC) {
   const MOBILE_BREAKPOINT = 768;
   let lastY = window.scrollY;
   let ticking = false;
+  let gate = 0;
+
+  /* The dock stays down until the reader has scrolled PAST the bar under
+     the hero: the anchor row on a service page, the trust strip on a home
+     page. It used to be permanently visible on desktop, so it sat on top
+     of that bar and on top of the copy beside it. Nothing should overlap
+     a control the reader has not asked for yet.
+
+     offsetTop, not getBoundingClientRect: the anchor row is sticky, so
+     its rect reports where it is stuck rather than where it lives. */
+  function docTop(el) {
+    let y = 0;
+    for (let n = el; n; n = n.offsetParent) y += n.offsetTop;
+    return y;
+  }
+  function measureGate() {
+    const bar = document.querySelector('dl-subnav, .sl-subnav, .sl-trust');
+    gate = bar && bar.offsetHeight
+      ? docTop(bar) + bar.offsetHeight
+      : Math.round(window.innerHeight * 0.6);
+  }
+
   function onScroll() {
     const dock = document.querySelector('.sl-dock');
     ticking = false;
     if (!dock) return;
-    if (window.innerWidth >= MOBILE_BREAKPOINT) {
-      dock.classList.remove('sl-dock--hidden');
-      lastY = window.scrollY;
+    if (!gate) measureGate();
+    const y = window.scrollY;
+
+    /* Before the gate the dock is down, on every viewport. */
+    if (y <= gate) {
+      dock.classList.add('sl-dock--hidden');
+      lastY = y;
       return;
     }
-    const y = window.scrollY;
-    if (y < 80) dock.classList.remove('sl-dock--hidden');
-    else if (y > lastY + 4) dock.classList.add('sl-dock--hidden');
+    if (window.innerWidth >= MOBILE_BREAKPOINT) {
+      dock.classList.remove('sl-dock--hidden');
+      lastY = y;
+      return;
+    }
+    if (y > lastY + 4) dock.classList.add('sl-dock--hidden');
     else if (y < lastY - 4) dock.classList.remove('sl-dock--hidden');
     lastY = y;
   }
   window.addEventListener('scroll', () => {
     if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
   }, { passive: true });
-  window.addEventListener('resize', onScroll, { passive: true });
+  window.addEventListener('resize', () => { measureGate(); onScroll(); }, { passive: true });
+  window.addEventListener('load', () => { measureGate(); onScroll(); });
+  if (document.readyState === 'complete') { measureGate(); onScroll(); }
 })();
