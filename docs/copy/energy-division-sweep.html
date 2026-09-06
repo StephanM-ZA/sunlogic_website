@@ -1,0 +1,397 @@
+<title>Energy Division Sweep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Karla:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap">
+
+<style>
+  :root {
+    --paper:   #FBF9F5;
+    --raise:   #FFFFFF;
+    --sunk:    #F3EFE8;
+    --ink:     #1B1D1F;
+    --muted:   #6E6862;
+    --rule:    #E2DBD1;
+    --accent:  #B85300;
+    --kill:    #A8362A;
+    --keep:    #3D6B4E;
+    --shadow:  0 1px 2px rgba(27,29,31,.05);
+
+    --serif: "Newsreader", Georgia, "Times New Roman", serif;
+    --sans:  "Karla", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono:  "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #17191B; --raise: #1F2225; --sunk: #202326;
+      --ink: #EDE8E1; --muted: #9C948B; --rule: #33383C;
+      --accent: #E88A3C; --kill: #E8776A; --keep: #7FB894;
+      --shadow: 0 1px 2px rgba(0,0,0,.3);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #17191B; --raise: #1F2225; --sunk: #202326;
+    --ink: #EDE8E1; --muted: #9C948B; --rule: #33383C;
+    --accent: #E88A3C; --kill: #E8776A; --keep: #7FB894;
+    --shadow: 0 1px 2px rgba(0,0,0,.3);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: var(--sans); font-size: 16.5px; line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 820px; margin-inline: auto; padding: 56px 24px 96px; }
+  @media (max-width: 600px) { .wrap { padding: 36px 18px 64px; } }
+
+  .label {
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: .13em; text-transform: uppercase; color: var(--muted);
+  }
+
+  h1 {
+    font-family: var(--serif); font-weight: 600; font-size: clamp(34px, 6vw, 48px);
+    line-height: 1.1; margin: 10px 0 0; letter-spacing: -.015em; text-wrap: balance;
+  }
+  .standfirst {
+    font-family: var(--serif); font-size: clamp(18px, 2.6vw, 21px); line-height: 1.5;
+    color: var(--muted); margin: 16px 0 0; max-width: 60ch;
+  }
+
+  h2 {
+    font-family: var(--serif); font-weight: 600; font-size: 27px; line-height: 1.2;
+    margin: 0 0 4px; letter-spacing: -.01em; text-wrap: balance;
+  }
+  h3 { font-family: var(--sans); font-weight: 700; font-size: 17px; margin: 0; line-height: 1.35; }
+  p { margin: 0 0 14px; }
+  p:last-child { margin-bottom: 0; }
+
+  section { margin-top: 52px; }
+  .sechead { border-top: 2px solid var(--ink); padding-top: 12px; margin-bottom: 26px; }
+
+  /* --- classification strip --- */
+  .facts {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1px; background: var(--rule); border: 1px solid var(--rule);
+    border-radius: 4px; overflow: hidden; margin-top: 34px;
+  }
+  .facts div { background: var(--raise); padding: 14px 16px; }
+  .facts dt { font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0 0 5px; }
+  .facts dd { margin: 0; font-size: 15px; line-height: 1.4; }
+
+  /* --- score --- */
+  .score {
+    display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;
+    background: var(--sunk); border: 1px solid var(--rule); border-radius: 4px;
+    padding: 20px 22px; margin-top: 34px;
+  }
+  .score__n { font-family: var(--serif); font-size: 46px; font-weight: 600;
+    line-height: 1; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .score__t { flex: 1 1 300px; font-size: 15.5px; color: var(--muted); line-height: 1.5; }
+
+  /* --- findings --- */
+  .find { border: 1px solid var(--rule); border-radius: 4px; background: var(--raise);
+    box-shadow: var(--shadow); margin-bottom: 20px; overflow: hidden; }
+  .find__top { display: flex; gap: 12px; align-items: flex-start;
+    padding: 16px 18px 14px; border-bottom: 1px solid var(--rule); }
+  .chip { flex: 0 0 auto; font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase; padding: 4px 8px; border-radius: 3px;
+    line-height: 1.4; white-space: nowrap; }
+  .chip--high { background: var(--kill); color: #fff; }
+  .chip--med  { background: var(--accent); color: #fff; }
+  .chip--low  { background: var(--sunk); color: var(--muted); border: 1px solid var(--rule); }
+  .chip--done { background: var(--keep); color: #fff; }
+  .chip--open { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+  .chips { display: flex; flex-direction: column; gap: 5px; flex: 0 0 auto; }
+  .find__where { font-family: var(--mono); font-size: 11px; color: var(--muted);
+    margin-top: 5px; letter-spacing: .04em; }
+  .find__body { padding: 16px 18px 18px; }
+  .find__body > * + * { margin-top: 13px; }
+
+  blockquote {
+    margin: 0; padding: 11px 15px; background: var(--sunk);
+    border-left: 3px solid var(--rule); border-radius: 0 3px 3px 0;
+    font-family: var(--serif); font-size: 16.5px; line-height: 1.5;
+  }
+  blockquote.fix { border-left-color: var(--keep); background: transparent;
+    border: 1px solid var(--rule); border-left: 3px solid var(--keep); }
+  .tag { display: block; font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .why { font-size: 14.5px; color: var(--muted); font-style: italic; }
+
+  /* --- voice table --- */
+  .scroller { overflow-x: auto; border: 1px solid var(--rule); border-radius: 4px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; background: var(--raise); }
+  th, td { text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+  th { font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--muted); background: var(--sunk); }
+  tr:last-child td { border-bottom: 0; }
+  td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; }
+  td.page { font-family: var(--mono); font-size: 13px; }
+  .warm { color: var(--accent); font-weight: 700; }
+
+  /* --- lists --- */
+  ul.plain { list-style: none; margin: 0; padding: 0; }
+  ul.plain li { position: relative; padding-left: 22px; margin-bottom: 11px; }
+  ul.plain li::before { content: ""; position: absolute; left: 4px; top: .62em;
+    width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  ul.kill li::before { background: var(--kill); border-radius: 1px; }
+  ul.keep li::before { background: var(--keep); }
+
+  .foot { margin-top: 60px; padding-top: 18px; border-top: 1px solid var(--rule);
+    font-family: var(--mono); font-size: 11.5px; color: var(--muted); line-height: 1.7; }
+</style>
+
+<div class="wrap">
+
+  <p class="label">Copy Chief &middot; Sunlogic Energy</p>
+  <h1>The Articles That Were Never Written</h1>
+  <p class="standfirst">A confirmation pass on the Energy home page, then a sweep across the whole
+    division. The home page came back close to finished. The sweep did not: the thank-you page had
+    been advertising three articles for months, and two of them do not exist.</p>
+
+  <dl class="facts">
+    <div><dt>Scope</dt><dd>All nine published pages of energy.sunlogic.co.za</dd></div>
+    <div><dt>Home page</dt><dd>Fourth review. Three fixed, three referred, one deliberately left</dd></div>
+    <div><dt>Division sweep</dt><dd>Cross-page checks the conformance gate cannot make</dd></div>
+    <div><dt>Result</dt><dd>Six defects, all applied. Two decisions referred to the owner</dd></div>
+  </dl>
+
+  <div class="score">
+    <div class="score__n">8</div>
+    <p class="score__t">The home page is finished bar one referred item. The division around it was not,
+      and none of what was wrong could have been caught by looking at a page on its own: every finding
+      below came from comparing pages against each other, or against the files they claim to describe.</p>
+  </div>
+
+  <section>
+    <div class="sechead"><h2>The home page, fourth pass</h2></div>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--high">High</span><span class="chip chip--done">Applied</span></div>
+        <div><h3>One sentence appeared twice, word for word</h3>
+        <p class="find__where">index.html &middot; "In a Business" and "Businesses"</p></div></div>
+      <div class="find__body">
+        <blockquote>You use it as you make it.</blockquote>
+        <p>Two sections apart, both times followed by the panels going straight into the building. The
+          Why-now card makes the argument; the Who-we-work-for card is a signpost and should not
+          re-argue it.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>Shops, offices, workshops and
+          guesthouses, where the daytime trading hours are the ones solar covers best.</blockquote>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--med">Medium</span><span class="chip chip--done">Applied</span></div>
+        <div><h3>"Three Recent Jobs" claimed something the page cannot support</h3>
+        <p class="find__where">index.html &middot; Our work</p></div></div>
+      <div class="find__body">
+        <p>"Recent" is a time claim. The photographs came from the Google Business Profile export with
+          no dates attached, so there is nothing behind it. The systems are real and specified; the
+          recency was not.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>Three Systems We Installed</blockquote>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--low">Low</span><span class="chip chip--done">Applied</span></div>
+        <div><h3>One grid, two heading cases</h3>
+        <p class="find__where">index.html &middot; Why Sunlogic</p></div></div>
+      <div class="find__body">
+        <p>Three sentence-case card headings and one Title Case. Each is correct on its own under the
+          five-word rule; together they read as a mistake. This is a real property of the rule, not a
+          slip: applied card by card it can leave a set looking uneven.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>Six words puts the odd one in the same
+          register as its neighbours.</blockquote>
+      </div>
+    </article>
+
+    <p><strong>Checked and left alone.</strong> "We are still here in year five" looked redundant
+      against the five-step section above it. It is not: the steps describe what servicing and
+      monitoring <em>are</em>, and the card answers <em>why you should believe we will still be
+      around</em>. Different questions, so no change.</p>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>The division sweep</h2></div>
+    <p>Six defects, none of them visible from inside a single page.</p>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--high">High</span><span class="chip chip--done">Applied</span></div>
+        <div><h3>Two of the three articles on the thank-you page do not exist</h3>
+        <p class="find__where">thank-you.html &middot; Worth knowing</p></div></div>
+      <div class="find__body">
+        <p>The page carried three article cards: <em>Why Your Bill Went Up</em>,
+          <em>Should You Get a Battery?</em> and <em>How to read a solar quote</em>. Only the first
+          corresponds to a published post. The other two were never written.</p>
+        <p><strong>And none of the three was a link.</strong> No href, no read button. Somebody who
+          had just handed over their details was shown three headlines they could not reach, two of
+          which led nowhere because there was nowhere for them to lead.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>The three posts that are actually
+          published, linked, titled exactly as each post titles itself, and dated from each post's own
+          datePublished.</blockquote>
+        <p class="why">This is the failure mode the house rules exist to prevent, and it had been live
+          the whole time. A gate that reads one page at a time cannot see it: the cards are
+          well-formed, on-palette and correctly spaced. They are simply about nothing.</p>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--high">High</span><span class="chip chip--done">Applied</span></div>
+        <div><h3>The same article was titled three different ways</h3>
+        <p class="find__where">index.html, blog.html, thank-you.html, and inside the posts</p></div></div>
+      <div class="find__body">
+        <div class="scroller"><table>
+          <thead><tr><th>Where</th><th>What it called the post</th></tr></thead>
+          <tbody>
+            <tr><td class="page">the post itself</td><td>Why Your Electricity Bill Went Up</td></tr>
+            <tr><td class="page">index.html</td><td>Why your electricity bill went up</td></tr>
+            <tr><td class="page">blog.html</td><td>Why your electricity bill went up</td></tr>
+            <tr><td class="page">thank-you.html</td><td>Why Your Bill Went Up</td></tr>
+          </tbody>
+        </table></div>
+        <p style="margin-top:14px">Same for the off-grid post, capitalised two ways. A reader who
+          follows a link should arrive at the headline they clicked.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>Each post's own
+          <code>&lt;title&gt;</code> is now the single source, and every card across the division
+          matches it.</blockquote>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--med">Medium</span><span class="chip chip--done">Applied</span></div>
+        <div><h3>The listing page was the thinnest view of the posts it lists</h3>
+        <p class="find__where">blog.html and the related-post cards inside each post</p></div></div>
+      <div class="find__body">
+        <p>No dates at all, and no photograph on two of four cards, while the home page teasing the
+          same posts had both. You had asked for publish dates on blog cards; that request landed on
+          the home page and never reached the listing or the cards at the foot of each post.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>All eighteen blog cards across the
+          division now carry a date, read off each post rather than invented, plus the one photograph
+          that existed and was not being used.</blockquote>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--med">Medium</span><span class="chip chip--done">Applied</span></div>
+        <div><h3>A post on the Energy site routed its enquiries to Electrical</h3>
+        <p class="find__where">blog-five-tips-load-shedding.html</p></div></div>
+      <div class="find__body">
+        <p><code>data-topic="Electrical"</code> on an Energy page. That attribute is what appends
+          <code>?need=</code> to every contact link, so anyone enquiring from that post arrived at the
+          form tagged to the wrong division.</p>
+        <blockquote class="fix"><span class="tag">Applied</span><code>data-topic="Energy"</code></blockquote>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--low">Low</span><span class="chip chip--done">Applied</span></div>
+        <div><h3>A second mixed-case grid, on the solar page</h3>
+        <p class="find__where">solar.html</p></div></div>
+      <div class="find__body">
+        <p>"Paying For It" beside "What happens when something wears out?". Same shape as the home
+          page finding: correct card by card, uneven as a pair.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>How people actually pay for it</blockquote>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--med">Medium</span><span class="chip chip--done">Applied</span></div>
+        <div><h3>The rule caught its own trap</h3>
+        <p class="find__where">shared/sunlogic-check.js, rule 6</p></div></div>
+      <div class="find__body">
+        <p>Canonicalising the titles made the gate fail on two blog posts, and the reason mattered.
+          Rule 6 exempts article cards from heading case, because a post's title is not a label this
+          system gets to set. That exemption keyed on the presence of a <em>date</em>. So a
+          related-post card where nobody remembered the date silently stopped being an article card
+          and started being judged as a label: the rule failed
+          <em>Why Your Electricity Bill Went Up</em> on two pages while passing the identical heading
+          on three others.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>The exemption now also accepts a card
+          that links to a post, which is what actually makes it an article card.</blockquote>
+        <p class="why">Worth keeping in mind: an exemption keyed on an optional attribute quietly
+          becomes a rule about whether somebody filled that attribute in.</p>
+      </div>
+    </article>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>Referred, not decided</h2></div>
+    <ul class="plain">
+      <li><strong>The hero.</strong> "Every Unit You Make Is One You Don't Buy" is an economics claim
+        and the body under it switches to method and scope. Both lines are good and provable, they
+        just do not follow from each other. This is v3 copy you approved, so it stands until you say
+        otherwise.</li>
+      <li><strong>The load-shedding post is still promoted</strong> in the blog grid alongside the
+        others. The argument moved off load shedding roughly eighteen months ago. Keeping it as
+        archive is defensible; promoting it may not be.</li>
+      <li><strong>Two of three blog cards are dated 2022.</strong> On a page dated 2026 that reads as
+        a dead blog. A content decision, not a copy one.</li>
+      <li><strong>Outside this division:</strong> <code>site-electrical/thank-you.html</code> carries
+        the identical fabricated cards, including the battery article that does not exist. Left
+        untouched on your instruction, flagged because it is the same invented content on a live
+        page.</li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>After this report was written</h2></div>
+    <p>Three things changed on the home page after this sweep was filed. Recorded here so the report
+      does not quietly go out of date, which is the same failure it criticises elsewhere.</p>
+    <ul class="plain">
+      <li><strong>Two of the three job cards were factually wrong in public.</strong> Noordhoek said
+        "10kW of panels each" where it is a 10kWh battery per phase, and Rondebosch said 64kW of
+        inverter capacity where it is six 12kW units, which is 72kW. Corrected from the owner's own
+        figures, and all three cards now say what kind of property it was: a new residential
+        development, a private residence on three phase, and Rondebosch Prep, named with permission.</li>
+      <li><strong>The blog teaser was removed from the home page.</strong> Adding the dates made a
+        four-year-old blog legible rather than causing it. Every presentational alternative was
+        lipstick, and dropping the dates again would have been concealment. The markup and the
+        condition for reinstating it (two or three posts from the current year) are preserved in a
+        comment at that point in the file. The archive was never made unreachable.</li>
+      <li><strong>The "one real number" promise was broken one line later</strong> by two cards that
+        each gave three. Now "a photograph and what was actually fitted".</li>
+    </ul>
+    <p><strong>The load-shedding post stays</strong>, on the owner's decision: it is a real piece
+      from when load shedding was a daily fact, and rewriting it would make it less true rather than
+      more. One thing was added and not one word of the article was changed. It opens with "no end in
+      sight to load shedding disruptions" and closes with a quote saying there is "no sign of load
+      shedding easing any time soon". Both were accurate in July 2022 and neither is now, and although
+      the post carries its byline date, a byline is not the same as telling a reader that the outlook
+      in the first and last lines has since changed. An archive note now says so, above the article,
+      carrying no duration figure: a number like "eighteen months without" needs maintaining and goes
+      quietly wrong the moment nobody updates it.</p>
+    <p><strong>Still open, and still the owner's:</strong> the hero, parked on instruction; and an SME
+      proof point. The job cards are now two residences and a school, which is a real improvement on
+      three anonymous suburbs, but the page argues to shops, offices, workshops and guesthouses and
+      shows none of them. That needs a commercial job with a photograph, not copy.</p>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>Voice</h2></div>
+    <p>The Energy home page went from nought contractions to eleven, so the division no longer reads
+      as formal on the home page and spoken on solar one click away. Two formal constructions were
+      kept on purpose: the statement panel's <em>"We cannot change what your municipality charges. We
+      can change how much of it you pay"</em>, where the cannot/can parallel is the whole device, and
+      a card heading, because headings do not take contractions by default.</p>
+  </section>
+
+  <p class="foot">
+    Reviewed against the Sunlogic house rules: no invented facts, no unverifiable claims, no jargon,
+    no em dashes, no manufactured urgency, South African English.<br>
+    Source: rendered copy from the built pages, not the markup, plus cross-page comparison of every
+    card heading, date and link across all nine published Energy pages.<br>
+    After every change: conformance gate 25 pages at two viewports, layout sweep 550 page and width
+    combinations, 59 unit tests. All clean.
+  </p>
+</div>

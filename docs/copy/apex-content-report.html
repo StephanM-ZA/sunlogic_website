@@ -1,0 +1,704 @@
+<title>Sunlogic Apex Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Karla:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap">
+
+<style>
+  :root {
+    --paper:   #FBF9F5;
+    --raise:   #FFFFFF;
+    --sunk:    #F3EFE8;
+    --ink:     #1B1D1F;
+    --muted:   #6E6862;
+    --rule:    #E2DBD1;
+    --accent:  #B85300;
+    --kill:    #A8362A;
+    --keep:    #3D6B4E;
+    --shadow:  0 1px 2px rgba(27,29,31,.05);
+
+    --serif: "Newsreader", Georgia, "Times New Roman", serif;
+    --sans:  "Karla", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono:  "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #17191B; --raise: #1F2225; --sunk: #202326;
+      --ink: #EDE8E1; --muted: #9C948B; --rule: #33383C;
+      --accent: #E88A3C; --kill: #E8776A; --keep: #7FB894;
+      --shadow: 0 1px 2px rgba(0,0,0,.3);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #17191B; --raise: #1F2225; --sunk: #202326;
+    --ink: #EDE8E1; --muted: #9C948B; --rule: #33383C;
+    --accent: #E88A3C; --kill: #E8776A; --keep: #7FB894;
+    --shadow: 0 1px 2px rgba(0,0,0,.3);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: var(--sans); font-size: 16.5px; line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 820px; margin-inline: auto; padding: 56px 24px 96px; }
+  @media (max-width: 600px) { .wrap { padding: 36px 18px 64px; } }
+
+  .label {
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: .13em; text-transform: uppercase; color: var(--muted);
+  }
+
+  h1 {
+    font-family: var(--serif); font-weight: 600; font-size: clamp(34px, 6vw, 48px);
+    line-height: 1.1; margin: 10px 0 0; letter-spacing: -.015em; text-wrap: balance;
+  }
+  .standfirst {
+    font-family: var(--serif); font-size: clamp(18px, 2.6vw, 21px); line-height: 1.5;
+    color: var(--muted); margin: 16px 0 0; max-width: 60ch;
+  }
+
+  h2 {
+    font-family: var(--serif); font-weight: 600; font-size: 27px; line-height: 1.2;
+    margin: 0 0 4px; letter-spacing: -.01em; text-wrap: balance;
+  }
+  h3 { font-family: var(--sans); font-weight: 700; font-size: 17px; margin: 0; line-height: 1.35; }
+  p { margin: 0 0 14px; }
+  p:last-child { margin-bottom: 0; }
+
+  section { margin-top: 52px; }
+  .sechead { border-top: 2px solid var(--ink); padding-top: 12px; margin-bottom: 26px; }
+
+  /* --- classification strip --- */
+  .facts {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1px; background: var(--rule); border: 1px solid var(--rule);
+    border-radius: 4px; overflow: hidden; margin-top: 34px;
+  }
+  .facts div { background: var(--raise); padding: 14px 16px; }
+  .facts dt { font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0 0 5px; }
+  .facts dd { margin: 0; font-size: 15px; line-height: 1.4; }
+
+  /* --- score --- */
+  .score {
+    display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;
+    background: var(--sunk); border: 1px solid var(--rule); border-radius: 4px;
+    padding: 20px 22px; margin-top: 34px;
+  }
+  .score__n { font-family: var(--serif); font-size: 46px; font-weight: 600;
+    line-height: 1; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .score__t { flex: 1 1 300px; font-size: 15.5px; color: var(--muted); line-height: 1.5; }
+
+  /* --- findings --- */
+  .find { border: 1px solid var(--rule); border-radius: 4px; background: var(--raise);
+    box-shadow: var(--shadow); margin-bottom: 20px; overflow: hidden; }
+  .find__top { display: flex; gap: 12px; align-items: flex-start;
+    padding: 16px 18px 14px; border-bottom: 1px solid var(--rule); }
+  .chip { flex: 0 0 auto; font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase; padding: 4px 8px; border-radius: 3px;
+    line-height: 1.4; white-space: nowrap; }
+  .chip--high { background: var(--kill); color: #fff; }
+  .chip--med  { background: var(--accent); color: #fff; }
+  .chip--low  { background: var(--sunk); color: var(--muted); border: 1px solid var(--rule); }
+  .chip--done { background: var(--keep); color: #fff; }
+  .chip--open { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+  .chips { display: flex; flex-direction: column; gap: 5px; flex: 0 0 auto; }
+  .find__where { font-family: var(--mono); font-size: 11px; color: var(--muted);
+    margin-top: 5px; letter-spacing: .04em; }
+  .find__body { padding: 16px 18px 18px; }
+  .find__body > * + * { margin-top: 13px; }
+
+  blockquote {
+    margin: 0; padding: 11px 15px; background: var(--sunk);
+    border-left: 3px solid var(--rule); border-radius: 0 3px 3px 0;
+    font-family: var(--serif); font-size: 16.5px; line-height: 1.5;
+  }
+  blockquote.fix { border-left-color: var(--keep); background: transparent;
+    border: 1px solid var(--rule); border-left: 3px solid var(--keep); }
+  .tag { display: block; font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .why { font-size: 14.5px; color: var(--muted); font-style: italic; }
+
+  /* --- voice table --- */
+  .scroller { overflow-x: auto; border: 1px solid var(--rule); border-radius: 4px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; background: var(--raise); }
+  th, td { text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+  th { font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--muted); background: var(--sunk); }
+  tr:last-child td { border-bottom: 0; }
+  td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; }
+  td.page { font-family: var(--mono); font-size: 13px; }
+  .warm { color: var(--accent); font-weight: 700; }
+
+  /* --- lists --- */
+  ul.plain { list-style: none; margin: 0; padding: 0; }
+  ul.plain li { position: relative; padding-left: 22px; margin-bottom: 11px; }
+  ul.plain li::before { content: ""; position: absolute; left: 4px; top: .62em;
+    width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  ul.kill li::before { background: var(--kill); border-radius: 1px; }
+  ul.keep li::before { background: var(--keep); }
+
+  .foot { margin-top: 60px; padding-top: 18px; border-top: 1px solid var(--rule);
+    font-family: var(--mono); font-size: 11.5px; color: var(--muted); line-height: 1.7; }
+</style>
+
+<div class="wrap">
+
+  <p class="label">Copy Chief &middot; Sunlogic apex</p>
+  <h1>Two Trades, One Buried Argument</h1>
+  <p class="standfirst">The apex page has one job and now does it. The line that would make somebody
+    choose Sunlogic over the other three quotes was in the third card of the third section; it opens
+    the page. Three rounds, twenty findings, nineteen applied.</p>
+
+  <dl class="facts">
+    <div><dt>Type</dt><dd>Company positioning and routing page</dd></div>
+    <div><dt>Traffic</dt><dd>Cold and branded, mostly direct or referral</dd></div>
+    <div><dt>Awareness</dt><dd>Mixed. Branded is product-aware, search is solution-aware at best</dd></div>
+    <div><dt>Mechanism</dt><dd>One registered company holding both trades, so no one can pass the fault along</dd></div>
+  </dl>
+
+  <p style="margin:26px 0 0;padding:13px 16px;border:1px solid var(--keep);border-left:3px solid var(--keep);border-radius:4px;font-size:15.5px">
+    <strong>Every finding below is applied and live.</strong> All High and Medium, all three rounds,
+    verified against the built pages rather than the source: each removed line was searched for in
+    <code>dist/main/</code> and none of them is still there. The single open item is at the foot of
+    this page and is a flag, not a finding.</p>
+
+  <div class="score">
+    <div class="score__n">8</div>
+    <p class="score__t"><strong>Final, round three.</strong> Was 6 at the start. The mechanism opens the
+      page, a checklist that restated the trust strip is now two named directors, and the reviews block
+      argues the relationship instead of reciting a source. Round two found six issues created by round
+      one; round three found six more, four of them again created by the round before it. That pattern
+      is the finding worth keeping: on a page this tight, a fix is a move, and the thing it was covering
+      is what you look at next.</p>
+  </div>
+
+  <section>
+    <div class="sechead"><h2>The strategic read</h2></div>
+
+    <p><strong>The big idea is sound.</strong> "Two Trades, One Contractor" is a real positioning
+      line, not a slogan. It passes the bar test: <em>they do the solar and the sparky work, so
+      nobody points fingers</em>. For a page whose entire reason to exist is explaining a
+      two-division structure, that is the correct headline.</p>
+
+    <p><strong>The lead does not carry it.</strong> The hero body underneath is three noun
+      fragments: certified contracting and compliance, solar backup and smart control, one
+      registered company. That is a services index. It restates the headline at lower resolution
+      and adds no reason to care. A reader who has three quotes on the table learns nothing from
+      it that the headline did not already say.</p>
+
+    <p><strong>The routing works, and it works well.</strong> "If it makes power, stores it or
+      controls it, that is Energy. If it is wiring, a fault, a board or a certificate, that is
+      Electrical." Two sentences, no jargon, and the reader knows which button to press. This is
+      the best-working copy on the site and nothing should be done to it.</p>
+
+    <p><strong>The middle sags.</strong> Divisions is strong, then "What You Get Either Way" is
+      four cards of which one is the actual argument and three are table stakes, then Reviews
+      addresses the wrong reader, then the company section says what the top of the page already
+      said. Momentum drops between the divisions and the close.</p>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>Findings</h2></div>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--high">High</span><span class="chip chip--done">Applied</span></div>
+        <div>
+          <h3>The mechanism is buried in card three of section three</h3>
+          <p class="find__where">index.html &middot; Why Sunlogic &middot; "One Team, Both Trades"</p>
+        </div>
+      </div>
+      <div class="find__body">
+        <blockquote><span class="tag">As it stands</span>A solar system is an electrical
+          installation. Having both under one registered company means nobody is arguing about
+          whose work the fault is.</blockquote>
+        <p>That is the whole argument for the company. It is concrete, it names a fear the reader
+          actually has, and no competitor holding one trade can say it. It is currently the third
+          of four equal cards, two thirds of the way down.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>A solar system is an
+          electrical installation. Most people end up hiring two companies for it and then
+          refereeing between them. We hold both trades in one registered company, across the
+          Western Cape.</blockquote>
+        <p class="why">Schwartz: the mechanism goes where the reader is still deciding whether to
+          keep reading, not where they have already decided.</p>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--high">High</span><span class="chip chip--done">Applied</span></div>
+        <div>
+          <h3>The same two credentials are stated three times on one page</h3>
+          <p class="find__where">index.html &middot; trust strip, then "Not a Call Centre" checklist</p>
+        </div>
+      </div>
+      <div class="find__body">
+        <p>The trust strip says compliance certificate on every job and council registration
+          handled for you. Six hundred words later the checklist says
+          <em>Compliance certificate on every job</em> and
+          <em>Council and SSEG registration handled for you</em>. Close to verbatim.</p>
+        <p>The other two checklist items have a different problem. They restate the paragraph
+          sitting immediately beside them: the body says both directors run the teams and the
+          person who quotes your job is answerable, and the checklist says
+          <em>Both directors run the teams and the projects</em> and
+          <em>The person who quotes your job stays on it</em>.</p>
+        <p><strong>All four items are redundant.</strong> Two duplicate the paragraph they sit
+          next to, two duplicate the top of the page.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>Cut the checklist, or replace all four
+          items with things not said anywhere else on the page: the years trading, the trades held,
+          the areas covered, what happens if something goes wrong after sign-off.</blockquote>
+        <p class="why">Repetition is a persuasion tool when it lands on a different facet each
+          time. Repeating a credential verbatim just tells the reader you ran out of material.</p>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--high">High</span><span class="chip chip--done">Applied</span></div>
+        <div>
+          <h3>The estate is written in two different voices, page by page</h3>
+          <p class="find__where">All three sites</p>
+        </div>
+      </div>
+      <div class="find__body">
+        <p>Counting contractions in the shipped pages, the split is not gradual. It is two camps.</p>
+        <div class="scroller">
+          <table>
+            <thead><tr><th>Page</th><th>Contractions</th><th>Reads as</th></tr></thead>
+            <tbody>
+              <tr><td class="page">electrical/electrical.html</td><td class="n warm">42</td><td>Spoken</td></tr>
+              <tr><td class="page">energy/solar.html</td><td class="n warm">32</td><td>Spoken</td></tr>
+              <tr><td class="page">electrical/index.html</td><td class="n">6</td><td>Mixed</td></tr>
+              <tr><td class="page">main/contact.html</td><td class="n">3</td><td>Mixed</td></tr>
+              <tr><td class="page">energy/index.html</td><td class="n">0</td><td>Formal</td></tr>
+              <tr><td class="page">main/index.html</td><td class="n">0</td><td>Formal</td></tr>
+              <tr><td class="page">main/thank-you.html</td><td class="n">0</td><td>Formal</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Two adjacent pages on the same site, energy home and solar, sit at nought and thirty two.
+          A reader moving between them hears the company change its register mid-visit. The house
+          rule asks for knowledgeable and not stiff, and nought contractions across a whole home
+          page is stiff.</p>
+        <blockquote class="fix"><span class="tag">Settled on the apex</span>Pick one register for the
+          estate. The recommendation is the spoken one, lightly: contractions in body copy and
+          answers, none in headings, eyebrows or button labels. That keeps headings crisp and stops
+          the body reading like terms and conditions.</blockquote>
+        <p class="why">This is the one finding on the list that no automated check can catch, and
+          the one a reader feels fastest without being able to name it.</p>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--med">Medium</span><span class="chip chip--done">Applied</span></div>
+        <div>
+          <h3>The only button in the reviews section is aimed at the wrong reader</h3>
+          <p class="find__where">index.html &middot; Reviews &middot; "Leave a Review"</p>
+        </div>
+      </div>
+      <div class="find__body">
+        <p>Almost everybody on this page is deciding whether to hire Sunlogic. "Leave a Review" is
+          addressed to somebody who already has. It is the only call to action in the section, so a
+          prospect reading the reviews is handed a control they cannot use.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>Point it at the reviews themselves,
+          where a prospect gains something: "Read them on Google". Keep the leave-a-review link,
+          but in the footer or the thank-you page, where the customer who would use it actually is.</blockquote>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--med">Medium</span><span class="chip chip--done">Applied</span></div>
+        <div>
+          <h3>The hero button does not promise what the section delivers</h3>
+          <p class="find__where">index.html &middot; hero &middot; "See What We Do"</p>
+        </div>
+      </div>
+      <div class="find__body">
+        <p>It scrolls to a section headed "Which One Do You Need?". The button should say that.
+          "See What We Do" is a label on a menu; the section is a decision the reader is trying to
+          make.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>Which One Do You Need?</blockquote>
+        <p class="why">A control's label says what happens when you press it. If the destination
+          has a better sentence than the button, use the destination's sentence.</p>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--med">Medium</span><span class="chip chip--done">Applied</span></div>
+        <div>
+          <h3>The contact page contradicts itself on response time</h3>
+          <p class="find__where">contact.html</p>
+        </div>
+      </div>
+      <div class="find__body">
+        <p>The form says <em>We'll be in touch as soon as we can.</em> A little further down the
+          same page says <em>We'll be in touch within 24 hours.</em> One of those is a promise and
+          the other is a hedge, and the hedge is the one sitting on the button the reader is about
+          to press.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>Use the specific one in both places.
+          The thank-you page already commits to 24 hours, so the promise is being made anyway,
+          just later and to somebody who has already converted.</blockquote>
+        <p class="why">Specificity is believability. "As soon as we can" is what people say when
+          the answer is "eventually".</p>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--low">Low</span><span class="chip chip--done">Applied</span></div>
+        <div>
+          <h3>The closing block says free twice in two lines</h3>
+          <p class="find__where">index.html &middot; closing CTA</p>
+        </div>
+      </div>
+      <div class="find__body">
+        <blockquote>A site visit costs nothing and ends with a straight answer, whichever division
+          ends up doing the work.<br><span style="opacity:.7">[ Book Your Free Site Visit ]</span></blockquote>
+        <p>The button already carries "free", and the button label is fixed across all three sites.
+          The body should spend its words on the part the button cannot say.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>An hour at your property, and a straight
+          answer about which division should do the work, or whether it is worth doing at all yet.</blockquote>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--low">Low</span><span class="chip chip--done">Applied</span></div>
+        <div>
+          <h3>The reviews line raises the doubt it is answering</h3>
+          <p class="find__where">index.html &middot; "Real reviews from Google, not curated testimonials."</p>
+        </div>
+      </div>
+      <div class="find__body">
+        <p>Nobody arrived suspecting the testimonials were curated until this sentence suggested
+          they might be. The defence is doing more work than the accusation would have.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>Say the fact without the denial:
+          "Pulled straight from our Google profile." Same claim, no shadow.</blockquote>
+      </div>
+    </article>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>Round two</h2></div>
+
+    <p>Fixing a page moves its weak spots rather than removing them. Five of these six exist
+      <em>because</em> of round one.</p>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--high">High</span><span class="chip chip--done">Applied</span></div>
+        <div>
+          <h3>The card heading now restates the headline it came from</h3>
+          <p class="find__where">Why Sunlogic &middot; "One Team, Both Trades"</p>
+        </div>
+      </div>
+      <div class="find__body">
+        <p>The hero says <em>Two Trades, One Contractor</em>. The card said <em>One Team, Both
+          Trades</em>. Same four words rearranged, two screens apart. Moving the mechanism up left
+          its old heading behind, still pointing at it.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>Nobody to Chase</blockquote>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--high">High</span><span class="chip chip--done">Applied</span></div>
+        <div>
+          <h3>The trust strip is still said twice, not three times</h3>
+          <p class="find__where">Why Sunlogic &middot; "Certified, and it goes on paper"</p>
+        </div>
+      </div>
+      <div class="find__body">
+        <p>Round one killed the third instance and congratulated itself. The second was sitting in
+          card one the whole time: the trust strip promises a certificate on every job and council
+          registration handled, and card one promised a certificate on every job and council and
+          SSEG registration handled. Two hundred words apart.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>We Take On Half-Finished Work. A
+          system whose installer has gone quiet, a board somebody else left in a state, paperwork
+          that was never issued. Plenty of people are holding one of those, and sorting it out is a
+          good part of what we do.</blockquote>
+        <p class="why">The one thing true of both divisions and said nowhere else on the site.
+          Energy claims it outright; fault finding on existing installations is the first line of
+          the Electrical list. No new claim was invented to fill the slot.</p>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--med">Medium</span><span class="chip chip--done">Applied</span></div>
+        <div>
+          <h3>The new hero body never says what is being split</h3>
+          <p class="find__where">Hero</p>
+        </div>
+      </div>
+      <div class="find__body">
+        <blockquote><span class="tag">Round one wrote</span>A solar system is an electrical
+          installation. Split that across two companies and you end up refereeing between them.</blockquote>
+        <p>Refereeing what, between whom, and when? The sentence gestures at a problem instead of
+          showing it. It reads well and means nothing.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>Hire one company to fit it and
+          another to sign it off, and the day something goes wrong you are the one standing between
+          them.</blockquote>
+        <p class="why">Two named roles and one named moment. The reader can now picture the
+          afternoon this costs them.</p>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--med">Medium</span><span class="chip chip--done">Applied</span></div>
+        <div>
+          <h3>The best sentence in the section is second again</h3>
+          <p class="find__where">Why Sunlogic &middot; "Straight Numbers"</p>
+        </div>
+      </div>
+      <div class="find__body">
+        <p><em>"If something is not worth doing yet, we will say so rather than quote it anyway."</em>
+          is the bravest line on the page and it was the back half of the card. Same mistake as
+          round one's headline finding, one level down.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>Lead the card with it. The bill
+          sizing and the readable scope follow.</blockquote>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--low">Low</span><span class="chip chip--done">Applied</span></div>
+        <div>
+          <h3>The closing body repeats its own heading</h3>
+          <p class="find__where">Closing CTA</p>
+        </div>
+      </div>
+      <div class="find__body">
+        <p>Heading: <em>Tell Us What You Have, We Will Point You Right.</em> Round one's body:
+          <em>a straight answer about which division should do the work.</em> The body spent its
+          words re-promising the heading.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>An hour at your property, and a
+          straight answer, including whether the work is worth doing at all yet.</blockquote>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--low">Low</span><span class="chip chip--done">Applied</span></div>
+        <div>
+          <h3>The "free said twice" fix stopped at one page</h3>
+          <p class="find__where">contact.html, all three sites</p>
+        </div>
+      </div>
+      <div class="find__body">
+        <p>Round one fixed the closing block on the apex home page. The contact hero on all three
+          sites still opened with <em>A site visit costs nothing</em> above a button that says
+          Book Your Free Site Visit.</p>
+        <blockquote class="fix"><span class="tag">Applied, all three sites</span>A site visit ends with
+          a straight answer, including whether the work is worth doing at all yet.</blockquote>
+        <p class="why">A finding is not closed until it is closed everywhere it occurs. Fixing the
+          instance you were looking at is how the estate drifted in the first place.</p>
+      </div>
+    </article>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>Still open</h2></div>
+    <p><strong>One finding, and it is not a defect.</strong> The emphasis button clears its orange fill
+      on hover, so on a cream ground the site's loudest control briefly becomes its quietest. That is
+      the same light-on-light failure the new rule bans, arriving on hover rather than at rest, which
+      is why a resting-state check does not catch it. It is fixed on the contact form because you
+      pointed at it. Changing it everywhere would restyle the primary call to action on all three
+      sites, so it is flagged, not done.</p>
+    <p>The voice split is settled on the apex: contractions in body copy, none in eyebrows or button
+      labels. Headings stay a judgement, because tested against the estate a flat no-contractions rule
+      would have broken "Every Unit You Make Is One You Don't Buy".</p>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>Round three</h2></div>
+    <p>Six findings. Four of them were created by the two rounds before. All applied.</p>
+
+    <article class="find">
+      <div class="find__top"><div class="chips"><span class="chip chip--high">High</span><span class="chip chip--done">Applied</span></div>
+        <div><h3>The reviews button said one thing and did another</h3>
+        <p class="find__where">index.html &middot; Reviews</p></div></div>
+      <div class="find__body">
+        <p>Round one relabelled it from "Leave a Review" to "Read Them on Google" and never touched
+          where it went. Both URLs were followed to their final destination before this was written:
+          the old one lands on a Maps URL carrying
+          <code>laa=lu-desktop-review-solicitation</code>, which is Google's write-a-review flow.
+          The button was sending readers to a form asking them to review a company they had not
+          hired yet.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>Drop <code>/review</code> from the
+          href. It now lands on the listing where the reviews are read.</blockquote>
+        <p class="why">Round one's own principle: a control's label says what happens when you press
+          it. Broken by round one's own fix.</p>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top"><div class="chips"><span class="chip chip--high">High</span><span class="chip chip--done">Applied</span></div>
+        <div><h3>The trust strip was said twice, not three times</h3>
+        <p class="find__where">index.html &middot; "Certified, and it goes on paper"</p></div></div>
+      <div class="find__body">
+        <p>Round one killed the third instance. The second was in card one the whole time: the strip
+          promises a certificate on every job and council registration handled, and card one promised
+          a certificate on every job and council and SSEG registration handled.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>We Take On Half-Finished Work. A system
+          whose installer has gone quiet, a board somebody else left in a state, paperwork that was
+          never issued.</blockquote>
+        <p class="why">True of both divisions, said nowhere else on the site, and not invented for the
+          slot: Energy claims it outright, and fault finding on existing installations is the first
+          line of the Electrical list.</p>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top"><div class="chips"><span class="chip chip--med">Medium</span><span class="chip chip--done">Applied</span></div>
+        <div><h3>The new hero never said what was being split</h3>
+        <p class="find__where">index.html &middot; hero</p></div></div>
+      <div class="find__body">
+        <blockquote><span class="tag">Round one wrote</span>Split that across two companies and you
+          end up refereeing between them.</blockquote>
+        <p>Refereeing what, between whom, and when? It read well and meant nothing.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>Hire one company to fit it and another
+          to sign it off, and the day something goes wrong you're standing between them.</blockquote>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top"><div class="chips"><span class="chip chip--med">Medium</span><span class="chip chip--done">Applied</span></div>
+        <div><h3>The section heading stopped fitting its cards</h3>
+        <p class="find__where">index.html &middot; Why Sunlogic</p></div></div>
+      <div class="find__body">
+        <p>Round two swapped one of the four cards, after which two described what you get and two
+          described what we do. "What You Get Either Way" only covered half of them.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>What Stays the Same Either Way</blockquote>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top"><div class="chips"><span class="chip chip--med">Medium</span><span class="chip chip--done">Applied</span></div>
+        <div><h3>Fixing a contradiction created a repetition</h3>
+        <p class="find__where">contact.html</p></div></div>
+      <div class="find__body">
+        <p>Round one resolved "as soon as we can" against "within 24 hours" by making both say 24
+          hours. The page then promised the same thing twice, two blocks apart.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>The form keeps the promise. The second
+          instance keeps only what the form does not say: you'll have it in writing rather than over
+          the phone.</blockquote>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top"><div class="chips"><span class="chip chip--low">Low</span><span class="chip chip--done">Applied</span></div>
+        <div><h3>The hero became the longest on the estate</h3>
+        <p class="find__where">index.html &middot; hero</p></div></div>
+      <div class="find__body">
+        <p>Forty nine words over the darkest ground on the page, against twenty four on the energy
+          home page. The cost of round one's fix.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>Cut "across the Western Cape", which
+          is already in the company section, the footer band, the meta description and the schema.</blockquote>
+      </div>
+    </article>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>Changed after the review, on your call</h2></div>
+    <p>Three things came from you rather than from the review, and each turned into a system rule
+      rather than a one-page edit.</p>
+    <ul class="plain">
+      <li><strong>The reviews block now sells the relationship.</strong> It said "Pulled straight from
+        our Google profile", which is a source note, not an argument. It now says the same two names
+        keep coming up, which is the thing the reviews actually show. No counts, at your instruction:
+        a tally has to be re-checked against the export every time it refreshes.</li>
+      <li><strong>Never a light-on-light button.</strong> On cream, navy at rest, orange on hover.
+        This retired <code>.sl-btn--secondary</code> (cream on beige, 1.09:1, used by no page) and
+        moved the contact form's submit off the emphasis treatment, whose hover clears its orange fill
+        and leaves an orange hairline on beige.</li>
+      <li><strong>The two directors' emails now look like links.</strong> They were always real
+        <code>mailto:</code> anchors, but the hover rule only matched the contact-row wrapper, not the
+        bare anchor the person card emits. They rendered as plain body text.</li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>What this cost, and what it caught</h2></div>
+    <p>The button rule was a two-line stylesheet change that broke something in a place nobody would
+      have looked. <code>wipe="navy"</code> existed so a paired Solar and Electrical row read as two
+      things before you got to the labels. The moment outline became navy at rest, those nine buttons
+      wiped navy over navy: a hover that runs, repaints, and changes nothing. It would not show in a
+      screenshot.</p>
+    <p>Four checks now enforce what used to be prose, and each was proved by injecting a violation and
+      watching the build fail:</p>
+    <div class="scroller">
+      <table>
+        <thead><tr><th>Rule</th><th>What it stops</th><th>Proved</th></tr></thead>
+        <tbody>
+          <tr><td class="page">6 (both ways)</td><td>Short card headings drifting to sentence case</td><td>7 real failures found</td></tr>
+          <tr><td class="page">18</td><td>A button under 1.6:1 against its own ground</td><td>fired on 3</td></tr>
+          <tr><td class="page">18b</td><td>A hover wipe the same colour as the fill it covers</td><td>found 9</td></tr>
+          <tr><td class="page">19</td><td>A counted claim drifting from the file it counts</td><td>fired on 1</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:14px">Rule 6 had been written down since the start and only half checked, which
+      is how "Straight numbers" came to sit beside "Backup Power". Rule 19 currently guards nothing,
+      because the counts came out of the copy at your instruction. It stays: it is the guard for the
+      next time a number goes in.</p>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>What is already working</h2></div>
+    <ul class="plain keep">
+      <li><strong>The routing paragraph.</strong> "If it makes power, stores it or controls it,
+        that is Energy." Two sentences that do the page's entire job. Do not touch it.</li>
+      <li><strong>"Backup batteries, from a gate motor to a full home system."</strong> The most
+        specific line on the page, and the only one that shows the range rather than claiming it.</li>
+      <li><strong>"If something is not worth doing yet, we will say so rather than quote it anyway."</strong>
+        A real risk taken in the copy. It is the sort of line that gets remembered and repeated.</li>
+      <li><strong>"Not a Call Centre."</strong> Names the fear rather than the feature. The heading
+        is better than the section under it.</li>
+      <li><strong>The trust strip now holds three provable items.</strong> Dropping the install
+        count cost the page a number and bought it credibility.</li>
+      <li><strong>The 404 and thank-you pages.</strong> Both do their job with no padding. Three
+        steps, concrete, and a phone number for people who would rather not wait.</li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>Kill list</h2></div>
+    <ul class="plain kill">
+      <li>The four-item checklist in "Not a Call Centre". Every item is said elsewhere on the page.</li>
+      <li>"not curated testimonials". The denial, not the claim.</li>
+      <li>"costs nothing" in the closing block. The button says it.</li>
+      <li>"usually" in "The person who quoted the job is usually the one you see again." Either it
+        is true and you say it, or it is not and you write the honest version. The hedge in the
+        middle buys nothing.</li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>The three that matter</h2></div>
+    <ul class="plain">
+      <li><strong>Move the mechanism into the hero.</strong> One paragraph move, and it is the
+        difference between a page that lists two divisions and a page that argues for holding both.</li>
+      <li><strong>Cut the redundant checklist.</strong> Four lines out, and the company section
+        stops repeating the top of the page.</li>
+      <li><strong>Settle the voice, then apply it everywhere.</strong> Nought against forty two
+        across one estate is not a style, it is an accident, and it is the finding that will keep
+        coming back until somebody decides.</li>
+    </ul>
+  </section>
+
+  <p class="foot">
+    Reviewed against the Sunlogic house rules: no invented facts, no unverifiable claims, no jargon,
+    no em dashes, no manufactured urgency, South African English.<br>
+    Source: rendered copy from the built pages, not the markup. Four apex pages, plus a
+    contraction count across all twenty one published pages of the three sites.<br>
+    Three rounds. Twenty findings, nineteen applied, one flagged. After each round: conformance gate
+    25 pages at two viewports, layout sweep 550 page and width combinations, 59 unit tests. All clean.
+  </p>
+</div>

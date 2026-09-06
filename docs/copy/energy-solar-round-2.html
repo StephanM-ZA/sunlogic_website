@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Copy Chief: The Energy Page</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,600&family=Public+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+ :root{--paper:#FCFBF9;--ink:#191B1F;--muted:#6E6B66;--rule:#E6E2DA;--card:#FFF;
+  --keep:#1F6B4A;--keep-bg:#EDF5F0;--keep-edge:#C7E0D3;
+  --cut:#8A1C1C;--cut-bg:#FBEEEE;--cut-edge:#E9C9C9;
+  --fix:#B23C08;--fix-bg:#FBF0E9;--fix-edge:#EED7C6;
+  --serif:"Newsreader",Georgia,serif;--sans:"Public Sans",-apple-system,sans-serif;--mono:"JetBrains Mono",Menlo,monospace}
+ @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#141619;--ink:#EDEBE6;--muted:#9B968D;--rule:#292D33;--card:#1B1E23;
+  --keep:#7FC4A2;--keep-bg:#16241D;--keep-edge:#24382D;
+  --cut:#E88A8A;--cut-bg:#261618;--cut-edge:#3E2224;
+  --fix:#F1873F;--fix-bg:#241A13;--fix-edge:#3C2A1C}}
+ :root[data-theme="dark"]{--paper:#141619;--ink:#EDEBE6;--muted:#9B968D;--rule:#292D33;--card:#1B1E23;
+  --keep:#7FC4A2;--keep-bg:#16241D;--keep-edge:#24382D;
+  --cut:#E88A8A;--cut-bg:#261618;--cut-edge:#3E2224;
+  --fix:#F1873F;--fix-bg:#241A13;--fix-edge:#3C2A1C}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--paper);color:var(--ink);font:400 16.5px/1.62 var(--sans)}
+ .wrap{max-width:920px;margin:0 auto;padding:56px 24px 110px}
+ .kicker{font:700 11px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--fix);margin:0 0 14px}
+ h1{font:400 44px/1.08 var(--serif);margin:0 0 16px;letter-spacing:-.015em;text-wrap:balance}
+ @media(max-width:640px){h1{font-size:31px}}
+ .lede{color:var(--muted);max-width:64ch;margin:0 0 8px;font-size:18.5px}
+ h2{font:400 30px/1.2 var(--serif);margin:64px 0 6px;text-wrap:balance}
+ h3{font:700 12px/1 var(--mono);letter-spacing:.11em;text-transform:uppercase;margin:34px 0 12px}
+ p{margin:0 0 14px;max-width:68ch}
+ .scores{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:26px 0 0}
+ @media(max-width:760px){.scores{grid-template-columns:1fr}}
+ .score{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--fix);
+  border-radius:8px;padding:18px 20px}
+ .score .lab{font:700 10.5px/1.3 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:10px}
+ .score .n{font:400 42px/1 var(--serif);color:var(--fix)}
+ .score .n span{font-size:19px;color:var(--muted)}
+ .score .was{font:400 12px/1 var(--mono);color:var(--muted);margin-left:8px}
+ .score p{margin:10px 0 0;font-size:14.5px;max-width:none}
+ .tw{overflow-x:auto;margin:18px 0 0}
+ table{border-collapse:collapse;width:100%;min-width:540px;font-size:15px}
+ th{font:700 10.5px/1.3 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;padding:0 14px 10px 0}
+ td{padding:11px 14px 11px 0;border-top:1px solid var(--rule);vertical-align:top}
+ td:first-child{white-space:nowrap;font-family:var(--mono);font-size:13px;color:var(--muted)}
+ .st{font:700 10px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;padding:5px 7px;border-radius:3px;white-space:nowrap}
+ .s-ok{background:var(--keep-bg);color:var(--keep);border:1px solid var(--keep-edge)}
+ .s-mid{background:var(--fix-bg);color:var(--fix);border:1px solid var(--fix-edge)}
+ .s-bad{background:var(--cut-bg);color:var(--cut);border:1px solid var(--cut-edge)}
+ .item{border-top:1px solid var(--rule);padding:26px 0 6px}
+ .loc{font:400 12px/1 var(--mono);color:var(--muted);letter-spacing:.05em}
+ blockquote{margin:10px 0 14px;padding:12px 18px;background:var(--card);border:1px solid var(--rule);
+  border-left:3px solid var(--rule);border-radius:0 6px 6px 0;font:400 17px/1.45 var(--serif)}
+ .lbl{font:700 10.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;display:inline-block;
+  padding:5px 8px;border-radius:3px;margin-bottom:8px}
+ .l-issue{background:var(--cut-bg);color:var(--cut);border:1px solid var(--cut-edge)}
+ .l-fix{background:var(--fix-bg);color:var(--fix);border:1px solid var(--fix-edge)}
+ .l-ok{background:var(--keep-bg);color:var(--keep);border:1px solid var(--keep-edge)}
+ .principle{font-size:14.5px;color:var(--muted);border-top:1px dotted var(--rule);padding-top:10px;margin-top:12px}
+ .principle b{color:var(--ink);font-weight:700}
+ .box{border-radius:8px;padding:20px 22px;margin:26px 0 0}
+ .box h4{font:700 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;margin:0 0 12px}
+ .box p,.box li{margin:0 0 10px;max-width:none}.box p:last-child,.box li:last-child{margin:0}
+ .b-keep{background:var(--keep-bg);border:1px solid var(--keep-edge);border-left:3px solid var(--keep)}
+ .b-keep h4{color:var(--keep)}
+ .b-cut{background:var(--cut-bg);border:1px solid var(--cut-edge);border-left:3px solid var(--cut)}
+ .b-cut h4{color:var(--cut)}
+ .b-fix{background:var(--fix-bg);border:1px solid var(--fix-edge);border-left:3px solid var(--fix)}
+ .b-fix h4{color:var(--fix)}
+ ol.top{counter-reset:t;list-style:none;padding:0;margin:18px 0 0}
+ ol.top li{counter-increment:t;position:relative;padding-left:44px;margin:0 0 20px;max-width:68ch}
+ ol.top li::before{content:counter(t);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--fix);color:#fff;font:700 13px/28px var(--mono);text-align:center}
+ ol.top b{display:block;margin-bottom:4px}
+ ul{padding-left:20px}
+ .rhythm{display:grid;gap:9px;margin:16px 0 0;max-width:640px}
+ .rrow{display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:center;font-size:15px}
+ .rrow .k{font:700 11px/1.4 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+ .pip{display:flex;gap:5px;align-items:center}
+ .pip i{width:26px;height:9px;border-radius:2px;background:var(--rule);display:block}
+ .pip i.on{background:var(--fix)}
+ .pip i.gap{background:transparent;border:1px dashed var(--cut)}
+ .foot{margin-top:70px;padding-top:22px;border-top:1px solid var(--rule);font:400 12.5px/1.7 var(--mono);color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <p class="kicker">Copy chief &middot; round seven &middot; the Energy page</p>
+ <h1>You were right about EV. It was one sentence, pointed the wrong way.</h1>
+ <p class="lede">Across the whole energy site, electric vehicles appeared once: a question in a
+   frequently asked list whose answer handed the reader to another site. The installation is
+   electrical work, so that handoff is right. The argument is not electrical at all, and it was
+   missing.</p>
+
+ <div class="scores">
+  <div class="score">
+   <span class="lab">Homeowner</span>
+   <span class="n">9<span>/10</span></span><span class="was">held</span>
+   <p>Unchanged and still the strongest third of the page. The tariff call-out survived verification untouched.</p>
+  </div>
+  <div class="score">
+   <span class="lab">Business owner</span>
+   <span class="n">8<span>/10</span></span><span class="was">restored</span>
+   <p>The emphasis block is back and it is a better one than the call-out I cut. How we quote earns its place.</p>
+  </div>
+  <div class="score">
+   <span class="lab">Larger site</span>
+   <span class="n">8<span>/10</span></span><span class="was">held</span>
+   <p>Untouched across four rounds. Nothing in it has ever needed changing.</p>
+  </div>
+ </div>
+
+ <h2>What verification actually bought</h2>
+ <p>Three claims were checked against the public record and came back clean, so they stayed exactly
+   as written. That is the useful outcome: knowing something is true is permission to say it
+   plainly, not an instruction to cite it.</p>
+ <div class="tw"><table>
+  <thead><tr><th>Claim</th><th>Result</th><th>What changed on the page</th></tr></thead>
+  <tbody>
+   <tr><td>Homeowner rebate expired</td><td><span class="st s-ok">True</span></td>
+     <td>Nothing. The reader does not need the section number to believe you.</td></tr>
+   <tr><td>Enhanced allowance ended</td><td><span class="st s-ok">True</span></td>
+     <td>Nothing.</td></tr>
+   <tr><td>Selling back means a different tariff with a fixed charge</td><td><span class="st s-ok">True</span></td>
+     <td>Nothing. The best block on the page survived the audit without a word moving.</td></tr>
+   <tr><td>Fixed charge rising faster than the rate</td><td><span class="st s-bad">Unevidenced</span></td>
+     <td>The comparison went. The point stayed: a charge you pay before using anything is why a bill rises on lower usage.</td></tr>
+   <tr><td>Demand charge call-out</td><td><span class="st s-bad">Unevidenced</span></td>
+     <td>Cut. Mine, written three days ago, never verified.</td></tr>
+   <tr><td>Registration fee and date</td><td><span class="st s-bad">Wrong</span></td>
+     <td>Removed entirely. The City's own page says the meter is at the customer's expense.</td></tr>
+  </tbody>
+ </table></div>
+
+ <h2>The problem I created</h2>
+
+ <div class="item" style="border-top:none;padding-top:0">
+  <p class="loc">Business &middot; section rhythm</p>
+  <span class="lbl l-issue">Issue</span>
+  <p>Each of the three sectors used to carry an emphasis block inside it. Cutting my call-out left
+   business as the only one without.</p>
+  <div class="rhythm">
+   <div class="rrow"><span class="k">At home</span>
+     <span class="pip"><i class="on"></i><i></i><i class="on"></i><i></i><i></i>
+       <span style="font-size:13px;color:var(--muted);margin-left:6px">tariff call-out, winter judgement</span></span></div>
+   <div class="rrow"><span class="k">Business</span>
+     <span class="pip"><i></i><i class="gap"></i><i></i><i></i><i></i>
+       <span style="font-size:13px;color:var(--cut);margin-left:6px">nothing between the heading and the calculator</span></span></div>
+   <div class="rrow"><span class="k">Larger sites</span>
+     <span class="pip"><i class="on"></i><i></i><i class="on"></i><i></i><i></i>
+       <span style="font-size:13px;color:var(--muted);margin-left:6px">oversell warning, will and will not fix</span></span></div>
+  </div>
+  <p style="margin-top:16px">The good news statement still leads into the section, so business is
+   not silent. But once a reader is inside it, they get two prose blocks and a calculator with
+   nothing raising its voice. In the two sectors either side, the block that raises its voice is
+   the block that gets remembered.</p>
+  <span class="lbl l-fix">Fix</span>
+  <p>Something has to fill it, and it should not be the demand charge again. The strongest
+   candidate is already in the section as a plain sentence: <em>we quote from your actual
+   consumption rather than your floor area</em>. That is the whole difference between you and a
+   quote generated off a satellite photo, and it is currently sitting mid-paragraph.</p>
+  <p class="principle"><b>Why it matters:</b> A reader skimming three sectors decides which one is
+   theirs from the blocks that stand out. Business now has none of them.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Business &middot; the reassurance I deleted</p>
+  <span class="lbl l-issue">Second-order damage</span>
+  <p>The cut call-out was doing one job worth keeping. It told a small business owner that the
+   demand charge warning further down the page probably was not theirs. Without it, a shop owner
+   reads the larger sites section, sees that solar barely touches the demand charge, and has no way
+   of knowing whether that applies to them.</p>
+  <span class="lbl l-fix">Fix</span>
+  <p>One clause, no claim needed, inside the larger sites section rather than the business one:
+   note that the charge appears on larger commercial accounts. That reassures the small business
+   reader without asserting anything about how any particular tariff is structured.</p>
+  <p class="principle"><b>Why it matters:</b> Cutting an unsourced claim is right. Cutting the
+   reader's orientation along with it is not, and I did both in one edit.</p>
+ </div>
+
+ <h2>Round five: what is left is furniture, not argument</h2>
+
+ <div class="item" style="border-top:none;padding-top:0">
+  <p class="loc">Whole page &middot; the ask</p>
+  <span class="lbl l-issue">The one that costs you money</span>
+  <p>Five buttons on this page point at the same form. They are labelled three different ways.</p>
+  <div class="tw"><table>
+   <thead><tr><th>Label</th><th>Where</th><th>Across the whole energy site</th></tr></thead>
+   <tbody>
+    <tr><td>Book Your Free Site Visit</td><td>Hero</td><td>3 uses</td></tr>
+    <tr><td>Book a free site visit</td><td>Both audience closes</td><td>2 uses</td></tr>
+    <tr><td>Book a Free Site Assessment</td><td>Closing CTA</td><td>7 uses</td></tr>
+   </tbody>
+  </table></div>
+  <p style="margin-top:16px">A reader who scrolls this page is asked to book a visit, then a visit
+   again in different clothes, then an assessment. Nothing tells them those are the same thing. The
+   third one is a different word for the same appointment, and "assessment" is the most corporate
+   of the three on a page whose whole voice is the opposite of that.</p>
+  <span class="lbl l-fix">Fix</span>
+  <p>One label, everywhere, across all three sites. <b>Book Your Free Site Visit.</b> It is the
+   reader's word rather than yours, it is possessive, and it says what actually happens: somebody
+   comes to your property. Twelve instances site-wide, one find and replace.</p>
+  <p class="principle"><b>Why it matters:</b> Every distinct label is a separate decision. Three
+   labels for one action means a reader who hesitated at the first has to work out that the second
+   is the same offer, and most of them will not bother.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Whole page &middot; twelve months</p>
+  <span class="lbl l-issue">A tic, not a theme</span>
+  <p>The mechanism appears five times, in four different phrasings: twelve months of your bills,
+   twelve months of bills rather than guessing from your roof, twelve months of bills is the first
+   thing we ask for, twelve months of your consumption.</p>
+  <p>Repeating a mechanism is right and it is the page's whole differentiator. Repeating it in four
+   costumes is not: the reader half-recognises it each time instead of recognising it once and
+   trusting it. Pick one phrasing for the mechanism and let the fifth mention be the callback.</p>
+  <span class="lbl l-fix">Fix</span>
+  <p>Standardise on <em>twelve months of your bills</em> and let the business callout keep its own
+   wording, since a business reader will not have read the home section.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Business &middot; Four Routes, Honestly Compared</p>
+  <span class="lbl l-issue">The heading promises something the cards do not do</span>
+  <p>The four cards describe four routes. They do not compare them. There is no axis, no better or
+   worse, no when-this-beats-that. Since you deliberately want the routes kept general, "honestly
+   compared" now writes a cheque the section cannot cash.</p>
+  <span class="lbl l-fix">Fix</span>
+  <p>Change the heading, not the cards. <em>Four Ways to Pay for It</em> describes what is actually
+   there. The honesty is in the paragraph underneath, which names what really decides the choice,
+   and that paragraph is doing its job.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Business &middot; one thing to check early</p>
+  <blockquote>"If your premises is on a standard single-phase supply, there's a ceiling on how much
+   solar you're permitted to feed back."</blockquote>
+  <span class="lbl l-issue">The last unqualified municipal claim on the page</span>
+  <p>Stated as though it holds everywhere. It is set per municipality, exactly like the registration
+   fee and the tariff structure. Those two were fixed and this one was not, which makes it an
+   inconsistency in the standard rather than an oversight in the writing.</p>
+  <span class="lbl l-fix">Fix</span>
+  <p>Two words. <em>Most municipalities put a ceiling on how much solar you are permitted to feed
+   back on a standard single phase supply.</em> Same warning, same urgency, and it stops asserting
+   a rule you have not read for every council you work in.</p>
+ </div>
+
+ <h2>Round six: closed, and what chasing them turned up</h2>
+ <div class="tw"><table>
+  <thead><tr><th>Round five finding</th><th>Status</th><th>What happened</th></tr></thead>
+  <tbody>
+   <tr><td>Three labels, one action</td><td><span class="st s-ok">Closed</span></td>
+     <td>Twenty-one instances across all three sites now read <b>Book Your Free Site Visit</b>. Electrical's compliance inspection is a different action and was deliberately left alone.</td></tr>
+   <tr><td>Four phrasings of the mechanism</td><td><span class="st s-ok">Closed</span></td>
+     <td>One phrase now, twelve months of your bills, varying only by the clause attached to it.</td></tr>
+   <tr><td>Four Routes, Honestly Compared</td><td><span class="st s-ok">Closed</span></td>
+     <td>Four Ways to Pay for It. The heading now describes what the cards do. The honesty stayed in the paragraph underneath, where it was always doing the work.</td></tr>
+   <tr><td>Single phase ceiling</td><td><span class="st s-ok">Closed</span></td>
+     <td>"Most municipalities put a ceiling..." The last unqualified municipal claim on the page.</td></tr>
+  </tbody>
+ </table></div>
+
+ <div class="box b-fix">
+  <h4>Two faults in the instruction files, found by chasing the labels</h4>
+  <p><b>SYSTEM.md said "Em dashes for asides."</b> Your house rule and the CI guide both say never,
+   anywhere. Three sites were carrying an instruction file telling the next person to do the
+   opposite of the standard. Corrected on all three.</p>
+  <p><b>SYSTEM.md and CLAUDE.md still taught the old case rule</b>, and used a button label as the
+   example of a heading. Replaced with the rule that is actually enforced, and both files now name
+   the one booking label.</p>
+  <p><b>A new check, rule 13.</b> Any button reading "free site visit", "free site assessment" or
+   "site assessment" that is not the canonical label now fails the build. Tested by injecting the
+   old label into a built page: it failed, and named the right one. Three names for one action can
+   no longer creep back in one page at a time, which is exactly how it happened.</p>
+ </div>
+
+ <h2>Round seven: the EV gap</h2>
+
+ <div class="item" style="border-top:none;padding-top:0">
+  <p class="loc">Whole site &middot; what was there</p>
+  <blockquote>"Can it charge my car? Yes, and it's worth planning both at the same time rather than
+   adding the charger later. The charger itself is electrical work, so that sits with Sunlogic
+   Electrical."</blockquote>
+  <span class="lbl l-issue">One mention, and it leads with the handoff</span>
+  <p>That was the entire treatment. Twenty-eight words, buried in an accordion, and two thirds of
+   them are about which company does what. A reader who came to the page wondering whether solar and
+   a car go together got an org chart.</p>
+  <p>The home page had nothing at all.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Why this one mattered more than its length suggested</p>
+  <span class="lbl l-fix">The argument was already on the page</span>
+  <p>The whole home section turns on one idea: a unit you use yourself is worth considerably more
+   than one you sell back. Everything else, the battery, the tariff warning, the morning and evening
+   load profile, exists to serve that idea.</p>
+  <p>A car is the purest case of it there is, and for a reason nothing else on the page can match:
+   <b>its timing is entirely the owner's</b>. A geyser has to fit around when people wash. A pool
+   pump has a job to do. A car does not care whether it charges at two in the afternoon or two in
+   the morning, only that it is full when they leave. That makes it the one load a reader can move
+   into daylight without changing a single habit.</p>
+  <p>Your own copy document says as much, in the smart section: starting the geyser, the pool pump or
+   the car charger when there is surplus is "the single most effective thing you can do with a solar
+   system after installing it". That sentence never made it onto a page.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">What went in</p>
+  <span class="lbl l-ok">Four places, no new section</span>
+  <div class="tw"><table>
+   <thead><tr><th>Where</th><th>What it now says</th></tr></thead>
+   <tbody>
+    <tr><td>At home,<br>the battery argument</td>
+      <td>A car is the one large load whose timing is entirely up to you. Charge it while the sun is up and you are running it on power you made rather than power you bought. Placed directly after the sell-back paragraph, because it is the same argument at its strongest.</td></tr>
+    <tr><td>At home,<br>the question</td>
+      <td>Reversed. The case first, then the point that sizing for a car from the start is far cheaper than growing a system afterwards, then the handoff to Electrical last where it belongs.</td></tr>
+    <tr><td>For business</td>
+      <td>New. A van or a bakkie that charges while you trade is charging in the exact hours your panels produce most. Same argument, different reader, and it is the first thing on the business half that is specific to running a business rather than to owning a building.</td></tr>
+    <tr><td>Home page,<br>smart control</td>
+      <td>"Hot water is the obvious place to start. A pool pump, or a car on charge, is the next." The line already promised there was more than the geyser and never said what.</td></tr>
+   </tbody>
+  </table></div>
+ </div>
+
+ <div class="item">
+  <p class="loc">Is EV a service on the home page?</p>
+  <span class="lbl l-issue">No, and I have not made it one</span>
+  <p>You asked directly, so: it is not listed as a service anywhere on the energy site, and it is
+   listed on the electrical site among fault finding, boards and compliance certificates.</p>
+  <p>I have deliberately not added a service block or a nav entry. The nav caps at four, the home page
+   already runs twelve sections, and the installation genuinely is electrical work, so a service
+   listing on the energy site would either duplicate the electrical one or contradict the split you
+   drew two days ago.</p>
+  <span class="lbl l-fix">What I would do instead, if you want more</span>
+  <p>The energy site should own the <b>argument</b> and the electrical site the <b>installation</b>.
+   That is now true. If EV is a growth line rather than an add-on, the honest next step is not a
+   section on this page, it is a page of its own on the electrical site that the energy pages point
+   into, the same way the smart control section points at energy-management.html.</p>
+  <p class="principle"><b>Why it matters:</b> A service listed on two sites belongs to neither. The
+   argument and the trade can live apart as long as each site is clear about which one it is holding.</p>
+ </div>
+
+ <div class="box b-fix" style="margin-top:26px">
+  <h4>One thing to check before this ships</h4>
+  <p>The business line says a vehicle charging during trading hours is charging when the panels
+   produce most. That is true of a daytime business with a vehicle on site during the day, and it is
+   not true of a delivery van that is out all day and back at six. If your commercial customers are
+   mostly the second kind, the sentence needs narrowing to the first.</p>
+ </div>
+
+ <h2>What is actually left</h2>
+
+ <div class="item" style="border-top:none;padding-top:0">
+  <p class="loc">Whole page &middot; 16,027 pixels, three audiences</p>
+  <span class="lbl l-issue">Flagged in round one, still open, and now the biggest thing here</span>
+  <p>A homeowner scrolls past a business calculator and four ways for a company to finance a system.
+   A shop owner scrolls past six household questions to reach theirs. The sub nav and the two
+   audience closes both help, and neither changes the fact that two thirds of this page is written
+   for somebody else.</p>
+  <span class="lbl l-fix">Fix</span>
+  <p>Three pages, or the sub nav becomes a real fork at the top rather than a strip a reader can
+   scroll straight past. This is not a copy decision and I have taken it as far as copy can.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Whole site &middot; no commercial proof anywhere</p>
+  <span class="lbl l-issue">The same finding as the home page, on a different page</span>
+  <p>The business section now argues well. It cannot show a business you have done this for. Neither
+   can the home page, whose three Our Work jobs all read as houses. Six rounds of copy have made the
+   commercial argument as good as words can make it, and a reader still has no evidence behind it.</p>
+  <span class="lbl l-fix">Fix</span>
+  <p>One commercial job. A photograph, the suburb, what went in, and what it did to their running
+   cost. It closes the gap on both pages at once and no sentence I write substitutes for it.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Two calculators, two different questions</p>
+  <span class="lbl l-issue">Small, and it is the same tool</span>
+  <p>The home one asks "What would solar cost at your house?" The business one asks "What could solar
+   do for your business?" One offers a cost, the other a benefit. A business owner wants the cost
+   too, and a homeowner is just as interested in what it does.</p>
+  <span class="lbl l-fix">Fix</span>
+  <p>Pick one shape. Either both ask what it costs, or both ask what it would do. Ten minutes.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Home page hero &middot; the exception I made</p>
+  <span class="lbl l-ok">Deliberate, and worth you knowing</span>
+  <p>Every other mention on both pages now says "twelve months of your bills". The home page hero
+   still says "twelve months of what you actually use", because you signed that sentence off and
+   because it deliberately avoids household language in the first line a business reader meets.
+   One phrase, one exception, made on purpose rather than missed.</p>
+ </div>
+
+ <h2>What is working</h2>
+
+ <div class="item">
+  <p class="loc">The long view</p>
+  <span class="lbl l-ok">The rewrite holds</span>
+  <p>Four paragraphs and not a number in any of them, and it still argues. The fixed charge point
+   survives the loss of its comparison because the mechanism carries it. And the paragraph about
+   knowing what panels will give you in year fifteen against nobody knowing what a unit will cost
+   by then is the clearest statement of the long case anywhere on the site.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Business &middot; ways to pay</p>
+  <span class="lbl l-ok">The vagueness works</span>
+  <p>The four cards describe the market rather than a Sunlogic price list, which they always did.
+   Dropping my "ask us which we arrange" line removed a spotlight from the gap. What replaced it
+   names what actually decides the choice: tax position, how long you are staying, whether the
+   capital is better spent elsewhere. That reads as someone who has had the conversation before.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Whole page &middot; the numbers</p>
+  <span class="lbl l-ok">Correctly placed</span>
+  <p>Seven rand figures on the page, all seven produced by a calculator from a reader's own input.
+   None in the prose. That is the right division of labour: the copy makes the argument, the
+   calculator settles the arithmetic, and neither has to hedge.</p>
+ </div>
+
+ <h2>The verdict</h2>
+ <p>Six rounds. The page opened as a document with a good argument in the wrong order and a headline
+   any competitor could have written. It now says nothing it cannot defend, sells without softening,
+   keeps every number in a calculator where a reader gets their own answer, and asks for the sale in
+   one voice across three sites.</p>
+ <p>I have no findings left in the words. The three things still open are a structure decision, a
+   photograph, and ten minutes on two calculator headings. None of them is writing, and I would stop
+   reviewing this page now.</p>
+
+ <h3>Three changes, none of them mine to make</h3>
+ <ol class="top">
+  <li><b>Decide the structure.</b> Three pages, or a real fork at the top. Two thirds of a 16,000
+    pixel page is written for somebody who is not the reader.</li>
+  <li><b>Get one commercial job photographed.</b> It closes the same gap on this page and the home
+    page, and it is the only thing on either list that no amount of writing replaces.</li>
+  <li><b>Match the two calculator questions.</b> Ten minutes.</li>
+ </ol>
+
+ <div class="box b-keep">
+  <h4>Untouched across four rounds, and it should stay that way</h4>
+  <p><b>The tariff call-out.</b> Verified against the City's own page and not a word changed.</p>
+  <p><b>The oversell warning.</b> "Anyone telling you otherwise has done something to the arithmetic."</p>
+  <p><b>It Will Reduce and It Will Barely Touch.</b></p>
+  <p><b>"There is a real judgement call in there, and it is one we would rather make with you than for you."</b></p>
+  <p><b>The whole larger sites section.</b> Four rounds, no findings.</p>
+ </div>
+
+ <div class="box b-fix">
+  <h4>Still needs you, and no research settles it</h4>
+  <ul>
+   <li><b>The hero.</b> Mine, unconfirmed.</li>
+   <li><b>Two figures off your own bills</b>, if you ever want the fixed charge point to carry a number. Not required now that the claim is qualitative.</li>
+   <li><b>The single phase feed-in ceiling.</b> Stated as universal in the business section; it is set per municipality. Lower risk than the ones already fixed, and still a claim about somebody else's rules.</li>
+  </ul>
+ </div>
+
+ <div class="foot">
+  Reviewed: site-energy/solar.html after the verification pass, 5 September 2026<br>
+  Rounds: 1 the copy document · 2 nine rewrites · 3 load shedding removed · 4 this one<br>
+  Machine checked: 0 dashes, 0 jargon, 0 superlatives, 0 rand figures outside the calculators<br>
+  Conformance 11/11 pages, 0 fails, 0 warns. Nothing committed<br>
+  House rules applied: no invented facts, no jargon, no em dashes
+ </div>
+</div>
+</body>
+</html>

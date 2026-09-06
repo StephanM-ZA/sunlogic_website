@@ -1,0 +1,262 @@
+<title>Copy Chief Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Public+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+ :root{--paper:#FCFBF9;--ink:#191B1F;--muted:#6E6B66;--rule:#E6E2DA;--card:#FFF;
+  --keep:#1F6B4A;--keep-bg:#EDF5F0;--keep-edge:#C7E0D3;
+  --cut:#8A1C1C;--cut-bg:#FBEEEE;--cut-edge:#E9C9C9;
+  --fix:#B23C08;--fix-bg:#FBF0E9;--fix-edge:#EED7C6;
+  --serif:"Newsreader",Georgia,serif;--sans:"Public Sans",-apple-system,sans-serif;--mono:"JetBrains Mono",Menlo,monospace}
+ @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#141619;--ink:#EDEBE6;--muted:#9B968D;--rule:#292D33;--card:#1B1E23;
+  --keep:#7FC4A2;--keep-bg:#16241D;--keep-edge:#24382D;
+  --cut:#E88A8A;--cut-bg:#261618;--cut-edge:#3E2224;
+  --fix:#F1873F;--fix-bg:#241A13;--fix-edge:#3C2A1C}}
+ :root[data-theme="dark"]{--paper:#141619;--ink:#EDEBE6;--muted:#9B968D;--rule:#292D33;--card:#1B1E23;
+  --keep:#7FC4A2;--keep-bg:#16241D;--keep-edge:#24382D;
+  --cut:#E88A8A;--cut-bg:#261618;--cut-edge:#3E2224;
+  --fix:#F1873F;--fix-bg:#241A13;--fix-edge:#3C2A1C}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--paper);color:var(--ink);font:400 16.5px/1.62 var(--sans)}
+ .wrap{max-width:920px;margin:0 auto;padding:56px 24px 110px}
+ .kicker{font:700 11px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--fix);margin:0 0 14px}
+ h1{font:400 44px/1.08 var(--serif);margin:0 0 16px;letter-spacing:-.015em;text-wrap:balance}
+ @media(max-width:640px){h1{font-size:32px}}
+ .lede{color:var(--muted);max-width:64ch;margin:0 0 8px;font-size:18.5px}
+ h2{font:400 30px/1.2 var(--serif);margin:70px 0 6px;text-wrap:balance}
+ h3{font:700 12px/1 var(--mono);letter-spacing:.11em;text-transform:uppercase;margin:34px 0 12px}
+ p{margin:0 0 14px;max-width:68ch}
+ .score{display:flex;align-items:baseline;gap:18px;background:var(--card);border:1px solid var(--rule);
+  border-left:3px solid var(--fix);border-radius:8px;padding:20px 24px;margin:26px 0 0}
+ .score .n{font:400 54px/1 var(--serif);color:var(--fix)}
+ .score .n span{font-size:24px;color:var(--muted)}
+ .score p{margin:0;font-size:15.5px}
+ .tw{overflow-x:auto;margin:18px 0 0}
+ table{border-collapse:collapse;width:100%;min-width:520px;font-size:15px}
+ th{font:700 10.5px/1.3 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;padding:0 14px 10px 0}
+ td{padding:11px 14px 11px 0;border-top:1px solid var(--rule);vertical-align:top}
+ td:first-child{white-space:nowrap;font-family:var(--mono);font-size:13px;color:var(--muted)}
+ .item{border-top:1px solid var(--rule);padding:26px 0 6px}
+ .loc{font:400 12px/1 var(--mono);color:var(--muted);letter-spacing:.05em}
+ blockquote{margin:10px 0 14px;padding:12px 18px;background:var(--card);border:1px solid var(--rule);
+  border-left:3px solid var(--rule);border-radius:0 6px 6px 0;font:400 17px/1.45 var(--serif)}
+ .lbl{font:700 10.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;display:inline-block;
+  padding:5px 8px;border-radius:3px;margin-bottom:8px}
+ .l-issue{background:var(--cut-bg);color:var(--cut);border:1px solid var(--cut-edge)}
+ .l-fix{background:var(--fix-bg);color:var(--fix);border:1px solid var(--fix-edge)}
+ .principle{font-size:14.5px;color:var(--muted);border-top:1px dotted var(--rule);padding-top:10px;margin-top:12px}
+ .principle b{color:var(--ink);font-weight:700}
+ .box{border-radius:8px;padding:20px 22px;margin:26px 0 0}
+ .box h4{font:700 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;margin:0 0 12px}
+ .box p,.box li{margin:0 0 10px}.box p:last-child,.box li:last-child{margin:0}
+ .b-keep{background:var(--keep-bg);border:1px solid var(--keep-edge);border-left:3px solid var(--keep)}
+ .b-keep h4{color:var(--keep)}
+ .b-cut{background:var(--cut-bg);border:1px solid var(--cut-edge);border-left:3px solid var(--cut)}
+ .b-cut h4{color:var(--cut)}
+ ol.top{counter-reset:t;list-style:none;padding:0;margin:18px 0 0}
+ ol.top li{counter-increment:t;position:relative;padding-left:44px;margin:0 0 20px;max-width:68ch}
+ ol.top li::before{content:counter(t);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--fix);color:#fff;font:700 13px/28px var(--mono);text-align:center}
+ ol.top b{display:block;margin-bottom:4px}
+ ul{padding-left:20px}
+ .order{display:grid;gap:8px;margin:18px 0 0;max-width:640px}
+ .row{display:grid;grid-template-columns:34px 1fr 1fr;gap:12px;align-items:center;font-size:15px}
+ .row .n{font:700 11px/1 var(--mono);color:var(--muted)}
+ .row .a{color:var(--muted)}
+ .row .b{font-weight:700}
+ .row.hi .b{color:var(--fix)}
+ .foot{margin-top:74px;padding-top:22px;border-top:1px solid var(--rule);font:400 12.5px/1.7 var(--mono);color:var(--muted)}
+</style>
+
+<div class="wrap">
+ <p class="kicker">Copy chief review &middot; the new energy copy</p>
+ <h1>The argument is here. It is in third place.</h1>
+ <p class="lede">Reviewing Sunlogic Energy Site Copy, the homepage section, as written on 4 September.
+   This is a large step up from what is live. Most of what follows is about order and proof, not
+   about the writing.</p>
+
+ <h2>What this is</h2>
+ <div class="tw"><table><tbody>
+  <tr><td>Piece</td><td>Homepage copy, roughly 980 words, for a purchase worth six figures.</td></tr>
+  <tr><td>Reader</td><td>Already shopping. They have two or three quotes and no way to tell them apart.</td></tr>
+  <tr><td>Your argument</td><td><b>We do the whole job, not just the sale.</b> It is stated clearly, it is true, and no competitor can copy it by writing a better sentence.</td></tr>
+  <tr><td>Where it sits</td><td>Section three of nine.</td></tr>
+ </tbody></table></div>
+
+ <h2>The order is the main problem</h2>
+ <p>The document knows what its best section is. It says so in the brief: "This is the
+   differentiator, so give it room on the page." Then it puts it third, after a section about the
+   market and a section of audience labels.</p>
+ <p>Your reader is holding two other quotes. The question in their head is not what solar is or
+   who you serve. It is why your quote is different. They should not have to scroll twice.</p>
+
+ <div class="order">
+  <div class="row"><span class="n">1</span><span class="a">Why now</span><span class="b">Why now</span></div>
+  <div class="row hi"><span class="n">2</span><span class="a">Who we work for</span><span class="b">The whole job</span></div>
+  <div class="row hi"><span class="n">3</span><span class="a">The whole job</span><span class="b">Why Sunlogic</span></div>
+  <div class="row"><span class="n">4</span><span class="a">Why Sunlogic</span><span class="b">Who we work for</span></div>
+  <div class="row"><span class="n">5</span><span class="a">Plentify</span><span class="b">Our work</span></div>
+  <div class="row"><span class="n">6</span><span class="a">Our work</span><span class="b">Plentify</span></div>
+ </div>
+ <p style="margin-top:16px">"Why now" already ends on the right line: <em>we can take the biggest
+   line on your bill and put it back under your control.</em> That hands straight into how. Putting
+   audience labels between them breaks a join the copy has already made.</p>
+
+ <h2>Line level</h2>
+
+ <div class="item">
+  <p class="loc">Section &middot; Who we work for</p>
+  <span class="lbl l-issue">Issue</span>
+  <p>Three headings with one line each, sitting next to a five block section that carries the whole
+    argument. It is a signpost dressed as a section. Its real job is sending people to the three
+    parts of the solar page, and that is a row of cards, not a chapter.</p>
+  <span class="lbl l-fix">Fix</span>
+  <p>Keep the three lines, drop the section status, move it below the argument. The wording is
+    fine. "You trade during the day, which is exactly when solar produces" is a good sentence.</p>
+  <p class="principle"><b>Why it matters:</b> A section heading is a promise that something
+    important follows. Spending one on a menu teaches the reader to skim the next heading too.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Section &middot; Plentify</p>
+  <blockquote>"Their technology has been checked by an independent testing body at the University of
+    Cape Town, trialled with the City of Cape Town, and named project of the year by an
+    international energy fund in 2024."</blockquote>
+  <span class="lbl l-issue">Issue</span>
+  <p>Three proof points, all of them about Plentify. The reader finishes the paragraph convinced
+    that Plentify is a serious company, which was not in doubt and is not what you are selling.
+    The only Sunlogic fact in the section, that you were one of their first installer partners, is
+    the last line.</p>
+  <span class="lbl l-fix">Fix</span>
+  <p>Turn it around. Lead with what the customer gets, then who makes it, then one credential.
+    Something close to: <em>Your geyser is the biggest single user of electricity in most homes,
+    and it heats water on a timer whether you are there or not. We fit controllers that decide when
+    it runs. They are made by Plentify, a Cape Town company we have partnered with since 2024, and
+    their technology has been independently tested at the University of Cape Town.</em></p>
+  <p class="principle"><b>Why it matters:</b> Borrowed credibility only works after the reader
+    knows what is in it for them. Otherwise you have written an advert for your supplier.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Section &middot; Our work</p>
+  <blockquote>"Three recent jobs, each with a photo and one real number. A home, a business, and
+    something larger."</blockquote>
+  <span class="lbl l-issue">Issue</span>
+  <p>The section the document itself calls the highest value on the site is a brief, not copy. As
+    it stands it ships as three empty cards.</p>
+  <span class="lbl l-fix">Fix</span>
+  <p>This one is not a writing job. Three to six jobs with a photograph, the suburb, what went in
+    and one honest number. Until those exist, the current live page already does a smaller version
+    of this correctly, so keep that rather than shipping placeholders.</p>
+  <p class="principle"><b>Why it matters:</b> It is the only section a competitor cannot write
+    their way past, which is exactly why it cannot go out empty.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Trust strip</p>
+  <blockquote>Registered electrical contractor &middot; Plentify partner since 2024 &middot;
+    Certificate on every job &middot; Council registration handled &middot; [X] systems installed</blockquote>
+  <span class="lbl l-issue">Issue</span>
+  <p>An unfilled slot in the first proof the reader meets. Two of the five entries are not yet
+    provable: the registration number and the install count. The count is live on the site today
+    as "300+" with nothing behind it.</p>
+  <span class="lbl l-fix">Fix</span>
+  <p>Ship four true items rather than five with a gap. Add the fifth when you can show it.</p>
+  <p class="principle"><b>Why it matters:</b> A trust strip is read as a set. One item nobody can
+    check invites doubt about the other four.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Block &middot; WE WATCH IT</p>
+  <blockquote>"Solar fails quietly. The lights stay on, the inverter hums, the app still shows
+    power coming in, and you find out on the bill six weeks later."</blockquote>
+  <span class="lbl l-issue">Issue</span>
+  <p>Nothing is wrong with it. It is the best writing in the document. The problem is that the
+    page it will sit on already shows live output from the systems you monitor, updating through
+    the day, and this block does not mention it.</p>
+  <span class="lbl l-fix">Fix</span>
+  <p>One sentence: <em>the numbers at the top of this page are real, from the systems we are
+    watching right now.</em> You are describing a service while the evidence of it runs in the
+    corner of the same screen.</p>
+  <p class="principle"><b>Why it matters:</b> Showing beats telling, and you already have the
+    showing built and running.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Block &middot; WE CLEAN IT</p>
+  <blockquote>"Done badly it scratches the glass and voids warranties, which is why it matters
+    who's on your roof."</blockquote>
+  <span class="lbl l-issue">Issue</span>
+  <p>A claim about the consequences of other people's work. The copy document's own checklist says
+    to have an attorney confirm the cleaning line before publishing it.</p>
+  <span class="lbl l-fix">Fix</span>
+  <p>Keep the sentence, get it checked. Softening it would cost the point. This is a note to act
+    on, not a rewrite.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Final call to action</p>
+  <blockquote>"A site visit costs you nothing and ends with a straight answer: what it'd take,
+    what it'd cost, and what it'd save."</blockquote>
+  <span class="lbl l-issue">Issue</span>
+  <p>It repeats WE QUOTE IT, which already promised a design, a price and a saving figure. Same
+    three things, twice on one page, and the second time carries less because the reader has met it.</p>
+  <span class="lbl l-fix">Fix</span>
+  <p>Close on the part the reader has not been given yet, which is what happens next and how long
+    it takes. <em>An hour at your property, twelve months of bills, and a number you can hold us
+    to. We come to you.</em></p>
+  <p class="principle"><b>Why it matters:</b> The close should add the last missing thing, not
+    summarise. A summary tells the reader they have already got the point and can leave.</p>
+ </div>
+
+ <h2>The verdict</h2>
+ <div class="score">
+  <div class="n">7<span>/10</span></div>
+  <p>A serious piece of work. It has a real argument, it is specific, and the voice is right. It
+    loses marks for burying its best section, for a proof section that is still a brief, and for
+    crediting Plentify where it should be selling the customer a warmer house and a smaller bill.</p>
+ </div>
+
+ <h3>Three changes</h3>
+ <ol class="top">
+  <li><b>Move the whole job to second.</b> It is the answer to the only question your reader
+    actually has. "Why now" already ends on the line that sets it up.</li>
+  <li><b>Rewrite the Plentify section from the customer's side.</b> What they get, then who makes
+    it, then one credential instead of three.</li>
+  <li><b>Point at the live numbers in WE WATCH IT.</b> One sentence, and a claim becomes evidence.</li>
+ </ol>
+
+ <div class="box b-keep">
+  <h4>Do not let anything change these</h4>
+  <p><b>"Solar fails quietly."</b> Four words that make a reader think about their own roof. Then
+    the detail earns it: the lights stay on, the inverter hums, the app still shows power coming
+    in. That is the paragraph the whole site should be built around.</p>
+  <p><b>"If solar isn't worth it on your property yet, we'll say so."</b> The most persuasive
+    sentence in the document, and the one every sales copy rulebook would cut.</p>
+  <p><b>"One company, one certificate, one number to phone."</b> Rhythm doing real work. It names
+    a genuine fear, being passed between trades, without naming it.</p>
+  <p><b>"We'll take on a system we didn't install."</b> Reaches people nobody else is speaking to,
+    and they are the easiest customers you will ever get, because they have already learned what
+    the alternative costs.</p>
+  <p><b>The fixed charge paragraph.</b> "Your bill can rise in a month you actually used less" is
+    checkable, surprising, and yours. Keep it exactly as written.</p>
+ </div>
+
+ <div class="box b-cut">
+  <h4>Cut or hold</h4>
+  <ul>
+   <li><b>Who we work for as a section.</b> Keep the three lines, lose the chapter status.</li>
+   <li><b>Two of the three Plentify credentials.</b> One is proof. Three is a press release.</li>
+   <li><b>The final call to action body.</b> Rewrite so it does not repeat WE QUOTE IT.</li>
+   <li><b>[X] systems installed.</b> Hold the whole item until the number exists.</li>
+   <li><b>Our work.</b> Hold the section until there are real jobs to put in it. Keep what is live.</li>
+  </ul>
+ </div>
+
+ <div class="foot">
+  Reviewed: copy/Sunlogic_Energy_Site_Copy.md, homepage section, 4 September 14:37<br>
+  Method: copychief by Rob Palmer, CC-BY-4.0. Every quoted line checked against the document<br>
+  House rules applied: no invented facts, no jargon, no em dashes
+ </div>
+</div>

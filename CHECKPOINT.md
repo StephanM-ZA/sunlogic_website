@@ -1,5 +1,219 @@
 # Checkpoint — Sunlogic Website
 
+**Saved:** 2026-09-04 (session 10 — Energy home DONE and banked, uncommitted. Next: solar.html)
+
+## Session 10 part 3 — Energy home signed off. CI rules changed with it.
+
+The user reviewed the built page and gave a long list. All of it is done, the
+gate and the sweep are clean, and nothing is committed. **Next task: the same
+copy loop for `site-energy/solar.html`, the main Energy page. Its new copy is
+at `copy/Sunlogic_Solar_Site_Copy.md` (9,765 words, NEVER COMMIT that file).**
+
+### Page changes, energy home
+
+- Plentify out of the trust strip. Three items now, all provable.
+- Smart control **rewritten twice**. First widened past the geyser into two
+  device cards, which the user rejected: the product claims were wrong AND no
+  brand or product detail belongs on a home page. Now a single block making
+  the timing argument with no brand, no device, no price, no feature list.
+  Heading "Your Panels Peak at Noon. Your House Peaks at Seven." A comment in
+  the markup says not to put specifics back.
+- Lead paragraph, the two sums cards, the four Why Sunlogic claims and the
+  three audience cards all got icon treatments.
+- Blog cards got cover images and publish dates.
+- Card headings past five words went to sentence case.
+
+### CI and rules changed. These roll out to every page.
+
+| Change | Where |
+|---|---|
+| Card/step headings past five words are sentence case; hero, section and CTA headings stay Title Case at any length | `sunlogic-check.js` rule 6, enforced as a fail. Found 9 violations on 6 pages across all three sites, all fixed, article titles changed on both the card and the post's own heading |
+| Callout is THE highlight block: tinted surface, 3px rule, lead-size copy | `.sl-callout`, applies everywhere, not a variant |
+| New tokens `--surface-highlight #FEEDD9`, `--border-highlight #F5D6AE`, `--accent-highlight #F0A050` | added to the check's PALETTE too, which caught them first |
+| Statement band is an inset 16px panel, not full bleed | `.sl-statement-wrap` + `.sl-statement` |
+| Closing CTA sits on `--surface-sunk`, and is now COUNTED as a band | rule 7 no longer resets on it |
+| Division promo carries the CTA's ground and is NOT a band of its own | rule 7 skips `.sl-section--promo` |
+| Promo card floats: resting lift, pointer-proximity drift, touch press | `SL_PROMO_FLOAT` in components.js, `.sl-hero--promo` in the CSS |
+| Footer is a grid with three fixed states, not wrapping flex | `.sl-footer__groups` |
+| `.sl-prose p.sl-body--lg` keeps lead size inside prose | specificity fix |
+| Three icons added from the Heroicons source: `home`, `building-office-2`, `calculator` | `shared/icons.js`, fetched not transcribed, 27 Heroicons + 3 brand |
+| CI guide updated on all three sites: case rule, highlight, statement shape, article cards | `site-*/ci-guide.html` |
+
+### Flare, final tuning
+
+Rise 30s, dark **46s**, dusk **0.42**, and the dark half now eases down over the
+first quarter, **holds flat at full depth**, then lifts. A plain curve spent an
+instant at the bottom and read as a flicker. Full cycle 76s.
+
+### Two corrections I owe the record
+
+1. `energy-management.html` is live right now claiming the controllers are made
+   by Plentify, that one detects geyser leaks, and that the other decides when
+   to charge and draw on the battery. The user says Plentify does not make that.
+   **That page is wrong in public.** Not yet fixed.
+2. The "Our Work has no photographs" finding from copy rounds 2 and 3 was
+   measured on my own assembled preview, not the live page, which has all three.
+   Withdrawn in `docs/copy/`.
+
+### Open decisions
+
+- CTA ground: asked for the alt tint, shipped on sunk. Alt collides with an alt
+  section on 11 pages and would recreate the same seam there. One line to change
+  plus 11 page edits if the user prefers alt.
+- Smart control still has no commercial equivalent to point at. Business
+  question, not a copy one.
+
+### Verified at this point
+
+`npm run build`, `npm run conformance` 25/25 pages 0 fails 0 warns both
+viewports, `npm run sweep` 550 combinations 0 findings. Lighthouse desktop 99,
+mobile 86/100/100/100 (mobile LCP and cache findings are artefacts of the local
+python server, not the site).
+
+---
+
+**Saved:** 2026-09-04 (session 10 — Energy home v3 copy + sunrise flare, BUILT, uncommitted)
+
+## Session 10 part 2 — v3 copy and the sunrise flare are IN. Not committed.
+
+User approved v3 copy and the tuned flare, then said "lets go". Both are now
+written into the source and built. Nothing is committed and nothing is deployed.
+
+### Files changed
+
+- `site-energy/index.html` — rewritten to the v3 structure. Twelve sections in
+  the order the reviews argued for: hero, trust strip (4 items), why now with the
+  two sums side by side, the whole job (5 steps, moved to second), why Sunlogic,
+  who we work for, compliance + day feed, our work, smart control at home, blog,
+  close, electrical promo. New title and meta description, since the page no
+  longer sells electrical.
+- `site-energy/solar.html` — the demand charge callout added to the small
+  business section. **UNVERIFIED, flagged in the markup.**
+- `shared/sunlogic.css` — `.sl-flare` rig and `.sl-hero__dusk`, plus their
+  reduced-motion state.
+- `shared/components.js` — `SL_FLARE_MARKUP`, `SL_FLARE_PATHS`,
+  `SL_FLARE_REGISTER`, and `SL_HERO_LAYERS` became a function taking a flare flag.
+
+### The flare, and why it is opt in
+
+`<dl-hero flare="sunrise">`. Only `site-energy/index.html` carries it. Electrical
+gets a different feature later and main stays as it is, per the user, so the
+attribute is per hero rather than a change to every hero.
+
+Sixty second cycle: thirty seconds of the sun tracking a path read off the
+photograph, then thirty with it gone while the scene dims 26% and lifts.
+Path `[[95.5,41.9],[87.3,34.7],[77.1,23.5],[65.4,11.1],[50.1,0.1]]`, Catmull-Rom,
+emerge 24%, vanish 34%. Tuned by the user in throwaway tuners under `dist/energy/`
+(git ignored, wiped by the next build).
+
+Two things that were deliberate, not incidental:
+- Position moves on a **transform**, never left/top. The blurs run to 118px and
+  re-laying-out a blurred element every frame is what would have made it costly.
+- The dusk layer sits **below both scrims**, so the scene dims while the heading
+  and buttons hold their contrast. Above them it would fail contrast for thirty
+  seconds in every sixty.
+
+### Verified
+
+| Check | Result |
+|---|---|
+| `npm run build` | all three sites |
+| `npm run conformance` | 25/25 pages, 0 fails, 0 warns, both viewports |
+| `npm run sweep` | 450 page/width combinations, 0 findings |
+| Lighthouse desktop, energy home | performance 99, LCP 0.9s, CLS 0, TBT 0 |
+| Lighthouse mobile, energy home | performance 86, a11y 100, best practices 100, SEO 100 |
+| Flare cost, same page with the attribute removed | LCP 4277ms vs 4203ms, score 86 both. Within noise. |
+| Electrical build | 2 heroes, 2 sweeps, 0 flares. Untouched. |
+
+Mobile LCP 4.3s and the caching/compression findings are artefacts of
+`python3 -m http.server`, which serves uncompressed with no cache headers.
+Cloudflare handles both. Re-measure against a real deploy before treating 86 as
+the real number.
+
+### Still blocking, all of it facts rather than writing
+
+| Blocker | Needs |
+|---|---|
+| Fixed charge line | Two figures and a year, off your own bills. Highest value blank on the page. |
+| A commercial job in Our Work | One of the three made a business, with what it did to their running cost. |
+| Our Work numbers | They say what was fitted, not what it did. |
+| Storage claim, Businesses card | "less of the capital goes into storage" is a tendency, not a law. Check against a real commercial job. |
+| Demand charge line, solar.html | Check against a real commercial invoice. Flagged in the markup. |
+| Cleaning line | Attorney, open since round 1. |
+| Phone numbers | Page promises "one number to phone", carries two across six links. |
+| Install count, reg number | Correctly still out of the trust strip. |
+
+**Correction carried into the docs:** rounds two and three both said Our Work
+promises a photograph and shows none. That was measured on my assembled preview,
+which had dropped the images, not on the live page, which has all three. The
+finding is withdrawn in `docs/copy/copychief-round3.html` and
+`docs/copy/energy-home-v3.md`.
+
+---
+
+## Session 10 part 1 — Energy home page copy, three review rounds
+
+Working the Energy home page copy through a loop: revise the copy, put it back through
+the copychief skill, read what comes back, revise again. User is reviewing between
+rounds and will say when to do the final build. **No site file has been changed.**
+
+### Where the work lives (banked out of the session scratchpad)
+
+- `docs/copy/energy-home-v3.md` — the current copy of record. Section by section,
+  every change marked, with the reason.
+- `docs/copy/energy-home-v2.md` — the previous round, kept for the audit trail.
+- `docs/copy/copychief-round2.html` — review of v2.
+- `docs/copy/copychief-round3.html` — review of v3, the current one.
+- `dist/energy/preview-new.html` — the assembled page render. **Still shows v1 copy.**
+  Git ignored (dist/), so it cannot deploy.
+- `dist/energy/hero-flare.html` — three hero variants comparing the current light sweep
+  against two lens flare treatments. Also git ignored. Awaiting the user's pick.
+- Published artifact, current page beside the assembled one:
+  https://claude.ai/code/artifact/83f94b37-6bfb-4c7e-8baa-b2ceabf1f862
+
+### What changed across the rounds
+
+- **Round 1** reviewed the supplied `copy/Sunlogic_Energy_Site_Copy.md`. Findings: the
+  whole job section buried at third, Plentify written as a supplier advert, We Watch It
+  not pointing at the live figures already on the page, trust strip carrying an
+  unprovable install count. All four fixed.
+- **Round 2** answered the user's note that the bill language speaks only to
+  residential. Bill mentions cut from 11 to 5. Business half added to Why Now, the
+  day-trading line promoted from a card in section 6 up beside the residential argument,
+  payback clause added to We Quote It, geyser section labelled as the home side.
+- **Round 3** rewrote both hero buttons and the Businesses card via the landing page
+  copy skill, and moved the demand charge callout OFF the home page onto solar.html,
+  because a home page owes a business reader recognition, not depth.
+
+Scores: homeowner 7 to 8 to 8. SME owner 4 to 6 to 7.
+
+### Blocking the final build, and none of it is writing
+
+| Blocker | Type | Needs |
+|---|---|---|
+| Fixed charge line | Fact | Two figures and a year, off their own bills. Highest value blank on the page. |
+| Our Work photographs | Asset | Copy promises "each with a photograph". Rendered page has zero images in those cards. |
+| A commercial job | Asset | One of the three Our Work jobs made a business, with what it did to running cost. |
+| Storage claim | Check | "less of the capital goes into storage" is a tendency, not a law. Check against a real commercial job. |
+| Demand charge line | Check | Now destined for solar.html. Needs a real commercial invoice first. |
+| Cleaning line | Legal | Attorney, open since round 1. |
+| Phone numbers | Build | Page promises "one number to phone", carries two across six links. |
+| Install count, reg number | Fact | Still correctly held out of the trust strip. |
+
+### House rules in force on all copy
+
+No invented facts, no jargon, no AI writing patterns, no em dashes. Every document
+above was machine checked for em dashes and a jargon word list before being shown.
+
+### Next steps
+
+1. User finishes reviewing round 3.
+2. User picks a hero flare variant (A current, B soft, C full).
+3. Only then: write v3 copy into `site-energy/index.html`, rebuild, run the conformance
+   gate and the layout sweep, commit.
+
+---
+
 **Saved:** 2026-09-01 (session 7 — PageSpeed Insights desktop + mobile audit fixes)
 
 ## Session 7 part 2 — mobile PageSpeed report (uncommitted at time of writing)

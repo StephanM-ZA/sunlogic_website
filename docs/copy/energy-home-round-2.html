@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Copy Chief: Round Two</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,600&family=Public+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+ :root{--paper:#FCFBF9;--ink:#191B1F;--muted:#6E6B66;--rule:#E6E2DA;--card:#FFF;
+  --keep:#1F6B4A;--keep-bg:#EDF5F0;--keep-edge:#C7E0D3;
+  --cut:#8A1C1C;--cut-bg:#FBEEEE;--cut-edge:#E9C9C9;
+  --fix:#B23C08;--fix-bg:#FBF0E9;--fix-edge:#EED7C6;
+  --serif:"Newsreader",Georgia,serif;--sans:"Public Sans",-apple-system,sans-serif;--mono:"JetBrains Mono",Menlo,monospace}
+ @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#141619;--ink:#EDEBE6;--muted:#9B968D;--rule:#292D33;--card:#1B1E23;
+  --keep:#7FC4A2;--keep-bg:#16241D;--keep-edge:#24382D;
+  --cut:#E88A8A;--cut-bg:#261618;--cut-edge:#3E2224;
+  --fix:#F1873F;--fix-bg:#241A13;--fix-edge:#3C2A1C}}
+ :root[data-theme="dark"]{--paper:#141619;--ink:#EDEBE6;--muted:#9B968D;--rule:#292D33;--card:#1B1E23;
+  --keep:#7FC4A2;--keep-bg:#16241D;--keep-edge:#24382D;
+  --cut:#E88A8A;--cut-bg:#261618;--cut-edge:#3E2224;
+  --fix:#F1873F;--fix-bg:#241A13;--fix-edge:#3C2A1C}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--paper);color:var(--ink);font:400 16.5px/1.62 var(--sans)}
+ .wrap{max-width:920px;margin:0 auto;padding:56px 24px 110px}
+ .kicker{font:700 11px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--fix);margin:0 0 14px}
+ h1{font:400 44px/1.08 var(--serif);margin:0 0 16px;letter-spacing:-.015em;text-wrap:balance}
+ @media(max-width:640px){h1{font-size:32px}}
+ .lede{color:var(--muted);max-width:64ch;margin:0 0 8px;font-size:18.5px}
+ h2{font:400 30px/1.2 var(--serif);margin:70px 0 6px;text-wrap:balance}
+ h3{font:700 12px/1 var(--mono);letter-spacing:.11em;text-transform:uppercase;margin:34px 0 12px}
+ p{margin:0 0 14px;max-width:68ch}
+ .scores{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:26px 0 0}
+ @media(max-width:700px){.scores{grid-template-columns:1fr}}
+ .score{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--fix);
+  border-radius:8px;padding:20px 22px}
+ .score .lab{font:700 10.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:12px}
+ .score .n{font:400 46px/1 var(--serif);color:var(--fix)}
+ .score .n span{font-size:20px;color:var(--muted)}
+ .score .was{font:400 12.5px/1 var(--mono);color:var(--muted);margin-left:10px}
+ .score p{margin:12px 0 0;font-size:15px;max-width:none}
+ .tw{overflow-x:auto;margin:18px 0 0}
+ table{border-collapse:collapse;width:100%;min-width:520px;font-size:15px}
+ th{font:700 10.5px/1.3 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;padding:0 14px 10px 0}
+ td{padding:11px 14px 11px 0;border-top:1px solid var(--rule);vertical-align:top}
+ td:first-child{white-space:nowrap;font-family:var(--mono);font-size:13px;color:var(--muted)}
+ .st{font:700 10px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;padding:5px 7px;border-radius:3px;white-space:nowrap}
+ .s-done{background:var(--keep-bg);color:var(--keep);border:1px solid var(--keep-edge)}
+ .s-part{background:var(--fix-bg);color:var(--fix);border:1px solid var(--fix-edge)}
+ .s-open{background:var(--cut-bg);color:var(--cut);border:1px solid var(--cut-edge)}
+ .item{border-top:1px solid var(--rule);padding:26px 0 6px}
+ .loc{font:400 12px/1 var(--mono);color:var(--muted);letter-spacing:.05em}
+ blockquote{margin:10px 0 14px;padding:12px 18px;background:var(--card);border:1px solid var(--rule);
+  border-left:3px solid var(--rule);border-radius:0 6px 6px 0;font:400 17px/1.45 var(--serif)}
+ .lbl{font:700 10.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;display:inline-block;
+  padding:5px 8px;border-radius:3px;margin-bottom:8px}
+ .l-issue{background:var(--cut-bg);color:var(--cut);border:1px solid var(--cut-edge)}
+ .l-fix{background:var(--fix-bg);color:var(--fix);border:1px solid var(--fix-edge)}
+ .l-ok{background:var(--keep-bg);color:var(--keep);border:1px solid var(--keep-edge)}
+ .principle{font-size:14.5px;color:var(--muted);border-top:1px dotted var(--rule);padding-top:10px;margin-top:12px}
+ .principle b{color:var(--ink);font-weight:700}
+ .box{border-radius:8px;padding:20px 22px;margin:26px 0 0}
+ .box h4{font:700 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;margin:0 0 12px}
+ .box p,.box li{margin:0 0 10px;max-width:none}.box p:last-child,.box li:last-child{margin:0}
+ .b-keep{background:var(--keep-bg);border:1px solid var(--keep-edge);border-left:3px solid var(--keep)}
+ .b-keep h4{color:var(--keep)}
+ .b-cut{background:var(--cut-bg);border:1px solid var(--cut-edge);border-left:3px solid var(--cut)}
+ .b-cut h4{color:var(--cut)}
+ .b-fix{background:var(--fix-bg);border:1px solid var(--fix-edge);border-left:3px solid var(--fix)}
+ .b-fix h4{color:var(--fix)}
+ ol.top{counter-reset:t;list-style:none;padding:0;margin:18px 0 0}
+ ol.top li{counter-increment:t;position:relative;padding-left:44px;margin:0 0 20px;max-width:68ch}
+ ol.top li::before{content:counter(t);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--fix);color:#fff;font:700 13px/28px var(--mono);text-align:center}
+ ol.top b{display:block;margin-bottom:4px}
+ ul{padding-left:20px}
+ .bars{display:grid;gap:10px;margin:18px 0 0;max-width:620px}
+ .bar{display:grid;grid-template-columns:130px 1fr 42px;gap:12px;align-items:center;font-size:14.5px}
+ .bar .k{font:400 12px/1.3 var(--mono);color:var(--muted)}
+ .bar .t{height:16px;background:var(--rule);border-radius:3px;overflow:hidden}
+ .bar .t i{display:block;height:100%;background:var(--fix)}
+ .bar .t.dim i{background:var(--muted)}
+ .bar .v{font:700 12px/1 var(--mono);color:var(--muted);text-align:right}
+ .foot{margin-top:74px;padding-top:22px;border-top:1px solid var(--rule);font:400 12.5px/1.7 var(--mono);color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <p class="kicker">Copy chief &middot; round two &middot; Energy home, v2</p>
+ <h1>The page now has a business half. It still has no business proof.</h1>
+ <p class="lede">Read on the v2 copy, after the edits answering your note that the bill language
+   speaks cheaply to residential and misses SME and commercial. Round one closed out, new
+   findings opened, and one sentence I cannot let you publish without checking it.</p>
+
+ <div class="scores">
+  <div class="score">
+   <span class="lab">As a page for a homeowner</span>
+   <span class="n">8<span>/10</span></span><span class="was">round 1: 7</span>
+   <p>Argument, order and proof all sit right. It drops marks on an unkept promise in Our Work
+     and a second hero button that says nothing.</p>
+  </div>
+  <div class="score">
+   <span class="lab">As a page for an SME owner</span>
+   <span class="n">6<span>/10</span></span><span class="was">round 1: 4</span>
+   <p>The argument now reaches them by section three instead of section six. Nothing on the page
+     yet shows them a business you have done this for.</p>
+  </div>
+ </div>
+
+ <h2>Your note, and what it was actually costing you</h2>
+ <p>You said the bill language speaks cheaply to residential and does not look at SME and
+   commercial. That was not tone. It was structural. Eleven sentences on the page named a bill,
+   and the single sentence written for a business was sitting in a card six sections down.</p>
+
+ <div class="bars">
+  <div class="bar"><span class="k">v1 assembled</span><span class="t"><i style="width:100%"></i></span><span class="v">11</span></div>
+  <div class="bar"><span class="k">v2</span><span class="t"><i style="width:45%"></i></span><span class="v">5</span></div>
+  <div class="bar"><span class="k">still fixable</span><span class="t dim"><i style="width:18%"></i></span><span class="v">2</span></div>
+ </div>
+ <p style="margin-top:14px;font-size:14.5px;color:var(--muted)">Mentions of bill or bills in the
+   visible copy. Three of the five that remain are blog post titles and their card text, which
+   cannot change without rewriting the posts.</p>
+
+ <h2>Round one, closed out</h2>
+ <div class="tw"><table>
+  <thead><tr><th>Finding</th><th>Status</th><th>What happened</th></tr></thead>
+  <tbody>
+   <tr><td>Whole job moves up</td><td><span class="st s-done">Done</span></td>
+     <td>Sits directly after Why now, which hands into it. The join the copy had already made is no longer broken.</td></tr>
+   <tr><td>Rewrite Plentify</td><td><span class="st s-done">Done</span></td>
+     <td>Leads with the geyser, one credential instead of three. The supplier advert is gone.</td></tr>
+   <tr><td>Point at live numbers</td><td><span class="st s-done">Done</span></td>
+     <td>We Watch It ends on the live figures. A claim became evidence in one sentence.</td></tr>
+   <tr><td>Trust strip</td><td><span class="st s-done">Done</span></td>
+     <td>Four true items. The unprovable install count is out.</td></tr>
+   <tr><td>Our work</td><td><span class="st s-part">Half</span></td>
+     <td>Three real jobs with real numbers, which is progress. The promise of a photograph is still unkept.</td></tr>
+   <tr><td>Cleaning line</td><td><span class="st s-open">Open</span></td>
+     <td>Still waiting on the attorney. Nothing changed, and nothing should until it is checked.</td></tr>
+  </tbody>
+ </table></div>
+
+ <h2>Round two, line level</h2>
+
+ <div class="item">
+  <p class="loc">Why now &middot; new callout</p>
+  <blockquote>"On a commercial tariff you are billed on your highest demand of the month as well
+    as on what you used. One busy half hour sets a charge you carry all month."</blockquote>
+  <span class="lbl l-issue">Issue</span>
+  <p>The best sentence added in v2 and the only one on the page I cannot check. It is the
+    commercial twin of the fixed charge line: specific, and the sort of thing a business owner
+    half suspects and has never seen written down. It is also a claim about how somebody else
+    bills them.</p>
+  <span class="lbl l-fix">Fix</span>
+  <p>Hold it against one real client invoice on a commercial tariff before it ships. If it is
+    right, put the actual charge beside it and it becomes the strongest thing on the page. If it
+    is wrong, it is wrong in front of exactly the reader it was written to win.</p>
+  <p class="principle"><b>Why it matters:</b> A reader who can check a claim against their own
+    paperwork will check it. That is the entire reason the fixed charge line works.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Why now &middot; the fixed charge</p>
+  <blockquote>"It is not only the rate per unit going up. The fixed monthly charge has been
+    climbing faster than the rate."</blockquote>
+  <span class="lbl l-issue">Issue</span>
+  <p>I called this the best fact on the page in round one. It is still running without a number.
+    Faster than the rate is a comparison the reader has to take on trust, on the one line where
+    they were most willing to go and look it up.</p>
+  <span class="lbl l-fix">Fix</span>
+  <p>Two figures and a year. What the fixed charge was, what it is now. The highest value blank
+    on the page, and unlike the demand charge above, this one is your own reading of a bill
+    rather than a claim about someone else's billing.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Our work</p>
+  <blockquote>"Each with a photograph and one real number, so you can judge the work rather than
+    the claim."</blockquote>
+  <span class="lbl l-issue">Issue</span>
+  <p>There are no photographs. I counted the images inside those three cards on the rendered
+    page and got zero. The sentence promises the reader something the section does not deliver,
+    in the section whose whole job is proving you do not overpromise.</p>
+  <span class="lbl l-fix">Fix</span>
+  <p>Photographs in, or the sentence out. Not both ways. And the numbers given are hardware, not
+    outcomes. Eighteen panels and fifteen kilowatt hours of storage says what you fitted. It
+    does not say what it did.</p>
+  <p class="principle"><b>Why it matters:</b> A page that says judge the work rather than the
+    claim, then shows no work, has made the claim and skipped the work.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Our work &middot; the commercial gap</p>
+  <span class="lbl l-issue">Issue</span>
+  <p>All three named jobs read as houses. Meanwhile the live day feed further up the same page
+    is showing a commercial install in Strand and a thirty kilowatt ground mount. The commercial
+    proof is running on the page as a widget and missing from the section built to carry proof.</p>
+  <span class="lbl l-fix">Fix</span>
+  <p>One of the three becomes a business. A shop, a workshop, a warehouse, with the suburb, what
+    went in, and what it did to their running cost. Until that exists, the SME half of the page
+    is an argument with nothing behind it, which is the criticism I made of Our Work in round
+    one, now pointed at a different reader.</p>
+  <p class="principle"><b>Why it matters:</b> You cannot claim equal weight for a market you
+    cannot show one job for.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Why now &middot; two different sums</p>
+  <blockquote>"You trade during the day, which is exactly when solar produces, so more of what
+    you generate goes straight into the building."</blockquote>
+  <span class="lbl l-ok">Working</span>
+  <p>Moving this up is right, and it was already the right sentence. Sitting beside the
+    residential sum it now does two jobs: it makes the business case, and it tells a homeowner
+    why theirs is different, which makes the storage conversation later feel earned rather than
+    upsold.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Hero &middot; second button</p>
+  <blockquote>Book a Free Site Assessment &nbsp;&middot;&nbsp; Work Out What You Need</blockquote>
+  <span class="lbl l-issue">Issue</span>
+  <p>Two buttons split the click, which is fine for a purchase this size. The second is the
+    problem. Work Out What You Need does not say what it is or what the reader gets back. It
+    reads like a section heading that grew a border.</p>
+  <span class="lbl l-fix">Fix</span>
+  <p>Name the tool and name the output. The reader is choosing between letting a stranger visit
+    their property and doing it themselves, and only one of those two options currently explains
+    itself.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Smart control at home</p>
+  <span class="lbl l-ok">Honest, and it exposes something</span>
+  <p>Labelling the geyser section as the home side was the right edit. It stops a business reader
+    hitting a domestic appliance at section nine and deciding they were on the wrong page.</p>
+  <p>What it exposes is not a copy problem. On a page claiming equal weight, the home reader gets
+    a named product, a partner and a credential, and the business reader gets no equivalent. If
+    you have a commercial load control story it belongs here. If you do not, the asymmetry is
+    now visible, which beats hidden but is still an asymmetry.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Close &middot; contact</p>
+  <span class="lbl l-issue">Issue</span>
+  <p>Section four promises one company, one certificate, one number to phone. The rendered page
+    carries two distinct numbers, repeated across the call to action, the footer and the dock,
+    six phone links in total. The copy makes a promise the furniture contradicts.</p>
+  <span class="lbl l-fix">Fix</span>
+  <p>One number, or label the second so the reader knows why it is there. Not a writing change,
+    a components change, and it undercuts the best line in the whole argument.</p>
+  <p class="principle"><b>Why it matters:</b> Every specific promise becomes a thing the reader
+    can catch you on. That is the price of being specific and it is worth paying, but only if
+    the page keeps its side.</p>
+ </div>
+
+ <h2>The verdict</h2>
+
+ <h3>Three changes</h3>
+ <ol class="top">
+  <li><b>Check the demand charge line, then put a number on the fixed charge.</b> One is a claim
+    you must verify, the other a blank you can fill from your own reading. Together they are the
+    two most persuasive sentences available to you, and neither is finished.</li>
+  <li><b>Make one of the three Our Work jobs a business, with a photograph.</b> It closes the
+    unkept promise and the missing commercial proof in one piece of work.</li>
+  <li><b>One phone number.</b> The page argues for one number to phone and shows two, six times.</li>
+ </ol>
+
+ <div class="box b-keep">
+  <h4>Do not let anything change these</h4>
+  <p><b>"We can change how much of it you pay."</b> Shorter than what it replaced, and it ends
+    the section on the reader instead of on their bill. Best edit in v2.</p>
+  <p><b>"Solar fails quietly."</b> Unchanged, and still the paragraph the site should be built
+    around.</p>
+  <p><b>"If solar is not worth it on your property yet, we will say so."</b> Now sitting next to
+    a payback promise, which makes it stronger, not weaker.</p>
+  <p><b>"The roof sets the ceiling. What you use sets the target."</b> Two short sentences that
+    work identically for a cottage and a cold store. This is what the rest of the shared copy
+    should sound like.</p>
+ </div>
+
+ <div class="box b-fix">
+  <h4>Verify before publishing</h4>
+  <ul>
+   <li><b>The demand charge sentence.</b> Against a real commercial invoice.</li>
+   <li><b>The fixed charge comparison.</b> Needs the two figures behind it.</li>
+   <li><b>The cleaning line.</b> Still waiting on the attorney, from round one.</li>
+   <li><b>Registration number and install count.</b> Still out of the trust strip, correctly.</li>
+  </ul>
+ </div>
+
+ <div class="box b-cut">
+  <h4>Cut or hold</h4>
+  <ul>
+   <li><b>The photograph promise in Our Work.</b> Out, until photographs exist.</li>
+   <li><b>Work Out What You Need.</b> Rename it to what it does.</li>
+   <li><b>The second phone number, or the one number to phone line.</b> You cannot keep both.</li>
+  </ul>
+ </div>
+
+ <div class="foot">
+  Reviewed: Energy home copy v2, after the SME and commercial edits, 4 September<br>
+  Counts taken off the rendered preview, not the source. Images inside Our Work cards: 0. Phone links: 6<br>
+  Method: copychief by Rob Palmer, CC-BY-4.0<br>
+  House rules applied: no invented facts, no jargon, no em dashes
+ </div>
+</div>
+</body>
+</html>

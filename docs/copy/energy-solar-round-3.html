@@ -1,0 +1,296 @@
+<title>Energy Page, Round Three</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Karla:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap">
+
+<style>
+  :root {
+    --paper:   #FBF9F5;
+    --raise:   #FFFFFF;
+    --sunk:    #F3EFE8;
+    --ink:     #1B1D1F;
+    --muted:   #6E6862;
+    --rule:    #E2DBD1;
+    --accent:  #B85300;
+    --kill:    #A8362A;
+    --keep:    #3D6B4E;
+    --shadow:  0 1px 2px rgba(27,29,31,.05);
+
+    --serif: "Newsreader", Georgia, "Times New Roman", serif;
+    --sans:  "Karla", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono:  "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #17191B; --raise: #1F2225; --sunk: #202326;
+      --ink: #EDE8E1; --muted: #9C948B; --rule: #33383C;
+      --accent: #E88A3C; --kill: #E8776A; --keep: #7FB894;
+      --shadow: 0 1px 2px rgba(0,0,0,.3);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #17191B; --raise: #1F2225; --sunk: #202326;
+    --ink: #EDE8E1; --muted: #9C948B; --rule: #33383C;
+    --accent: #E88A3C; --kill: #E8776A; --keep: #7FB894;
+    --shadow: 0 1px 2px rgba(0,0,0,.3);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: var(--sans); font-size: 16.5px; line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 820px; margin-inline: auto; padding: 56px 24px 96px; }
+  @media (max-width: 600px) { .wrap { padding: 36px 18px 64px; } }
+
+  .label {
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: .13em; text-transform: uppercase; color: var(--muted);
+  }
+
+  h1 {
+    font-family: var(--serif); font-weight: 600; font-size: clamp(34px, 6vw, 48px);
+    line-height: 1.1; margin: 10px 0 0; letter-spacing: -.015em; text-wrap: balance;
+  }
+  .standfirst {
+    font-family: var(--serif); font-size: clamp(18px, 2.6vw, 21px); line-height: 1.5;
+    color: var(--muted); margin: 16px 0 0; max-width: 60ch;
+  }
+
+  h2 {
+    font-family: var(--serif); font-weight: 600; font-size: 27px; line-height: 1.2;
+    margin: 0 0 4px; letter-spacing: -.01em; text-wrap: balance;
+  }
+  h3 { font-family: var(--sans); font-weight: 700; font-size: 17px; margin: 0; line-height: 1.35; }
+  p { margin: 0 0 14px; }
+  p:last-child { margin-bottom: 0; }
+
+  section { margin-top: 52px; }
+  .sechead { border-top: 2px solid var(--ink); padding-top: 12px; margin-bottom: 26px; }
+
+  /* --- classification strip --- */
+  .facts {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1px; background: var(--rule); border: 1px solid var(--rule);
+    border-radius: 4px; overflow: hidden; margin-top: 34px;
+  }
+  .facts div { background: var(--raise); padding: 14px 16px; }
+  .facts dt { font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0 0 5px; }
+  .facts dd { margin: 0; font-size: 15px; line-height: 1.4; }
+
+  /* --- score --- */
+  .score {
+    display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;
+    background: var(--sunk); border: 1px solid var(--rule); border-radius: 4px;
+    padding: 20px 22px; margin-top: 34px;
+  }
+  .score__n { font-family: var(--serif); font-size: 46px; font-weight: 600;
+    line-height: 1; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .score__t { flex: 1 1 300px; font-size: 15.5px; color: var(--muted); line-height: 1.5; }
+
+  /* --- findings --- */
+  .find { border: 1px solid var(--rule); border-radius: 4px; background: var(--raise);
+    box-shadow: var(--shadow); margin-bottom: 20px; overflow: hidden; }
+  .find__top { display: flex; gap: 12px; align-items: flex-start;
+    padding: 16px 18px 14px; border-bottom: 1px solid var(--rule); }
+  .chip { flex: 0 0 auto; font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase; padding: 4px 8px; border-radius: 3px;
+    line-height: 1.4; white-space: nowrap; }
+  .chip--high { background: var(--kill); color: #fff; }
+  .chip--med  { background: var(--accent); color: #fff; }
+  .chip--low  { background: var(--sunk); color: var(--muted); border: 1px solid var(--rule); }
+  .chip--done { background: var(--keep); color: #fff; }
+  .chip--open { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+  .chips { display: flex; flex-direction: column; gap: 5px; flex: 0 0 auto; }
+  .find__where { font-family: var(--mono); font-size: 11px; color: var(--muted);
+    margin-top: 5px; letter-spacing: .04em; }
+  .find__body { padding: 16px 18px 18px; }
+  .find__body > * + * { margin-top: 13px; }
+
+  blockquote {
+    margin: 0; padding: 11px 15px; background: var(--sunk);
+    border-left: 3px solid var(--rule); border-radius: 0 3px 3px 0;
+    font-family: var(--serif); font-size: 16.5px; line-height: 1.5;
+  }
+  blockquote.fix { border-left-color: var(--keep); background: transparent;
+    border: 1px solid var(--rule); border-left: 3px solid var(--keep); }
+  .tag { display: block; font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .why { font-size: 14.5px; color: var(--muted); font-style: italic; }
+
+  /* --- voice table --- */
+  .scroller { overflow-x: auto; border: 1px solid var(--rule); border-radius: 4px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; background: var(--raise); }
+  th, td { text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+  th { font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--muted); background: var(--sunk); }
+  tr:last-child td { border-bottom: 0; }
+  td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; }
+  td.page { font-family: var(--mono); font-size: 13px; }
+  .warm { color: var(--accent); font-weight: 700; }
+
+  /* --- lists --- */
+  ul.plain { list-style: none; margin: 0; padding: 0; }
+  ul.plain li { position: relative; padding-left: 22px; margin-bottom: 11px; }
+  ul.plain li::before { content: ""; position: absolute; left: 4px; top: .62em;
+    width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  ul.kill li::before { background: var(--kill); border-radius: 1px; }
+  ul.keep li::before { background: var(--keep); }
+
+  .foot { margin-top: 60px; padding-top: 18px; border-top: 1px solid var(--rule);
+    font-family: var(--mono); font-size: 11.5px; color: var(--muted); line-height: 1.7; }
+</style>
+
+<div class="wrap">
+  <p class="label">Copy Chief &middot; Sunlogic Energy</p>
+  <h1>The Audience With No Close</h1>
+  <p class="standfirst">Third review of solar.html, the division's long service page. Its structural bet
+    is three audiences in one scroll. That bet pays off for two of them. The one it failed is the one
+    with the largest deal sizes.</p>
+
+  <dl class="facts">
+    <div><dt>Page</dt><dd>solar.html, 13,600px, three audiences, two calculators, three FAQ blocks</dd></div>
+    <div><dt>Round</dt><dd>Third. Two earlier rounds built most of what is there</dd></div>
+    <div><dt>Question asked</dt><dd>Is three audiences in one scroll paying off, and where does the length cost conversions</dd></div>
+    <div><dt>Result</dt><dd>Six findings, all applied</dd></div>
+  </dl>
+
+  <div class="score"><div class="score__n">8</div>
+    <p class="score__t">A strong page with one structural hole and one asymmetry between its two main
+      audience sections. Both are fixed. The length is not the problem it looks like: each audience can
+      finish and convert without reading the other two.</p></div>
+
+  <section>
+    <div class="sechead"><h2>The verdict on the structural bet</h2></div>
+    <p><strong>It works, and here is the test it passes.</strong> A homeowner can read to roughly forty
+      per cent of the page, hit a close written for them, and book without ever meeting the business
+      argument. The subnav jumps a business reader straight past the home section. The arguments
+      genuinely differ rather than repeating at three sizes: battery necessity at home, the
+      cost-per-unit comparison in a business, the demand charge and the tax position at scale. It reads
+      as three pages that share a URL, which is what it should be.</p>
+    <p><strong>Where it failed:</strong> only two of the three audiences actually had a close.</p>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>Findings</h2></div>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--high">High</span><span class="chip chip--done">Applied</span></div>
+        <div><h3>The largest accounts were the only audience with no close</h3>
+        <p class="find__where">solar.html &middot; sector 03, larger sites</p></div></div>
+      <div class="find__body">
+        <div class="scroller"><table>
+          <thead><tr><th>Sector</th><th>Ends with</th></tr></thead>
+          <tbody>
+            <tr><td class="page">01 at home</td><td>navy statement + Book Your Free Site Visit</td></tr>
+            <tr><td class="page">02 for business</td><td>navy statement + Book Your Free Site Visit</td></tr>
+            <tr><td class="page">03 larger sites</td><td class="warm">nothing</td></tr>
+          </tbody>
+        </table></div>
+        <p style="margin-top:14px">A factory, a farm or a multi-site operator read the whole argument
+          written for them, hit an FAQ, and then had to reach a CTA written for everybody to find a way
+          to book. Biggest deal size on the page, weakest ask.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>For a larger site: a site visit, your
+          metered data, and a payback figure that survives scrutiny.</blockquote>
+        <p class="why">A reader is closest to booking at the end of the argument aimed at them, not
+          several thousand pixels later at a close written for somebody else.</p>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--high">High</span><span class="chip chip--done">Applied</span></div>
+        <div><h3>One audience section highlighted advice, the other highlighted itself</h3>
+        <p class="find__where">solar.html &middot; the two callouts</p></div></div>
+      <div class="find__body">
+        <p>The home section puts genuinely useful reader advice in its highlight: selling power back can
+          move you onto a tariff whose fixed charge costs more than the export earns. That is worth
+          knowing whoever you buy from.</p>
+        <p>The business section put a <em>company process</em> in its highlight, headed "How we quote",
+          and buried the equivalent reader advice in the middle of a prose paragraph:</p>
+        <blockquote>Ask us to show the quote as a cost per unit as well as a monthly saving.</blockquote>
+        <p>That line works on a competitor's quote as well as on ours, which is exactly why it earns the
+          highlight. It was also the fourth appearance of "twelve months of your bills" on one page,
+          one of them inside a highlight box.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>Ask any installer for this. Ask for the
+          quote as a cost per unit, not only as a monthly saving. That is the number you can hold against
+          what you already pay, and it is the fastest way to compare three proposals that have all been
+          laid out differently. Ask us for it too.</blockquote>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--med">Medium</span><span class="chip chip--done">Applied</span></div>
+        <div><h3>An eyebrow announcing that the news is good</h3>
+        <p class="find__where">solar.html &middot; "Good news, if you run a business"</p></div></div>
+      <div class="find__body">
+        <p>The statement under it is strong on its own: your business uses power during the day, which is
+          exactly when solar makes it. Labelling it as good news first tells the reader how to feel
+          instead of letting the line do it.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>If you run a business</blockquote>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--low">Low</span><span class="chip chip--done">Applied</span></div>
+        <div><h3>A defensive adjective in the closing block</h3>
+        <p class="find__where">solar.html &middot; final CTA</p></div></div>
+      <div class="find__body">
+        <p><em>"a design, a price and an honest saving figure."</em> Nobody arrived suspecting a
+          dishonest one until the word appeared. Same pattern as "not curated testimonials" on the apex:
+          the defence does more work than the accusation would have.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>a saving figure with the working shown</blockquote>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--low">Low</span><span class="chip chip--done">Applied</span></div>
+        <div><h3>A preposition capitalised against the page's own habit</h3>
+        <p class="find__where">solar.html &middot; two section headings</p></div></div>
+      <div class="find__body">
+        <p>"Solar For Your Home" and "Solar For Your Business", on a page that correctly writes
+          "Four Ways to Pay for It". Title Case lowercases short prepositions.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>Solar for Your Home, Solar for Your Business</blockquote>
+      </div>
+    </article>
+
+    <article class="find">
+      <div class="find__top">
+        <div class="chips"><span class="chip chip--low">Low</span><span class="chip chip--done">Applied</span></div>
+        <div><h3>A mixed-case card pair</h3>
+        <p class="find__where">solar.html &middot; "Paying For It" beside "What happens when something wears out?"</p></div></div>
+      <div class="find__body">
+        <p>Correct card by card under the five-word rule, uneven as a pair. The same shape as the grid
+          fixed on the home page in the previous pass.</p>
+        <blockquote class="fix"><span class="tag">Applied</span>How people actually pay for it</blockquote>
+      </div>
+    </article>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>Not a finding</h2></div>
+    <p><strong>The length.</strong> At 13,600px this is the longest page in the estate, and the obvious
+      note to write is that it should be split. It should not. Each audience has its own marker, its own
+      argument, its own FAQ and now its own close, so nobody has to read another audience's section to
+      reach a booking. The subnav makes any of the three one click from the top. Splitting it would
+      trade one long page a reader can navigate for three thin ones that each repeat the tariff
+      argument.</p>
+    <p>The one real cost of the length is that a larger-site reader arriving from the nav rather than
+      from the home page's routing card passes two audiences before reaching theirs. The subnav is the
+      mitigation and it is doing its job.</p>
+  </section>
+
+  <p class="foot">
+    Reviewed against the Sunlogic house rules: no invented facts, no unverifiable claims, no jargon,
+    no em dashes, no manufactured urgency, South African English.<br>
+    Source: rendered copy from the built page, not the markup. 137 lines of extracted copy.<br>
+    After the changes: conformance gate 25 pages at two viewports, layout sweep 550 page and width
+    combinations, 59 unit tests. All clean.
+  </p>
+</div>

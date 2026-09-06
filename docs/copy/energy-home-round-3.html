@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Copy Chief: Round Three</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,600&family=Public+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+ :root{--paper:#FCFBF9;--ink:#191B1F;--muted:#6E6B66;--rule:#E6E2DA;--card:#FFF;
+  --keep:#1F6B4A;--keep-bg:#EDF5F0;--keep-edge:#C7E0D3;
+  --cut:#8A1C1C;--cut-bg:#FBEEEE;--cut-edge:#E9C9C9;
+  --fix:#B23C08;--fix-bg:#FBF0E9;--fix-edge:#EED7C6;
+  --serif:"Newsreader",Georgia,serif;--sans:"Public Sans",-apple-system,sans-serif;--mono:"JetBrains Mono",Menlo,monospace}
+ @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#141619;--ink:#EDEBE6;--muted:#9B968D;--rule:#292D33;--card:#1B1E23;
+  --keep:#7FC4A2;--keep-bg:#16241D;--keep-edge:#24382D;
+  --cut:#E88A8A;--cut-bg:#261618;--cut-edge:#3E2224;
+  --fix:#F1873F;--fix-bg:#241A13;--fix-edge:#3C2A1C}}
+ :root[data-theme="dark"]{--paper:#141619;--ink:#EDEBE6;--muted:#9B968D;--rule:#292D33;--card:#1B1E23;
+  --keep:#7FC4A2;--keep-bg:#16241D;--keep-edge:#24382D;
+  --cut:#E88A8A;--cut-bg:#261618;--cut-edge:#3E2224;
+  --fix:#F1873F;--fix-bg:#241A13;--fix-edge:#3C2A1C}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--paper);color:var(--ink);font:400 16.5px/1.62 var(--sans)}
+ .wrap{max-width:920px;margin:0 auto;padding:56px 24px 110px}
+ .kicker{font:700 11px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--fix);margin:0 0 14px}
+ h1{font:400 44px/1.08 var(--serif);margin:0 0 16px;letter-spacing:-.015em;text-wrap:balance}
+ @media(max-width:640px){h1{font-size:32px}}
+ .lede{color:var(--muted);max-width:64ch;margin:0 0 8px;font-size:18.5px}
+ h2{font:400 30px/1.2 var(--serif);margin:70px 0 6px;text-wrap:balance}
+ h3{font:700 12px/1 var(--mono);letter-spacing:.11em;text-transform:uppercase;margin:34px 0 12px}
+ p{margin:0 0 14px;max-width:68ch}
+ .scores{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:26px 0 0}
+ @media(max-width:700px){.scores{grid-template-columns:1fr}}
+ .score{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--fix);
+  border-radius:8px;padding:20px 22px}
+ .score .lab{font:700 10.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:12px}
+ .score .n{font:400 46px/1 var(--serif);color:var(--fix)}
+ .score .n span{font-size:20px;color:var(--muted)}
+ .score .was{font:400 12.5px/1 var(--mono);color:var(--muted);margin-left:10px}
+ .score p{margin:12px 0 0;font-size:15px;max-width:none}
+ .tw{overflow-x:auto;margin:18px 0 0}
+ table{border-collapse:collapse;width:100%;min-width:520px;font-size:15px}
+ th{font:700 10.5px/1.3 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;padding:0 14px 10px 0}
+ td{padding:11px 14px 11px 0;border-top:1px solid var(--rule);vertical-align:top}
+ td:first-child{white-space:nowrap;font-family:var(--mono);font-size:13px;color:var(--muted)}
+ .st{font:700 10px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;padding:5px 7px;border-radius:3px;white-space:nowrap}
+ .s-done{background:var(--keep-bg);color:var(--keep);border:1px solid var(--keep-edge)}
+ .s-part{background:var(--fix-bg);color:var(--fix);border:1px solid var(--fix-edge)}
+ .s-open{background:var(--cut-bg);color:var(--cut);border:1px solid var(--cut-edge)}
+ .item{border-top:1px solid var(--rule);padding:26px 0 6px}
+ .loc{font:400 12px/1 var(--mono);color:var(--muted);letter-spacing:.05em}
+ blockquote{margin:10px 0 14px;padding:12px 18px;background:var(--card);border:1px solid var(--rule);
+  border-left:3px solid var(--rule);border-radius:0 6px 6px 0;font:400 17px/1.45 var(--serif)}
+ .lbl{font:700 10.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;display:inline-block;
+  padding:5px 8px;border-radius:3px;margin-bottom:8px}
+ .l-issue{background:var(--cut-bg);color:var(--cut);border:1px solid var(--cut-edge)}
+ .l-fix{background:var(--fix-bg);color:var(--fix);border:1px solid var(--fix-edge)}
+ .l-ok{background:var(--keep-bg);color:var(--keep);border:1px solid var(--keep-edge)}
+ .principle{font-size:14.5px;color:var(--muted);border-top:1px dotted var(--rule);padding-top:10px;margin-top:12px}
+ .principle b{color:var(--ink);font-weight:700}
+ .box{border-radius:8px;padding:20px 22px;margin:26px 0 0}
+ .box h4{font:700 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;margin:0 0 12px}
+ .box p,.box li{margin:0 0 10px;max-width:none}.box p:last-child,.box li:last-child{margin:0}
+ .b-keep{background:var(--keep-bg);border:1px solid var(--keep-edge);border-left:3px solid var(--keep)}
+ .b-keep h4{color:var(--keep)}
+ .b-cut{background:var(--cut-bg);border:1px solid var(--cut-edge);border-left:3px solid var(--cut)}
+ .b-cut h4{color:var(--cut)}
+ .b-fix{background:var(--fix-bg);border:1px solid var(--fix-edge);border-left:3px solid var(--fix)}
+ .b-fix h4{color:var(--fix)}
+ ol.top{counter-reset:t;list-style:none;padding:0;margin:18px 0 0}
+ ol.top li{counter-increment:t;position:relative;padding-left:44px;margin:0 0 20px;max-width:68ch}
+ ol.top li::before{content:counter(t);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--fix);color:#fff;font:700 13px/28px var(--mono);text-align:center}
+ ol.top b{display:block;margin-bottom:4px}
+ ul{padding-left:20px}
+ .ab{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0 0}
+ @media(max-width:700px){.ab{grid-template-columns:1fr}}
+ .ab>div{border:1px solid var(--rule);border-radius:7px;padding:15px 17px;background:var(--card)}
+ .ab .t{font:700 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:9px}
+ .ab .was{color:var(--muted)}
+ .ab .now{font-weight:700;color:var(--fix)}
+ .ab p{margin:0;font-size:15.5px;max-width:none}
+ .foot{margin-top:74px;padding-top:22px;border-top:1px solid var(--rule);font:400 12.5px/1.7 var(--mono);color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <p class="kicker">Copy chief &middot; round three &middot; Energy home, v3</p>
+ <h1>The copy is no longer what is holding this page back.</h1>
+ <p class="lede">Buttons and the Businesses card rewritten, and the commercial detail moved off
+   the home page onto solar.html. Everything still standing between this and a page you would
+   put money behind is a fact somebody has to go and find.</p>
+
+ <div class="scores">
+  <div class="score">
+   <span class="lab">As a page for a homeowner</span>
+   <span class="n">8<span>/10</span></span><span class="was">round 2: 8</span>
+   <p>The button fix helps, but the three things capping this are all fact gathering. No amount
+     of writing moves it from here.</p>
+  </div>
+  <div class="score">
+   <span class="lab">As a page for an SME owner</span>
+   <span class="n">7<span>/10</span></span><span class="was">round 2: 6</span>
+   <p>The card now gives them something a homeowner cannot have. Still capped by having no
+     business you can show them.</p>
+  </div>
+ </div>
+
+ <h2>Your question about the home page</h2>
+ <p>You asked whether the home page should stay lighter, with the energy page fleshing it out.
+   You are right, and it changes something I did in v2.</p>
+ <p>A home page owes a business reader three things. They have to recognise themselves early.
+   They need one thing that is true for them and not for a homeowner. And they need a door.
+   That is recognition, not depth, and everything past it belongs on solar.html where a reader
+   who has already put their hand up can take it in.</p>
+ <p>Measured against that, v2 overbuilt. I had added four commercial pieces to the home page.
+   The demand charge callout is the one that does not belong there. It is detail, it is the
+   fourth thing a business reader meets before they have chosen to be interested, and it is the
+   one claim on the page I cannot verify. Putting it on your highest traffic page was the wrong
+   trade twice over. It has moved to the business section of solar.html.</p>
+ <p>What stays is the two sums block, which is recognition and earns its place, the payback
+   clause inside We Quote It, which is one clause, and the rewritten card.</p>
+
+ <h2>What changed this round</h2>
+
+ <div class="item">
+  <p class="loc">Hero &middot; both buttons</p>
+  <div class="ab">
+   <div><span class="t">Was</span><p class="was">Book a Free Site Assessment</p></div>
+   <div><span class="t">Now</span><p class="now">Book Your Free Site Visit</p></div>
+   <div><span class="t">Was</span><p class="was">Work Out What You Need</p></div>
+   <div><span class="t">Now</span><p class="now">Run the Sums Yourself</p></div>
+  </div>
+  <span class="lbl l-ok">Working</span>
+  <p style="margin-top:14px">The pair now reads as one decision instead of two vague offers.
+    Someone else does it, or I do it now. Assessment was your word for the visit and visit is
+    theirs. Sums echoes the two sums block further down, so the button and the section it leads
+    toward are speaking the same language.</p>
+  <p class="principle"><b>Why it matters:</b> A secondary button that does not say what it
+    returns is a button that only gets clicked by people who were going to click something.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Who we work for &middot; Businesses card</p>
+  <blockquote>"You use it as you make it. Most of what the panels produce goes straight into
+    the building, so less of the capital goes into storage."</blockquote>
+  <span class="lbl l-ok">Working</span>
+  <p>This is the first sentence on the page that gives a business reader an advantage a
+    homeowner cannot have. Not a different sum, a better one, and cheaper to build. That is
+    what equal weight is supposed to buy them.</p>
+  <span class="lbl l-issue">But</span>
+  <p>It is unverified, and it is a tendency rather than a law. A restaurant, a bar, a bakery
+    running ovens at five in the morning breaks it. Check it against a commercial job you have
+    already done, and if the pattern does not hold for the businesses you actually serve, the
+    sentence has to go, however good it reads.</p>
+ </div>
+
+ <h2>What is left, and none of it is writing</h2>
+ <div class="tw"><table>
+  <thead><tr><th>Blocker</th><th>Type</th><th>What it needs</th></tr></thead>
+  <tbody>
+   <tr><td>Fixed charge</td><td><span class="st s-open">Fact</span></td>
+     <td>Two figures and a year, off your own bills. The highest value blank on the page.</td></tr>
+   <tr><td>Our work photos</td><td><span class="st s-done">Closed</span></td>
+     <td>My error. I counted zero images on my own assembled preview, not on the live page, which has all three. Withdrawn.</td></tr>
+   <tr><td>Our work numbers</td><td><span class="st s-open">Asset</span></td>
+     <td>The numbers say what was fitted, not what it did. Still the weakest part of the strongest section.</td></tr>
+   <tr><td>A commercial job</td><td><span class="st s-open">Asset</span></td>
+     <td>One of the three becomes a business, with what it did to their running cost.</td></tr>
+   <tr><td>Storage claim</td><td><span class="st s-open">Check</span></td>
+     <td>Against a commercial job already done.</td></tr>
+   <tr><td>Cleaning line</td><td><span class="st s-open">Legal</span></td>
+     <td>Attorney, open since round one.</td></tr>
+   <tr><td>Phone numbers</td><td><span class="st s-part">Build</span></td>
+     <td>One number, or label the second. Two numbers across six links, against a page that promises one.</td></tr>
+   <tr><td>Demand charge</td><td><span class="st s-part">Moved</span></td>
+     <td>Now on solar.html. Still needs a real commercial invoice before that page ships.</td></tr>
+  </tbody>
+ </table></div>
+
+ <h2>The verdict</h2>
+ <p>Three rounds ago this was a document with a good argument in the wrong order. It is now a
+   page whose argument, order, language and calls to action all hold up, for two different
+   readers, without either of them feeling like an afterthought.</p>
+ <p>Every remaining finding is a photograph, a figure, a lawyer or a component. That is a
+   different kind of work and it is not mine. I would stop writing here.</p>
+
+ <h3>What to do next, in order</h3>
+ <ol class="top">
+  <li><b>Pull two numbers off your own bills.</b> The fixed charge then and now. One line, and
+    it turns the strongest paragraph on the page from an assertion into something a reader can
+    go and check.</li>
+  <li><b>Photograph three jobs, one of them a business.</b> It closes the unkept promise and the
+    missing commercial proof together, and it is the only section a competitor cannot write
+    their way past.</li>
+  <li><b>Decide the phone number.</b> One, or label the second. Cheapest fix on the list and it
+    is currently contradicting your best line.</li>
+ </ol>
+
+ <div class="box b-keep">
+  <h4>Do not let anything change these</h4>
+  <p><b>"You use it as you make it."</b> Five words, and a business owner understands their
+    whole case. Best line added in three rounds, if it survives the check.</p>
+  <p><b>"We can change how much of it you pay."</b> Ends the section on the reader.</p>
+  <p><b>"Solar fails quietly."</b> Unchanged since round one and still the paragraph the site
+    should be built around.</p>
+  <p><b>"The roof sets the ceiling. What you use sets the target."</b> Works identically for a
+    cottage and a cold store.</p>
+  <p><b>"If solar is not worth it on your property yet, we will say so."</b> Still the most
+    persuasive sentence you have, and still the one every rulebook would cut.</p>
+ </div>
+
+ <div class="box b-cut">
+  <h4>Do not put these on the home page</h4>
+  <ul>
+   <li><b>The demand charge callout.</b> Moved to solar.html. Detail, and unverified.</li>
+   <li><b>Payback worked examples.</b> Same reason. The clause in We Quote It is enough here.</li>
+   <li><b>Tax treatment.</b> Belongs on solar.html, and only once an accountant confirms what
+     currently applies. Do not let me write a percentage.</li>
+  </ul>
+ </div>
+
+ <div class="foot">
+  Reviewed: Energy home copy v3, 4 September. Rounds one and two are the earlier documents<br>
+  Counts taken off the rendered preview. Images inside Our Work cards: 0. Phone links: 6<br>
+  Method: copychief and landing page copy, both by Rob Palmer, CC-BY-4.0<br>
+  House rules applied: no invented facts, no jargon, no em dashes
+ </div>
+</div>
+</body>
+</html>

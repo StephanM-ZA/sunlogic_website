@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Copy Chief: The Energy Page</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,600&family=Public+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+ :root{--paper:#FCFBF9;--ink:#191B1F;--muted:#6E6B66;--rule:#E6E2DA;--card:#FFF;
+  --keep:#1F6B4A;--keep-bg:#EDF5F0;--keep-edge:#C7E0D3;
+  --cut:#8A1C1C;--cut-bg:#FBEEEE;--cut-edge:#E9C9C9;
+  --fix:#B23C08;--fix-bg:#FBF0E9;--fix-edge:#EED7C6;
+  --serif:"Newsreader",Georgia,serif;--sans:"Public Sans",-apple-system,sans-serif;--mono:"JetBrains Mono",Menlo,monospace}
+ @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#141619;--ink:#EDEBE6;--muted:#9B968D;--rule:#292D33;--card:#1B1E23;
+  --keep:#7FC4A2;--keep-bg:#16241D;--keep-edge:#24382D;
+  --cut:#E88A8A;--cut-bg:#261618;--cut-edge:#3E2224;
+  --fix:#F1873F;--fix-bg:#241A13;--fix-edge:#3C2A1C}}
+ :root[data-theme="dark"]{--paper:#141619;--ink:#EDEBE6;--muted:#9B968D;--rule:#292D33;--card:#1B1E23;
+  --keep:#7FC4A2;--keep-bg:#16241D;--keep-edge:#24382D;
+  --cut:#E88A8A;--cut-bg:#261618;--cut-edge:#3E2224;
+  --fix:#F1873F;--fix-bg:#241A13;--fix-edge:#3C2A1C}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--paper);color:var(--ink);font:400 16.5px/1.62 var(--sans)}
+ .wrap{max-width:920px;margin:0 auto;padding:56px 24px 110px}
+ .kicker{font:700 11px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--fix);margin:0 0 14px}
+ h1{font:400 44px/1.08 var(--serif);margin:0 0 16px;letter-spacing:-.015em;text-wrap:balance}
+ @media(max-width:640px){h1{font-size:32px}}
+ .lede{color:var(--muted);max-width:64ch;margin:0 0 8px;font-size:18.5px}
+ h2{font:400 30px/1.2 var(--serif);margin:70px 0 6px;text-wrap:balance}
+ h3{font:700 12px/1 var(--mono);letter-spacing:.11em;text-transform:uppercase;margin:34px 0 12px}
+ p{margin:0 0 14px;max-width:68ch}
+ .scores{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:26px 0 0}
+ @media(max-width:760px){.scores{grid-template-columns:1fr}}
+ .score{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--fix);
+  border-radius:8px;padding:18px 20px}
+ .score .lab{font:700 10.5px/1.3 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:10px}
+ .score .n{font:400 42px/1 var(--serif);color:var(--fix)}
+ .score .n span{font-size:19px;color:var(--muted)}
+ .score p{margin:10px 0 0;font-size:14.5px;max-width:none}
+ .tw{overflow-x:auto;margin:18px 0 0}
+ table{border-collapse:collapse;width:100%;min-width:520px;font-size:15px}
+ th{font:700 10.5px/1.3 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;padding:0 14px 10px 0}
+ td{padding:11px 14px 11px 0;border-top:1px solid var(--rule);vertical-align:top}
+ td:first-child{white-space:nowrap;font-family:var(--mono);font-size:13px;color:var(--muted)}
+ .st{font:700 10px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;padding:5px 7px;border-radius:3px;white-space:nowrap}
+ .s-ok{background:var(--keep-bg);color:var(--keep);border:1px solid var(--keep-edge)}
+ .s-mid{background:var(--fix-bg);color:var(--fix);border:1px solid var(--fix-edge)}
+ .s-bad{background:var(--cut-bg);color:var(--cut);border:1px solid var(--cut-edge)}
+ .item{border-top:1px solid var(--rule);padding:26px 0 6px}
+ .loc{font:400 12px/1 var(--mono);color:var(--muted);letter-spacing:.05em}
+ blockquote{margin:10px 0 14px;padding:12px 18px;background:var(--card);border:1px solid var(--rule);
+  border-left:3px solid var(--rule);border-radius:0 6px 6px 0;font:400 17px/1.45 var(--serif)}
+ .lbl{font:700 10.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;display:inline-block;
+  padding:5px 8px;border-radius:3px;margin-bottom:8px}
+ .l-issue{background:var(--cut-bg);color:var(--cut);border:1px solid var(--cut-edge)}
+ .l-fix{background:var(--fix-bg);color:var(--fix);border:1px solid var(--fix-edge)}
+ .l-ok{background:var(--keep-bg);color:var(--keep);border:1px solid var(--keep-edge)}
+ .principle{font-size:14.5px;color:var(--muted);border-top:1px dotted var(--rule);padding-top:10px;margin-top:12px}
+ .principle b{color:var(--ink);font-weight:700}
+ .box{border-radius:8px;padding:20px 22px;margin:26px 0 0}
+ .box h4{font:700 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;margin:0 0 12px}
+ .box p,.box li{margin:0 0 10px;max-width:none}.box p:last-child,.box li:last-child{margin:0}
+ .b-keep{background:var(--keep-bg);border:1px solid var(--keep-edge);border-left:3px solid var(--keep)}
+ .b-keep h4{color:var(--keep)}
+ .b-cut{background:var(--cut-bg);border:1px solid var(--cut-edge);border-left:3px solid var(--cut)}
+ .b-cut h4{color:var(--cut)}
+ .b-fix{background:var(--fix-bg);border:1px solid var(--fix-edge);border-left:3px solid var(--fix)}
+ .b-fix h4{color:var(--fix)}
+ ol.top{counter-reset:t;list-style:none;padding:0;margin:18px 0 0}
+ ol.top li{counter-increment:t;position:relative;padding-left:44px;margin:0 0 20px;max-width:68ch}
+ ol.top li::before{content:counter(t);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--fix);color:#fff;font:700 13px/28px var(--mono);text-align:center}
+ ol.top b{display:block;margin-bottom:4px}
+ ul{padding-left:20px}
+ .opts{display:grid;gap:10px;margin:16px 0 0}
+ .opt{display:grid;grid-template-columns:26px 1fr;gap:12px;align-items:start;
+   border:1px solid var(--rule);border-radius:7px;padding:13px 15px;background:var(--card)}
+ .opt .k{font:700 12px/1.5 var(--mono);color:var(--fix)}
+ .opt p{margin:0;max-width:none}
+ .opt .h{font:400 20px/1.25 var(--serif);display:block;margin-bottom:3px}
+ .opt .n{font-size:14px;color:var(--muted)}
+ .foot{margin-top:74px;padding-top:22px;border-top:1px solid var(--rule);font:400 12.5px/1.7 var(--mono);color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <p class="kicker">Copy chief &middot; the Energy page &middot; solar.html</p>
+ <h1>The most honest page on the site, wearing the most ordinary headline.</h1>
+ <p class="lede">Read on the SOLAR section of Sunlogic_Solar_Site_Copy.md, 2,344 words, checked
+   line by line against what is live. Unlike the home page, this one was already built from this
+   copy. The gap is not between document and page. It is inside the copy.</p>
+
+ <div class="scores">
+  <div class="score">
+   <span class="lab">Homeowner</span>
+   <span class="n">8<span>/10</span></span>
+   <p>Answers the real questions in the order people ask them, and tells them things against its own interest four separate times.</p>
+  </div>
+  <div class="score">
+   <span class="lab">Business owner</span>
+   <span class="n">7<span>/10</span></span>
+   <p>Has the one advantage they have over a household and states it well. Then repeats the home section's shape instead of its own.</p>
+  </div>
+  <div class="score">
+   <span class="lab">Larger site</span>
+   <span class="n">8<span>/10</span></span>
+   <p>The oversell warning and the two things solar does and does not fix are the best writing on the page.</p>
+  </div>
+ </div>
+
+ <h2>What this page has that almost nothing else in the category does</h2>
+ <p>Four times, unprompted, it tells the reader something that costs it the sale.</p>
+ <div class="tw"><table>
+  <thead><tr><th>Where</th><th>What it gives away</th></tr></thead>
+  <tbody>
+   <tr><td>At home</td><td>Selling power back can put you on a tariff that costs you more, so you may want a smaller system.</td></tr>
+   <tr><td>At home</td><td>Winter versus summer is a real judgement call and we would rather make it with you than for you.</td></tr>
+   <tr><td>At home</td><td>Ask any installer, us included, what the battery guarantee actually promises.</td></tr>
+   <tr><td>Larger sites</td><td>Be careful of a proposal promising to pay for itself almost immediately. Anyone telling you otherwise has done something to the arithmetic.</td></tr>
+  </tbody>
+ </table></div>
+ <p style="margin-top:16px">That is the page's whole argument and it is never stated as one. It is
+   four good instincts sitting in four different sections. A reader who lands on the business
+   anchor meets one of them and leaves.</p>
+
+ <h2>The headline is the weakest line on the page</h2>
+ <div class="item" style="border-top:none;padding-top:0">
+  <p class="loc">Hero &middot; live</p>
+  <blockquote>"Solar That Pays For Itself"</blockquote>
+  <span class="lbl l-issue">Issue</span>
+  <p>Every solar company in the country says this. It is the category's default sentence, which
+    means it identifies you as one of them at the exact moment you are trying to be the other
+    thing. It also makes a payback promise the next two thousand words spend their time
+    qualifying, including a call-out warning readers about proposals that promise fast payback.
+    The page argues against its own headline.</p>
+  <p class="loc" style="margin-top:16px">Hero &middot; the document's version</p>
+  <blockquote>"Solar Sized On Your Bill"</blockquote>
+  <span class="lbl l-issue">Also no</span>
+  <p>Better, because it points at the mechanism. But the home page now says
+    <em>we size on what you use, not your roof</em>, and it deliberately dropped bill language to
+    stop sounding residential. Two pages, one click apart, arguing in different vocabularies.</p>
+  <span class="lbl l-fix">Fix</span>
+  <p>The real idea is already in the WORTH KNOWING block directly underneath: a backup system and
+    a bill system are different systems, and most people are quoted the wrong one. Nobody else in
+    this market opens with that. Four ways to say it:</p>
+  <div class="opts">
+   <div class="opt"><span class="k">A</span><div>
+     <span class="h">Most Quotes Size the Wrong System</span>
+     <p class="n">Leads with the mistake. Makes a reader with two quotes in hand want to check them.</p></div></div>
+   <div class="opt"><span class="k">B</span><div>
+     <span class="h">Sized On What You Use, Not What You Fear</span>
+     <p class="n">The mechanism and the mistake in one line, and it matches the home page's vocabulary exactly.</p></div></div>
+   <div class="opt"><span class="k">C</span><div>
+     <span class="h">Built to Cut a Bill, Not to Survive a Blackout</span>
+     <p class="n">Most concrete. Names both systems so the reader knows immediately which one they were sold.</p></div></div>
+   <div class="opt"><span class="k">D</span><div>
+     <span class="h">Two Houses, One Street, Two Different Systems</span>
+     <p class="n">Curiosity rather than claim. Weakest of the four commercially, strongest at getting the next line read.</p></div></div>
+  </div>
+  <p class="principle" style="margin-top:18px"><b>Why it matters:</b> A headline everybody uses is
+    not a neutral choice, it is an active one. It spends your first impression telling the reader
+    you are the same as the last two quotes they got.</p>
+ </div>
+
+ <h2>Line level</h2>
+
+ <div class="item">
+  <p class="loc">Business &middot; the demand charge, twice</p>
+  <span class="lbl l-issue">Issue, and this one is mine</span>
+  <p>I added a call-out to the business section this week saying you are billed on your highest
+    demand of the month. The larger sites section already says the same thing, better, in
+    <em>It Will Barely Touch</em>. Same fact, two framings, twelve hundred words apart, and the
+    second one quietly contradicts the first by explaining that solar does not help with it.</p>
+  <span class="lbl l-fix">Fix</span>
+  <p>One of them goes. Keep the larger sites version, which is honest about what solar cannot do.
+    The business section gets the point it is missing instead, which is that a smaller business on
+    a simple tariff may not have a demand charge at all, and that is worth knowing before they
+    read the larger sites section and worry.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Ways to pay &middot; four routes</p>
+  <blockquote>Buy it outright &middot; Finance it &middot; Rent to own &middot; Let someone else own it</blockquote>
+  <span class="lbl l-issue">Issue</span>
+  <p>These are live, presented as things a reader can choose. The copy document's own note beside
+    them says: confirm which of these Sunlogic actually offers or has finance partners for,
+    because advertising one you cannot deliver costs the enquiry. That note did not make it onto
+    the page. The same applies to <em>Paying For It</em> in the home section.</p>
+  <span class="lbl l-fix">Fix</span>
+  <p>Not a writing job. Mark each of the four as offered, referred, or neither, and cut what is
+    neither. A reader who picks the fourth one and finds out on the phone that it is not really
+    available has been sold something twice and got neither.</p>
+  <p class="principle"><b>Why it matters:</b> This is the one section on a page full of honesty
+    where the page might not be able to keep its word.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Home &middot; common questions &middot; registration</p>
+  <blockquote>"At the time of writing there is no registration or connection fee, though that is
+    due to change at the end of September 2026."</blockquote>
+  <span class="lbl l-issue">Issue</span>
+  <p>That is this month. In a few weeks this sentence is either wrong or stale, and it is buried
+    inside an accordion where nobody will remember it lives.</p>
+  <span class="lbl l-fix">Fix</span>
+  <p>Two things. Put a review date on it somewhere you will actually see, and consider that a fee
+    arriving at the end of September is a reason to move now. Right now the page treats a deadline
+    as a footnote. It is the only genuine piece of urgency you have, and it is true, which is
+    rarer than it sounds.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Structure &middot; three audiences, one scroll</p>
+  <span class="lbl l-issue">Issue</span>
+  <p>A homeowner scrolls past a business calculator, four ways for a company to finance a system,
+    and a section about demand charges on factory tariffs, to reach a closing call to action
+    written for all three. The sub nav helps, but only for a reader who notices it and knows which
+    of the three they are.</p>
+  <span class="lbl l-fix">Fix</span>
+  <p>Close each audience where it ends, rather than once at the foot. A homeowner who has just
+    read about battery guarantees is closer to booking than the same person eleven hundred words
+    later. The single close at the end is written for whoever is left, and the people left are the
+    ones who were already going to call.</p>
+  <p class="principle"><b>Why it matters:</b> Ask for the sale where the argument lands, not where
+    the page runs out.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Business &middot; shape</p>
+  <span class="lbl l-issue">Issue</span>
+  <p>What it costs, one thing to check early, common questions. The home section above it is:
+    what will it save, do I need a battery, will it fit, what does it cost, common questions. The
+    business section reads as a shorter copy of the home one rather than a different argument for
+    a different reader.</p>
+  <span class="lbl l-fix">Fix</span>
+  <p>The business reader's questions are not smaller versions of a homeowner's. They are: what
+    does it do to my cost per unit, who signs it off, what happens to trading while you install,
+    and what does my accountant need. Three of those are somewhere on the page. Order them the way
+    a business owner would ask them and the section stops feeling like an afterthought.</p>
+ </div>
+
+ <div class="item">
+  <p class="loc">Larger sites &middot; What solar will and will not fix</p>
+  <blockquote>"It will barely touch the demand charge, which is based on your highest peak in the
+    month. On most sites that peak lands on a winter evening, when there is no sun."</blockquote>
+  <span class="lbl l-ok">Working, and it is the best thing here</span>
+  <p>Two cards, one saying what you get and one saying what you do not. It is specific, it is
+    checkable against their own invoice, and no competitor's proposal will contain it. If one
+    block on this page had to survive a rewrite, it is this pair.</p>
+ </div>
+
+ <h2>The verdict</h2>
+ <p>This page is a long way ahead of where the home page started. It has a real argument, it
+   answers questions in the order people ask them, and its instinct to give things away is the
+   most commercially valuable thing on the whole site. It is held back by a headline any of your
+   competitors could have written and by one section it may not be able to deliver.</p>
+
+ <h3>Three changes</h3>
+ <ol class="top">
+  <li><b>Replace the hero.</b> The idea is sitting in the block directly beneath it. Four options
+    above; the page cannot go out arguing against its own headline.</li>
+  <li><b>Resolve the four ways to pay.</b> Offered, referred, or gone. This is the only place on
+    the page where you might not be able to keep your word.</li>
+  <li><b>Close each audience where it ends.</b> One close at the foot of a 2,300 word page is a
+    close for people who had already decided.</li>
+ </ol>
+
+ <div class="box b-keep">
+  <h4>Do not let anything change these</h4>
+  <p><b>The tariff call-out.</b> "Selling power back can put you on a tariff that costs you more."
+    The equivalent of the fixed charge line on the home page: checkable, surprising, and against
+    your own interest. Best block on the page.</p>
+  <p><b>"There is a real judgement call in there, and it is one we would rather make with you than
+    for you."</b> That sentence is the entire company in nineteen words.</p>
+  <p><b>"Anyone telling you otherwise has done something to the arithmetic."</b> Says the quiet
+    part, and a reader holding an oversold proposal will recognise themselves immediately.</p>
+  <p><b>It Will Reduce and It Will Barely Touch.</b> Keep them as a pair. Separately they are
+    facts. Together they are a demonstration that you will tell people what solar cannot do.</p>
+  <p><b>"We work it out from your last twelve months of bills rather than guessing from your
+    roof."</b> Same mechanism as the home page, same words. Consistency across two pages is worth
+    more than a better sentence on one of them.</p>
+ </div>
+
+ <div class="box b-fix">
+  <h4>Verify before this ships</h4>
+  <ul>
+   <li><b>The four ways to pay.</b> Which are real, which are referrals, which are neither.</li>
+   <li><b>The home finance list.</b> Same question, same paragraph problem.</li>
+   <li><b>The registration fee date.</b> End of September 2026 is now. Needs an owner and a review date.</li>
+   <li><b>Both tax paragraphs.</b> They already say confirm with your accountant, which is right, but the enhanced allowance claim needs a date check.</li>
+  </ul>
+ </div>
+
+ <div class="box b-cut">
+  <h4>Cut or move</h4>
+  <ul>
+   <li><b>The demand charge call-out in the business section.</b> Duplicate. The larger sites version is better and more honest.</li>
+   <li><b>"Solar That Pays For Itself."</b> The page spends two thousand words disagreeing with it.</li>
+   <li><b>The single closing call to action.</b> Not cut, multiplied. One per audience, where that audience's argument ends.</li>
+  </ul>
+ </div>
+
+ <div class="foot">
+  Reviewed: SOLAR section of copy/Sunlogic_Solar_Site_Copy.md, 2,344 words, against live solar.html<br>
+  Every quoted line checked against the document or the rendered page<br>
+  Method: copychief by Rob Palmer, CC-BY-4.0<br>
+  House rules applied: no invented facts, no jargon, no em dashes
+ </div>
+</div>
+</body>
+</html>
