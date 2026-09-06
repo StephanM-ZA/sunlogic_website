@@ -351,7 +351,11 @@ class DlCard extends SLElement {
     const body = this.getAttribute('body');
     const photo = this.getAttribute('photo');
     const media = photo
-      ? '<div class="sl-card__media"><img src="' + photo + '" alt="' + SL_ATTR(this, 'photo-alt', heading || '') + '" loading="lazy" decoding="async"/></div>'
+      /* fit="contain" for a PRODUCT shot: the default frame crops 16/9 and a
+         device photographed square loses its top and bottom to it. */
+      ? '<div class="sl-card__media' + (this.getAttribute('fit') === 'contain' ? ' sl-card__media--contain' : '') +
+        (this.getAttribute('media') === 'dark' ? ' sl-card__media--dark' : '') +
+        '"><img src="' + photo + '" alt="' + SL_ATTR(this, 'photo-alt', heading || '') + '" loading="lazy" decoding="async"/></div>'
       : '';
     /* A <dl-tag> child is pulled up above the heading/body — a category
        label reads before the copy, not buried near the button. */

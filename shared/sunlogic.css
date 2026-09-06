@@ -562,6 +562,36 @@ a.sl-card:hover, .sl-card:has(> a:hover) { border-color: var(--color-orange); }
    edges since .sl-card has uniform padding, rounded to match the card. */
 .sl-card__media { margin: -28px -28px 0; border-radius: var(--radius-md) var(--radius-md) 0 0; overflow: hidden; aspect-ratio: 16 / 9; }
 .sl-card__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* A PRODUCT shot is not a photograph and cannot be cropped like one.
+   The default media frame is 16/9 with object-fit: cover, which is right for a
+   rooftop or a job photo and wrong for a device: the Plentify controllers are
+   705x633, so cover chopped the top and bottom off the thing being sold.
+   Contained, on a white ground, at a ratio near the source. Reach for this
+   whenever the subject is an object rather than a scene. */
+.sl-card__media--contain { aspect-ratio: 4 / 3; background: var(--color-white);
+  margin: -28px -28px 0; }
+.sl-card__media--contain img { object-fit: contain; padding: 18px; }
+/* A dark screenshot on the white contain ground would sit in a white ring.
+   Navy behind it instead, and no padding, so the document reads as a document
+   rather than as a picture of one. */
+.sl-card__media--dark { background: var(--color-navy); }
+.sl-card__media--dark img { padding: 0; object-fit: cover; object-position: top; }
+
+/* A price is a decision point, so it gets its own block rather than sitting in
+   a paragraph where it reads as more prose. Navy, because on a white card on a
+   beige band the eye has nothing else to land on and the previous design used
+   exactly this. Not a card tone, so rule 15 does not apply: that rule governs
+   the tone of a CARD, and this is a panel inside one. */
+.sl-price { display: grid; gap: 3px; padding: 14px 16px; border-radius: var(--radius-sm);
+  background: var(--color-navy); color: var(--color-white); }
+.sl-price__amount { font-family: var(--font-display); font-size: 20px; font-weight: 800;
+  line-height: 1.1; letter-spacing: -0.01em; }
+.sl-price__note { font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.05em; text-transform: uppercase; color: rgba(255,255,255,0.72); }
+.sl-card > .sl-price { margin-top: auto; }
+/* A provenance note under a screenshot. Smaller and quieter than body copy,
+   because saying what was redacted is necessary and is not the argument. */
+.sl-note { font-size: 13px; color: var(--text-secondary); }
 /* Publish date on an article card. Mono, label size, above the heading
    with the tag, because when a post was written is part of deciding
    whether to read it. */
