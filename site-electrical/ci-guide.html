@@ -299,17 +299,26 @@
   </div>
   <div class="ci-spec" style="border-bottom:none">
     <span class="ci-spec__meta">Button · Hanken Grotesk 700 · 14 (inferred, flagged for review)</span>
-    <div><dl-button variant="primary">Book a Free Site Assessment</dl-button></div>
+    <div><dl-button variant="primary">Book Your Free Site Visit</dl-button></div>
   </div>
 
   <h3 class="sl-title" style="margin:32px 0 8px">Case</h3>
-  <p class="ci-lede" style="margin-bottom:20px">Headings are Title Case; everything inside prose is
-    sentence case. The split follows the copy document, which is the authority on wording.</p>
+  <p class="ci-lede" style="margin-bottom:20px">Hero, section and CTA headings are Title Case at any
+    length. A card or step heading is Title Case up to five words and sentence case past that. Prose
+    is always sentence case. The copy document remains the authority on wording.</p>
   <div class="ci-rules" style="margin-bottom:20px">
-    <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do: headings</span>
-      <p>Title Case for hero and section headings, card titles, step titles and CTA headings.
-      "Solar That Pays For Itself." Minor words stay lower case (<em>a, and, at, for, in, of, on,
-      or, the, to</em>) unless they open the heading.</p></div>
+    <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do: structure</span>
+      <p>Title Case for hero and section headings and the closing CTA, however long they run. These
+      are the page's own structure. "Solar That Pays For Itself." Minor words stay lower case
+      (<em>a, and, at, for, in, of, on, or, the, to</em>) unless they open the heading.</p></div>
+    <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do: cards, five words or fewer</span>
+      <p>Title Case, because a short heading is a label and reads as the name of a thing.
+      "Straight Numbers." "Backup Power." "One Team, Both Jobs."</p></div>
+    <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do: cards, past five words</span>
+      <p>Sentence case, because it has stopped being a label and become a sentence.
+      "We will take on a system we did not install." A grid of four Title Cased sentences shouts
+      four times. This applies to article titles too, and a title is set the same way on its card
+      and on its own page.</p></div>
     <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do: prose</span>
       <p>Sentence case for sub-heads inside body copy, eyebrows, field labels and captions.
       "What will it actually save me?"</p></div>
@@ -345,13 +354,45 @@
   <table class="ci-table" style="margin-bottom:40px">
     <thead><tr><th>Measure</th><th>Desktop</th><th>Below 768px</th></tr></thead>
     <tbody>
-      <tr><td>Section padding</td><td>120px</td><td>64px</td></tr>
+      <tr><td>Section padding</td><td>96px</td><td>56px</td></tr>
+      <tr><td>Panel gap<br><span style="font-weight:400;opacity:.7">band edge to inset panel</span></td><td>40px</td><td>24px</td></tr>
       <tr><td>Between blocks in a section</td><td>40px</td><td>32px</td></tr>
       <tr><td>Gutter</td><td>24px</td><td>16px</td></tr>
       <tr><td>Container</td><td colspan="2">1152px</td></tr>
       <tr><td>Grid gap</td><td colspan="2">20px</td></tr>
     </tbody>
   </table>
+
+  <h3 class="sl-title" style="margin:40px 0 16px">One rhythm, two kinds of band</h3>
+  <p class="ci-lede" style="margin-bottom:20px">A full-bleed section gives 96px from its own edge to
+    its content. An inset panel band, meaning the statement, the closing CTA and the division promo,
+    reaches the same figure by splitting it: <strong>40px of band padding plus the panel's own
+    padding</strong>. The band supplies the gap that shows the panel is inset; the panel supplies the
+    rest.</p>
+  <div class="ci-rules" style="margin-bottom:40px">
+    <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">What goes wrong</span>
+      <p>Giving the band a full section padding <em>and</em> letting the panel keep its own. The two
+      stack, the statement gets close to double the rhythm above its first line, and the page reads as
+      though it has been pulled apart. This shipped once and it is the reason the panel gap token
+      exists.</p></div>
+    <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do</span>
+      <p>Use <code>var(--panel-gap)</code> on the wrapper, never <code>var(--section-pad-y)</code>.
+      A wrapper is not a section.</p></div>
+  </div>
+
+  <h3 class="sl-title" style="margin:40px 0 16px">The one exception: a sector marker</h3>
+  <p class="ci-lede" style="margin-bottom:20px">A <code>dl-sector</code> marker belongs to the section it
+    opens, so a full rhythm between the two reads as a gap inside a heading. The marker and its section
+    sit at <strong>three quarters of the rhythm</strong>: 72px desktop, 42px below 768px. A full rhythm
+    and a half were both tried on the page; one looked disconnected and the other cramped. It is written
+    as a ratio rather than a pixel value so it holds at every breakpoint on its own, and it is the only
+    place the rhythm bends.</p>
+
+  <h3 class="sl-title" style="margin:40px 0 16px">A split with one child is not a split</h3>
+  <p class="ci-lede" style="margin-bottom:40px">Remove a column from <code>cols="split"</code> and the
+    wrapper is usually left behind, which leaves half the band empty at every width above 768px. Remove
+    the wrapper too. The stylesheet collapses a one-child split to a single column so it never looks
+    broken, but that is a net, not the fix.</p>
 
   <h3 class="sl-title" style="margin-bottom:16px">Section rhythm is automatic</h3>
   <p class="ci-lede" style="margin-bottom:20px">Every top-level block inside a section sits 40px from the
@@ -485,10 +526,10 @@
       <tr><td><code>dl-nav-bar</code></td><td>Sticky 72px header. Four links plus the quote button.</td></tr>
       <tr><td><code>dl-subnav</code></td><td>Sticky anchor row. Only on pages serving several audiences in one scroll.</td></tr>
       <tr><td><code>dl-dock</code></td><td>The fixed action pill: phone and quote. Not a second nav. Also renders the back-to-top button.</td></tr>
-      <tr><td><code>.sl-totop</code></td><td>Back to top. Appears after a quarter of the page. Every page has one — enforced by rule 12.</td></tr>
+      <tr><td><code>.sl-totop</code></td><td>Back to top. Appears after a quarter of the page. Every page has one, enforced by rule 12.</td></tr>
       <tr><td><code>dl-hero</code></td><td>Five-layer hero. All five layers required.</td></tr>
       <tr><td><code>dl-section</code></td><td>Section band. <code>bg</code> = page, alt or inverse.</td></tr>
-      <tr><td><code>dl-statement</code></td><td>Full-bleed band, one large line, gradient behind. Breaks up long copy.</td></tr>
+      <tr><td><code>dl-statement</code></td><td>Inset navy panel at the 16px radius, one large line, gradient behind. Breaks up long copy.</td></tr>
       <tr><td><code>dl-grid</code></td><td>Layout. <code>cols</code> = 3, 2 or split.</td></tr>
       <tr><td><code>dl-stack</code></td><td>The canonical opener: eyebrow → heading → body → slot.</td></tr>
       <tr><td><code>dl-heading</code> · <code>dl-text</code> · <code>dl-eyebrow</code></td><td>Standalone type roles.</td></tr>
@@ -496,7 +537,9 @@
       <tr><td><code>dl-list</code> · <code>dl-checklist</code></td><td>Orange dot with a bold lead-in; orange ticks.</td></tr>
       <tr><td><code>dl-card</code></td><td>Flat card. <code>tone</code> = white, warm, sunk, inverse, glass.</td></tr>
       <tr><td><code>dl-step</code></td><td>Numbered process step. The final step in a sequence takes <code>tone="inverse"</code>, one per sequence.</td></tr>
-      <tr><td><code>dl-callout</code></td><td>Warm flat card with an icon. No accent bar.</td></tr>
+      <tr><td><code>dl-sector</code></td><td>The seam between two audiences on a page that serves several. Numbered, because the sectors run in a real order.</td></tr>
+      <tr><td><code>dl-calc</code></td><td>Collapsible wrapper for a calculator. Full width, closed by default except the first on a page. Content inside holds an 880px measure so controls never stretch.</td></tr>
+      <tr><td><code>dl-callout</code></td><td>The highlight block: tinted surface, 3px orange rule, icon. Lead-size copy. Use where a page has to interrupt itself.</td></tr>
       <tr><td><code>dl-faq</code></td><td>Accordion. Use once past three questions.</td></tr>
       <tr><td><code>dl-stat</code> · <code>dl-figures</code> · <code>dl-creds</code></td><td>Numbers: card, band, and the low-density phone restatement.</td></tr>
       <tr><td><code>dl-badge</code> · <code>dl-tag</code></td><td>Status chip; bracketed tag.</td></tr>
@@ -527,14 +570,12 @@
   <div class="ci-demo" style="margin-bottom:12px">
     <dl-button variant="primary">Primary</dl-button>
     <dl-button variant="emphasis">Emphasis</dl-button>
-    <dl-button variant="secondary">Secondary</dl-button>
     <dl-button variant="outline">Outline</dl-button>
     <dl-button variant="primary" size="sm">Small</dl-button>
   </div>
   <div class="ci-demo ci-demo--dark" style="margin-bottom:20px">
     <dl-button variant="emphasis">Emphasis</dl-button>
     <dl-button variant="ghost" on-dark>Ghost on dark</dl-button>
-    <dl-button variant="secondary">Secondary</dl-button>
   </div>
   <h3 class="sl-title" style="margin:32px 0 8px">Paired buttons can fill different colours</h3>
   <p class="ci-lede" style="margin-bottom:16px">Where two buttons sit side by side and each should read as
@@ -543,7 +584,7 @@
     values exist. It is not a licence to introduce a colour.</p>
   <div class="ci-demo" style="margin-bottom:40px">
     <dl-button variant="outline" wipe="orange">Solar</dl-button>
-    <dl-button variant="outline" wipe="navy">Electrical</dl-button>
+    <dl-button variant="outline">Electrical</dl-button>
   </div>
 
   <p class="ci-lede" style="margin-bottom:40px">50px tall, 38px small. 4px radius. Press is a 1px downward
@@ -555,8 +596,8 @@
 
   <h3 class="sl-title" style="margin-bottom:16px">Cards, steps and stats</h3>
   <dl-grid cols="3">
-    <dl-card icon="sun" heading="Service card" body="Flat white card, hairline border, orange icon at 28px."></dl-card>
-    <dl-step step="01" heading="Step card" body="Numbered process step. The final step in a sequence takes the navy inverse tone."></dl-step>
+    <dl-card icon="sun" heading="Service Card" body="Flat white card, hairline border, orange icon at 28px."></dl-card>
+    <dl-step step="01" heading="Step Card" body="Numbered process step. The final step in a sequence takes the navy inverse tone."></dl-step>
     <dl-stat label="Registration" value="[pending]" sub="Number to be confirmed"></dl-stat>
   </dl-grid>
   <p class="ci-lede" style="margin:20px 0 20px"><strong>When a card goes navy.</strong> Exactly one place:
@@ -577,14 +618,107 @@
     <dl-card tone="inverse" heading="Inverse" body="Hover: edge brightens against the navy."></dl-card>
   </dl-grid>
 
+  <h3 class="sl-title" style="margin:40px 0 16px">Which skill owns which job</h3>
+  <p class="ci-lede" style="margin-bottom:20px">Copy is not written by feel here. Every kind of copy
+    has a skill that owns it, and the skill is <strong>run</strong>, not remembered. Applying a
+    skill's principles from memory is not the same thing and must never be reported as if it were.</p>
+  <div class="tw" style="margin-bottom:20px"><table class="ci-table">
+    <thead><tr><th>Job</th><th>Skill</th><th>Watch for</th></tr></thead>
+    <tbody>
+      <tr><td>Headlines, subheads, button labels, section openers</td><td><code>landing-page-copy</code></td><td>Take its mechanism and specificity discipline. Ignore its urgency devices: suppression framing and manufactured scarcity would read as a scam on a six-figure purchase.</td></tr>
+      <tr><td>Argument sections, anything whose job is to get the next block read</td><td><code>direct-response-copy</code></td><td></td></tr>
+      <tr><td>Reviewing or critiquing copy, before and after a change</td><td><code>copychief</code></td><td>Run it on the source being changed, not on whatever happens to be live.</td></tr>
+      <tr><td>Any claim about tax, tariffs, municipal rules, finance terms, competitors, or a number</td><td><code>compliance-checker</code></td><td>It is a checklist. Run it.</td></tr>
+      <tr><td>Copy for use off-site</td><td><code>ad-copy</code></td><td></td></tr>
+    </tbody>
+  </table></div>
+  <div class="ci-rules" style="margin-bottom:40px">
+    <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do</span>
+      <p><strong>Verify, then persuade.</strong> A claim about how somebody else charges, taxes or
+      regulates does not go on a page without a document behind it. Knowing a claim is true is
+      permission to say it plainly, not an instruction to cite it.</p></div>
+    <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Don't</span>
+      <p>Hedge an unsourced claim. Hedging keeps the risk and loses the force. Cut it instead, and
+      put it back when the source exists.</p></div>
+    <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Not the problem</span>
+      <p>Marketing and sales language. This is a site that has to convert interest into enquiries.
+      The rule is about unverified facts, never about persuasive writing.</p></div>
+  </div>
+
+  <h3 class="sl-title" style="margin:40px 0 16px">Hover is a promise</h3>
+  <p class="ci-lede" style="margin-bottom:20px">Hover state and the pointer cursor both say that
+    something happens. On a block you cannot act on they teach a reader that the signal means
+    nothing, and the reader then stops trusting it on the elements where it does.</p>
+  <div class="ci-rules" style="margin-bottom:40px">
+    <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do</span>
+      <p>A card hovers if it <em>is</em> a link or <em>contains</em> one. Written as
+      <code>.sl-card:has(a, button, summary):hover</code>, so it follows the content rather than
+      the author's memory. Enforced from the other side by rule 17, which fails a pointer cursor on
+      anything that is not a control.</p></div>
+    <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Don't</span>
+      <p>Give a callout, a statement or a plain content card a hover. A callout also takes no hover
+      at all: the generic card hover set <code>border-color</code> on every side and turned its
+      3px accent edge grey.</p></div>
+  </div>
+
+  <h3 class="sl-title" style="margin:40px 0 16px">Marks are icons, never characters</h3>
+  <p class="ci-lede" style="margin-bottom:20px">A disclosure marker, an arrow, a plus: all icons
+    from the set. Never a typed character in a <code>content:</code> property. A glyph centres on
+    its font's metrics rather than on its box, cannot be restyled with the set, and is not in the
+    vocabulary. Two shipped inside disclosure controls before rule 16 existed. Letters and digits
+    are fine: a step number, a counter, a label.</p>
+
+  <h3 class="sl-title" style="margin:40px 0 16px">One card tone per section</h3>
+  <p class="ci-lede" style="margin-bottom:40px">Tone belongs to the band, not the card. White steps
+    up from a beige ground; warm does not. A section that runs a row of white cards and then a row
+    of warm ones reads as two design systems sharing a page, and that is what a reader notices
+    before anything else. Navy remains the final step of a numbered sequence and nothing else.
+    Enforced by rule 15, which counts content cards only: a callout is the highlight tint by
+    definition and a stat is glass by definition, so neither is a tone choice.</p>
+
+  <h3 class="sl-title" style="margin:40px 0 16px">Highlight</h3>
+  <p class="ci-lede" style="margin-bottom:20px">The callout is the highlight block, and the tint is not
+    optional. Its whole job is to interrupt, so a callout that sits at the same value as the band
+    behind it is a bug rather than a quieter choice. Tinted surface, a 3px rule, an orange icon, and
+    copy at lead size rather than the 16px default. The tint is roughly 7% orange in beige, never the
+    accent colour itself: a solid orange block competes with the page's one emphasis button.
+    Use it where a page has to stop and say one thing. Not more than one or two per page.</p>
+  <div style="margin-bottom:40px">
+    <dl-callout icon="bolt">
+      <p class="sl-split-copy__label">The part most people miss</p>
+      <p class="sl-body">It is not only the rate per unit going up. The fixed monthly charge has been
+        climbing faster than the rate.</p>
+    </dl-callout>
+  </div>
+
   <h3 class="sl-title" style="margin:40px 0 16px">Statement band</h3>
-  <p class="ci-lede" style="margin-bottom:20px">One large line with the dawn gradient drifting behind it,
-    full bleed. This is what breaks up a long service page: a beat between two runs of prose.
-    One per two or three sections; more and it stops being a break.</p>
-  <div style="margin-bottom:40px;border-radius:var(--radius-md);overflow:hidden">
+  <p class="ci-lede" style="margin-bottom:20px">One large line with the dawn gradient drifting behind it.
+    This is what breaks up a long service page: a beat between two runs of prose.
+    One per two or three sections; more and it stops being a break. It is an inset panel at the 16px
+    radius, the same shape as the closing CTA and the promo card, not a full-bleed band: every dark
+    block on a page wears the same corner.</p>
+  <div style="margin-bottom:40px">
     <dl-statement eyebrow="Worth knowing"
       text="A system built to cut your bill is sized around |what you actually use"></dl-statement>
   </div>
+
+  <h3 class="sl-title" style="margin:40px 0 16px">Article cards</h3>
+  <p class="ci-lede" style="margin-bottom:20px">A card pointing at an article carries a cover image and
+    a publish date. The date sits above the heading in the mono face at label size, because when
+    something was written is part of deciding whether to read it. Pass it as
+    <code>date="2026-08-30"</code> and the component prints it and writes the
+    <code>&lt;time datetime&gt;</code>. The cover is the subject of the piece, never a product shot.</p>
+  <dl-grid cols="2" style="margin-bottom:40px">
+    <dl-card photo="images/blog/grid-tied-home.jpeg" photo-alt="A home with rooftop solar"
+      date="2026-08-30" heading="Why your electricity bill went up"
+      body="Cover, date, sentence case heading past five words.">
+      <dl-actions><dl-button variant="outline" icon="arrow-right" href="blog.html">Read</dl-button></dl-actions>
+    </dl-card>
+    <dl-card heading="Backup Power"
+      body="A card that is not an article takes neither. Five words or fewer, so the heading stays Title Case.">
+      <dl-actions><dl-button variant="outline" icon="arrow-right" href="blog.html">Read</dl-button></dl-actions>
+    </dl-card>
+  </dl-grid>
 
   <h3 class="sl-title" style="margin-bottom:16px">Question sets</h3>
   <p class="ci-lede" style="margin-bottom:20px">Three or fewer questions can be cards. More than three
@@ -717,10 +851,11 @@
     <thead><tr><th>Rule</th><th>Detail</th></tr></thead>
     <tbody>
       <tr><td>Spelling</td><td>South African English: colour, organised, licence (noun) / license (verb)</td></tr>
-      <tr><td>Headings</td><td>Title Case. Sub-heads inside prose are sentence case.</td></tr>
+      <tr><td>Headings</td><td>Hero, section and CTA headings are Title Case. Card and step headings are Title Case to five words, sentence case past that. Prose sub-heads are sentence case.</td></tr>
       <tr><td>Claims</td><td>No superlatives, nothing unverifiable. Specific checkable facts instead.</td></tr>
       <tr><td>First use</td><td>"Certificate of Compliance" and "Section 12B" spelled out in full</td></tr>
-      <tr><td>Punctuation</td><td>No em or en dashes, anywhere. Use a colon, comma or full stop for an aside instead, and reserve parentheses for a genuine side note</td></tr>
+      <tr><td>Punctuation</td><td><strong>No em dash in copy, ever.</strong> Use a colon, comma or full stop for an aside, and reserve parentheses for a genuine side note. Enforced by rule 14, which reads the rendered page rather than the source, so a dash inside a code comment is fine and a dash inside a script's output string is not.<br>The en dash is a different character doing a different job and is allowed where it is correct typography: numeric ranges (6&#8211;9 years), time ranges (08:00&#8211;18:00) and the empty-value glyph on a live stat card</td></tr>
+      <tr><td>The site visit</td><td>One label everywhere, on all three sites: <strong>Book Your Free Site Visit</strong>. Enforced by rule 13. Electrical's compliance inspection is a different action and is not covered</td></tr>
       <tr><td>Emoji</td><td>None, anywhere</td></tr>
       <tr><td>Unknowns</td><td>Visible bracketed placeholders, never invented, never silently dropped</td></tr>
     </tbody>

@@ -31,7 +31,22 @@ a composition of `<dl-*>` elements and copy — nothing else.
 4. **Hanken Grotesk and JetBrains Mono only**, bundled in `shared/fonts/`.
    Never Feature Deck, Aeonik Pro or Social Mono — those are licensed to
    another brand.
-5. **Sentence case headings.** "Book a site assessment", never Title Case.
+5. **Heading case.** Hero, section and CTA headings Title Case. Card and step
+   headings Title Case to five words, sentence case past that. Prose sub-heads
+   sentence case. One label for the site visit: "Book Your Free Site Visit".
+
+6. **Skills are not optional.** Copy work runs through the skill that owns it:
+   `landing-page-copy` for headlines and CTAs, `direct-response-copy` for
+   argument sections, `copychief` for every review, `compliance-checker` for
+   any claim about tax, tariffs, municipal rules, finance or a number.
+   Applying a skill's principles from memory is not running it, and must never
+   be reported as if it were. Full table in SYSTEM.md.
+7. **Hover and pointer cursor only on things you can act on.** A card hovers
+   if it is or contains a link. Rule 17.
+8. **Marks on controls are icons from the set.** Never a typed "+" or minus.
+   Rule 16.
+9. **One card tone per section.** Navy is the final step of a numbered
+   sequence and nothing else. Rule 15.
 
 ## Shape of a page
 
@@ -45,7 +60,7 @@ a composition of `<dl-*>` elements and copy — nothing else.
         heading="Solar and electrical from |one team"
         body="…">
         <dl-actions>
-          <dl-button variant="emphasis" icon="arrow-right" href="#assessment">Book a site assessment</dl-button>
+          <dl-button variant="emphasis" icon="arrow-right" href="#assessment">Book Your Free Site Visit</dl-button>
           <dl-button variant="ghost" on-dark href="contact.html">Talk to us</dl-button>
         </dl-actions>
       </dl-stack>
@@ -65,7 +80,7 @@ a composition of `<dl-*>` elements and copy — nothing else.
 </dl-section>
 
 <dl-cta heading="Find out what your roof |can actually do" body="…"
-  action="Book a site assessment" href="contact.html"></dl-cta>
+  action="Book Your Free Site Visit" href="contact.html"></dl-cta>
 
 <dl-footer></dl-footer>
 ```

@@ -202,7 +202,7 @@ Two families. **Hanken Grotesk** (display and body) and **JetBrains Mono**
 ## Spacing, radius, elevation
 
 8px rhythm: 4, 8, 16, 24, 32, 40, 48, 64, 80, 120.
-Section padding 120px desktop / 64px mobile. Gutter 24 / 16. Container 1152px.
+Section padding 96px desktop / 56px mobile. Gutter 24 / 16. Container 1152px.
 
 **Section rhythm is automatic.** Every top-level block inside a `<dl-section>`
 sits 40px from the next (32px below 768px). Do not add margins between a
@@ -221,7 +221,7 @@ exactly 0px of travel. Any future sticky component hits the same trap.
 for the header alone, `145px` where a section nav is present
 (`body:has(dl-subnav)`). Add sticky chrome later and you must update those two
 numbers, or every in-page link lands its target underneath the bars — silently,
-and worst on mobile where section padding is only 64px.
+and worst on mobile where section padding is only 56px.
 
 **Cards have a hover state: the hairline alone.** The border warms over 100ms
 and nothing else moves — no fill change, no lift, no shadow, no scale. A card
@@ -265,15 +265,117 @@ opacity. That motion is the point of the block. Don't flatten it.
 
 ---
 
+## Spacing
+
+- `--section-pad-y` 96px desktop, 56px below 768px. A full-bleed section's
+  padding, edge to content.
+- `--panel-gap` 40px desktop, 24px below 768px. The gap between an INSET
+  PANEL band and its own edge: the statement, the closing CTA, the promo.
+  The panel's own padding supplies the rest, so a panel band lands on the
+  same rhythm as a section. **Never put `--section-pad-y` on a panel
+  wrapper.** Doing that stacks two paddings and gives the block 168px above
+  its first line. That shipped once.
+- A `cols="split"` grid with one child is not a split, it is half an empty
+  band. Remove the wrapper when you remove the column.
+- **One exception, and only one.** A `dl-sector` marker belongs to the section
+  it opens, so a full rhythm between the two reads as a gap inside a heading.
+  The pair sits at three quarters of the rhythm: 72px desktop, 42px below
+  768px. Written as `calc(var(--section-pad-y) * 0.75)`, a ratio rather than a
+  pixel value, so it holds at every breakpoint without a second media query.
+  A full rhythm and a half were both tried on the page and both were wrong.
+- The model is the same figure on every page of every site at every width.
+  If a band looks different from the band above it, the fix is in this file,
+  not a margin on the page.
+
+## Skills: which one, for which job
+
+**Never write or change copy without running the skill that owns it.** These
+are installed globally at `~/.claude/skills/`. Applying their principles from
+memory is not the same as running them and must not be described as if it were.
+
+| Job | Skill | Non-negotiable |
+|---|---|---|
+| Headlines, subheads, button labels, hero and section openers | `landing-page-copy` | Take its mechanism and specificity discipline. Ignore its urgency devices: suppression framing and fake scarcity would destroy credibility here. |
+| Argument sections, anything whose job is to get the next block read | `direct-response-copy` | |
+| Reviewing or critiquing any copy, before and after a change | `copychief` | Run it on the SOURCE being changed, not on whatever is currently live. |
+| Any claim about tax, tariffs, municipal rules, finance terms, competitors, or a number | `compliance-checker` | Run the checklist. It is a checklist, not a philosophy. |
+| Copy for use off-site | `ad-copy` | |
+
+House rules apply to all of them, always: no invented facts, no jargon, no AI
+writing patterns, no em dash.
+
+**Verification before persuasion.** A claim about how somebody else charges,
+taxes or regulates does not go on a page without a document behind it. Where
+there is no document the claim is cut, not hedged: hedging keeps the risk and
+loses the force. Marketing and sales language is not the problem and never was.
+
+## Interaction
+
+- **Never a light-on-light button at rest.** On cream, a button is NAVY at rest
+  and wipes to ORANGE on hover. The outline variant used to be a transparent box
+  with a warm hairline, which on a cream ground is a control you only find if
+  you already know it is there, on the same page as a solid navy dock button
+  that announces itself perfectly well. Enforced by rule 18, which measures the
+  button's own background against the first painted ground behind it and fails
+  under 1.6:1. A button with no background of its own is exempt: ghost over
+  photography is deliberate, and the scrim does that work.
+  `.sl-btn--secondary` was retired by this rule. It was cream on beige at
+  1.09:1, no page used it, and it survived only as a CI guide specimen.
+- **A counted claim is checked against the file it counts.** The reviews
+  section states twenty reviews because `reviews.data.js` holds twenty.
+  Refresh the export without touching the copy and rule 19 fails the build.
+  A number that used to be true is how a verified claim quietly becomes an
+  invented one.
+- **Hover and the pointer cursor are promises.** Only something you can act on
+  may have either. A card hovers if it IS a link or CONTAINS one, and not
+  otherwise. Enforced by rule 17 and by `.sl-card:has(a, button, summary)`.
+- **Marks on controls are icons from the set, never typed characters.** No
+  "+", no minus sign, no arrow glyph in a `content:` property. A glyph centres
+  on its font's metrics rather than its box and cannot be restyled with the
+  set. Enforced by rule 16.
+- **One card tone per section.** Tone belongs to the band, not the card: white
+  steps up from a beige ground, warm does not. Navy is the final step of a
+  numbered sequence and nothing else. Enforced by rule 15.
+- **The dock waits.** It stays down until the reader has scrolled past the bar
+  under the hero: the anchor row on a service page, the trust strip on a home
+  page. Nothing overlaps a control the reader has not asked for yet.
+
 ## Copy
 
-- **Sentence case headings.** "Book a site assessment", never "Book A Site
-  Assessment".
+- **Voice: contractions.** Body copy, answers and prose take contractions.
+  "It isn't worth doing yet" is what a person says; "It is not worth doing yet"
+  is what a contract says, and the house voice asks for knowledgeable, not
+  stiff. Eyebrows and button labels take none: they are label copy and a
+  contraction reads as a typo at that size.
+
+  Headings are a judgement, not a default. Use one only where it carries the
+  line: "Every Unit You Make Is One You Don't Buy" is the hook, and "Do Not Buy"
+  would kill it. This started life as a flat rule saying no contractions in any
+  heading, which was tested against the estate before it was written down and
+  would have broken exactly that approved headline. It is a judgement here
+  because it could not survive being a rule.
+
+  **This one is NOT gate-checked**, and that is deliberate. A possessive and a
+  contraction are the same apostrophe, so "Plentify's case studies" and
+  "you can't" cannot be told apart mechanically without flagging the first.
+  Everything else in this file that reads like a rule IS enforced; treat the
+  absence of a check here as the exception it is.
+
+- **Heading case.** Hero, section and CTA headings are Title Case at any
+  length. Card and step headings are Title Case to five words and sentence
+  case past that. Prose sub-heads are always sentence case. Enforced by
+  `shared/sunlogic-check.js` rule 6.
+- **One label for the site visit.** "Book Your Free Site Visit", everywhere,
+  on all three sites. Enforced by `shared/sunlogic-check.js` rule 13.
 - South African English — colour, organised, licence (noun) / license (verb).
 - No superlatives, no unverifiable claims. Specific checkable facts instead.
 - Spell out "Certificate of Compliance" and "Section 12B" in full on first use
   per page.
-- Em dashes for asides.
+- **No em dash in copy, ever.** Colon, comma or full stop for an aside.
+  Enforced by `shared/sunlogic-check.js` rule 14, which reads the RENDERED
+  page: a dash in a code comment is fine, a dash in a string the page
+  prints is not. The en dash stays legal where it is correct typography:
+  numeric ranges, time ranges, and the empty-value glyph on a stat card.
 - Knowledgeable, not technical. Someone who knows the trade, not a friendly
   stranger. No hype, no stiffness.
 - **No emoji.** Ever.
