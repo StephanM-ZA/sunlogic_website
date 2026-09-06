@@ -53,6 +53,77 @@
         gap: 0.75rem;
       }
 
+      /* A slider field puts its name and its value on ONE line and gives
+         the slider the width underneath. The label used to sit alone on
+         the line above, which spent a whole row on a field name and made
+         a two-control form look like a long one. */
+      .plugin-calc-input-group:has(.plugin-calc-slider-row) {
+        display: grid;
+        grid-template-columns: 1fr 7rem;
+        column-gap: 1rem;
+        row-gap: 0.6rem;
+        align-items: center;
+      }
+      .plugin-calc-input-group:has(.plugin-calc-slider-row) > label {
+        grid-area: 1 / 1; margin-bottom: 0;
+      }
+      .plugin-calc-input-group:has(.plugin-calc-slider-row) .plugin-calc-slider-row {
+        display: contents;
+      }
+      .plugin-calc-input-group:has(.plugin-calc-slider-row) .plugin-calc-range {
+        grid-area: 2 / 1 / 3 / -1;
+      }
+      .plugin-calc-input-group:has(.plugin-calc-slider-row) .plugin-calc-number {
+        grid-area: 1 / 2; width: 100%;
+      }
+
+      /* Everything past the headline figure collapses. A reader who wants
+         the number gets it without scrolling; a reader who wants the
+         working asks for it. */
+      /* This is a control, not a footnote. It was a small orange text link
+         and read as one, so a reader who wanted the working scrolled past
+         it. Tinted bar, its own border, and the marker at the far right
+         where a disclosure marker belongs. */
+      .plugin-calc-more { margin-top: 1.25rem; }
+      .plugin-calc-more__summary {
+        display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+        list-style: none; cursor: pointer;
+        padding: 0.85rem 1.1rem; min-height: 52px;
+        border: 1px solid var(--plugin-calc-highlight-edge, #F5D6AE);
+        border-radius: var(--plugin-calc-radius);
+        background: var(--plugin-calc-highlight, #FEEDD9);
+        transition: background 120ms ease-out, border-color 120ms ease-out;
+      }
+      .plugin-calc-more__summary::-webkit-details-marker { display: none; }
+      .plugin-calc-more__summary:hover {
+        background: var(--plugin-calc-highlight-hover, #F0E5CF);
+        border-color: var(--plugin-calc-accent);
+      }
+      .plugin-calc-more__summary:focus-visible { outline: 2px solid var(--plugin-calc-accent); outline-offset: 2px; }
+      .plugin-calc-more__text { display: grid; gap: 0.15rem; }
+      .plugin-calc-more__label {
+        font-weight: 700; font-size: 1rem; color: var(--plugin-calc-accent); line-height: 1.3;
+      }
+      .plugin-calc-more__hint {
+        font-size: 0.8rem; color: var(--plugin-calc-text-muted); line-height: 1.4;
+      }
+      /* An icon from the set, never a typed character. A glyph centres on
+         its font's metrics rather than on the box, and it is not in the
+         icon vocabulary. chevron-down, rotated when open. */
+      .plugin-calc-more__mark {
+        flex: 0 0 auto;
+        width: 28px; height: 28px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        background: var(--plugin-calc-accent); color: #fff;
+      }
+      .plugin-calc-more__mark svg {
+        width: 18px; height: 18px; display: block;
+        transition: transform 140ms ease-out;
+      }
+      .plugin-calc-more[open] .plugin-calc-more__mark svg { transform: rotate(180deg); }
+      .plugin-calc-more[open] .plugin-calc-more__summary { margin-bottom: 0.25rem; }
+      .plugin-calc-more .plugin-calc-detail { margin-top: 1rem; padding-top: 0; border-top: 0; }
+
       .plugin-calc-range {
         flex: 1;
         accent-color: var(--plugin-calc-accent);
@@ -191,6 +262,15 @@
     document.head.appendChild(style);
   }
 
+  /* The icon set is the only source of marks. Falls back to the same
+     Heroicons chevron inline so the plugin still works standalone. */
+  function chevronIcon() {
+    if (window.dlIcons && window.dlIcons['chevron-down']) return window.dlIcons['chevron-down'];
+    return '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" ' +
+      'stroke-width="1.5" stroke="currentColor" aria-hidden="true">' +
+      '<path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"></path></svg>';
+  }
+
   function formatRand(amount) {
     const rounded = Math.round(amount);
     const withSeparators = rounded.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -200,7 +280,7 @@
   function formatCo2(annualCo2Kg, treesEquivalent) {
     const tons = annualCo2Kg / 1000;
     const tonsText = tons >= 1 ? tons.toFixed(1) + ' tons' : Math.round(annualCo2Kg) + ' kg';
-    return `~${tonsText} of CO₂ avoided per year — roughly the same as ${Math.round(treesEquivalent)} trees planted.`;
+    return `~${tonsText} of CO₂ avoided per year, roughly the same as ${Math.round(treesEquivalent)} trees planted.`;
   }
 
   /* `payback` draws a break-even line at the system cost, and shades the
@@ -232,7 +312,7 @@
       breakEven =
         `<line x1="0" y1="${y}" x2="${width}" y2="${y}" stroke="var(--plugin-calc-text-color, currentColor)" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"/>` +
         `<text x="${width - 4}" y="${(toY(payback) - 5).toFixed(1)}" text-anchor="end" font-size="10" fill="var(--plugin-calc-text-color, currentColor)" opacity="0.7">Estimated system cost</text>`;
-      label += `. The dashed line marks the estimated system cost — bars before the crossing are the payback period, shaded lighter. The dip midway is a real inverter-replacement cost, not a data error.`;
+      label += `. The dashed line marks the estimated system cost. Bars before the crossing are the payback period, shaded lighter. The dip midway is a real inverter-replacement cost, not a data error.`;
     }
 
     return `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${label}">${bars}${breakEven}</svg>`;
@@ -280,7 +360,7 @@
     `;
   }
 
-  const DISCLAIMER_TEXT = 'Figures are indicative estimates based on typical Western Cape conditions and standard industry assumptions — not a formal system design or finance offer. Contact us for an accurate, site-specific quote.';
+  const DISCLAIMER_TEXT = 'Figures are indicative estimates based on typical Western Cape conditions and standard industry assumptions. Not a formal system design or finance offer. Contact us for an accurate, site-specific quote.';
 
   class PluginCalculator extends HTMLElement {
     connectedCallback() {
@@ -303,8 +383,17 @@
         <div class="plugin-calc-card">
           <div class="plugin-calc-inputs">${inputsHtml}</div>
           <div class="plugin-calc-headline" aria-live="polite"></div>
-          <div class="plugin-calc-detail"></div>
-          <div class="plugin-calc-disclaimer">${DISCLAIMER_TEXT}</div>
+          <details class="plugin-calc-more">
+            <summary class="plugin-calc-more__summary">
+              <span class="plugin-calc-more__text">
+                <span class="plugin-calc-more__label">See the full breakdown</span>
+                <span class="plugin-calc-more__hint">System size, cost and the payback chart</span>
+              </span>
+              <span class="plugin-calc-more__mark" aria-hidden="true">${chevronIcon()}</span>
+            </summary>
+            <div class="plugin-calc-detail"></div>
+            <div class="plugin-calc-disclaimer">${DISCLAIMER_TEXT}</div>
+          </details>
           <form class="plugin-calc-gate" novalidate>
             <label for="${this._instanceId}-email">Want this estimate emailed to you?</label>
             <div class="plugin-calc-gate-row">
@@ -447,7 +536,7 @@
 
         emailInput.value = '';
         if (status) {
-          status.textContent = "Sent — we'll email that report shortly.";
+          status.textContent = "Sent. We'll email that report shortly.";
           clearTimeout(this._emailStatusTimer);
           this._emailStatusTimer = setTimeout(() => { status.textContent = ''; }, 5000);
         }
@@ -512,7 +601,7 @@
       const math = window.PluginCalculatorMath;
       const headline = this.querySelector('.plugin-calc-headline');
       const includeBattery = this._getBatteryToggle();
-      const batteryNote = includeBattery ? 'With battery storage' : 'Panels only, grid-tied — no backup during an outage';
+      const batteryNote = includeBattery ? 'With battery storage' : 'Panels only, grid-tied. No backup during an outage';
 
       if (this._mode === 'sme') {
         const bill = this._getFieldValue('bill', 15000);
@@ -532,12 +621,12 @@
                 <div class="plugin-calc-headline-figure">${formatRand(result.monthlySavings)}</div>
               </div>
             </div>
-            <p class="plugin-calc-pivot-fallback">That's an estimated ${formatRand(result.pivot)}/month back in your pocket, from day one.</p>
+            <p class="plugin-calc-pivot-fallback">That's an estimated ${formatRand(result.pivot)}/month better off, on these figures.</p>
             <p class="plugin-calc-headline-note">${batteryNote}</p>
           `;
         } else {
           headline.innerHTML = `
-            <p class="plugin-calc-pivot-fallback">At this size, financing may run close to or above your savings — this is where site-specific numbers matter. Let's talk it through.</p>
+            <p class="plugin-calc-pivot-fallback">At this size, financing may run close to or above your savings. This is where site-specific numbers matter. Let's talk it through.</p>
             <p class="plugin-calc-headline-note">${batteryNote}</p>
           `;
         }

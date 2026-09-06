@@ -117,23 +117,19 @@
   .sl-division__list li::before { content: ""; flex: 0 0 6px; width: 6px; height: 6px;
     margin-top: 8px; border-radius: 50%; background: var(--color-orange); }
 
-  /* .sl-cols centres its two columns, which is right for a copy-and-image pair
-     but not for a copy-and-card one: the shorter card floats off the heading it
-     belongs beside. Top-aligned, the eyebrow and the card's own heading start
-     on the same line. */
-  #company .sl-cols { align-items: start; }
+  /* Two spacing overrides used to live here and have been removed. Both were
+     written before --panel-gap existed, when a panel wrapper still carried a
+     full --section-pad-y and so stacked a second gap on the one the section
+     above had just closed with. That is fixed in the stylesheet now: a panel
+     band takes --panel-gap and lands on the same rhythm as a section.
 
-  /* The closing CTA is an inset card on its own gutter wrap, and that wrap
-     opens a full section gap on top of the one the section above just closed
-     with — 240px of beige between the contact card and the callout. The
-     section's own bottom padding is the gap; the wrap's top is a second one. */
-  dl-cta .sl-cta-wrap { padding-top: 0; }
-
-  /* The trust band belongs to the hero block, not to a section of its own, so
-     the first real section continues from it rather than opening the full
-     section-to-section gap. The system defines two section gaps; this takes
-     the smaller one rather than inventing a third. */
-  #divisions .sl-section { padding-top: var(--section-gap-mobile); }
+     The first zeroed the closing CTA's wrapper. The second gave the section
+     under the trust band the mobile gap at every width. Each looked local and
+     harmless; together they made the apex home page the one page in the
+     estate whose bands did not match, which is the thing a reader notices
+     before they notice anything else. A page does not get its own rhythm. If
+     a band looks wrong here it is wrong everywhere, and the fix belongs in
+     shared/sunlogic.css. See SYSTEM.md, Spacing. */
 </style>
 </head>
 <body>
@@ -150,20 +146,26 @@
     <dl-reveal>
       <dl-stack level="hero" eyebrow="Sunlogic SA"
         heading="Two Trades, |One Contractor"
-        body="Certified electrical contracting and compliance. Solar, backup and smart control. One registered company, across the Western Cape.">
+        body="A solar system is an electrical installation. Hire one company to fit it and another to sign it off, and the day something goes wrong you're standing between them. We hold both trades under one registration, so one name goes on the certificate.">
         <dl-actions>
-          <dl-button variant="emphasis" icon="arrow-right" href="#divisions">See What We Do</dl-button>
+          <dl-button variant="emphasis" icon="arrow-right" href="#divisions">Find the Right Division</dl-button>
         </dl-actions>
       </dl-stack>
     </dl-reveal>
   </div>
 </dl-hero>
 
+<!-- Three items, all provable, and the same three the energy home page
+     carries. "300+ systems installed" used to sit in the third slot. It was
+     removed from energy earlier for having nothing behind it and stayed here,
+     which is how one unverifiable number survives a cleanup: it was on the
+     page nobody was reviewing that day. Put it back the moment there is a
+     figure that can be shown, and not before. -->
 <div class="sl-trust">
   <div class="sl-trust__inner">
+    <span>Registered electrical contractor</span>
     <span>Compliance certificate on every job</span>
     <span>Council registration handled for you</span>
-    <span>300+ systems installed</span>
   </div>
 </div>
 
@@ -173,7 +175,7 @@
   <dl-reveal>
     <dl-stack eyebrow="Two divisions"
       heading="Which One |Do You Need?"
-      body="If it makes power, stores it or controls it, that is Energy. If it is wiring, a fault, a board or a certificate, that is Electrical. Same company either way, and the same standard behind both."></dl-stack>
+      body="If it makes power, stores it or controls it, that's Energy. If it's wiring, a fault, a board or a certificate, that's Electrical. Same company either way, and the same standard behind both."></dl-stack>
   </dl-reveal>
   <dl-reveal>
     <dl-grid cols="2">
@@ -214,6 +216,7 @@
             <li>Fault finding, rewiring and distribution boards</li>
             <li>Compliance certificates for sales, leases and insurers</li>
             <li>Fire damage and insurance claim work</li>
+            <li>EV charger installation, for home and business</li>
             <li>Three phase, commercial maintenance and sub-metering</li>
               </ul>
               <dl-actions>
@@ -230,22 +233,29 @@
 
 <dl-section bg="alt" id="why">
   <dl-reveal>
-    <dl-stack eyebrow="Why Sunlogic" heading="What You Get |Either Way"></dl-stack>
+    <dl-stack eyebrow="Why Sunlogic" heading="What Stays the Same |Either Way"></dl-stack>
   </dl-reveal>
   <dl-reveal>
     <!-- Four cards in a two-column grid, so the grid is always full. cols="3"
          drops to two columns between 768 and 1024, where three cards leave an
-         orphan on its own row. The fourth takes tone="inverse" — the same rule
-         the numbered steps follow, where the sequence ends on navy. -->
+         orphan on its own row.
+
+         All four take the same tone, and none of them is navy. This comment
+         used to claim the fourth was, which was either stale or aspirational;
+         either way it was wrong, and a wrong comment about a colour rule is
+         how the colour rule gets broken by the next person who trusts it.
+         Navy is the final step of a NUMBERED SEQUENCE and nothing else
+         (rule 15). These four are a set of equals with no order, so there is
+         no final step to give it to. -->
     <dl-grid cols="2">
-      <dl-card icon="clipboard-document-check" heading="Certified, and it goes on paper"
-        body="Every job ends with the certificate it needs, and council and SSEG registration is handled as part of the work rather than left with you."></dl-card>
-      <dl-card icon="chart-bar" heading="Straight numbers"
-        body="Solar sized and costed from your actual bills, electrical work quoted against a scope you can read. If something is not worth doing yet, we will say so rather than quote it anyway."></dl-card>
-      <dl-card icon="wrench-screwdriver" heading="One team, both trades"
-        body="A solar system is an electrical installation. Having both under one registered company means nobody is arguing about whose work the fault is."></dl-card>
-      <dl-card tone="inverse" icon="chat-bubble-left-right" heading="We stay in touch"
-        body="Monitoring, scheduled check-ups and someone to phone when something is not right. The person who quoted the job is usually the one you see again."></dl-card>
+      <dl-card icon="clipboard-document-check" heading="We Take On Half-Finished Work"
+        body="A system whose installer has gone quiet, a board somebody else left in a state, paperwork that was never issued. Plenty of people are holding one of those, and sorting it out is a good part of what we do."></dl-card>
+      <dl-card icon="chart-bar" heading="Straight Numbers"
+        body="If something isn't worth doing yet, we'll say so rather than quote it anyway. Solar is sized and costed from your actual bills, and electrical work is quoted against a scope you can read."></dl-card>
+      <dl-card icon="wrench-screwdriver" heading="Nobody to Chase"
+        body="The same people design it, install it, certify it and come back to service it. Your job does not get handed to a subcontractor you have never met and cannot get hold of."></dl-card>
+      <dl-card icon="chat-bubble-left-right" heading="We Stay in Touch"
+        body="Monitoring, scheduled check-ups and someone to phone when something isn't right. The person who quoted your job stays on it."></dl-card>
     </dl-grid>
   </dl-reveal>
 </dl-section>
@@ -261,10 +271,17 @@
      running page / alt / page / alt down the page. -->
 <dl-section bg="page" id="reviews">
   <dl-reveal>
-    <dl-stack eyebrow="Reviews" heading="What Customers |Say"
-      body="Real reviews from Google, not curated testimonials.">
+    <!-- No counts here, deliberately. A tally has to be re-checked against
+         reviews.data.js every time that export is refreshed, and the claim that
+         actually lands does not need one: people who were passed around do not
+         come back and write the installer's first name. Rule 19 still stands
+         and will fail the build if a number ever reappears here without
+         matching the data file. -->
+    <dl-stack eyebrow="Reviews" heading="They Remember |Who Turned Up"
+      body="Read our Google reviews and the same two names keep coming up. People write about Stephan and Craig by name, which isn't what anyone does after being passed between a call centre and a subcontractor they never met. The relationship is the job. It's the part we work hardest at, and it's the part they write about.">
       <dl-actions>
-        <dl-button variant="outline" icon="arrow-right" href="https://g.page/r/Cda0Ro0gwWNMEAI/review" target="_blank" rel="noopener">Leave a Review</dl-button>
+        <dl-button variant="outline" icon="google" href="https://g.page/r/Cda0Ro0gwWNMEAI" target="_blank" rel="noopener">Read Them on Google</dl-button>
+        <dl-button variant="outline" icon="pencil-square" href="https://g.page/r/Cda0Ro0gwWNMEAI/review" target="_blank" rel="noopener">Leave a Review</dl-button>
       </dl-actions>
     </dl-stack>
   </dl-reveal>
@@ -273,37 +290,32 @@
   </dl-reveal>
 </dl-section>
 
+<!-- "Not a call centre" is a claim until the reader can see who is not in it.
+     A four-item checklist used to sit under the paragraph here; every line of
+     it repeated either the paragraph beside it or the trust strip at the top
+     of the page, so the section said the same two credentials for the third
+     time. The two directors are on the page instead: new here, provable, and
+     the only thing a small contractor can show that a call centre cannot.
+     Same two people, same photographs and roles as contact.html. -->
 <dl-section bg="alt" id="company">
-  <dl-grid cols="split">
-    <dl-reveal>
-      <dl-stack eyebrow="The company"
-        heading="Not a Call Centre"
-        body="Sunlogic SA works across the Western Cape. Both directors run the teams and manage the projects themselves, so the person who quotes your job is the one answerable for how it goes.">
-        <dl-checklist items="Both directors run the teams and the projects|The person who quotes your job stays on it|Compliance certificate on every job|Council and SSEG registration handled for you"></dl-checklist>
-      </dl-stack>
-    </dl-reveal>
-    <dl-reveal>
-      <dl-card tone="warm">
-        <div class="sl-card__stack">
-          <h3 class="sl-title">Get in touch</h3>
-          <p class="sl-body">One number for both divisions. Tell us what you need and we will point you at the right team.</p>
-        </div>
-        <div style="display:grid;gap:16px">
-          <dl-contact-row icon="phone" label="Office" items='[{"text":"+27 (82) 655 5371","href":"tel:+27826555371"},{"text":"+27 (82) 443 7799","href":"tel:+27824437799"}]'></dl-contact-row>
-          <dl-contact-row icon="envelope" label="Sales" value="sales@sunlogic.co.za" href="mailto:sales@sunlogic.co.za"></dl-contact-row>
-          <dl-contact-row icon="map-pin" label="Address" value="9 Chesham Road, Claremont, Cape Town, 7708"></dl-contact-row>
-          <dl-contact-row icon="clock" label="Hours" value="08:00 to 18:00, weekdays"></dl-contact-row>
-        </div>
-      </dl-card>
-    </dl-reveal>
-  </dl-grid>
+  <dl-reveal>
+    <dl-stack eyebrow="The company"
+      heading="Not a Call Centre"
+      body="Sunlogic SA works across the Western Cape from one office in Claremont. Both directors run the teams and manage the projects themselves, so the person who quotes your job is the one answerable for how it goes."></dl-stack>
+  </dl-reveal>
+  <dl-reveal>
+    <dl-grid cols="2">
+      <dl-person photo="images/team/stephan_marais2b.jpg" name="Stephan Marais" job-title="Co-Owner" bio="Runs projects end to end, from the first site visit to the final sign-off." email="stephan@sunlogic.co.za"></dl-person>
+      <dl-person photo="images/team/craig_lewis.jpg" name="Craig Lewis" job-title="Co-Owner" bio="Handles quoting and installs, and stays the point of contact afterwards." email="craig@sunlogic.co.za"></dl-person>
+    </dl-grid>
+  </dl-reveal>
 </dl-section>
 
 <dl-reveal>
   <dl-cta eyebrow="Not sure which you need?"
     heading="Tell Us What You Have, |We Will Point You Right"
-    body="A site visit costs nothing and ends with a straight answer, whichever division ends up doing the work."
-    action="Book a Free Site Assessment"
+    body="An hour at your property, then a written figure and a recommendation, whichever division ends up doing the work."
+    action="Book Your Free Site Visit"
     href="contact.html"></dl-cta>
 </dl-reveal>
 
