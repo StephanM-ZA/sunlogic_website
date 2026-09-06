@@ -123,7 +123,7 @@
         <p class="sl-body">Works with electric geysers, and with solar geysers that circulate on their own. It doesn't work with pumped solar or gas. A home with two geysers needs one for each.</p>
         <div class="sl-price">
           <span class="sl-price__amount">R849 once off, then R149 a month</span>
-          <span class="sl-price__note">One unit per geyser</span>
+          <span class="sl-price__note">Including VAT &middot; one unit per geyser</span>
         </div>
       </dl-card>
       <dl-card tone="white" photo="images/SolarBot_01.webp" photo-alt="The SolarBot solar controller"
@@ -132,7 +132,7 @@
         <p class="sl-body">Works with Sunsynk, Deye and Sungrow inverters on a standard household supply.</p>
         <div class="sl-price">
           <span class="sl-price__amount">R849 once off, then R149 a month</span>
-          <span class="sl-price__note">Extra units R99 a month</span>
+          <span class="sl-price__note">Including VAT &middot; extra units R99 a month</span>
         </div>
       </dl-card>
     </dl-grid>
@@ -190,7 +190,7 @@
   <dl-reveal>
     <dl-callout icon="chat-bubble-left-right">
       <p class="sl-split-copy__label">What you actually get</p>
-      <p class="sl-body">If it finds something on your system, you get a WhatsApp from us. Depending on your subscription, a full report every month as well. Not another app to check, and not an alert firehose you'll mute inside a week: a message from the people who installed it when there's something worth telling you, and silence when there isn't.</p>
+      <p class="sl-body">If it finds something on your system, you get a WhatsApp from us, and a full report every month. Not another app to check, and not an alert firehose you'll mute inside a week: a message from the people who installed it when there's something worth telling you, and silence when there isn't.</p>
     </dl-callout>
   </dl-reveal>
   <!-- Two documents, and they are genuinely different. The customer report is a
@@ -259,25 +259,71 @@
 </dl-section>
 
 <!-- Deliberately last, and deliberately honest about why. -->
-<dl-section bg="alt" id="smart-home">
+<dl-section bg="alt" id="watching">
   <dl-reveal>
-    <dl-stack eyebrow="And then the rest" heading="Worth Doing. Not |Where the Saving Is."
-      body="Once the big things are handled, the rest is worth doing for how it makes the house work rather than for what it takes off the bill. We'd rather say that than let you find out.">
-      <dl-checklist items="Lighting and scenes, including outside lighting that follows the sun rather than a clock|Plugs and appliances that can be switched or scheduled, and that tell you what they're drawing|Gate, garage and access, so you're not hunting for a remote|Sensors for leaks, doors, movement and temperature, mostly useful for what they tell you early|Cameras and intercom, in one app rather than three"></dl-checklist>
-    </dl-stack>
+    <dl-stack eyebrow="What it costs" heading="Most Systems Are Not |Broken. They Are Just Losing."
+      body="A system can run for years without a single fault and still cost you money every month, because it was sized for a house you no longer live in the same way. VoltIQ works that out and says so. The first two below are for one system. The third is for a company looking after a lot of them."></dl-stack>
   </dl-reveal>
-  <!-- House rule: an unresolved fact ships as a VISIBLE bracketed placeholder,
-       never a plausible-looking invention and never a silent omission. The brand
-       list is the detail that decides who somebody phones, so its absence is
-       stated rather than hidden. -->
+  <dl-reveal>
+    <dl-grid cols="3">
+      <dl-card tone="white" icon="home" heading="Home">
+        <p class="sl-body">Your battery empties at nine every night and you buy the rest of the evening back at full price. Your panels hit their ceiling at noon and throw the difference away. Neither of those is a fault, so nothing alerts you and nothing looks wrong.</p>
+        <p class="sl-body">It's the sort of thing you'd only find by reading your own data every day, which is what you're paying us to do.</p>
+        <div class="sl-price">
+          <span class="sl-price__amount">R149 a month</span>
+          <span class="sl-price__note">Excluding VAT, one system</span>
+        </div>
+      </dl-card>
+      <dl-card tone="white" icon="building-office-2" heading="Business">
+        <p class="sl-body">Somebody signed off a payback figure when you bought this. Every month the system quietly underperforms, that figure moves, and nothing on your books tells you it has.</p>
+        <p class="sl-body">Panels running under their own baseline three days running. More than sixty percent of your power still bought from the grid. We find those in the data and tell you what they're costing, in time to do something about it.</p>
+        <p class="sl-body">A business system earns money five days a week, so this tier reports on more of it, regularly. More detail, more of the picture, and that's the whole difference in the price.</p>
+        <div class="sl-price">
+          <span class="sl-price__amount">R199 a month</span>
+          <span class="sl-price__note">Excluding VAT, one system, more detail</span>
+        </div>
+      </dl-card>
+      <dl-card tone="white" icon="chart-bar" heading="Installer">
+        <p class="sl-body">You cannot read a hundred systems every morning. This does, and hands you the shortlist at seven, in your own branding rather than ours.</p>
+        <p class="sl-body">Faults and repeat faults on one side. On the other, the systems that have outgrown themselves: undersized panels, a battery emptying before the evening, an inverter clipping its ceiling. That second list is not a support queue. It is your next month's quotes.</p>
+        <div class="sl-price">
+          <span class="sl-price__amount">R299 a month</span>
+          <span class="sl-price__note">Excluding VAT, whole fleet, co-branded</span>
+        </div>
+      </dl-card>
+    </dl-grid>
+  </dl-reveal>
+</dl-section>
+
+<dl-section bg="page" id="smart-home">
+  <dl-reveal>
+    <dl-stack eyebrow="The rest of the house" heading="After the Big Three, |You're Guessing"
+      body="Hot water, switching and monitoring are where the money is. Everything after them is smaller, and it's better you hear that from us now than work it out from the bill later. What the rest is genuinely good for is ending the guesswork. A metering plug tells you what an appliance actually draws, and once you have that number you can decide whether it's worth scheduling, replacing or leaving alone."></dl-stack>
+  </dl-reveal>
+  <dl-reveal>
+    <dl-grid cols="3">
+      <dl-card icon="chart-bar" heading="Measure Before You Change Anything">
+        <p class="sl-body">Put a metering plug on whatever you suspect. The second fridge in the garage, the tumble dryer, the borehole pump, the chest freezer nobody has opened in a year.</p>
+        <p class="sl-body">A week of readings tells you what that one thing costs to run. It is usually not the appliance everyone in the house has been blaming.</p>
+      </dl-card>
+      <dl-card icon="clock" heading="Then Move It to Daytime">
+        <p class="sl-body">Switching at the board handles what's wired in. This is everything else, the things on a plug that don't care what time they happen.</p>
+        <p class="sl-body">Dishwasher, washing machine, the pool cleaner, anything nobody minds running at eleven in the morning. Each is small on its own. Together they're the difference between a system that carries your day and one that nearly does.</p>
+      </dl-card>
+      <dl-card icon="cog-6-tooth" heading="One Hub, Not Five Apps">
+        <p class="sl-body">Sonoff, Tuya, Shelly and Plentify each arrive with their own app, and a house run from five apps is a house where nobody but the person who set it up ever changes anything.</p>
+        <p class="sl-body">Home Assistant puts them in one place, on a small computer in your house, with what your solar is making shown next to what your appliances are drawing. That is what lets a decision run on conditions instead of a clock. It also keeps working when the internet doesn't.</p>
+      </dl-card>
+    </dl-grid>
+  </dl-reveal>
   <dl-reveal>
     <dl-prose>
-      <p class="sl-body sl-body--lg">[Smart home brands and systems we install and support: placeholder pending]</p>
+      <p class="sl-body sl-body--lg">We install and support Home Assistant, Plentify, Sonoff, Tuya and Shelly, and most smart appliances that will talk to one of them. Lighting, cameras and access control we'll do as well, and they're worth having for how they make the house work. They're just not what changes the bill. Spend there last.</p>
     </dl-prose>
   </dl-reveal>
 </dl-section>
 
-<dl-section bg="page" id="ai">
+<dl-section bg="alt" id="ai">
   <dl-reveal>
     <dl-stack eyebrow="Straight answer" heading="Some of What Gets Called AI |Is a Timer With Better Marketing"
       body="The word is on every solar website in the country and almost none of them say what they mean by it. Here's where we'd draw the line."></dl-stack>
