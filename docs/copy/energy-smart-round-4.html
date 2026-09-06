@@ -1,0 +1,271 @@
+<title>Smart Solutions, Round Four</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Karla:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap">
+
+<style>
+  :root {
+    --paper:   #FBF9F5;
+    --raise:   #FFFFFF;
+    --sunk:    #F3EFE8;
+    --ink:     #1B1D1F;
+    --muted:   #6E6862;
+    --rule:    #E2DBD1;
+    --accent:  #B85300;
+    --kill:    #A8362A;
+    --keep:    #3D6B4E;
+    --shadow:  0 1px 2px rgba(27,29,31,.05);
+
+    --serif: "Newsreader", Georgia, "Times New Roman", serif;
+    --sans:  "Karla", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono:  "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #17191B; --raise: #1F2225; --sunk: #202326;
+      --ink: #EDE8E1; --muted: #9C948B; --rule: #33383C;
+      --accent: #E88A3C; --kill: #E8776A; --keep: #7FB894;
+      --shadow: 0 1px 2px rgba(0,0,0,.3);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #17191B; --raise: #1F2225; --sunk: #202326;
+    --ink: #EDE8E1; --muted: #9C948B; --rule: #33383C;
+    --accent: #E88A3C; --kill: #E8776A; --keep: #7FB894;
+    --shadow: 0 1px 2px rgba(0,0,0,.3);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: var(--sans); font-size: 16.5px; line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 820px; margin-inline: auto; padding: 56px 24px 96px; }
+  @media (max-width: 600px) { .wrap { padding: 36px 18px 64px; } }
+
+  .label {
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: .13em; text-transform: uppercase; color: var(--muted);
+  }
+
+  h1 {
+    font-family: var(--serif); font-weight: 600; font-size: clamp(34px, 6vw, 48px);
+    line-height: 1.1; margin: 10px 0 0; letter-spacing: -.015em; text-wrap: balance;
+  }
+  .standfirst {
+    font-family: var(--serif); font-size: clamp(18px, 2.6vw, 21px); line-height: 1.5;
+    color: var(--muted); margin: 16px 0 0; max-width: 60ch;
+  }
+
+  h2 {
+    font-family: var(--serif); font-weight: 600; font-size: 27px; line-height: 1.2;
+    margin: 0 0 4px; letter-spacing: -.01em; text-wrap: balance;
+  }
+  h3 { font-family: var(--sans); font-weight: 700; font-size: 17px; margin: 0; line-height: 1.35; }
+  p { margin: 0 0 14px; }
+  p:last-child { margin-bottom: 0; }
+
+  section { margin-top: 52px; }
+  .sechead { border-top: 2px solid var(--ink); padding-top: 12px; margin-bottom: 26px; }
+
+  /* --- classification strip --- */
+  .facts {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1px; background: var(--rule); border: 1px solid var(--rule);
+    border-radius: 4px; overflow: hidden; margin-top: 34px;
+  }
+  .facts div { background: var(--raise); padding: 14px 16px; }
+  .facts dt { font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0 0 5px; }
+  .facts dd { margin: 0; font-size: 15px; line-height: 1.4; }
+
+  /* --- score --- */
+  .score {
+    display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;
+    background: var(--sunk); border: 1px solid var(--rule); border-radius: 4px;
+    padding: 20px 22px; margin-top: 34px;
+  }
+  .score__n { font-family: var(--serif); font-size: 46px; font-weight: 600;
+    line-height: 1; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .score__t { flex: 1 1 300px; font-size: 15.5px; color: var(--muted); line-height: 1.5; }
+
+  /* --- findings --- */
+  .find { border: 1px solid var(--rule); border-radius: 4px; background: var(--raise);
+    box-shadow: var(--shadow); margin-bottom: 20px; overflow: hidden; }
+  .find__top { display: flex; gap: 12px; align-items: flex-start;
+    padding: 16px 18px 14px; border-bottom: 1px solid var(--rule); }
+  .chip { flex: 0 0 auto; font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase; padding: 4px 8px; border-radius: 3px;
+    line-height: 1.4; white-space: nowrap; }
+  .chip--high { background: var(--kill); color: #fff; }
+  .chip--med  { background: var(--accent); color: #fff; }
+  .chip--low  { background: var(--sunk); color: var(--muted); border: 1px solid var(--rule); }
+  .chip--done { background: var(--keep); color: #fff; }
+  .chip--open { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+  .chips { display: flex; flex-direction: column; gap: 5px; flex: 0 0 auto; }
+  .find__where { font-family: var(--mono); font-size: 11px; color: var(--muted);
+    margin-top: 5px; letter-spacing: .04em; }
+  .find__body { padding: 16px 18px 18px; }
+  .find__body > * + * { margin-top: 13px; }
+
+  blockquote {
+    margin: 0; padding: 11px 15px; background: var(--sunk);
+    border-left: 3px solid var(--rule); border-radius: 0 3px 3px 0;
+    font-family: var(--serif); font-size: 16.5px; line-height: 1.5;
+  }
+  blockquote.fix { border-left-color: var(--keep); background: transparent;
+    border: 1px solid var(--rule); border-left: 3px solid var(--keep); }
+  .tag { display: block; font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .why { font-size: 14.5px; color: var(--muted); font-style: italic; }
+
+  /* --- voice table --- */
+  .scroller { overflow-x: auto; border: 1px solid var(--rule); border-radius: 4px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; background: var(--raise); }
+  th, td { text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+  th { font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--muted); background: var(--sunk); }
+  tr:last-child td { border-bottom: 0; }
+  td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; }
+  td.page { font-family: var(--mono); font-size: 13px; }
+  .warm { color: var(--accent); font-weight: 700; }
+
+  /* --- lists --- */
+  ul.plain { list-style: none; margin: 0; padding: 0; }
+  ul.plain li { position: relative; padding-left: 22px; margin-bottom: 11px; }
+  ul.plain li::before { content: ""; position: absolute; left: 4px; top: .62em;
+    width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  ul.kill li::before { background: var(--kill); border-radius: 1px; }
+  ul.keep li::before { background: var(--keep); }
+
+  .foot { margin-top: 60px; padding-top: 18px; border-top: 1px solid var(--rule);
+    font-family: var(--mono); font-size: 11.5px; color: var(--muted); line-height: 1.7; }
+</style>
+
+<div class="wrap">
+  <p class="label">Copy Chief &middot; Sunlogic Energy &middot; Round four</p>
+  <h1>Three Questions, Settled</h1>
+  <p class="standfirst">Four rounds on the Smart Solutions page. This one was asked to settle three
+    arguments the previous three had circled without resolving. All three are answered below, and only
+    one of them turned out to need a change to the page.</p>
+
+  <dl class="facts">
+    <div><dt>Round</dt><dd>Fourth. One change applied, two questions answered without one</dd></div>
+    <div><dt>Verdict</dt><dd>The copy is finished. The commercial gaps are not copy</dd></div>
+    <div><dt>Skills run</dt><dd>direct-response-copy wrote the captions, copychief reviewed, landing-page-copy did the headlines</dd></div>
+    <div><dt>Open</dt><dd>Four items, all facts only the owner has</dd></div>
+  </dl>
+
+  <div class="score"><div class="score__n">9</div>
+    <p class="score__t">Nothing left that better writing fixes. What remains is missing information:
+      two of the three pillars still cannot tell a reader what they cost.</p></div>
+
+  <section>
+    <div class="sechead"><h2>Question one: monitoring is 597 words, hot water is 344</h2></div>
+    <p><strong>It is a defensible choice, and I would keep it. The page was making a different claim
+      than I thought.</strong></p>
+    <div class="scroller"><table>
+      <thead><tr><th>Pillar</th><th>Words</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td class="page">hot water</td><td class="n">344</td><td>Two products with specifications. A reader gets it fast</td></tr>
+        <tr><td class="page">switching</td><td class="n">347</td><td>A familiar object doing an unfamiliar job</td></tr>
+        <tr><td class="page">monitoring</td><td class="n warm">597</td><td>No category the reader already has. Everything has to be built</td></tr>
+        <tr><td class="page">AI</td><td class="n">332</td><td>Sells nothing. Positions everything</td></tr>
+        <tr><td class="page">smart home</td><td class="n">58</td><td>Waiting on a brand list</td></tr>
+      </tbody>
+    </table></div>
+    <p style="margin-top:14px">Word count follows how hard something is to explain, not how much it
+      matters. HotBot is a box with a price and a job; VoltIQ is a platform nobody has heard of that
+      produces a document nobody has seen. Cutting it to match hot water would make it worse.</p>
+    <p><strong>The sentence was the problem, not the sections.</strong> "The order that pays" reads as a
+      ranking of importance, and then the page contradicts it with its own layout. It now says "the
+      order to spend in", and adds one line: monitoring gets the most space because it is the one
+      nobody has heard of, not because it comes last. That is the whole fix, and it retires a tension
+      three rounds kept circling.</p>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>Question two: smart home is 58 words and mostly a placeholder</h2></div>
+    <p><strong>It is not earning its place commercially, and cutting it would still be wrong.</strong></p>
+    <p>The page opens by arguing that a lot of smart home is convenience dressed as a saving. Make that
+      argument and then never mention smart home again and you have attacked a category and offered the
+      reader nothing. The section exists to close the loop the thesis opens: yes we do it, no it is not
+      where the saving is, and we would rather say so.</p>
+    <p>So it earns its place argumentatively while being commercially empty. Fifty eight honest words
+      beat two hundred that oversell. <strong>The fix is the brand list, not the word count.</strong>
+      That list turns this from a placeholder into the detail that decides who somebody phones.</p>
+    <div class="scroller"><table>
+      <thead><tr><th>Worth noticing</th><th></th></tr></thead>
+      <tbody>
+        <tr><td class="page">AI section</td><td class="n">332 words, sells nothing</td></tr>
+        <tr><td class="page">Smart home</td><td class="n">58 words, is a service you offer</td></tr>
+      </tbody>
+    </table></div>
+    <p style="margin-top:14px">The page currently spends six times more words disclaiming AI than
+      describing a thing it will actually install for you. The AI section earns its length because it
+      is the most quotable material on the site and it inoculates against every competitor's claims.
+      But that ratio is only defensible while the brand list is missing. Once it lands, smart home
+      should grow.</p>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>Question three: is the page finished</h2></div>
+    <p><strong>As copy, yes.</strong> There is nothing left that better writing improves. The thesis is
+      clear and differentiated, each pillar makes its own argument, the honesty sections do real
+      competitive work, and the page now shows two genuine documents rather than describing them.</p>
+    <p><strong>Commercially, no, and the gap is specific.</strong></p>
+    <div class="scroller"><table>
+      <thead><tr><th>Pillar</th><th>What a reader can find out</th></tr></thead>
+      <tbody>
+        <tr><td class="page">hot water</td><td>R849 once off, R149 a month, R99 for extra units</td></tr>
+        <tr><td class="page">switching</td><td class="warm">nothing</td></tr>
+        <tr><td class="page">monitoring</td><td class="warm">"depending on your subscription"</td></tr>
+      </tbody>
+    </table></div>
+    <p style="margin-top:14px">The one thing you resell has exact figures. The two things you own and
+      build have none. A reader who finishes this page convinced that switching is the right next step
+      cannot find out what it would cost them, and that is the single biggest thing standing between
+      this page and a booking.</p>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>What round four actually changed</h2></div>
+    <ul class="plain">
+      <li><strong>One line added</strong> to the order callout, and its label changed from "The order
+        that pays" to "The order to spend in".</li>
+    </ul>
+    <p>That is all, and it is the right amount for a fourth round. When a review starts proposing
+      rewrites of copy that is already working, it has run out of findings and started manufacturing
+      them.</p>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>Carried forward from earlier rounds</h2></div>
+    <ul class="plain keep">
+      <li><strong>Round three</strong> caught a callout headed "What you actually get" sitting directly
+        above a card headed "What You Get", answering two different questions with the same words. The
+        cards are "Written for You" and "Written for Us" now.</li>
+      <li><strong>Introducing real screenshots changed what the captions had to do.</strong> They were
+        narrating the picture: the report's own headline says the panels are fine, and the caption said
+        it again. Rewritten to carry what the reader cannot see, which is who this was and what they
+        had assumed.</li>
+      <li><strong>The captions assumed a gender.</strong> "He", "his", "him", about a client whose
+        gender is not known and did not need to be. Rewritten through direct-response-copy with that as
+        a hard constraint, and verified: zero gendered pronouns remain on the page.</li>
+      <li><strong>The redaction disclaimer came off</strong> at the owner's instruction. The redaction
+        itself stands: name, street address and station ID were removed before the screenshots were
+        taken, and nothing else was altered.</li>
+    </ul>
+  </section>
+
+  <p class="foot">
+    Four rounds. Written with direct-response-copy, reviewed with copychief, headlines through
+    landing-page-copy.<br>
+    Every VoltIQ figure traces to <code>api/services/analyzer.py</code>, <code>upsell.py</code> or the
+    forensic analysis in the VoltIQ repo. The four inverter brands are the four provider clients that
+    exist. Plentify's verification is owner-confirmed.<br>
+    Conformance gate 25 pages at two viewports, layout sweep 550 page and width combinations, 59 unit
+    tests. Clean on Main and Energy.
+  </p>
+</div>
