@@ -36,7 +36,25 @@ function startServer(rootDir, options) {
       /* Only the preview asks for directory indexes. The runners address every
          page by its full filename, so they never reach this. */
       if (opts.index && rel.endsWith('/')) rel += 'index.html';
-      const file = path.resolve(path.join(root, rel));
+      let file = path.resolve(path.join(root, rel));
+      /* Cloudflare Pages, which is what these sites actually deploy to, serves
+         /blog-post from blog-post.html and /energy from energy/index.html. The
+         preview opts into the same two fallbacks so a URL typed by hand behaves
+         the way it will in production rather than 404ing only here. Deliberately
+         opt-in: the conformance runner and the tests address every file exactly,
+         and a fallback that quietly resolves a wrong path would hide a broken
+         link from the gate instead of failing it. */
+      if (opts.cleanUrls && !fs.existsSync(file)) {
+        /* Extensionless only. /style.css must 404 rather than try style.css.html. */
+        if (!path.extname(rel)) {
+          const asHtml = path.resolve(file + '.html');
+          if (asHtml.startsWith(root) && fs.existsSync(asHtml)) file = asHtml;
+        }
+      }
+      if (opts.cleanUrls && fs.existsSync(file) && fs.statSync(file).isDirectory()) {
+        const asIndex = path.resolve(path.join(file, 'index.html'));
+        if (asIndex.startsWith(root) && fs.existsSync(asIndex)) file = asIndex;
+      }
       /* Refuse anything that escapes the root — this serves a repo directory. */
       if (!file.startsWith(root) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) {
         res.writeHead(404, { 'Content-Type': 'text/plain' });

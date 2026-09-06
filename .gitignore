@@ -55,5 +55,10 @@ design-inspiration/source-images/
 # are the client's, not the site's, and several are unreviewed.
 Sunlogic_Feedback_Decisions.*
 copy/Sunlogic_*
-# One-off screenshot scratch left by an earlier session.
+# One-off scratch scripts. Leading underscore marks a throwaway that duplicates
+# something in scripts/ for a single investigation and is not part of the build.
 _shot.js
+_audit.mjs
+
+# Raw image drops. Originals are converted into site-*/images/ and never committed.
+_incoming/

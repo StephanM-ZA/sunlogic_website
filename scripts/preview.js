@@ -26,7 +26,7 @@ if (!fs.existsSync(DIST)) {
   process.exit(1);
 }
 
-startServer(DIST, { port: PORT, index: true }).then(
+startServer(DIST, { port: PORT, index: true, cleanUrls: true }).then(
   (s) => {
     console.log('preview serving dist/ on http://127.0.0.1:' + s.port + '/');
     for (const site of fs.readdirSync(DIST).filter((d) => fs.statSync(path.join(DIST, d)).isDirectory())) {
