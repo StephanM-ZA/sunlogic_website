@@ -1,0 +1,544 @@
+<title>Worth Knowing, All Four</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Karla:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap">
+
+<style>
+  :root {
+    --paper:   #FBF9F5;
+    --raise:   #FFFFFF;
+    --sunk:    #F3EFE8;
+    --ink:     #1B1D1F;
+    --muted:   #6E6862;
+    --rule:    #E2DBD1;
+    --accent:  #B85300;
+    --kill:    #A8362A;
+    --keep:    #3D6B4E;
+    --shadow:  0 1px 2px rgba(27,29,31,.05);
+
+    --serif: "Newsreader", Georgia, "Times New Roman", serif;
+    --sans:  "Karla", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono:  "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #17191B; --raise: #1F2225; --sunk: #202326;
+      --ink: #EDE8E1; --muted: #9C948B; --rule: #33383C;
+      --accent: #E88A3C; --kill: #E8776A; --keep: #7FB894;
+      --shadow: 0 1px 2px rgba(0,0,0,.3);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #17191B; --raise: #1F2225; --sunk: #202326;
+    --ink: #EDE8E1; --muted: #9C948B; --rule: #33383C;
+    --accent: #E88A3C; --kill: #E8776A; --keep: #7FB894;
+    --shadow: 0 1px 2px rgba(0,0,0,.3);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: var(--sans); font-size: 16.5px; line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 820px; margin-inline: auto; padding: 56px 24px 96px; }
+  @media (max-width: 600px) { .wrap { padding: 36px 18px 64px; } }
+
+  .label {
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: .13em; text-transform: uppercase; color: var(--muted);
+  }
+
+  h1 {
+    font-family: var(--serif); font-weight: 600; font-size: clamp(34px, 6vw, 48px);
+    line-height: 1.1; margin: 10px 0 0; letter-spacing: -.015em; text-wrap: balance;
+  }
+  .standfirst {
+    font-family: var(--serif); font-size: clamp(18px, 2.6vw, 21px); line-height: 1.5;
+    color: var(--muted); margin: 16px 0 0; max-width: 60ch;
+  }
+
+  h2 {
+    font-family: var(--serif); font-weight: 600; font-size: 27px; line-height: 1.2;
+    margin: 0 0 4px; letter-spacing: -.01em; text-wrap: balance;
+  }
+  h3 { font-family: var(--sans); font-weight: 700; font-size: 17px; margin: 0; line-height: 1.35; }
+  p { margin: 0 0 14px; }
+  p:last-child { margin-bottom: 0; }
+
+  section { margin-top: 52px; }
+  .sechead { border-top: 2px solid var(--ink); padding-top: 12px; margin-bottom: 26px; }
+
+  /* --- classification strip --- */
+  .facts {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1px; background: var(--rule); border: 1px solid var(--rule);
+    border-radius: 4px; overflow: hidden; margin-top: 34px;
+  }
+  .facts div { background: var(--raise); padding: 14px 16px; }
+  .facts dt { font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0 0 5px; }
+  .facts dd { margin: 0; font-size: 15px; line-height: 1.4; }
+
+  /* --- score --- */
+  .score {
+    display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;
+    background: var(--sunk); border: 1px solid var(--rule); border-radius: 4px;
+    padding: 20px 22px; margin-top: 34px;
+  }
+  .score__n { font-family: var(--serif); font-size: 46px; font-weight: 600;
+    line-height: 1; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .score__t { flex: 1 1 300px; font-size: 15.5px; color: var(--muted); line-height: 1.5; }
+
+  /* --- findings --- */
+  .find { border: 1px solid var(--rule); border-radius: 4px; background: var(--raise);
+    box-shadow: var(--shadow); margin-bottom: 20px; overflow: hidden; }
+  .find__top { display: flex; gap: 12px; align-items: flex-start;
+    padding: 16px 18px 14px; border-bottom: 1px solid var(--rule); }
+  .chip { flex: 0 0 auto; font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase; padding: 4px 8px; border-radius: 3px;
+    line-height: 1.4; white-space: nowrap; }
+  .chip--high { background: var(--kill); color: #fff; }
+  .chip--med  { background: var(--accent); color: #fff; }
+  .chip--low  { background: var(--sunk); color: var(--muted); border: 1px solid var(--rule); }
+  .chip--done { background: var(--keep); color: #fff; }
+  .chip--open { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+  .chips { display: flex; flex-direction: column; gap: 5px; flex: 0 0 auto; }
+  .find__where { font-family: var(--mono); font-size: 11px; color: var(--muted);
+    margin-top: 5px; letter-spacing: .04em; }
+  .find__body { padding: 16px 18px 18px; }
+  .find__body > * + * { margin-top: 13px; }
+
+  blockquote {
+    margin: 0; padding: 11px 15px; background: var(--sunk);
+    border-left: 3px solid var(--rule); border-radius: 0 3px 3px 0;
+    font-family: var(--serif); font-size: 16.5px; line-height: 1.5;
+  }
+  blockquote.fix { border-left-color: var(--keep); background: transparent;
+    border: 1px solid var(--rule); border-left: 3px solid var(--keep); }
+  .tag { display: block; font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .why { font-size: 14.5px; color: var(--muted); font-style: italic; }
+
+  /* --- voice table --- */
+  .scroller { overflow-x: auto; border: 1px solid var(--rule); border-radius: 4px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; background: var(--raise); }
+  th, td { text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+  th { font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--muted); background: var(--sunk); }
+  tr:last-child td { border-bottom: 0; }
+  td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; }
+  td.page { font-family: var(--mono); font-size: 13px; }
+  .warm { color: var(--accent); font-weight: 700; }
+
+  /* --- lists --- */
+  ul.plain { list-style: none; margin: 0; padding: 0; }
+  ul.plain li { position: relative; padding-left: 22px; margin-bottom: 11px; }
+  ul.plain li::before { content: ""; position: absolute; left: 4px; top: .62em;
+    width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  ul.kill li::before { background: var(--kill); border-radius: 1px; }
+  ul.keep li::before { background: var(--keep); }
+
+  .foot { margin-top: 60px; padding-top: 18px; border-top: 1px solid var(--rule);
+    font-family: var(--mono); font-size: 11.5px; color: var(--muted); line-height: 1.7; }
+</style>
+
+<div class="wrap">
+  <p class="label">Copy Chief &middot; Sunlogic Energy &middot; Worth Knowing, all four posts</p>
+  <h1>Both Solar Articles Describe the Wrong Product</h1>
+  <p class="standfirst">Four posts reviewed worst first. The unit errors and the dead statistic are real and
+    all confirmed, but they are not the serious problem. The serious problem is that the two 2022 solar
+    articles share a mental model in which off-grid means having a battery and grid-tied means not having
+    one, which is not what Sunlogic sells.</p>
+
+  <dl class="facts">
+    <div><dt>Set</dt><dd>Four posts. One from 2026, three carried over from WordPress in 2022</dd></div>
+    <div><dt>Verdict</dt><dd>Rewrite all four. Retire none. One is blocked on prices only you have</dd></div>
+    <div><dt>Worst</dt><dd>Rent-to-Own. It publishes prices nobody has confirmed and an internal note to staff</dd></div>
+    <div><dt>Best</dt><dd>Why Your Electricity Bill Went Up, and it is genuinely good, not just relatively</dd></div>
+  </dl>
+
+  <div class="score"><div class="score__n">4</div>
+    <p class="score__t">Average across the set. Individually: bill 7, off&nbsp;grid 4, five&nbsp;tips 3,
+      rent&nbsp;to&nbsp;own 2. Three of the four contain a statement that is either false, unverifiable,
+      or contradicted by another page on this same site.</p></div>
+
+  <section>
+    <div class="sechead"><h2>The finding that outranks the typos</h2></div>
+    <p><strong>Both 2022 solar articles think a battery is what makes a system off-grid.</strong> Off the
+      Grid vs. Grid-tied says an off-grid system needs "a battery, which comes in different sizes", then
+      describes grid-tied as panels and an inverter, "or an inverter and a battery so that they can keep
+      the lights on during load shedding". Five Tips says to choose between "a grid-tied solution that
+      will supplement your energy requirement when the sun is available or an off-grid system that can
+      store excess solar power produced during the day".</p>
+    <p>That is the same error twice, and it misdescribes the category Sunlogic actually installs. A hybrid
+      grid-tied system with batteries stores excess solar and rides through an outage while staying
+      connected. Off-grid means no connection to the utility at all, which is a different decision with
+      different economics and different failure modes. Two articles telling a reader that the way to store
+      solar is to disconnect from the grid will send people to the wrong quote, and the Noordhoek and
+      Rondebosch Prep installations on the solar page are both the thing these articles say does not
+      exist.</p>
+    <p class="why">Every unit error below is embarrassing. This one loses work.</p>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>Pressure test: should archive pieces be rewritten at all</h2></div>
+    <p>Your callout on Five Tips argues no, and it is a good argument. A dated article is a record, and
+      rewriting the words while keeping the date presents new writing as if it were written then. That is
+      quietly dishonest and I would not do it.</p>
+    <p><strong>But the choice is not rewrite or don't. It is what the date means.</strong> Three routes,
+      and only one of them survives contact with the errors above.</p>
+    <div class="scroller"><table>
+      <thead><tr><th>Route</th><th>Date</th><th>Words</th><th>Holds up?</th></tr></thead>
+      <tbody>
+        <tr><td>Rewrite in place</td><td>2022 kept</td><td>New</td><td>No. Backdates new writing</td></tr>
+        <tr><td>Archive, fix facts only</td><td>2022 kept</td><td>Original</td><td>Leaves press release prose and a live contradiction</td></tr>
+        <tr><td class="warm">Republish as new</td><td class="warm">Today</td><td class="warm">New</td><td class="warm">Yes</td></tr>
+      </tbody>
+    </table></div>
+    <p style="margin-top:14px"><strong>Republish under today's date with a one line provenance note.</strong>
+      "An earlier version of this appeared in 2022." The reader is told exactly what they are reading, the
+      original is honoured, and the rewrite is free to be a real rewrite.</p>
+    <p><strong>There is also a fact that undercuts the archive purity argument.</strong> Rent-to-Own has
+      already been partly rewritten. "Homeowners and businesses are looking at solar to take the biggest
+      controllable line on the bill back under their own control" is not 2022 press release prose, it is
+      current site voice. The archive was breached before this conversation started, and it was breached
+      in the middle of a paragraph, which is the worst possible place because nothing tells the reader
+      which sentences are which.</p>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>The Craig Lewis constraint, and why it dissolves</h2></div>
+    <p><strong>You are right not to write new words for a real person, and the constraint is smaller than
+      it looks.</strong> The quotes exist because these were press releases, and a press release needs an
+      attributed spokesperson to have a voice at all. Republished as Sunlogic's own current writing, the
+      pieces do not need a spokesperson. The company is the voice.</p>
+    <p>So the rule set is short. A quote that still fits stays verbatim, inside quotation marks, attributed.
+      A quote whose surrounding argument has changed comes out entirely, and its substance is restated
+      unquoted in the company's own voice. Nothing is paraphrased inside quotation marks. No quote is
+      lengthened, shortened mid sentence, or moved to a claim it was not making.</p>
+    <p>Applied to the actual quotes: Lewis on "you don't need to go completely off-grid to benefit from a
+      solar system" is still true and still useful, so it can stay. Lewis on "no sign of load shedding
+      easing any time soon" was accurate in July 2022 and is not now, so it goes. Lewis on the perception
+      that solar is too expensive is still true and can stay. That is one quote lost out of four.</p>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>1. Rent-to-Own &middot; 428 words &middot; score 2</h2></div>
+    <p><span class="label">Verdict</span> <strong>Rewrite, and it is the only one of the four that cannot
+      be finished without you.</strong></p>
+
+    <div class="find"><div class="find__top"><div class="chips"><span class="chip chip--high">High</span></div>
+      <div><h3>An internal note to staff is rendered on the live page</h3>
+        <p class="find__where">final line, class sl-hint</p></div></div>
+      <div class="find__body">
+        <blockquote>Pricing (R2 349 / R3 875 a month) is as it appeared live in 2022. Worth confirming
+          against current rates before this goes live.</blockquote>
+        <p>"Before this goes live" is an instruction to a colleague, published. A visitor reads it as the
+          company telling them it does not know its own prices. Nothing else on this page matters until
+          this is gone.</p>
+      </div></div>
+
+    <div class="find"><div class="find__top"><div class="chips"><span class="chip chip--high">High</span></div>
+      <div><h3>The article never answers the question in its own title</h3>
+        <p class="find__where">throughout</p></div></div>
+      <div class="find__body">
+        <p>Rent-to-own has exactly one question attached to it: do I own it at the end. The piece runs 428
+          words on rent-to-own and never says. It describes rented systems, home loan finance and
+          asset-backed finance, and leaves the headline promise unaddressed.</p>
+        <p>It also mixes renting and rent-to-own as if they are one thing, then quotes Lewis explaining
+          rented systems, which are the other thing.</p>
+      </div></div>
+
+    <div class="find"><div class="find__top"><div class="chips"><span class="chip chip--high">High</span></div>
+      <div><h3>The import statistic cannot be true as written</h3>
+        <p class="find__where">opening paragraph</p></div></div>
+      <div class="find__body">
+        <blockquote>South Africa imported solar panels worth nearly R2.2 million in the first months of
+          that year alone.</blockquote>
+        <p>Confirmed, and worse than you flagged. R2.2 million is roughly two residential installations.
+          As a national import figure over several months it is off by orders of magnitude, and it is
+          quoted as evidence of a boom, so the sentence argues against itself to anyone who knows what a
+          system costs. "That year" also has no antecedent anywhere in the piece.</p>
+        <p><strong>Do not correct it to a bigger number.</strong> Neither of us can source the real one.
+          Cut the sentence. The argument stands without it.</p>
+      </div></div>
+
+    <div class="find"><div class="find__top"><div class="chips"><span class="chip chip--med">Medium</span></div>
+      <div><h3>Wrong unit, twice, on a solar installer's website</h3>
+        <p class="find__where">pricing paragraph</p></div></div>
+      <div class="find__body">
+        <blockquote>should produce around 15-20KW of power a day &hellip; produces around 20-35KW of power
+          a day</blockquote>
+        <p>Confirmed. kW is a rate, kWh is a quantity. "20KW of power a day" is not a quantity of anything.
+          The correct unit is kWh, and the capitalisation is wrong too: it is kWh, not KWH or KW.</p>
+        <p>This is the error that costs most reputationally, because it is the one an informed reader spots
+          instantly and it appears on the page where you ask for money.</p>
+      </div></div>
+
+    <div class="find"><div class="find__top"><div class="chips"><span class="chip chip--med">Medium</span></div>
+      <div><h3>Four year old prices published as current</h3></div></div>
+      <div class="find__body">
+        <p>R2 349 and R3 875 a month, from 2022. A price on a contractor's website is read as a quote.
+          Either they are confirmed and republished, or the piece explains the structure and sends the
+          reader to the calculator for a figure. It cannot keep numbers nobody has checked.</p>
+      </div></div>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>2. Five Tips to Beat Load Shedding &middot; 593 words &middot; score 3</h2></div>
+    <p><span class="label">Verdict</span> <strong>Rewrite, and re-aim the premise rather than retiring
+      it.</strong> The tips themselves are good and still work. What expired is the reason given for
+      needing them.</p>
+
+    <div class="find"><div class="find__top"><div class="chips"><span class="chip chip--high">High</span></div>
+      <div><h3>The premise is false in the present tense, in the first and last lines</h3></div></div>
+      <div class="find__body">
+        <blockquote>With no end in sight to load shedding disruptions &hellip; With no sign of load
+          shedding easing any time soon</blockquote>
+        <p>The archive callout tries to manage this by telling the reader the outlook has changed. That is
+          damage control on copy that should simply be correct. A note explaining that the article is wrong
+          is worse than an article that is right.</p>
+        <p><strong>The re-aim is sitting there.</strong> The advice is about outages, and outages did not
+          stop when scheduled load shedding eased. Municipal faults, storms, cable theft and planned
+          maintenance all produce the same evening without power, with the difference that nobody publishes
+          a schedule for them. Same five tips, an honest premise, and a sharper one: you used to know when.</p>
+      </div></div>
+
+    <div class="find"><div class="find__top"><div class="chips"><span class="chip chip--high">High</span></div>
+      <div><h3>Tip four contradicts the flagship page</h3></div></div>
+      <div class="find__body">
+        <blockquote>Only switch on your geyser when you need warm water.</blockquote>
+        <p>Confirmed, and it is a direct contradiction rather than a soft one. Smart Solutions argues that a
+          geyser running to a human decision is precisely the problem, that people forget, go away, and
+          heat water for a house nobody is in, and it sells a product to fix it. This post tells the same
+          reader to do it manually.</p>
+        <p>The tip is not wrong so much as superseded. Rewritten, it becomes the strongest internal link in
+          the set: the geyser is the biggest load, here is the manual version, here is what we do about it
+          properly.</p>
+      </div></div>
+
+    <div class="find"><div class="find__top"><div class="chips"><span class="chip chip--med">Medium</span></div>
+      <div><h3>An unsourced percentage</h3></div></div>
+      <div class="find__body">
+        <blockquote>you will use up to 20% less power to heat it up</blockquote>
+        <p>Confirmed unsourced. "Up to" is doing the work of a citation. Either source it or state the
+          mechanism without a number: a geyser blanket slows standing losses, so the element runs less to
+          hold temperature. That is true, checkable and needs no figure.</p>
+      </div></div>
+
+    <div class="find"><div class="find__top"><div class="chips"><span class="chip chip--med">Medium</span></div>
+      <div><h3>A UPS does not do what tip two says it does</h3></div></div>
+      <div class="find__body">
+        <blockquote>If you have a UPS system (uninterrupted power supply), this will kick in with
+          additional power when the electricity switches off.</blockquote>
+        <p>Found on my own read. A UPS does not supply additional power. It keeps the existing load running
+          without a break, which is a different claim and the actual reason to own one. The tip also welds
+          two unrelated ideas together: unplug against surges on restoration, and buy a UPS.</p>
+      </div></div>
+
+    <div class="find"><div class="find__top"><div class="chips"><span class="chip chip--low">Low</span></div>
+      <div><h3>Voice</h3></div></div>
+      <div class="find__body">
+        <blockquote>Both are really great solutions, but with the recent increase in fuel prices, maybe a
+          consideration for a greener solution is the way to go!</blockquote>
+        <p>An exclamation mark, "really great", "maybe", and a swerve into fuel prices that belongs to a
+          generator argument the article never makes. Also "do what they can to get through the outages as
+          best they can" in the opening line.</p>
+      </div></div>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>3. Off the Grid vs. Grid-tied &middot; 325 words &middot; score 4</h2></div>
+    <p><span class="label">Verdict</span> <strong>Rewrite. Best bones of the three archive pieces.</strong>
+      It answers a question people genuinely ask and it is the natural feeder to the calculator. It just
+      never finishes.</p>
+
+    <div class="find"><div class="find__top"><div class="chips"><span class="chip chip--high">High</span></div>
+      <div><h3>It poses a question in the title and never answers it</h3></div></div>
+      <div class="find__body">
+        <p>Confirmed. The piece describes off-grid, describes grid-tied, and stops. No recommendation, no
+          "here is how you tell which one you are", nothing. A comparison article that does not compare is
+          a glossary.</p>
+        <p>Worse, the site has an opinion and states it everywhere else. The answer for almost every house
+          is hybrid grid-tied, and off-grid is for properties with no viable connection or an owner who
+          wants it for reasons that are not financial. Say that.</p>
+      </div></div>
+
+    <div class="find"><div class="find__top"><div class="chips"><span class="chip chip--med">Medium</span></div>
+      <div><h3>Two electrical errors in one paragraph</h3></div></div>
+      <div class="find__body">
+        <blockquote>the inverter which converts the low voltage received from the panels to high-voltage
+          230VA</blockquote>
+        <p>Confirmed on 230VA: volt amps are apparent power, not voltage. Two more found on my read. The
+          conversion that matters is DC to AC, and the article never mentions it, so it describes the
+          inverter's job without naming what the inverter actually does. And 230V is not high voltage; by
+          any standard used in this country it is low voltage. Three errors, one sentence, on the component
+          the company sells.</p>
+      </div></div>
+
+    <div class="find"><div class="find__top"><div class="chips"><span class="chip chip--med">Medium</span></div>
+      <div><h3>Sunlight hours</h3></div></div>
+      <div class="find__body">
+        <blockquote>South Africa enjoys about four to six hours of sunlight a day</blockquote>
+        <p>Found on my read. South Africa gets far more than six hours of daylight. The figure being
+          reached for is peak sun hours, which is a different measure and worth naming, because naming it
+          correctly is the sort of thing that separates an installer from a reseller.</p>
+      </div></div>
+
+    <div class="find"><div class="find__top"><div class="chips"><span class="chip chip--med">Medium</span></div>
+      <div><h3>A promise one hyperlink away from being kept</h3></div></div>
+      <div class="find__body">
+        <blockquote>Sunlogic offers calculators that do this based on your monthly electricity bill.</blockquote>
+        <p>The calculator exists, on the solar page, and this sentence does not link to it. It is the single
+          highest value link available anywhere in this set and it is currently a dead mention.</p>
+      </div></div>
+
+    <div class="find"><div class="find__top"><div class="chips"><span class="chip chip--med">Medium</span></div>
+      <div><h3>Both images belong to a competitor</h3></div></div>
+      <div class="find__body">
+        <p>Confirmed. Hero and in-body are credited to stendysolar.co.nz, a New Zealand solar company. The
+          credit is honest, and it still means the two photographs illustrating a South African installer's
+          own explainer are somebody else's installations on the other side of the world.</p>
+      </div></div>
+
+    <div class="find"><div class="find__top"><div class="chips"><span class="chip chip--low">Low</span></div>
+      <div><h3>Municipal approval is vaguer than it needs to be</h3></div></div>
+      <div class="find__body">
+        <blockquote>make sure that any inverter you use has been approved by your local municipality</blockquote>
+        <p>True but soft, and it is a place where the company's own expertise should show rather than hide.
+          The reader's actual question is who checks this, and the answer is that Sunlogic does, as part of
+          the job.</p>
+      </div></div>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>4. Why Your Electricity Bill Went Up &middot; 465 words &middot; score 7</h2></div>
+    <p><span class="label">Verdict</span> <strong>Keep and finish. It is genuinely good, not just good by
+      comparison.</strong> Sourced to NERSA, the City of Cape Town, Mail &amp; Guardian and Energize, with
+      a real thesis that the rest of the site does not make anywhere else: the growing part of your bill is
+      the part solar cannot touch. The chart carries its own alt text and its own sources. This is the
+      standard the other three should be rewritten to.</p>
+
+    <div class="find"><div class="find__top"><div class="chips"><span class="chip chip--med">Medium</span></div>
+      <div><h3>It ends by handing the reader back to themselves</h3></div></div>
+      <div class="find__body">
+        <blockquote>a proper assessment has to be based on your actual usage pattern and tariff, not a rule
+          of thumb.</blockquote>
+        <p>You called this correctly. It is true, it is the right conclusion, and it sends nobody anywhere.
+          The reader has just been shown that a growing slice of their bill is immune to solar. The obvious
+          next sentence is that a fixed charge you cannot avoid makes it matter more, not less, what you do
+          with the usage you can still control, and that is the entire Smart Solutions argument, one click
+          away, unlinked.</p>
+      </div></div>
+
+    <div class="find"><div class="find__top"><div class="chips"><span class="chip chip--low">Low</span></div>
+      <div><h3>The only post in the set with no author</h3></div></div>
+      <div class="find__body">
+        <p>Two posts carry Craig Lewis, one carries a bare date, and this one carries "Sunlogic SA". Pick
+          one convention. If the company is the author, say so on all four. I am not inventing a byline for
+          this piece.</p>
+      </div></div>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>Does "Worth Knowing" have a reason to exist</h2></div>
+    <p><strong>Not as it stands. It has one available, and it is the site's own spine.</strong> Four posts
+      currently read as whatever was to hand. Named properly they are a sequence, and the tags already half
+      admit it.</p>
+    <div class="scroller"><table>
+      <thead><tr><th>Post</th><th>The question it answers</th><th>Sends you to</th></tr></thead>
+      <tbody>
+        <tr><td class="page">bill went up</td><td>What is my electricity actually costing, and why</td><td>Smart Solutions</td></tr>
+        <tr><td class="page">off grid vs grid tied</td><td>What kind of system do I need</td><td>Calculator</td></tr>
+        <tr><td class="page">rent to own</td><td>How do I pay for it</td><td>Contact</td></tr>
+        <tr><td class="page">five tips</td><td>What do I do tonight, with no system at all</td><td>Hot water pillar</td></tr>
+      </tbody>
+    </table></div>
+    <p style="margin-top:14px">Cost, then system, then payment, then what to do meanwhile. That is a
+      complete arc for somebody deciding about solar, and it happens to be the same order the rest of the
+      site argues in. It needs no new posts. It needs the four to know about each other.</p>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>The verdict</h2></div>
+    <p><strong>Top three, by impact.</strong></p>
+    <ul class="plain">
+      <li>Fix the off-grid-means-battery model in both solar posts. It is the only error in this set that
+        sends somebody to the wrong quote.</li>
+      <li>Delete the staff note and the unverifiable import figure from Rent-to-Own, today, before anything
+        else on that page is touched.</li>
+      <li>Republish the three archive pieces under today's date with a provenance line, which is what makes
+        an honest rewrite possible at all.</li>
+    </ul>
+    <p><strong>What is already working.</strong></p>
+    <ul class="plain keep">
+      <li>Why Your Electricity Bill Went Up is properly sourced, has a genuine thesis, and its chart is
+        accessible and cited. Rewrite the other three towards it.</li>
+      <li>The five tips are actually useful. Frozen water bottles in the fridge is the kind of concrete,
+        cheap, immediately actionable advice this whole set should be full of.</li>
+      <li>The archive callout was the right instinct even though the conclusion is being reversed. Somebody
+        noticed the problem and refused to paper over it.</li>
+      <li>Every post ends on the same site visit CTA. Consistency across the set is correct and should stay.</li>
+    </ul>
+    <p><strong>Kill list.</strong></p>
+    <ul class="plain kill">
+      <li>The sl-hint staff note on Rent-to-Own. Publishing an instruction to a colleague.</li>
+      <li>The R2.2 million import figure. Unverifiable and self-defeating.</li>
+      <li>"With no end in sight" and "no sign of load shedding easing any time soon". Both false now, and
+        the second is inside a quotation, so it comes out rather than being edited.</li>
+      <li>"Both are really great solutions &hellip; maybe a consideration for a greener solution is the way
+        to go!"</li>
+      <li>The archive callout on Five Tips, once the article no longer needs apologising for.</li>
+      <li>"230VA", "high-voltage", "15-20KW of power a day", "four to six hours of sunlight".</li>
+    </ul>
+    <p><strong>Blocked on the owner.</strong> Rent-to-Own cannot be completed without current rental
+      pricing, or a decision to describe the structure and send the reader to the calculator instead. That
+      is the only thing in this review that better writing cannot solve.</p>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>Applied, 6 September 2026</h2></div>
+    <p>All four rewritten the same day this review was written. <strong>One change of position from the
+      review above:</strong> instead of republishing the three 2022 pieces under today's date, the
+      published date stays at 2022 and each byline now reads "27 July 2022, updated 6 September 2026",
+      with schema.org dateModified set to match. Same honesty, and it keeps the archive signal and the
+      page age rather than throwing both away.</p>
+    <ul class="plain keep">
+      <li><strong>Off the Grid vs. Grid-tied.</strong> Rewritten around the finding: a section headed
+        "The battery is not what makes a system off-grid" now introduces hybrid properly. 230VA, "high
+        voltage" and the missing DC to AC conversion all corrected. "Four to six hours of sunlight"
+        became peak sun hours, named as such. A "So which one" conclusion answers the title. Calculator
+        linked. Meta description rewritten to lead on the correction.</li>
+      <li><strong>Five Things to Do Before the Power Goes Off.</strong> Retitled, because the old title
+        promised a premise the article no longer has. Re-aimed onto outages that arrive without a
+        schedule. Archive callout removed. UPS tip corrected. The 20% claim replaced by the mechanism.
+        Geyser tip now links the hot water pillar instead of contradicting it. The closing Lewis quote
+        removed rather than edited; the surviving one is verbatim and attributed to when it was said.</li>
+      <li><strong>Rent-to-Own.</strong> Staff note deleted. R2.2 million import figure cut, not corrected.
+        Renting and rent-to-own separated into their own explanations. Both surviving Lewis quotes kept
+        verbatim. Calculator linked.</li>
+      <li><strong>Why Your Electricity Bill Went Up.</strong> New closing section, "What to do about the
+        part you can still control", which turns the fixed-charge thesis into the load-shifting argument
+        and links Smart Solutions and the calculator.</li>
+      <li><strong>Across the set.</strong> Index cards, related-reading cards and llms.txt updated for the
+        retitle and the new descriptions. Four em dashes removed from llms.txt while it was open.</li>
+    </ul>
+    <ul class="plain kill">
+      <li><strong>Blocked, and shipped as visible bracketed placeholders per the house rule:</strong>
+        rent-to-own end of term, and indicative monthly pricing. The 2022 prices were removed rather than
+        republished.</li>
+      <li><strong>Left for the owner:</strong> the two stendysolar.co.nz photographs on Off the Grid vs.
+        Grid-tied, and hero photography on two posts, both pending new images.</li>
+    </ul>
+  </section>
+
+  <p class="foot">
+    Reviewed and applied 6 September 2026 &middot; skill: copychief, rewritten with direct-response-copy<br>
+    Targets: site-energy/blog-why-your-bill-went-up.html, blog-off-grid-vs-grid-tied.html,
+    blog-rent-to-own.html, blog-five-tips-load-shedding.html<br>
+    Ranked worst first. Scores before rewrite: rent to own 2, five tips 3, off grid 4, bill went up 7.<br>
+    Conformance gate clean on all four pages at both viewports; layout sweep clean across 550 page and
+    width combinations.
+  </p>
+</div>
