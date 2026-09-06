@@ -416,6 +416,42 @@
       });
     }
 
+    /* 20 — Card headings inside one grid share one case.
+
+       Rule 6 is correct card by card and still produces sets that read as a
+       mistake: a six-word heading goes to sentence case, its four-word
+       neighbours stay Title Case, and the grid looks like nobody checked it.
+       That was fixed by hand on the energy home page, on solar.html, and twice
+       on the smart page before this rule existed. The defect is not either
+       heading. It is the mix, so the mix is what gets measured.
+
+       The fix is always the copy, not the case: reword the odd one to sit on
+       the same side of five words as its neighbours. Article cards are exempt
+       for the same reason they are exempt from rule 6, and a grid needs at
+       least two judgeable headings before there is a set to be inconsistent
+       about. */
+    document.querySelectorAll('.sl-grid-2, .sl-grid-3, .sl-cols').forEach((grid) => {
+      const titles = [...grid.querySelectorAll('.sl-card .sl-title, .sl-step .sl-title')]
+        .filter((el) => {
+          const card = el.closest('.sl-card, .sl-step');
+          if (card && card.querySelector('.sl-card__date')) return false;
+          if (card && card.querySelector('a[href*="blog-"]')) return false;
+          return true;
+        });
+      if (titles.length < 2) return;
+      const cased = titles.map((el) => {
+        const words = el.textContent.trim().split(/\s+/).filter(Boolean);
+        const sig = words.filter((w) => w.length > 3);
+        if (!sig.length) return null;                 /* "Tax": nothing to judge */
+        return sig.every((w) => /^[A-Z]/.test(w));
+      }).filter((v) => v !== null);
+      if (cased.length < 2) return;
+      if (new Set(cased).size === 1) return;
+      const names = titles.map((el) => '"' + el.textContent.trim() + '"').join(', ');
+      fail('copy', 'one grid, two heading cases: ' + names +
+        '. Reword the odd one so the set sits on one side of five words', titles[0]);
+    });
+
     /* 17 — The pointer cursor belongs to controls.
 
        The companion to the hover rule in the stylesheet. Hover state and
