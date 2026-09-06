@@ -3,18 +3,18 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Smart Control For Your Geyser and Solar | Sunlogic SA</title>
-<meta name="description" content="HotBot and SolarBot smart controllers for your geyser and solar system, installed by Sunlogic SA. Real-time monitoring, less wasted energy, one app."/>
+<title>Smart Hot Water, Switching and Monitoring | Sunlogic SA</title>
+<meta name="description" content="Smart control for the loads that actually move your bill: hot water with Plentify, switching at your board, and VoltIQ monitoring built and run by Sunlogic."/>
 <link rel="canonical" href="https://sunlogic.co.za/energy-management.html"/>
 <meta property="og:type" content="website"/>
 <meta property="og:site_name" content="Sunlogic SA"/>
-<meta property="og:title" content="Smart Control For Your Geyser and Solar | Sunlogic SA"/>
-<meta property="og:description" content="HotBot and SolarBot smart controllers for your geyser and solar system, installed by Sunlogic SA. Real-time monitoring, less wasted energy, one app."/>
+<meta property="og:title" content="Smart Hot Water, Switching and Monitoring | Sunlogic SA"/>
+<meta property="og:description" content="Smart control for the loads that actually move your bill: hot water with Plentify, switching at your board, and VoltIQ monitoring built and run by Sunlogic."/>
 <meta property="og:url" content="https://sunlogic.co.za/energy-management.html"/>
 <meta property="og:image" content="https://sunlogic.co.za/images/energy-hero.webp"/>
 <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:title" content="Smart Control For Your Geyser and Solar | Sunlogic SA"/>
-<meta name="twitter:description" content="HotBot and SolarBot smart controllers for your geyser and solar system, installed by Sunlogic SA. Real-time monitoring, less wasted energy, one app."/>
+<meta name="twitter:title" content="Smart Hot Water, Switching and Monitoring | Sunlogic SA"/>
+<meta name="twitter:description" content="Smart control for the loads that actually move your bill: hot water with Plentify, switching at your board, and VoltIQ monitoring built and run by Sunlogic."/>
 <meta name="twitter:image" content="https://sunlogic.co.za/images/energy-hero.webp"/>
 <link rel="icon" type="image/png" href="images/fav_icon.png"/>
 <link rel="preload" href="shared/fonts/HankenGrotesk-400-latin.woff2" as="font" type="font/woff2" crossorigin/>
@@ -32,125 +32,287 @@
 </head>
 <body data-topic="Smart Solutions">
 <a class="sl-skip-link" href="#main-content">Skip to main content</a>
-<dl-nav-bar active="energy"></dl-nav-bar>
+<dl-nav-bar active="smart"></dl-nav-bar>
 <main id="main-content">
 
-<dl-hero photo="images/energy-hero.webp" fit="contain" alt="HotBot and SolarBot connected to the monitoring app and dashboard">
+<!-- Rewritten from docs/copy/energy-smart-v1.md.
+
+     What this page used to be: one supplier's two geyser controllers and
+     nothing else, which made a page called Smart Solutions into a reseller
+     page. Two of the three pillars here are Sunlogic's own work, and neither
+     of them appeared on it: switching is electrical work at the board, and
+     VoltIQ is a platform Sunlogic built and runs.
+
+     The order of the pillars is the order the page argues for, not a catalogue
+     order: hot water, then switching, then monitoring, then the rest. -->
+<dl-hero photo="images/energy-hero.webp" alt="A modern kitchen at dusk with the lights on, seen from the garden">
   <div class="sl-hero__text">
     <dl-reveal>
-      <dl-stack level="hero" eyebrow="Energy management"
-        heading="Smart Control For Your |Geyser and Solar"
-        body="Two small devices that quietly make your home cheaper to run.">
+      <dl-stack level="hero" eyebrow="Smart solutions"
+        heading="Three Things Move Your Bill. |Lights Are Not One of Them."
+        body="The big loads run to a clock, and a clock knows nothing about your house. Hot water, switching and monitoring: two of those three are our own work rather than a box we resell, and the order you do them in decides whether any of it pays for itself.">
         <dl-actions>
-          <dl-button variant="emphasis" icon="arrow-right" href="contact.html">Get Started</dl-button>
-          <dl-button variant="ghost" on-dark href="#products">See the Devices</dl-button>
+          <dl-button variant="emphasis" icon="arrow-right" href="contact.html">Book Your Free Site Visit</dl-button>
+          <dl-button variant="ghost" on-dark href="#monitoring">See What We Watch For</dl-button>
         </dl-actions>
       </dl-stack>
     </dl-reveal>
   </div>
 </dl-hero>
 
-<dl-reveal>
-  <dl-statement warm eyebrow="Why it matters"
-    text="Your geyser is the single biggest user of electricity |in most homes">
-    <div style="display:grid;gap:16px;max-width:720px">
-      <p class="sl-body sl-body--lg">It heats water on a timer whether you're going to use it or not, and it carries on doing that all year.</p>
-      <p class="sl-body sl-body--lg">These two controllers fix that, and they're managed from one app on your phone.</p>
-    </div>
-  </dl-statement>
-</dl-reveal>
+<dl-subnav items="Hot water=#hot-water|Switching=#switching|Monitoring=#monitoring|Smart home=#smart-home"></dl-subnav>
 
-<!-- Products -->
-<dl-section bg="page" id="products">
+<!-- The thesis. Missing from the page entirely before this rewrite, which is
+     why the page had no argument of its own and read as a product listing. -->
+<dl-section bg="page" id="start-here">
   <dl-reveal>
-    <dl-stack eyebrow="The devices" heading="Two Controllers, |One App"></dl-stack>
+    <dl-stack eyebrow="Start here" heading="A Lot of Smart Home Is |Convenience Dressed as a Saving"
+      body="Voice controlled lights are pleasant. They will not change your bill."></dl-stack>
   </dl-reveal>
   <dl-reveal>
-    <div style="display:flex;flex-wrap:wrap;gap:12px">
-      <dl-tag>Intelligent</dl-tag>
-      <dl-tag>Easy</dl-tag>
-      <dl-tag>Clean</dl-tag>
-      <dl-tag>Cheap</dl-tag>
-    </div>
+    <dl-prose>
+      <p class="sl-body sl-body--lg">What changes your bill is the big things. Hot water. Heating and cooling. The pool. Control those and you move your usage onto power you made instead of power you bought, which is the only mechanism that actually works.</p>
+      <p class="sl-body sl-body--lg">So there's an order to this, and it isn't the order things usually get sold in.</p>
+    </dl-prose>
   </dl-reveal>
+  <dl-reveal>
+    <dl-callout icon="check-circle">
+      <p class="sl-split-copy__label">The order to spend in</p>
+      <p class="sl-body">Hot water first, because that's where the money is. Then switching, because that's the second lot of money and where the nuisance tripping stops. Then monitoring, so you can see what changed. Then the rest, if you want it. Do it backwards and you've bought an expensive light switch.</p>
+      <p class="sl-body">That's the order to spend in, not a ranking of what matters. Monitoring gets the most space below because it's the one nobody has heard of, not because it comes last.</p>
+    </dl-callout>
+  </dl-reveal>
+</dl-section>
+
+<!-- Pillar one -->
+<dl-sector num="01" of="03" name="Hot water" note="Where the money is"></dl-sector>
+<dl-section bg="alt" id="hot-water">
+  <dl-reveal>
+    <dl-stack eyebrow="One, hot water" heading="Your Geyser Doesn&rsquo;t |Know You&rsquo;re Out"
+      body="Your geyser is the biggest single user of electricity in most homes, and it gets there by heating water on a timer whether anyone's going to use it or not. All year. Regardless of the weather, or whether the house is empty."></dl-stack>
+  </dl-reveal>
+  <dl-reveal>
+    <dl-prose>
+      <p class="sl-body sl-body--lg">For this we work with Plentify, a Cape Town company that builds controllers for geysers and solar systems. We've been a partner since 2024 and we were one of their first solar installer partners. We fit and support the hardware, Plentify builds it.</p>
+    </dl-prose>
+  </dl-reveal>
+  <!-- Confirmed by the owner as real, which is why it is on the page. Held back
+       from the first draft on the grounds that the copy doc is a draft rather
+       than a primary source; the owner is the primary source. It is the only
+       third-party verification of anything on this page, and the other two
+       pillars are "we built it", so it carries more weight here than anywhere
+       else on the site. Every figure is stated exactly as recorded: no number
+       is rounded, extended or inferred. -->
+  <dl-reveal>
+    <dl-callout icon="shield-check">
+      <p class="sl-split-copy__label">Checked by somebody other than the people selling it</p>
+      <p class="sl-body">Plentify's technology has been independently tested by a body at the University of Cape Town. It was trialled with the City of Cape Town, Hessequa Municipality and a German development agency across 500 homes, named project of the year by an international energy fund in 2024, and it now runs a municipal programme in Durban.</p>
+      <p class="sl-body">That is rare in this market: a smart energy product whose claims have been checked by somebody other than the company selling it.</p>
+    </dl-callout>
+  </dl-reveal>
+  <dl-actions>
+    <dl-button variant="outline" icon="arrow-right" href="https://plentify.io" target="_blank" rel="noopener">Read More on Plentify</dl-button>
+  </dl-actions>
+  <!-- Two cards, one tone, per rule 15. Photographs are the supplier's own
+       product shots, already in the repo and already used on the old page. -->
   <dl-reveal>
     <dl-grid cols="2">
-      <dl-card>
-        <div style="position:relative;aspect-ratio:4/3">
-          <dl-media src="images/HotBot.webp" alt="The HotBot smart geyser controller and its app"></dl-media>
-        </div>
-        <div class="sl-card__stack">
-          <div><dl-badge>Hot water</dl-badge></div>
-          <h3 class="sl-title">HotBot</h3>
-          <p class="sl-hint">by <a href="https://plentify.io" target="_blank" rel="noopener">Plentify</a> · R849 once off · R149 a month</p>
-          <p class="sl-body">HotBot learns when your household actually uses hot water and heats the geyser to suit, instead of running to a fixed schedule. It also picks up a leak early, which is the difference between a plumber and a new ceiling.</p>
-          <p class="sl-body">It works with electric and solar geysers. A home with two geysers needs one for each.</p>
+      <dl-card tone="white" photo="images/HotBot.webp" photo-alt="The HotBot geyser controller"
+        fit="contain" heading="HotBot">
+        <p class="sl-body">Learns when your household actually uses hot water and heats to suit, instead of running to a clock. It picks up a leak early, which is the difference between a plumber and a new ceiling, and it handles power cuts and holidays on its own.</p>
+        <p class="sl-body">Works with electric geysers, and with solar geysers that circulate on their own. It doesn't work with pumped solar or gas. A home with two geysers needs one for each.</p>
+        <div class="sl-price">
+          <span class="sl-price__amount">R849 once off, then R149 a month</span>
+          <span class="sl-price__note">One unit per geyser</span>
         </div>
       </dl-card>
-      <dl-card>
-        <div style="position:relative;aspect-ratio:4/3">
-          <dl-media src="images/SolarBot_01.webp" alt="The SolarBot solar and battery controller and its app"></dl-media>
-        </div>
-        <div class="sl-card__stack">
-          <div><dl-badge>Solar and battery</dl-badge></div>
-          <h3 class="sl-title">SolarBot</h3>
-          <p class="sl-hint">by <a href="https://plentify.io" target="_blank" rel="noopener">Plentify</a> · R849 once off · R149 a month</p>
-          <p class="sl-body">If you already have solar, SolarBot decides when to charge and when to draw on the battery, leans on your own power rather than the grid wherever it can, and can heat your water off your solar instead of buying electricity to do it.</p>
-          <p class="sl-body">Since a unit you use yourself is worth considerably more than one you sell back, anything that shifts more of your usage onto your own power is working on the right problem.</p>
+      <dl-card tone="white" photo="images/SolarBot_01.webp" photo-alt="The SolarBot solar controller"
+        fit="contain" heading="SolarBot">
+        <p class="sl-body">For a house that already has solar and a battery. It reads the weather forecast, the load shedding schedule and how your household actually behaves, then decides when to charge and when to draw, and it can heat your water off your panels instead of buying electricity to do it.</p>
+        <p class="sl-body">Works with Sunsynk, Deye and Sungrow inverters on a standard household supply.</p>
+        <div class="sl-price">
+          <span class="sl-price__amount">R849 once off, then R149 a month</span>
+          <span class="sl-price__note">Extra units R99 a month</span>
         </div>
       </dl-card>
     </dl-grid>
   </dl-reveal>
+  <!-- Cancellation terms are deliberately absent. The old page, the legal page
+       and Plentify's published terms give three different answers, and the
+       legal page uses "the Free Trial" as a defined term it never defines.
+       Nothing goes here until those three agree. See docs/copy/energy-smart-v1.md. -->
 </dl-section>
 
-<!-- Subscription -->
-<dl-section bg="alt" id="subscription">
-  <dl-grid cols="split">
-    <dl-reveal>
-      <dl-stack eyebrow="How the subscription works" heading="What You Pay, |and For What"
-        body="R849 buys the device. R149 a month covers the app, the monitoring and support."></dl-stack>
-    </dl-reveal>
-    <dl-reveal>
-      <dl-card tone="white">
-        <div class="sl-card__stack">
-          <h3 class="sl-title">Cancellation</h3>
-          <p class="sl-body">During the first 24 months, cancelling costs R750 per device. After that, cancel any time with 20 business days' notice, no fee.</p>
-          <p class="sl-body">Full terms apply: see the <a href="legal.html#energy-management-terms">energy management terms</a> for the complete agreement.</p>
-        </div>
-      </dl-card>
-    </dl-reveal>
-  </dl-grid>
+<!-- Pillar two. Sunlogic's own work, and it had no presence on the site at all
+     before this. -->
+<dl-sector num="02" of="03" name="Switching" note="At your distribution board"></dl-sector>
+<dl-section bg="page" id="switching">
   <dl-reveal>
-    <dl-figures items="R849=Device, once off|R149=Per month, per device|1 app=Both controllers"></dl-figures>
+    <dl-stack eyebrow="Two, switching" heading="Smart Switches on the Things |That Actually Cost You"
+      body="A smart switch is a small relay that sits between your board and an appliance and decides when it runs. Put them on the big loads and you move that usage onto power you made. Put them on lamps and you have a remote control. We fit CBI at the board, and Shelly, Sonoff and Tuya devices where an in-line module suits the job better."></dl-stack>
   </dl-reveal>
-</dl-section>
-
-<!-- Proof — Plentify's own published results, not Sunlogic's. Attributed
-     by name throughout so nothing here reads as a Sunlogic customer claim. -->
-<dl-section bg="page" id="results">
   <dl-reveal>
-    <dl-stack eyebrow="What Plentify's customers report" heading="Plentify's Own |Case Studies"
-      body="These are Plentify's published results, not Sunlogic's. We install the hardware, Plentify builds it.">
-      <dl-actions>
-        <dl-button variant="outline" icon="arrow-right" href="https://plentify.io" target="_blank" rel="noopener">See Plentify's Case Studies</dl-button>
-      </dl-actions>
-    </dl-stack>
+    <dl-callout icon="cog-6-tooth">
+      <p class="sl-split-copy__label">The switch is the cheap part</p>
+      <p class="sl-body">Anyone can fit a relay. What decides whether it saves you anything is what it is told to do, and that is set up against your system, your tariff and how your household actually runs. A smart switch with no logic behind it is a light switch you can reach from the couch.</p>
+    </dl-callout>
   </dl-reveal>
   <dl-reveal>
     <dl-grid cols="3">
-      <dl-stat label="Average bill drop" value="R2 000/mo" sub="Lee-ann, Cape Town, SolarBot customer"></dl-stat>
-      <dl-stat label="Lower electricity usage" value="30%" sub="Brandon Jardine, Legaro Property Development"></dl-stat>
-      <dl-stat label="Backup battery runtime" value="3.5 → 5.5 hrs" sub="Brandon Jardine, Legaro Property Development"></dl-stat>
+      <dl-card icon="sun" heading="Run It When There Is Sun">
+        <p class="sl-body">The switch asks whether there's spare power right now, not what time it is, and starts the geyser, the pool pump or the car charger when there is.</p>
+        <p class="sl-body">Nothing gets exported cheaply that could have been used at full value. It's the most effective thing you can do to a solar system after installing it, and the one most people never get round to.</p>
+      </dl-card>
+      <dl-card icon="bolt" heading="Drop It on a Failure">
+        <p class="sl-body">When the grid fails and the house runs on battery, the last thing you want is the geyser deciding to heat.</p>
+        <p class="sl-body">The big loads drop on the changeover and come back staggered afterwards. Without it, a battery that should have run the house all evening gets emptied by a geyser nobody asked for.</p>
+        <p class="sl-body">Most inverters sold in the last few years have a connection built in for exactly this, and on most installations nothing was ever wired to it.</p>
+      </dl-card>
+      <dl-card icon="scale" heading="Stop Them Fighting">
+        <p class="sl-body">Geyser, pool pump, oven, air conditioning and a car charger will cheerfully all switch on at once and trip your main between them.</p>
+        <p class="sl-body">Given an order, they take turns. The geyser waits for the oven. The pool runs while the sun's up. The car charges overnight. Real money, and the end of nuisance tripping.</p>
+      </dl-card>
+    </dl-grid>
+  </dl-reveal>
+</dl-section>
+
+<!-- Pillar three. VoltIQ has been running in production for months and appeared
+     on no customer-facing page anywhere. Every detection named below is read off
+     api/services/analyzer.py and api/services/upsell.py in the VoltIQ repo, and
+     the four inverter brands are the four provider clients that exist. Nothing
+     here is aspirational. -->
+<dl-sector num="03" of="03" name="Monitoring" note="Built and run by us"></dl-sector>
+<dl-section bg="alt" id="monitoring">
+  <dl-reveal>
+    <dl-stack eyebrow="Three, monitoring" heading="Solar Fails Quietly. |VoltIQ Doesn&rsquo;t."
+      body="The failures that cost you money are the quiet ones. The lights stay on, the inverter hums, the app still shows power coming in, and you find out on the bill six weeks later. VoltIQ is ours: we built it, we run it, and it reads your inverter manufacturer's own cloud data every morning to tell us what changed."></dl-stack>
+  </dl-reveal>
+  <dl-reveal>
+    <dl-callout icon="chat-bubble-left-right">
+      <p class="sl-split-copy__label">What you actually get</p>
+      <p class="sl-body">If it finds something on your system, you get a WhatsApp from us. Depending on your subscription, a full report every month as well. Not another app to check, and not an alert firehose you'll mute inside a week: a message from the people who installed it when there's something worth telling you, and silence when there isn't.</p>
+    </dl-callout>
+  </dl-reveal>
+  <!-- Two documents, and they are genuinely different. The customer report is a
+       plain-language explainer built from the same data as the fleet report the
+       installer works from. Section headings quoted here are the real ones from
+       a report that has been sent. -->
+  <dl-reveal>
+    <dl-grid cols="2">
+      <!-- Both screenshots are real reports that were sent, not mockups. The
+           customer's name, street address and station ID were removed before
+           these were taken; nothing else was altered. Shown contained rather
+           than cropped, for the same reason the product shots are: the point is
+           the document, and cropping a document loses it. -->
+      <dl-card tone="white" photo="images/voltiq-report-customer.webp"
+        photo-alt="The opening of a real VoltIQ customer report, headed Your panels are fine. Your house is not, with the customer's details removed"
+        fit="contain" media="dark" heading="Written for You">
+        <p class="sl-body">This client had been paying noticeably more for months and had concluded the solar was failing. It wasn't. Generation was up 13 percent on the year before.</p>
+        <p class="sl-body">The cause was a 1.4 kW load that never switches off, and it wasn't even new: the same load ran the previous winter. What changed is that it started in May instead of late July, so it ran for 124 days instead of 61. The report ends with four things to do in order, and two that would have been a waste of money.</p>
+      </dl-card>
+      <dl-card tone="white" photo="images/voltiq-report-installer.webp"
+        photo-alt="The opening of the matching VoltIQ installer report, showing grid import up 93 percent against solar yield up 13 percent, with identifying details removed"
+        fit="contain" media="dark" heading="Written for Us">
+        <p class="sl-body">Same house, same data, written for us. It exists because a client deserves an answer, not a theory, and getting to one meant going through 566 days of five minute readings with no gaps.</p>
+        <p class="sl-body">You never see this one, and that's the point. The detector had flagged the load on the sixth of May. The client raised it 119 days later, and by then there was nothing left to work out.</p>
+      </dl-card>
     </dl-grid>
   </dl-reveal>
 </dl-section>
 
 <dl-reveal>
-  <dl-cta eyebrow="Get started"
-    heading="Two Devices, and a |Smaller Bill"
-    body="Fitted and set up by the same team that does your solar and electrical work."
-    action="Get Started"
-    href="contact.html"></dl-cta>
+  <dl-statement eyebrow="Why it is worth watching"
+    text="Nobody phones to say their solar is producing less than it did last month. |That is exactly why we watch it">
+    <p class="sl-body sl-body--lg" style="max-width:720px">One customer's overnight load doubled and stayed there. We measure that against the same house's own last twenty eight nights, not against a fixed number, because a floor that's normal in one home is alarming in another. It flagged on the sixth of May. The client noticed the bills and phoned us 119 days later.</p>
+    <p class="sl-body sl-body--lg" style="max-width:720px">Comparing this April with last April would not have caught it either. Both came out at 29.02 kWh a day, a change of exactly nothing, while the overnight floor had already doubled underneath it.</p>
+  </dl-statement>
+</dl-reveal>
+
+<dl-section bg="page" id="what-it-finds">
+  <dl-reveal>
+    <dl-stack eyebrow="What it looks for" heading="Three Things You |Would Never See"></dl-stack>
+  </dl-reveal>
+  <dl-reveal>
+    <dl-grid cols="2">
+      <dl-card tone="white" icon="lifebuoy" heading="The System Stopped Talking">
+        <p class="sl-body">An inverter that goes offline. Or the harder one: a plant that still reports itself online while its readings have quietly gone stale.</p>
+        <p class="sl-body">That second failure looks like health from the outside, which is exactly why it runs for weeks.</p>
+      </dl-card>
+      <dl-card tone="white" icon="scale" heading="The Battery Ran Flat, Again">
+        <p class="sl-body">Not once. Repeatedly, and cycling deeper each time.</p>
+        <p class="sl-body">One flat battery is a bad day. A pattern is a system that's undersized for how you actually live, and it shortens the life of the battery you already paid for.</p>
+      </dl-card>
+      <dl-card tone="white" icon="chart-bar" heading="Buying More Than You Were">
+        <p class="sl-body">Grid import climbing above your own average, or creeping into the evenings.</p>
+        <p class="sl-body">Either way the system has stopped covering what it used to, and something changed to make that happen. Panels underperforming, an inverter clipping and more export than there should be all show up the same way.</p>
+      </dl-card>
+    </dl-grid>
+  </dl-reveal>
+  <dl-reveal>
+    <dl-prose>
+      <p class="sl-body sl-body--lg">VoltIQ reads Deye, Sunsynk, Luxpower and FoxESS. If you're on one of those, we can watch your system whether we installed it or not, and we'll tell you what we find on somebody else's work.</p>
+    </dl-prose>
+  </dl-reveal>
+  <dl-actions>
+    <dl-button variant="outline" icon="arrow-right" href="contact.html">Put My System on VoltIQ</dl-button>
+  </dl-actions>
+</dl-section>
+
+<!-- Deliberately last, and deliberately honest about why. -->
+<dl-section bg="alt" id="smart-home">
+  <dl-reveal>
+    <dl-stack eyebrow="And then the rest" heading="Worth Doing. Not |Where the Saving Is."
+      body="Once the big things are handled, the rest is worth doing for how it makes the house work rather than for what it takes off the bill. We'd rather say that than let you find out.">
+      <dl-checklist items="Lighting and scenes, including outside lighting that follows the sun rather than a clock|Plugs and appliances that can be switched or scheduled, and that tell you what they're drawing|Gate, garage and access, so you're not hunting for a remote|Sensors for leaks, doors, movement and temperature, mostly useful for what they tell you early|Cameras and intercom, in one app rather than three"></dl-checklist>
+    </dl-stack>
+  </dl-reveal>
+  <!-- House rule: an unresolved fact ships as a VISIBLE bracketed placeholder,
+       never a plausible-looking invention and never a silent omission. The brand
+       list is the detail that decides who somebody phones, so its absence is
+       stated rather than hidden. -->
+  <dl-reveal>
+    <dl-prose>
+      <p class="sl-body sl-body--lg">[Smart home brands and systems we install and support: placeholder pending]</p>
+    </dl-prose>
+  </dl-reveal>
+</dl-section>
+
+<dl-section bg="page" id="ai">
+  <dl-reveal>
+    <dl-stack eyebrow="Straight answer" heading="Some of What Gets Called AI |Is a Timer With Better Marketing"
+      body="The word is on every solar website in the country and almost none of them say what they mean by it. Here's where we'd draw the line."></dl-stack>
+  </dl-reveal>
+  <dl-reveal>
+    <dl-grid cols="2">
+      <dl-card icon="check-circle" heading="The Real Version Is Timing">
+        <p class="sl-body">A system that knows tomorrow's forecast, what your household normally does and what electricity costs at different times can decide when to charge, when to heat water and when to run the pool, and it will do it better than a clock. That's running in South African homes now.</p>
+      </dl-card>
+      <dl-card icon="calculator" heading="This Part Is Just Arithmetic">
+        <p class="sl-body">Working around cheaper and dearer hours works and is worth having. It isn't learning anything. Nor is a fault alert, which is a warning that a number left a range.</p>
+        <p class="sl-body">Software that tells you a part is about to fail before it does is genuinely promising, and we haven't seen it proven on home solar here. We'd rather say so than sell it to you.</p>
+      </dl-card>
+    </dl-grid>
+  </dl-reveal>
+  <dl-reveal>
+    <dl-callout icon="scale">
+      <p class="sl-split-copy__label">And the one you will be sold next</p>
+      <p class="sl-body">You'll start hearing that your battery can earn money by helping the national grid. That's genuinely being built. It also has no formal place in South African electricity rules yet, and the regulator has said it isn't drafting any. So we won't promise you an income from a battery, and be wary of anyone who does. What we will say: buy equipment that can join in later rather than equipment that can't. That choice is cheap now and expensive to undo.</p>
+    </dl-callout>
+  </dl-reveal>
+  <dl-reveal>
+    <dl-prose>
+      <p class="sl-body sl-body--lg">Our position is simple. Buy equipment that can be controlled and can be watched, and let the software earn its keep on top of that.</p>
+    </dl-prose>
+  </dl-reveal>
+</dl-section>
+
+<dl-reveal>
+  <dl-cta eyebrow="Where to start"
+    heading="We Will Tell You Which One |Is Worth Doing First"
+    body="For most houses it is hot water. For a house that already has solar and keeps tripping its main, it is not. An hour at your property settles which, and whether any of it is worth doing on yours yet."
+    action="Book Your Free Site Visit"
+    href="contact.html"
+    phone></dl-cta>
 </dl-reveal>
 
 </main>
