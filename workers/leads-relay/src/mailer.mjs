@@ -19,6 +19,7 @@ import bodyExpired from '../../../emails/body-offer-expired.html';
 import bodyUnclaimed from '../../../emails/body-unclaimed-alert.html';
 import bodyDigest from '../../../emails/body-daily-digest.html';
 import bodyVisitor from '../../../emails/body-visitor-report.html';
+import bodyInternalTest from '../../../emails/body-internal-test.html';
 import { applyRedirect } from './logic.mjs';
 
 const BODIES = {
@@ -28,6 +29,12 @@ const BODIES = {
   unclaimed: bodyUnclaimed,
   digest: bodyDigest,
   visitor_report: bodyVisitor,
+  /* Replies to us, not to a customer. Without it a partner testing the
+     contact form hears nothing at all: no director mail by design, and
+     contact has no visitor auto-reply the way the calculator does. To
+     somebody testing because they do not yet trust the system, silence
+     reads as broken and proves the opposite of what the test was for. */
+  internal_test: bodyInternalTest,
 };
 
 /* From a subdomain, deliberately. sunlogic.co.za's own SPF, DKIM and sending

@@ -213,12 +213,15 @@ async function handleLeadRoute(request, env, ctx, type) {
       event: 'internal_submission_skipped', lead_id: leadId, type, division,
       reason: 'sender is a sunlogic.co.za address; stored but not offered',
     }));
-    /* The visitor still gets what they asked for. A partner testing the
-       calculator should see the estimate arrive, otherwise the test looks
-       like a failure and proves the opposite of what it was meant to. */
+    /* Two replies, and both are wanted. The estimate is the thing a
+       calculator tester actually asked for; the test confirmation is the
+       thing that tells them the exclusion worked rather than the form
+       failing. A contact tester only gets the second, and before it existed
+       got nothing. */
     if (type === 'calculator' && typeof body.email === 'string') {
       ctx.waitUntil(sendVisitorReport(env, leadId, body));
     }
+    ctx.waitUntil(sendInternalTestReply(env, leadId, body.email, division, formatSast(sqliteNow())));
     return jsonResponse({ ok: true }, 200, origin);
   }
 
@@ -327,6 +330,41 @@ async function alertUnclaimed(env, onlyLeadId) {
 /* One way out of this Worker for every non-offer notification. Task 8
    replaces the body with the Resend call and keeps n8n as the fallback;
    until then everything goes through the existing relay. */
+/* The reply to one of our own.
+   ------------------------------------------------------------------
+   Contact submissions have no visitor auto-reply, so before this a partner
+   testing the contact form got nothing at all: the exclusion suppresses the
+   director mail by design, and there was nothing else. Somebody testing
+   because they do not yet trust the system reads silence as broken, which
+   proves the opposite of what they set out to check.
+
+   It says what happened and why, names the lead id so it can be looked up,
+   and describes what a real enquiry would have done instead. A failure here
+   is recorded on the lead like any other, but it is never escalated: this
+   is a courtesy to ourselves, and it must not be able to take a submission
+   path down. */
+async function sendInternalTestReply(env, leadId, email, division, receivedOn) {
+  const result = await send(env, {
+    to: [email],
+    replyTo: 'sales@sunlogic.co.za',
+    subject: 'Test received, and kept out of the rotation',
+    html: compose('internal_test', {
+      divisionLabel: divisionLabel(division),
+      leadId,
+      receivedOn,
+      preheader: 'Recorded as a test. No director was notified.',
+      footnote: 'Sunlogic lead system &middot; sunlogic.co.za',
+    }),
+    leadId,
+    event: 'internal_test',
+  });
+  if (!result.ok) {
+    await env.DB.prepare("UPDATE leads SET last_error=? WHERE id=?")
+      .bind(('internal test reply failed: ' + result.why).slice(0, 400), leadId).run();
+  }
+  return result.ok;
+}
+
 async function sendVisitorReport(env, leadId, payload) {
   const result = await send(env, {
     to: [payload.email],

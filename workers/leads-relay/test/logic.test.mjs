@@ -271,3 +271,35 @@ test('a missing or non-string email is not internal, and never throws', () => {
     assert.strictEqual(isInternalSubmission(e), false, String(e));
   }
 });
+
+/* --- the internal test reply -------------------------------------------
+   The template is imported into the Worker as text at build time, so a typo
+   in a placeholder name is not a build error. render() leaves an unknown
+   {{key}} in place deliberately, which means the failure ships and is
+   visible in a real inbox rather than logged. This is the check for that. */
+
+test('the internal test template fills every placeholder it declares', () => {
+  const tpl = readFileSync(REPO + 'emails/body-internal-test.html', 'utf8');
+  const declared = [...tpl.matchAll(/\{\{([a-zA-Z0-9_]+)\}\}/g)].map((m) => m[1]);
+
+  // exactly what sendInternalTestReply passes to compose()
+  const supplied = ['divisionLabel', 'leadId', 'receivedOn', 'preheader', 'footnote'];
+  for (const key of declared) {
+    assert.ok(supplied.includes(key),
+      'template uses {{' + key + '}} but sendInternalTestReply does not supply it');
+  }
+
+  // and it says the two things a sceptical tester needs to read
+  assert.match(tpl, /No director was notified/);
+  assert.match(tpl, /rotation was not moved on/);
+});
+
+test('the sender supplies nothing the template silently ignores', () => {
+  const tpl = readFileSync(REPO + 'emails/body-internal-test.html', 'utf8');
+  const layout = readFileSync(REPO + 'emails/_layout.html', 'utf8');
+  const both = tpl + layout;
+  for (const key of ['divisionLabel', 'leadId', 'receivedOn']) {
+    assert.ok(both.includes('{{' + key + '}}'),
+      'sendInternalTestReply supplies ' + key + ' but nothing renders it');
+  }
+});
