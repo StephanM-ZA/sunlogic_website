@@ -897,7 +897,31 @@ need deleting.
 
 ## Task 12: Cut over
 
-- [ ] **Step 1:** Confirm with the human that `sales@` should stop receiving the full notification.
-- [ ] **Step 2:** Deploy the Worker.
+- [x] **Step 1:** Confirm with the human that `sales@` should stop receiving the full notification. **Confirmed 2026-09-10: yes, it should stop.**
+- [x] **Step 2:** Deploy the Worker. **Done 2026-09-10**, version `39910dc7`.
 - [ ] **Step 3:** Watch the first real lead end to end.
 - [ ] **Step 4:** Confirm the digest arrives the next morning. **This is the acceptance test for the whole feature** — if it does not arrive, something is broken and everything else was theatre.
+
+### Step 1, and why it needed no code
+
+It had already happened, in Task 9. Worth writing down, because "confirm the
+human agrees" and "make the change" are different jobs and only the first was
+outstanding.
+
+`sales@` is not a recipient anywhere:
+
+- `mailer.mjs`'s `ADDRESS` map holds `stephan` and `craig` and nothing else,
+  and `recipients()` can only return entries from it.
+- n8n cannot add one. It is six nodes and, in its own documentation, "holds no
+  templates and makes no decisions about content: it addresses an envelope it
+  was handed". The `to` array comes from the Worker.
+
+So the full notification stopped reaching `sales@` the moment the Worker took
+over sending. What was outstanding was somebody agreeing to that, and on
+2026-09-10 somebody did.
+
+**`sales@` deliberately stays as the `Reply-To` on visitor-facing mail** — the
+calculator estimate and the internal test reply. A customer replying to their
+own estimate should land in the shared mailbox, not in one director's inbox,
+and that is the opposite question from who gets notified about a new lead.
+Director notifications already reply-to the director who owns the lead.
