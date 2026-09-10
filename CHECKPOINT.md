@@ -205,17 +205,19 @@ The Electrical block is done. These are what survived it, each verified on
   never defines, and says Sunlogic retains ownership of a device the product
   copy elsewhere describes as bought. Both are contract questions.
 
-**One-line fixes, deliberately not done without being asked:**
-- `site-electrical/legal.html` still names **"Automated Publishing Services
-  (PTY) Ltd"** in the privacy statement, 2 occurrences. Energy and main were
-  corrected in `3c917f4`; Electrical was skipped because it was out of scope at
-  the time, and nobody has since said to do it.
-- `main/llms.txt` has **3 em dashes**. Energy's and Electrical's are clean.
-  Every other em dash on the estate is in a code comment, not visible copy.
+**One-line fixes: both done in `6491b9a`.** The Electrical privacy statement
+now names Sunlogic SA (Pty) Ltd, so all three legal pages agree, and
+`main/llms.txt` is clean. Every `llms.txt` on the estate is now free of em
+dashes. The one left in each `robots.txt` is inside a `#` comment, which is the
+same position taken for those in HTML and CSS comments.
 
 **Fixed, so do not go looking:** the `/electrical/electrical.html` gate failure,
-the "Three Recent Jobs" section carrying the Energy division's solar specs, and
-`electrical/llms.txt`'s em dashes.
+the "Three Recent Jobs" section carrying the Energy division's solar specs,
+`electrical/llms.txt`'s em dashes, the Electrical privacy statement's entity
+name, and `main/llms.txt`'s em dashes.
+
+**Everything left on Electrical is blocked on Craig.** There is no one-line fix
+outstanding.
 
 ---
 
