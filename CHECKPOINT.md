@@ -1,11 +1,82 @@
 # Checkpoint — Sunlogic Website
 
-**Saved:** 2026-09-06 (session 11 — **Energy division complete and pushed**. Next block: Electrical.)
+**Saved:** 2026-09-10 (session 12 — **all three sites written and live. Lead
+rotation switched on.** Next action is an observation, not a task: see below.)
 
-> Everything below is current as of commit `9012549`. The prior checkpoint
-> (session 10, 4 September) was left stale and cost most of a session: it
-> reported two defects that had already been fixed or never existed, and they
-> were chased twice. If you change the site, change this file in the same pass.
+> Current as of commit `b58c684`. The session-10 checkpoint was left stale and
+> cost most of a session: it reported two defects that had already been fixed
+> or never existed, and both were chased twice before anyone checked the
+> source. If you change something, change this file in the same pass.
+
+---
+
+## FIRST THING TOMORROW (2026-09-11)
+
+**Confirm the daily digest arrives at 07:00 SAST.** Task 12 Step 4 of the lead
+plan calls this "the acceptance test for the whole feature — if it does not
+arrive, something is broken and everything else was theatre."
+
+If it does not arrive:
+- `cd workers/leads-relay && ../../node_modules/.bin/wrangler tail --env=""`
+- The digest is the `0 5 * * *` cron in `wrangler.toml`, handled by
+  `sendDailyDigest` in `src/index.js`. It POSTs to n8n, which renders it.
+- The Workers Free plan caps cron triggers at five ACROSS the account. A
+  deploy that exceeds it uploads the code and silently schedules nothing.
+
+Also still open: **watch the first real lead end to end** (Step 3).
+
+---
+
+## Lead rotation went live 2026-09-10
+
+Three commits, all deployed. Worker version `39910dc7` serving 100%.
+
+| Commit | What |
+|---|---|
+| `1a71c39` | Removed `MAIL_REDIRECT_TO` from production; excluded our own submissions from the rotation |
+| `7c023e1` | Auto-reply to internal test submissions |
+| `b58c684` | Recorded the `sales@` decision |
+
+**Test mode is off.** Real notifications now reach whichever director's turn it
+is. The TEST MODE banner on every email and the digest's redirect notice were
+both conditional on `MAIL_REDIRECT_TO` and disappeared with it. **Staging keeps
+its own redirect deliberately** — that is the entire reason that environment
+exists. Never set `MAIL_REDIRECT_TO` in production.
+
+**Submissions from `@sunlogic.co.za` are stored but take no turn.** Partners
+test the form, and three tests in a row would otherwise hand the next three
+real leads to the same director while the 30-day split still looked even.
+Nothing would error and nothing would log. The rule is `isInternalSubmission`
+in `logic.mjs`, anchored at both ends so `notsunlogic.co.za`,
+`evil-sunlogic.co.za` and `sunlogic.co.za.evil.com` all pass through: a false
+positive means a real customer's enquiry reaches nobody, which is the worst
+thing this system can do.
+
+**`sales@` is not a recipient anywhere** and has not been since Task 9. It
+stays as Reply-To on visitor-facing mail, deliberately: a customer replying to
+their own estimate should reach the shared mailbox rather than one director.
+
+---
+
+## State: all three divisions are written
+
+Apex, Energy and Electrical are all copy-reviewed, gated and live.
+
+**Electrical, done 2026-09-10.** Three of its four main pages had belonged to
+other divisions: the home page was the pre-split apex homepage with the H1
+"Solar Power & Certified Electrical Contracting", the Smart page was the Energy
+division's smart page selling geyser controllers, and the blog index led on
+"what solar costs". All rewritten. The spine is Craig's unanswered first item:
+electrical has no built-in motive the way solar does, so the argument is a
+deadline somebody else sets — selling, claiming, a lease renewal, adding load,
+something already broken.
+
+Also: WhatsApp added to the dock on all three sites (Craig's item 10), and
+`<dl-hero lights>` built as Electrical's answer to Energy's sunrise flare.
+
+**Two visible placeholders ship deliberately on Electrical** — the proof
+section and the smart capability list. Both are blocked on Craig and both are
+in "Open" below.
 
 ---
 
@@ -18,14 +89,13 @@ counts as a defect.
 | Check | Result |
 |---|---|
 | `npm run build` | three sites |
-| `npm run conformance` | 25/25 pages, both viewports. **1 fail, and it is not Energy** (see below) |
+| `npm run conformance` | 25/25 pages, both viewports, **0 fails** |
 | `npm run sweep` | 550 page/width combinations, 0 findings |
-| `npm test` | 65 passing |
+| `npm test` | 70 passing |
 
-**The one gate failure is `/electrical/electrical.html`** — a grid mixing
-heading cases, "Lighting is usually the fastest saving" against "Three-Phase
-Supply". Left alone all session because Electrical was out of scope. It is one
-reword and the gate goes green.
+**That gate failure is fixed.** It was `/electrical/electrical.html` mixing
+heading cases in one grid; the heading is now "Lighting Pays Back Fastest".
+**The gate is green across all 25 pages, both viewports, for the first time.**
 
 ---
 
@@ -111,24 +181,41 @@ are not lost, and so they are not raised again as though they were faults.
 
 ---
 
-## Waiting for the Electrical block
+## Still open on Electrical
 
-Listed here only so nothing is lost. **Do not start these without being asked.**
+The Electrical block is done. These are what survived it, each verified on
+2026-09-10 rather than carried forward on trust.
 
+**Blocked on Craig, and no writing fixes them:**
+- **Three to five real electrical jobs** for the proof section on
+  `site-electrical/index.html`: photograph, the problem, what was done, and the
+  outcome. A mix of residential and commercial, at least one DB upgrade. The
+  section is currently a visible labelled empty state, which keeps its slot so
+  filling it is a copy job rather than a rebuild. Craig's own review calls this
+  the highest-value item on his list and the thing every competitor is weakest
+  on, and he is right.
+- **The full smart capability list.** `energy-management.html` argues "the
+  clever part is behind the wall" and can only name load control, sub-metering
+  and charging. Craig's document flags this exact gap. Access control,
+  intercoms and lighting control are listed there as room to grow into, not as
+  current capability, so none of them is claimed.
+- **`blog-ev-home-charging.html`** carries `[Hero photography pending: no
+  EV/charger photography exists yet]`.
+- **The subscription agreement** dates its Initial Term from a "Free Trial" it
+  never defines, and says Sunlogic retains ownership of a device the product
+  copy elsewhere describes as bought. Both are contract questions.
+
+**One-line fixes, deliberately not done without being asked:**
 - `site-electrical/legal.html` still names **"Automated Publishing Services
-  (PTY) Ltd"** in the privacy statement. Energy and main were corrected in
-  `3c917f4`; Electrical was deliberately skipped.
-- The gate failure named above.
-- Electrical's "Three Recent Jobs" section is **the Energy division's three
-  solar jobs under an electrical heading**, and its own heading promises "one
-  real number" per job that the specs do not provide. Needs three actual
-  electrical jobs: a DB rebuild, a rewire, a CoC, an EV charger, surge
-  protection. Per job a photograph, suburb, and a number an electrical buyer
-  cares about.
-- `blog-ev-home-charging.html` carries `[Hero photography pending: no EV/charger
-  photography exists yet]`.
-- Em dashes remain in `main/llms.txt` (3) and `electrical/llms.txt` (6). Every
-  other em dash on the sites is in a code comment, not visible copy.
+  (PTY) Ltd"** in the privacy statement, 2 occurrences. Energy and main were
+  corrected in `3c917f4`; Electrical was skipped because it was out of scope at
+  the time, and nobody has since said to do it.
+- `main/llms.txt` has **3 em dashes**. Energy's and Electrical's are clean.
+  Every other em dash on the estate is in a code comment, not visible copy.
+
+**Fixed, so do not go looking:** the `/electrical/electrical.html` gate failure,
+the "Three Recent Jobs" section carrying the Energy division's solar specs, and
+`electrical/llms.txt`'s em dashes.
 
 ---
 
