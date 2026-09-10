@@ -61,6 +61,32 @@ export function applyRedirect(env, to) {
   return env && env.MAIL_REDIRECT_TO ? [env.MAIL_REDIRECT_TO] : to;
 }
 
+/* Is this submission one of ours?
+   ------------------------------------------------------------------
+   Partners test the form to satisfy themselves it works. Those submissions
+   are real rows in D1 and real emails, and left alone each one takes a turn
+   in the rotation and pages a director about an enquiry that does not
+   exist. Worse, they arrive in bursts, so a run of tests can hand several
+   consecutive real leads to the same person.
+
+   A RULE, so it lives in the pure module and is tested, same as
+   applyRedirect above.
+
+   The pattern is anchored at both ends and matches the domain or any
+   subdomain of it. index.js already learned this lesson on the CORS
+   allow-list: an unanchored check lets 'evil-sunlogic.co.za' and
+   'sunlogic.co.za.evil.com' through. Both fail here.
+
+   Deliberately narrow. It excludes only this one domain, because the cost
+   of a false positive is a real customer's enquiry silently never reaching
+   anyone, which is the worst thing this system can do. */
+const INTERNAL_DOMAIN = /@(?:[a-z0-9-]+\.)*sunlogic\.co\.za$/;
+
+export function isInternalSubmission(email) {
+  if (typeof email !== 'string') return false;
+  return INTERNAL_DOMAIN.test(email.trim().toLowerCase());
+}
+
 /* An unrecognised value becomes 'unsure' rather than a guess. A director
    reading "an Energy enquiry has come in" must be able to trust that the
    visitor chose Energy — the teaser is the only thing they see before

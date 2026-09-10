@@ -7,12 +7,13 @@ compatibility_date = "2026-08-31"
 # it back is the last step of that run.
 OFFER_TTL_MINUTES = "1440"
 CLAIM_BASE_URL = "https://leads.sunlogic.co.za"
-# TEMPORARY — set 2026-09-04 while Xneelo mail is down, so the directors'
-# notifications are visible somewhere. REMOVE THIS once Xneelo is back.
-# While it is set, only this address is told anything and the rotation looks
-# like it is working when nobody else is hearing about a lead. Every email
-# carries a banner saying so, and the daily digest leads with it.
-MAIL_REDIRECT_TO = "smarais.za@gmail.com"
+# MAIL_REDIRECT_TO is deliberately ABSENT here. It was set 2026-09-04 while
+# Xneelo mail was down and removed 2026-09-10 to start the real rotation.
+# Setting it in production means one address is told everything while the
+# rotation appears to work and neither director hears about a lead, so it
+# belongs to staging only. The TEST MODE banner on every email and the
+# digest's redirect notice are both conditional on this variable and
+# disappear with it; see mailer.mjs and sendDailyDigest.
 N8N_WEBHOOK_URL = "https://hooks.digitaloperations.co.za/webhook/sunlogic-leads"
 
 [[d1_databases]]

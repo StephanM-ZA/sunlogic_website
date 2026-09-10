@@ -1,5 +1,6 @@
 import {
   normaliseDivision, nextAssignee, newToken, expiryFrom, sqliteNow, OTHER, estimateValues,
+  isInternalSubmission,
   formatSast,
 } from './logic.mjs';
 import { handleClaimGet, handleClaimPost } from './claim.mjs';
@@ -193,6 +194,34 @@ async function handleLeadRoute(request, env, ctx, type) {
   }
 
   const { leadId, division } = await insertLead(env.DB, type, body);
+
+  /* Our own address: log it, do not rotate it.
+     ------------------------------------------------------------------
+     Partners test the form to satisfy themselves it works. The row is
+     still written, so nothing is lost and the test is visible in D1, but
+     no offer is created: no director is paged about an enquiry that does
+     not exist, and crucially the rotation pointer is NOT consumed. That
+     second part is the real reason for this. Tests arrive in bursts, and
+     three test submissions in a row silently hand the next three REAL
+     leads to the same director while the split looks fair.
+
+     Logged rather than dropped in silence. A submission that vanishes
+     with no trace is the failure mode this file warns about everywhere
+     else; `wrangler tail` shows this one happening. */
+  if (isInternalSubmission(body.email)) {
+    console.log(JSON.stringify({
+      event: 'internal_submission_skipped', lead_id: leadId, type, division,
+      reason: 'sender is a sunlogic.co.za address; stored but not offered',
+    }));
+    /* The visitor still gets what they asked for. A partner testing the
+       calculator should see the estimate arrive, otherwise the test looks
+       like a failure and proves the opposite of what it was meant to. */
+    if (type === 'calculator' && typeof body.email === 'string') {
+      ctx.waitUntil(sendVisitorReport(env, leadId, body));
+    }
+    return jsonResponse({ ok: true }, 200, origin);
+  }
+
   const { assignee, token } = await createOffer(env, leadId, 1, null);
 
   ctx.waitUntil(notify(env, leadId, 'offer', assignee, token, 1));

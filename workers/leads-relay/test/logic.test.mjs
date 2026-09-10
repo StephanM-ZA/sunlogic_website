@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import {
   normaliseDivision, divisionLabel, nextAssignee, newToken,
-  expiryFrom, sqliteNow, OTHER, estimateValues, applyRedirect,
+  expiryFrom, sqliteNow, OTHER, estimateValues, applyRedirect, isInternalSubmission,
 } from '../src/logic.mjs';
 
 const REPO = fileURLToPath(new URL('../../../', import.meta.url));
@@ -233,4 +233,41 @@ test('without it, recipients are untouched and identity is preserved', () => {
   assert.strictEqual(applyRedirect({}, to), to);
   assert.strictEqual(applyRedirect(undefined, to), to);
   assert.strictEqual(applyRedirect({ MAIL_REDIRECT_TO: '' }, to), to);
+});
+
+/* --- internal submissions ----------------------------------------------
+   Partners test the form to prove to themselves it works. Those tests must
+   not take a turn in the rotation: they arrive in bursts, and three of them
+   in a row hand the next three REAL leads to the same director while the
+   30-day split still looks even.
+
+   The false-positive cases matter more than the true positives. Excluding a
+   real customer means their enquiry is stored and then reaches nobody, which
+   is the worst outcome this system has, so the pattern is anchored at both
+   ends and the near-miss domains below are the ones that would do it. */
+
+test('our own addresses are recognised, including subdomains and odd casing', () => {
+  for (const e of [
+    'craig@sunlogic.co.za',
+    'stephan@sunlogic.co.za',
+    '  Craig@SunLogic.co.za  ',        // trimmed and case-folded
+    'someone@energy.sunlogic.co.za',   // division subdomains
+    'someone@electrical.sunlogic.co.za',
+  ]) assert.strictEqual(isInternalSubmission(e), true, e);
+});
+
+test('near-miss domains are NOT excluded, so no real lead is silently dropped', () => {
+  for (const e of [
+    'a.customer@gmail.com',
+    'buyer@notsunlogic.co.za',      // suffix match would wrongly catch this
+    'x@evil-sunlogic.co.za',        // the CORS allow-list bug, in email form
+    'x@sunlogic.co.za.evil.com',    // domain as a prefix of a longer one
+    'sunlogic.co.za@gmail.com',     // our domain in the local part
+  ]) assert.strictEqual(isInternalSubmission(e), false, e);
+});
+
+test('a missing or non-string email is not internal, and never throws', () => {
+  for (const e of [undefined, null, '', 42, {}, []]) {
+    assert.strictEqual(isInternalSubmission(e), false, String(e));
+  }
 });
