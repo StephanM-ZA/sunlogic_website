@@ -19,6 +19,7 @@ const { minify: minifyJs } = require('terser');
 const sharp = require('sharp');
 
 const { SITES, byKey } = require('../sites.config.js');
+const CI_GUIDE = path.join(__dirname, '..', 'CI_Guide', 'ci-guide.html');
 
 const ROOT = path.join(__dirname, '..');
 /* The design system lives outside any one site so all three can share it.
@@ -427,6 +428,14 @@ async function buildSite(site, build) {
   console.log('\n' + site.key + '  (' + site.src + ' -> ' + site.out + ')');
   if (fs.existsSync(out)) fs.rmSync(out, { recursive: true, force: true });
   copyRecursive(src, out);
+  /* The CI guide has one source, CI_Guide/ci-guide.html, and ships on every
+     site. It used to be three copies, one per site directory, and they drifted: one had
+     a modal-glass rule and two component rows the others lacked, another had
+     the current blog card. Copied in here, before the image, host,
+     extensionless and minify passes, so it is treated exactly like a page
+     the site owns. robots.txt disallows it and site-pages.js keeps it out
+     of the gate; neither cares where the source lives. */
+  fs.copyFileSync(CI_GUIDE, path.join(out, 'ci-guide.html'));
   copyRecursive(SHARED, path.join(out, 'shared'));
   const renameMap = await optimizeImages(out);
   rewriteImageReferences(out, renameMap);

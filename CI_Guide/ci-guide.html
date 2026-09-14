@@ -504,6 +504,16 @@
       <p>Honour <code>prefers-reduced-motion</code>: animations resolve to their end state rather than disappearing.</p></div>
     <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Don't</span>
       <p>Add particles, parallax, spring physics or hover scaling. None are in the vocabulary.</p></div>
+    <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do</span>
+      <p><strong>Overlay a dialog on glass, not on blackout.</strong> The modal backdrop is
+      <code>--scrim-modal</code> (<code>rgba(13,32,40,0.45)</code>) over <code>--glass-blur-soft</code>
+      (<code>blur(10px) saturate(1.05)</code>): a light tint and a soft blur, so the page stays
+      readable behind the dialog as context. The 24px <code>--glass-blur</code> is tuned for a small
+      pane over a photo; across a whole viewport it reads as fog.</p></div>
+    <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Don't</span>
+      <p>Blur anything else. Glass is for the badge, the stat pane, the glass card and the modal
+      backdrop — four places, all of them a surface sitting over photography. It is not a
+      decoration to reach for elsewhere.</p></div>
   </div>
 </section>
 
@@ -545,6 +555,8 @@
       <tr><td><code>dl-badge</code> · <code>dl-tag</code></td><td>Status chip; bracketed tag.</td></tr>
       <tr><td><code>dl-button</code> · <code>dl-actions</code></td><td>Buttons and button rows.</td></tr>
       <tr><td><code>dl-field</code></td><td>Input or select. An <code>options</code> list makes it a select.</td></tr>
+      <tr><td><code>dl-contact-form</code></td><td>The lead form. One definition, used wherever an enquiry is taken.</td></tr>
+      <tr><td><code>dl-contact-modal</code></td><td>That form in a native <code>&lt;dialog&gt;</code>. Every link to the contact page opens it instead of navigating. One per page.</td></tr>
       <tr><td><code>dl-contact-row</code> · <code>dl-person</code></td><td>Contact line; team card.</td></tr>
       <tr><td><code>dl-media</code></td><td>Real image, or a labelled empty state. Never stock.</td></tr>
       <tr><td><code>dl-icon</code> · <code>dl-wordmark</code></td><td>Heroicon; the name set in type.</td></tr>
@@ -590,9 +602,10 @@
   <p class="ci-lede" style="margin-bottom:40px">50px tall, 38px small. 4px radius. Press is a 1px downward
     translate. <strong>Every button wipes on hover</strong>: a fill rising bottom-to-top over 240ms.
     It sits on the base button rather than a variant, so it is automatic wherever a button appears.
-    Navy, beige and outline wipe to orange; the orange emphasis button wipes to navy; ghost-on-dark
-    wipes to a restrained white. <strong>One emphasis button in view</strong>: the closing CTA is the
-    allowed second.</p>
+    Navy, beige and outline wipe to orange; ghost-on-dark wipes to a restrained white.
+    <strong>Emphasis runs it backwards</strong>: the orange is the resting state and retracts on
+    hover, clearing to an orange-outlined button. The dock's Get a quote does the same.
+    <strong>One emphasis button in view</strong>: the closing CTA is the allowed second.</p>
 
   <h3 class="sl-title" style="margin-bottom:16px">Cards, steps and stats</h3>
   <dl-grid cols="3">
@@ -709,8 +722,12 @@
     <code>date="2026-08-30"</code> and the component prints it and writes the
     <code>&lt;time datetime&gt;</code>. The cover is the subject of the piece, never a product shot.</p>
   <dl-grid cols="2" style="margin-bottom:40px">
-    <dl-card photo="images/blog/grid-tied-home.jpeg" photo-alt="A home with rooftop solar"
-      date="2026-08-30" heading="Why your electricity bill went up"
+    <!-- A specimen, so no photograph: a real file here would have to exist on
+         all three sites and would rot the moment one of them replaced it,
+         which is exactly how this guide drifted. The labelled empty state IS
+         the system's answer to a missing image, so it is also the right
+         specimen. -->
+    <dl-card date="2026-08-30" heading="Why Your Electricity Bill Went Up"
       body="Cover, date, sentence case heading past five words.">
       <dl-actions><dl-button variant="outline" icon="arrow-right" href="blog.html">Read</dl-button></dl-actions>
     </dl-card>
@@ -999,11 +1016,11 @@
     <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Missing</span>
       <p><strong>The logo.</strong> No mark exists. The wordmark sets the name in display type. Do not draw, trace, generate or approximate one.</p></div>
     <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Missing</span>
-      <p><strong>All photography.</strong> Every slot is a labelled empty state awaiting real installation and team images.</p></div>
+      <p><strong>Electrical proof photography.</strong> Every hero now carries a real image; what is still a labelled empty state is the Electrical proof section (three to five real jobs), its smart capability list, and the EV blog post's hero. All blocked on the owner.</p></div>
     <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Missing</span>
-      <p><strong>Nine facts</strong>: phone, email, address, hours, registration number, response time, install cost.</p></div>
+      <p><strong>From Craig's list</strong>: registration number and categories held, years trading, installation count, team details, publishable reviews, response-time commitment, insurance details, and a decision on the workmanship guarantee.</p></div>
     <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Unresolved</span>
-      <p><strong>Accessibility.</strong> No focus trap in the drawer, no skip link, no arrow-key navigation in tabs or menus. Contrast and reduced motion are fixed.</p></div>
+      <p><strong>Accessibility.</strong> No focus trap in the drawer, no arrow-key navigation in tabs or menus. The skip link, contrast and reduced motion are done.</p></div>
     <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Unresolved</span>
       <p><strong>Landscape phone</strong> behaviour, and whether the sticky header should hide on scroll-down.</p></div>
     <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Inferred</span>
@@ -1011,10 +1028,129 @@
   </div>
 </section>
 
+<section class="ci-sec" id="since-september">
+  <div class="sl-stack" style="margin-bottom:40px">
+    <p class="ci-num">10</p>
+    <h2 class="sl-section-heading">Added in September, <em>and why</em></h2>
+    <p class="ci-lede">Nine things the three divisions needed that the system did not have. Each is
+      already live; this section is the specimen. None of them is a new idea, all of them are the
+      existing vocabulary applied to a case it had not met yet.</p>
+  </div>
+
+  <h3 class="sl-title" style="margin-bottom:16px">A button you can see</h3>
+  <p class="ci-lede" style="margin-bottom:16px">The outline variant used to be a transparent box with a warm hairline. On cream that is a
+    control you only find if you already know it is there, on the same page as a solid navy dock button that
+    announces itself perfectly well. It is navy at rest now and wipes to orange. Rule 18 measures every button's
+    own background against the first painted ground behind it and fails under 1.6:1; the same rule fails a
+    wipe the same colour as the fill, since that is a hover that does nothing.</p>
+  <div class="ci-demo" style="margin-bottom:40px">
+    <dl-actions>
+      <dl-button variant="primary">Primary</dl-button>
+      <dl-button variant="outline">Outline, navy at rest</dl-button>
+      <dl-button variant="emphasis">Emphasis</dl-button>
+    </dl-actions>
+  </div>
+
+  <h3 class="sl-title" style="margin-bottom:16px">A price is a navy block</h3>
+  <p class="ci-lede" style="margin-bottom:16px"><code>.sl-price</code> at the foot of a card. VAT is always stated in the note, never assumed. Where
+    there is no figure the pillar still says what it costs: "On quote, and it has to be", with the reason,
+    in a callout. A pillar with no price at all was the gap on Smart Solutions.</p>
+  <div class="ci-demo ci-demo--plain" style="margin-bottom:40px">
+    <dl-grid cols="2">
+      <dl-card tone="white" heading="HotBot">
+        <p class="sl-body">Learns nothing. You tell it your routine, and it heats to suit that instead of a clock.</p>
+        <div class="sl-price">
+          <span class="sl-price__amount">R849 once off, then R149 a month</span>
+          <span class="sl-price__note">Including VAT &middot; one unit per geyser</span>
+        </div>
+      </dl-card>
+      <dl-card tone="white" heading="Load Control at the Board">
+        <p class="sl-body">Electrical work rather than a box with a price on it.</p>
+        <dl-callout icon="clipboard-document-check">
+          <p class="sl-split-copy__label">What it costs</p>
+          <p class="sl-body">On quote, and it has to be. We price it once we have looked.</p>
+        </dl-callout>
+      </dl-card>
+    </dl-grid>
+  </div>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Two more ways a card holds an image</h3>
+  <p class="ci-lede" style="margin-bottom:16px">The default photo slot crops 16:9, which decapitates a 705&times;633 product render.
+    <code>fit="contain"</code> gives a 4:3 white frame with an 18px inset and object-fit contain.
+    <code>media="dark"</code> is for a screenshot of a dark UI: navy frame, no inset, anchored to the top so
+    the heading of the report is what shows.</p>
+  <div class="ci-demo ci-demo--plain" style="margin-bottom:40px">
+    <dl-grid cols="2">
+      <dl-card tone="white" fit="contain" heading="fit=&quot;contain&quot;">
+        <p class="sl-body">A product shot in a white frame, the whole object visible.</p>
+      </dl-card>
+      <dl-card tone="white" media="dark" heading="media=&quot;dark&quot;">
+        <p class="sl-body">A dark report screenshot in a navy frame, top-anchored.</p>
+      </dl-card>
+    </dl-grid>
+  </div>
+
+  <h3 class="sl-title" style="margin-bottom:16px">A note is small and grey</h3>
+  <p class="ci-lede" style="margin-bottom:16px"><code>.sl-note</code>, 13px secondary. For the line under a price, a visible bracketed placeholder,
+    or a contract term quoted with a link. It is the one place a bracketed unknown is allowed to ship.</p>
+  <div class="ci-demo" style="margin-bottom:40px">
+    <p class="sl-note">[Three to five real electrical jobs, each with a photograph, the problem, the work and the outcome. Owner to supply.]</p>
+  </div>
+
+  <h3 class="sl-title" style="margin-bottom:16px">The dock carries WhatsApp</h3>
+  <p class="ci-lede" style="margin-bottom:16px">Between the rolling contact detail and the quote button. It is an action, so it gets a button's height
+    and hit area; it is the secondary action, so it stays ghost and never competes with the orange CTA. 127&times;44
+    on desktop, a 46&times;44 icon below 560px. One constant, <code>SL_WHATSAPP</code>, for all three sites. The
+    glyph is drawn in the house stroke like the other four brand icons, never imported as a filled mark.</p>
+  <div class="ci-demo ci-demo--dark" style="margin-bottom:40px">
+    <a class="sl-dock__wa" href="#" onclick="return false"><dl-icon name="whatsapp" size="18"></dl-icon><span class="sl-dock__wa-label">WhatsApp</span></a>
+  </div>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Each home hero carries one feature</h3>
+  <table class="ci-table" style="margin-bottom:40px">
+    <thead><tr><th>Division</th><th>Attribute</th><th>What it does</th><th>Cost</th></tr></thead>
+    <tbody>
+      <tr><td>Energy</td><td><code>flare="sunrise"</code></td><td>The sun tracks a path read off the photograph for 30s, then the scene dims 42% for 46s and lifts. 76s cycle. Welded to that photo: change the image, retune the path.</td><td>One rAF loop, transforms only</td></tr>
+      <tr><td>Electrical</td><td><code>lights</code></td><td>A warm interior wash rises from the lower half, screen-blended so it warms the photo rather than veiling it. 8s up, 40s lit, 8s down. Image-independent, so it survives a new photo.</td><td>Pure CSS, nothing per frame</td></tr>
+      <tr><td>Apex</td><td>none</td><td>Stays still, per the owner.</td><td>&mdash;</td></tr>
+    </tbody>
+  </table>
+  <div class="ci-rules" style="margin-bottom:40px">
+    <div class="ci-rule ci-rule--do"><span class="ci-rule__tag">Do</span>
+      <p>Keep both features below both scrims in source order, so the heading holds its contrast through the whole cycle. Under <code>prefers-reduced-motion</code> the flare holds a frame and the lights hold lit: neither switches off, because both are part of how the photograph is lit.</p></div>
+    <div class="ci-rule ci-rule--dont"><span class="ci-rule__tag">Don't</span>
+      <p>Build a second path-tracking rig. The flare is welded to one photograph. The lights were designed image-independent for exactly that reason.</p></div>
+  </div>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Images ship at three widths</h3>
+  <p class="ci-lede" style="margin-bottom:16px">Every hero and card photo is <code>.webp</code> at 640, 1024 and 1440 plus a fallback, wired with
+    <code>srcset-widths="640,1024,1440"</code> on <code>&lt;dl-hero&gt;</code> and preloaded with
+    <code>fetchpriority="high"</code>. Convert at quality 82, drop to 76 for foliage, and pre-crop to 16:9
+    first: the hero throws away the sky and the road anyway, and that crop is most of the file size. The
+    largest image a phone now pulls is 66KB against the 245KB JPEG that was there.</p>
+
+  <h3 class="sl-title" style="margin-bottom:16px">The other division, as a card</h3>
+  <p class="ci-lede" style="margin-bottom:40px"><code>&lt;dl-division-promo&gt;</code> closes each division site wearing the destination's own hero
+    image. It carries the closing CTA's ground and is not a band of its own, so rule 7 skips it and a navy CTA
+    can sit directly above the navy footer.</p>
+
+  <h3 class="sl-title" style="margin-bottom:16px">Three rules the gate did not have</h3>
+  <table class="ci-table" style="margin-bottom:24px">
+    <thead><tr><th>#</th><th>Rule</th><th>What it caught</th></tr></thead>
+    <tbody>
+      <tr><td>18</td><td>Never a light-on-light button at rest. A button's own background against the ground behind it must reach 1.6:1; a wipe the same colour as the fill also fails.</td><td>The outline button at 1.09:1, and <code>.sl-btn--secondary</code>, which was retired by it.</td></tr>
+      <tr><td>19</td><td>A counted claim matches the data it is counted from.</td><td>"Twenty reviews" is checked against <code>reviews.data.js</code>. Refresh the export without touching the copy and the build fails.</td></tr>
+      <tr><td>20</td><td>Card headings inside one grid share one case.</td><td>"Lighting is usually the fastest saving" beside "Three-Phase Supply", red for a week.</td></tr>
+    </tbody>
+  </table>
+  <p class="ci-lede">Every rule is proved by injecting a violation before it ships. Rule 20 was first written to select
+    <code>.sl-grid</code>, a class that does not exist, and the injection test is what caught it.</p>
+</section>
+
 <section class="ci-sec" style="padding-bottom:120px">
   <p class="ci-num" style="margin-bottom:12px">Reference</p>
   <p class="ci-lede">Everything in this document is implemented. <code>sunlogic.css</code> holds the tokens and
-    geometry, <code>components.js</code> the library, <code>SYSTEM.md</code> the written contract, and
+    geometry, <code>components.js</code> the library, <code>CI_Guide/SYSTEM.md</code> the written contract, and
     <code>sunlogic-check.js</code> verifies a page against all of it in the browser console.
     <code>index.html</code> is the reference composition.</p>
 </section>
