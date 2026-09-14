@@ -433,6 +433,10 @@ loses the force. Marketing and sales language is not the problem and never was.
   Refresh the export without touching the copy and rule 19 fails the build.
   A number that used to be true is how a verified claim quietly becomes an
   invented one.
+- **A button's label and its URL are one promise.** "Leave a Review" was
+  relabelled "Read Them on Google" and left pointing at the write-a-review
+  URL. Both halves were verified by following the redirects, not by reading
+  the markup. Change one, check the other.
 - **Hover and the pointer cursor are promises.** Only something you can act on
   may have either. A card hovers if it IS a link or CONTAINS one, and not
   otherwise. Enforced by rule 17 and by `.sl-card:has(a, button, summary)`.
@@ -530,6 +534,28 @@ loses the force. Marketing and sales language is not the problem and never was.
   says Sunlogic retains the device, takes 20 business days' notice, and
   charges R750 inside 24 months. The second is the contract. The first was
   published for an afternoon.
+- **Each division has a spine, and it is not the same one.** Energy's is an
+  ORDER of spending: hot water first because that is where the money is, then
+  switching, then monitoring, then the rest. It sells against a grievance
+  everybody already has: the bill goes up whether you act or not.
+  **Electrical has no equivalent motive**, and Craig's review named that as
+  the hard problem. Nobody phones an electrician because they would like to.
+  The honest spine is **a deadline somebody else sets**: selling a property,
+  an insurance claim, a lease renewal, adding load the board cannot carry,
+  something already broken. It is stronger than a saving because it has a
+  date on it. Every Electrical page hangs off it, including the closing CTA,
+  which had to be caught still promising "what it would save". A division
+  page whose sections do not hang off its spine is the apex page wearing a
+  division badge.
+- **Smart on each division site is that division's side of smart.** On
+  Energy it is hot water, switching and monitoring, with Plentify's
+  controllers. On Electrical it is load control at the board, sub-metering
+  and charge scheduling, on the argument that anyone can sell a device and
+  the value is being the people who wire and certify it. The Electrical
+  Smart page shipped as an unchanged copy of Energy's, selling geyser
+  controllers to an electrical audience, and repeated a product claim that
+  had been corrected on Energy the same day. Cross-link the other division's
+  pillar; never duplicate it.
 - **Hedge time, cost, diagnosis and legal obligation. Stay confident
   everywhere else.** Craig's rule, from his review. "A day's work" is a promise
   a contractor cannot keep; "usually a day's work" is true. A statement of
@@ -566,6 +592,13 @@ npm test                        # 70 unit tests, including the gate's own rules
 home page, which is the reference composition. Then show the owner: a
 `Read` of a PNG shows it to you and not to them; use `SendUserFile` or the
 Browser pane.
+
+**Look at the built page, never the source.** An editor hook opens
+`file:///…/site-energy/page.html` after every edit. That tab is unstyled:
+`shared/` and `images/` only exist in `dist/`, so the source renders as raw
+text and looks broken when nothing is wrong. The owner has been shown that
+tab by mistake more than once. The preview at `http://127.0.0.1:8433/energy/`
+is what to look at, and it is what the reviewer should be pointed at.
 
 **Every gate rule is proved by injecting a violation.** A new rule that has
 never been seen to fail has not been shown to work. Rule 20 was written to
@@ -611,7 +644,15 @@ The full rule index is in `CI_Guide/README.md`.
 - **The lead form posts to a Cloudflare Worker** (`workers/leads-relay/`),
   which rotates offers between the two directors and falls back to n8n on the
   iMac. n8n is a catalogued iMac service, so any change to it routes through
-  the `serverMonitor` project.
+  the `serverMonitor` project. Two rules that live there and affect the site:
+  **`sales@sunlogic.co.za` receives no lead notification** (it is the
+  reply-to on visitor-facing mail only, so a customer answering their own
+  estimate reaches the shared mailbox rather than one director); and **a
+  submission from any `@sunlogic.co.za` address is stored but takes no turn
+  in the rotation**, so partners can test the form without paging a director
+  or handing the next real lead to the wrong person. They get a reply that
+  says so, which is the proof the system works. Never set `MAIL_REDIRECT_TO`
+  in production.
 - **Preview:** `node scripts/preview.js 8433`, then
   `http://127.0.0.1:8433/energy/`. Clean URLs work, matching Cloudflare.
 - **Never bare `npx`.** Use the repo's `node_modules/.bin/`.
