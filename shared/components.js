@@ -1397,10 +1397,12 @@ class DlNavBar extends SLElement {
 
     this.innerHTML =
       '<header class="sl-nav' + (this.hasAttribute('dark') ? ' sl-nav--dark' : '') + '">' +
-      /* The nav bar sits on light, near-white beige, where sl_logo_white's
-         white wordmark would vanish — sl_logo.svg is the same lockup with
-         the wordmark set in navy instead, for exactly this ground. Dark
-         grounds (the drawer, the CTA block, the footer) use the white one. */
+      /* The nav bar sits on light, near-white beige, where a white wordmark
+         would vanish — `logo` is the site's own lockup with the wordmark set
+         in navy, for exactly this ground. Dark grounds take a white wordmark
+         instead: `logoWhite` (horizontal) in the drawer, `logoVertical` in
+         the footer. All three are the SAME site's lockup — the drawer on
+         Energy must not show the apex's. */
       '<a href="index.html" class="sl-wordmark-link">' + SL_LOGO_IMG('logo', 186, 56) + '</a>' +
       '<nav class="sl-nav__links" data-has-active="' + hasActive + '">' + navLinks +
       '<dl-button variant="primary" size="sm" href="contact.html">Get a quote</dl-button></nav>' +

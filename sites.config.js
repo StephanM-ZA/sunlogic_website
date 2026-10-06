@@ -51,10 +51,14 @@ const SITES = [
     /* Per-site logo artwork. Same filenames would have been simpler, but these
        are three distinct lockups, so the path is config rather than convention.
        `logoWhite` is the horizontal wordmark for dark grounds (the mobile
-       drawer); there is no per-site artwork for it yet, so all three still
-       point at the shared white lockup. */
+       drawer). It is the same lockup as `logo` with the navy wordmark set in
+       white — the drawer carries the division's own lockup, so the apex's
+       `Sunlogic`, Energy's and Electrical's never cross over. The older shared
+       `sl_logo_white.svg` is a different lockup entirely (it carries a
+       "Solar & Electrical" sub-line) and is no longer used by the sites; the
+       doc-builder still embeds its own copy. */
     logo: 'images/sl_logo_main_blue.svg',
-    logoWhite: 'images/sl_logo_white.svg',
+    logoWhite: 'images/sl_logo_main_white.svg',
     logoVertical: 'images/sl_logo_verticle_main_white.svg',
   },
 
@@ -90,7 +94,7 @@ const SITES = [
       [['Contact', 'contact.html'], ['Legal', 'legal.html']],
     ],
     logo: 'images/sl_logo_energy_blue.svg',
-    logoWhite: 'images/sl_logo_white.svg',
+    logoWhite: 'images/sl_logo_energy_white.svg',
     logoVertical: 'images/sl_logo_verticle_energy_white.svg',
   },
 
@@ -113,7 +117,7 @@ const SITES = [
       [['Contact', 'contact.html'], ['Legal', 'legal.html']],
     ],
     logo: 'images/sl_logo_electrical_blue.svg',
-    logoWhite: 'images/sl_logo_white.svg',
+    logoWhite: 'images/sl_logo_electrical_white.svg',
     logoVertical: 'images/sl_logo_verticle_electrical_white.svg',
   },
 ];

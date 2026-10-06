@@ -10,6 +10,28 @@ rotation switched on.** Next action is an observation, not a task: see below.)
 
 ---
 
+## Mobile fixes, 2026-10-06 — three defects, all three sites
+
+Reported from a phone: a slab of empty beige under the apex hero, footers
+left-aligned down the middle of the screen, and the wrong logo in the menu
+drawer. All three fixed and verified at 375px on all three sites.
+
+| What | Where | Fix |
+|---|---|---|
+| ~400px gap under the apex hero | `shared/sunlogic.css` | The pre-upgrade height reservation on `dl-hero` (964px) never released. Scoped it — and `dl-section`'s 500px — to `:not(:defined)`, so the floor holds space until the element upgrades and then gets out of the way. The number no longer has to be re-measured when hero copy changes. |
+| Footer left-aligned on phones | `shared/sunlogic.css` | New `@media (max-width: 559px)` block centres `.sl-footer`, its brand block, its columns, the eyebrow's flex axis and the social row. 560 and up is untouched — the left edge is what makes those read as columns. |
+| Drawer showed the shared lockup on all three sites | `sites.config.js`, three new SVGs | `logoWhite` now points at per-site artwork: `sl_logo_{main,energy,electrical}_white.svg`, each generated from that site's `_blue` lockup with the navy wordmark set to white. The old `sl_logo_white.svg` (a different lockup, with a "Solar & Electrical" sub-line) is no longer referenced by the sites — `tools/doc-builder` still embeds its own base64 copy and is unaffected. |
+
+Checks: `conformance` 25/25 pages, 0 fails, 0 warns at both viewports;
+`sweep` 575 page/width combinations, 0 findings. `npm test` 83/84 —
+the one failure is `tools/doc-builder/harness/api-test.mjs`, which opens a
+hardcoded `/home/claude/docbuilder/examples/...` path. Pre-existing, in
+untracked doc-builder work, unrelated.
+
+**Not deployed.** Built into `dist/` and verified locally only.
+
+---
+
 ## FIRST THING TOMORROW (2026-09-11)
 
 **Confirm the daily digest arrives at 07:00 SAST.** Task 12 Step 4 of the lead
