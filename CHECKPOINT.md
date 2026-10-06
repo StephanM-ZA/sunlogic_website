@@ -28,7 +28,61 @@ the one failure is `tools/doc-builder/harness/api-test.mjs`, which opens a
 hardcoded `/home/claude/docbuilder/examples/...` path. Pre-existing, in
 untracked doc-builder work, unrelated.
 
-**Not deployed.** Built into `dist/` and verified locally only.
+**Deployed.** All three Cloudflare Pages projects rebuilt off `6025061` and
+are serving it. `sunlogic-electrical`'s first build failed and was retried —
+see below.
+
+### The sweep is no longer a coin toss
+
+`sunlogic-electrical` deployment `84926717` failed on this commit. Not the
+change: `npm test` 70/70 and `conformance:electrical` 10/10 both passed, then
+`sweep:electrical` died on `page.goto: Timeout 30000ms exceeded` navigating to
+`blog-3-essential-checks.html` — a page this change does not touch, from a
+static server on the builder's own loopback. The retry passed on the identical
+commit.
+
+Cause: `scripts/layout-sweep.js` ran six concurrent tabs, each decoding hero
+photography, and `waitUntil: 'load'` waits for every one of those images. On a
+build container that crosses Playwright's generic 30s default, and one
+rejection failed all 575 combinations. Fixed in the same file:
+
+- `NAV_TIMEOUT_MS = 60000` — a deadline chosen for this workload, not inherited
+- three attempts on a fresh page, with backoff, before believing a timeout
+- retries are **printed**, so a flake that becomes chronic is visible in the
+  build log rather than silently absorbed
+- an `aborted` flag, so once one combination gives up the other five workers
+  stop instead of retrying into a closing browser
+- the failure now names the page **and the width**, and the headline comes
+  before the stack
+- `SWEEP_CONCURRENCY` turns the pool down from the Pages dashboard with no
+  code change, if a builder ever needs it
+
+Verified by forcing `NAV_TIMEOUT_MS = 1`: 12 retry lines (six in-flight jobs x
+two retries), then a single labelled failure and exit 1 — no screenful of
+teardown noise. Full sweep back on 60s: 575 combinations, 0 findings.
+
+`scripts/conformance.js` had the identical unguarded goto. It is sequential,
+so it never had the six-way contention and never tripped — but "has not failed
+yet" is not a property, so it was fixed in the same pass.
+
+Both gates now load pages through **`scripts/page-load.js`**, which owns the
+deadline, the attempts and the retry announcement. One place to tune, and the
+two gates cannot drift apart.
+
+**Only loading is retried.** Nothing that measures a page is. Measurement here
+is deterministic — when conformance says a page never exposed
+`window.SL_CHECK`, that is true and will be true three times, and wrapping it
+in "failed 3 attempts" would turn a precise diagnosis into noise. A flaky load
+is infrastructure; a failing measurement is a finding. `loadPage` therefore
+returns the loaded page and the caller measures it outside the retry loop.
+
+Verified by forcing the deadline to 1ms: sweep gives 12 retry lines (six
+in-flight jobs x two retries), one labelled failure naming page **and width**,
+exit 1; conformance gives exactly 2, labelled, exit 1. Restored and diffed
+byte-identical. On the real deadline: conformance 25/25 pages, 0 fails /
+0 warns at both viewports; sweep 575 combinations, 0 findings; `npm test`
+unchanged at 83/84, the one failure still the untracked doc-builder harness
+opening a hardcoded `/home/claude/` path.
 
 ---
 

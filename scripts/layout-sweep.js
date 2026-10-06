@@ -35,6 +35,7 @@ const ROOT = path.join(__dirname, '..');
 const { chromium } = require(path.join(ROOT, 'node_modules', 'playwright'));
 const { sitePages } = require('./site-pages.js');
 const { startServer } = require('./static-server.js');
+const { loadPage } = require('./page-load.js');
 
 /* Read the breakpoints out of the CSS instead of guessing them. */
 function declaredBreakpoints() {
@@ -221,28 +222,62 @@ async function main() {
 
      Six is deliberate: each page is a real browser tab rendering photographs,
      and past roughly this the builder starts swapping and the wall-clock
-     stops improving. */
+     stops improving. It was measured on a development Mac, though, and a CI
+     build container is not one — SWEEP_CONCURRENCY turns the pool down
+     without a code change if a builder ever needs it. */
   const queue = [];
   for (const p of pages) for (const width of widths) queue.push({ p, width });
 
-  const CONCURRENCY = 6;
+  const CONCURRENCY = Number(process.env.SWEEP_CONCURRENCY) || 6;
   let cursor = 0;
+  let aborted = false;
+
+  /* Why loading is retried at all, and why only loading: scripts/page-load.js.
+     The short version is that six tabs decoding hero photography on a build
+     container can miss a navigation deadline with nothing wrong in the repo,
+     and one rejection here fails all 575 combinations. */
+  async function sweepOnce(job) {
+    const page = await loadPage(
+      browser,
+      { viewport: { width: job.width, height: 900 } },
+      server.urlFor(job.p.url),
+      {
+        label: job.p.url + ' at ' + job.width + 'px',
+        /* Once one combination has given up, the browser is about to be torn
+           down and every tab still open will fail with it. Those are not
+           flakes: retrying them would bury the real failure under a screenful
+           of noise. */
+        onRetry: (attempt, max, why) => {
+          if (aborted) return false;
+          console.log('  retry ' + attempt + '/' + max + '  ' +
+            job.p.url + ' @ ' + job.width + 'px  (' + why + ')');
+          return true;
+        },
+      },
+    );
+    try {
+      await page.addStyleTag({ content: '*,*::before,*::after{transition:none !important;animation:none !important}' });
+      await page.waitForTimeout(120);
+      return await page.evaluate(auditInPage);
+    } finally {
+      await page.close();
+    }
+  }
 
   async function worker() {
     for (;;) {
+      if (aborted) return;
       const job = queue[cursor++];
       if (!job) return;
-      const page = await browser.newPage({ viewport: { width: job.width, height: 900 } });
+      let found;
       try {
-        await page.goto(server.urlFor(job.p.url), { waitUntil: 'load' });
-        await page.addStyleTag({ content: '*,*::before,*::after{transition:none !important;animation:none !important}' });
-        await page.waitForTimeout(120);
-        const found = await page.evaluate(auditInPage);
-        checks++;
-        for (const f of found) findings.push(Object.assign({ page: job.p.url, width: job.width }, f));
-      } finally {
-        await page.close();
+        found = await sweepOnce(job);
+      } catch (err) {
+        aborted = true;
+        throw err;
       }
+      checks++;
+      for (const f of found) findings.push(Object.assign({ page: job.p.url, width: job.width }, f));
     }
   }
 
@@ -285,4 +320,10 @@ async function main() {
   process.exit(findings.length ? 1 : 0);
 }
 
-main().catch((err) => { console.error(err); process.exit(1); });
+/* The message carries the page and the width; the stack only ever points back
+   into this file, so the headline goes first and the stack after it. */
+main().catch((err) => {
+  console.error('\nsweep failed: ' + String(err && err.message || err));
+  if (err && err.stack) console.error(err.stack);
+  process.exit(1);
+});

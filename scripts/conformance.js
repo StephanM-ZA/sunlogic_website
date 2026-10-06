@@ -18,6 +18,7 @@ const ROOT = path.join(__dirname, '..');
 const { chromium } = require(path.join(ROOT, 'node_modules', 'playwright'));
 const { sitePages } = require('./site-pages.js');
 const { startServer } = require('./static-server.js');
+const { loadPage } = require('./page-load.js');
 
 /* Mobile first, matching lighthouserc.js. Touch-target heights differ by
    width, so the viewport is part of the result and is printed with it. */
@@ -46,9 +47,12 @@ async function runConformance(options) {
 
   try {
     for (const p of pages) {
-      const page = await browser.newPage({ viewport });
+      /* Loading is retried; measuring is not. scripts/page-load.js says why.
+         This gate is sequential, so it never had the sweep's six-way
+         contention and never tripped — but it was the same unguarded goto on
+         the same deploy gate, and "has not failed yet" is not a property. */
+      const page = await loadPage(browser, { viewport }, server.urlFor(p.url), { label: p.url });
       try {
-        await page.goto(server.urlFor(p.url), { waitUntil: 'load' });
         /* Measure resting state. A colour caught partway through a transition is a
            sampling artefact, not a violation: .sl-nav__link transitions colour over
            100ms and components.js sets aria-current after render, so a sample taken
