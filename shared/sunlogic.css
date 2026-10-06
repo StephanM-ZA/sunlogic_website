@@ -1419,6 +1419,22 @@ body:has(.sl-modal[open]) .sl-dock { display: none; }
 .sl-eyebrow--centred { justify-content: center; }
 .sl-footer__col { display: grid; gap: 4px; align-content: start; }
 .sl-footer__brand { max-width: 280px; display: grid; gap: 12px; align-content: start; }
+/* Under 560 the footer collapses to one column (see .sl-footer__groups), and
+   a single stack of short lines flush to the left edge of a phone reads as a
+   ragged margin rather than as a column — there is no second column for that
+   edge to line up against. Centre the whole block at that one breakpoint
+   only: at 560 and above the left edge is what makes the columns read as
+   columns, so it stays. */
+@media (max-width: 559px) {
+  .sl-footer { text-align: center; }
+  .sl-footer__brand { justify-items: center; margin-inline: auto; }
+  .sl-footer__col { justify-items: center; }
+  /* The eyebrow's leading rule is a ::before on a flex row, so centring its
+     text does nothing — the flex axis is what moves. Same switch
+     .sl-eyebrow--centred makes elsewhere. */
+  .sl-footer .sl-eyebrow { justify-content: center; }
+  .sl-footer__socials { justify-content: center; }
+}
 
 /* Step card — numbered process step. */
 .sl-step { gap: 12px; }
