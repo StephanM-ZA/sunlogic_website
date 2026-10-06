@@ -775,10 +775,20 @@ dl-nav-bar { position: sticky; top: 0; z-index: var(--z-sticky); min-height: 72p
 /* 964px measured live at 412px width (Lighthouse's mobile emulation
    viewport) — .sl-hero's own 560px floor is a minimum, not the actual
    flex-content height, which needs far more room once real heading/
-   body/button content mounts. Re-measure if the homepage hero copy
-   changes meaningfully. */
-dl-hero { display: block; min-height: 964px; }
-@media (min-width: 768px) { dl-hero { min-height: 78vh; } }
+   body/button content mounts.
+
+   :not(:defined) is load-bearing, not decoration. A reservation is a guess
+   at a height, and the moment the real hero mounts the guess is worse than
+   the measurement — on the apex homepage at 375px the hero renders 560px
+   tall, so an unconditional 964px floor left 400px of empty beige under it
+   on every phone. Scoped this way the floor holds the space right up to the
+   upgrade (customElements.define upgrades and renders synchronously, so
+   :defined flips in the same breath the content arrives) and releases it
+   immediately after. It also means the number never has to be re-measured
+   when hero copy changes — being wrong now only costs a shift, not a gap. */
+dl-hero:not(:defined) { min-height: 964px; }
+@media (min-width: 768px) { dl-hero:not(:defined) { min-height: 78vh; } }
+dl-hero { display: block; }
 .sl-hero {
   position: relative; overflow: hidden;
   min-height: 560px;
@@ -1863,8 +1873,12 @@ dl-statement, dl-faq, dl-figures { display: block; }
    section, e.g. a contact form or long-form legal text, can be
    1000px+ tall) — a flat, general floor can't match every section's
    real height, but meaningfully cuts the shift distance for any
-   section on any page, present or future, with no per-page tuning. */
-dl-section { display: block; min-height: 500px; }
+   section on any page, present or future, with no per-page tuning.
+   Released on upgrade for the same reason dl-hero's is: a floor that
+   outlives the render stops being a reservation and becomes a gap under
+   any section shorter than 500px. */
+dl-section { display: block; }
+dl-section:not(:defined) { min-height: 500px; }
 /* Sticky hosts keep display:block AND their position — declared above. */
 dl-nav-bar, dl-subnav { display: block; }
 /* Card-like elements fill their grid cell so a row is always level. */
