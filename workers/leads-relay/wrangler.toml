@@ -34,13 +34,18 @@ binding = "DB"
 database_name = "sunlogic-leads"
 database_id = "3a7d8834-4e84-4fa0-9377-f2b3da573be6"
 
-# Brief photos. The bucket stays PRIVATE: /uploads/<key> serves objects back
-# through this Worker, so there is no public bucket domain and no DNS record to
-# keep. See src/uploads.mjs for why, and docs/project-brief.md for the
-# `wrangler r2 bucket create` this expects to already have been run.
-[[r2_buckets]]
-binding = "UPLOADS"
-bucket_name = "sunlogic-brief-uploads"
+# Brief photos live in the D1 database above, as rows in brief_photos.
+#
+# R2 is the right shape for this and was built first. It cannot be used:
+# enabling R2 needs a card at checkout, which the owner declined, and
+# `wrangler r2 bucket create` fails with code 10042 until then. Google Drive
+# via a service account was built next and reverted, because it needed a new
+# Google Cloud project created from scratch. D1 is already enabled, already
+# bound, already deployed. Using the storage that is actually available beats
+# a better-shaped store that is not.
+#
+# The cost of that choice is a 2 MB cap per photo, which is why the page
+# downscales before uploading. See migrations/0005-brief-photos.sql.
 
 [triggers]
 # */5 sweeps expiries and retries the relay queue.
@@ -89,11 +94,9 @@ binding = "DB"
 database_name = "sunlogic-leads-staging"
 database_id = "9251e67a-9ae5-4d3f-9b89-3aeed2a75e7a"
 
-# A separate bucket, for the same reason as the separate database: a staging
-# run must not leave objects in the bucket a real brief's Trello card links to.
-[[env.staging.r2_buckets]]
-binding = "UPLOADS"
-bucket_name = "sunlogic-brief-uploads-staging"
+# Staging photos land in the staging D1 database above, so a staging run
+# cannot leave rows a real brief's Trello card links to. No extra binding
+# needed: brief_photos lives in the same database as the leads.
 
 [[env.staging.rules]]
 type = "Text"

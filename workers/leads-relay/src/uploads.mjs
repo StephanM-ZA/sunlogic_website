@@ -26,7 +26,8 @@
 /* What a phone's camera roll actually produces, plus PDF because a sparky
    photographs a COC as often as a DB. Deliberately a list and not a prefix
    match on image/: image/svg+xml is an image by content type and a script by
-   behaviour, and this file is served back from our own origin. */
+   behaviour, and these are served back from our own origin, where a script
+   would run with our cookies. */
 const ALLOWED_TYPES = new Set([
   'image/jpeg',
   'image/png',
@@ -36,11 +37,17 @@ const ALLOWED_TYPES = new Set([
   'application/pdf',
 ]);
 
-/* 15 MB. A 48MP phone photo is 8 to 12 MB, so this clears a real one with
-   room and still refuses a video someone picked by mistake. Workers can
-   stream a body straight to R2, so this is a product decision rather than a
-   platform limit. */
-export const MAX_UPLOAD_BYTES = 15 * 1024 * 1024;
+/* D1 caps a single BLOB at 2,000,000 bytes, and this is where photos are
+   stored — so unlike every other limit in this file, this one is not ours to
+   choose. A little headroom under it for the row's other columns.
+
+   A raw 48MP phone photo is 8 to 12 MB and would be refused outright, which
+   is why the page downscales before uploading rather than sending what the
+   camera produced: a distribution board at 1600px lands around 300 KB and is
+   still legible enough to read a breaker label. See dlCompressImage in
+   shared/forms.js. A file that arrives over this has skipped that step, and
+   refusing it is correct. */
+export const MAX_UPLOAD_BYTES = 1_900_000;
 
 export function isAllowedType(contentType) {
   if (typeof contentType !== 'string') return false;
@@ -89,8 +96,8 @@ export function isUploadKey(key) {
 }
 
 /* Content-Length is advisory — a chunked request has none, and a lying one is
-   caught by R2 refusing the write. It is checked anyway because rejecting a
-   400 MB body before reading it is worth a header's word. */
+   caught when the body is read and measured. It is checked anyway because
+   rejecting a 400 MB body before reading it is worth a header's word. */
 export function declaredSizeExceedsLimit(contentLengthHeader) {
   if (!contentLengthHeader) return false;
   const n = Number(contentLengthHeader);

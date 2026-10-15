@@ -41,7 +41,10 @@ function corsHeaders(origin) {
    there is nowhere else to put it. Allow-list, not a wildcard — a wildcard
    here would also permit whatever a future bug sends. */
 function uploadCorsHeaders(origin) {
-  return { ...corsHeaders(origin), 'Access-Control-Allow-Headers': 'Content-Type, X-File-Name' };
+  return {
+    ...corsHeaders(origin),
+    'Access-Control-Allow-Headers': 'Content-Type, X-File-Name, X-Brief-Reference',
+  };
 }
 
 function jsonResponse(body, status, origin) {
@@ -876,10 +879,9 @@ async function handleUploadPost(request, env) {
   if (request.method !== 'POST') {
     return jsonResponse({ ok: false, error: 'method not allowed' }, 405, origin);
   }
-  if (!env.UPLOADS) {
-    /* The binding is absent, which means the bucket was never created or the
-       deploy predates it. Said plainly: a 500 here reads as a transient fault
-       and would have the installer retrying a photo that can never land. */
+  if (!env.DB) {
+    /* Said plainly rather than as a 500: a 500 reads as a transient fault and
+       would have the installer retrying a photo that can never land. */
     return jsonResponse({ ok: false, error: 'uploads not configured' }, 503, origin);
   }
 
@@ -894,12 +896,26 @@ async function handleUploadPost(request, env) {
   const key = uploadKey(Date.now(), randomHex(), contentType);
   /* The submitted filename is metadata, never part of the key. See uploads.mjs. */
   const originalName = (request.headers.get('X-File-Name') || '').slice(0, 200);
+  /* The brief's quote/invoice number when the page sends one, so a photo can
+     be traced back to its job and a retention sweep can be selective. Not a
+     foreign key: the photo is uploaded BEFORE the brief row exists. */
+  const reference = (request.headers.get('X-Brief-Reference') || '').slice(0, 60);
+
+  /* Measured, not trusted. Content-Length was checked above but a chunked
+     request has none, so this is the check that actually holds: D1 refuses a
+     BLOB over 2 MB and a refusal here is a clearer answer than one from the
+     database driver. */
+  const bytes = await request.arrayBuffer();
+  if (bytes.byteLength > MAX_UPLOAD_BYTES) {
+    return jsonResponse({ ok: false, error: 'file too large', maxBytes: MAX_UPLOAD_BYTES }, 413, origin);
+  }
 
   try {
-    await env.UPLOADS.put(key, request.body, {
-      httpMetadata: { contentType: contentType.split(';')[0].trim() },
-      customMetadata: originalName ? { originalName } : undefined,
-    });
+    await env.DB
+      .prepare('INSERT INTO brief_photos (id, bytes, content_type, file_name, reference, size_bytes) VALUES (?, ?, ?, ?, ?, ?)')
+      .bind(key, bytes, contentType.split(';')[0].trim(), originalName || null,
+            reference || null, bytes.byteLength)
+      .run();
   } catch (err) {
     console.log(JSON.stringify({ event: 'upload_failed', key, error: String(err) }));
     return jsonResponse({ ok: false, error: 'upload failed' }, 502, origin);
@@ -912,18 +928,22 @@ async function handleUploadPost(request, env) {
   });
 }
 
-/* GET /uploads/<key> — serve it back.
+/* GET /uploads/<key> — serve the photo back out of D1.
    No CORS and no auth: the callers are Trello fetching an attachment and a
    director opening the link from an email, neither of which is a browser on
    our own origin. The key is the access control. */
 async function handleUploadGet(env, key) {
-  if (!env.UPLOADS) return new Response('not found', { status: 404 });
-  const object = await env.UPLOADS.get(key);
-  if (!object) return new Response('not found', { status: 404 });
+  if (!env.DB) return new Response('not found', { status: 404 });
+  const row = await env.DB
+    .prepare('SELECT bytes, content_type FROM brief_photos WHERE id = ?')
+    .bind(key)
+    .first();
+  if (!row) return new Response('not found', { status: 404 });
 
   const headers = new Headers();
-  object.writeHttpMetadata(headers);
-  headers.set('etag', object.httpEtag);
+  /* content_type was validated against the allow-list on the way in, so this
+     is never attacker-chosen text. See isAllowedType in uploads.mjs. */
+  headers.set('Content-Type', row.content_type);
   /* Immutable: the key is random and an object at a given key is never
      replaced, so this can be cached for as long as anyone will keep it. */
   headers.set('Cache-Control', 'public, max-age=31536000, immutable');
@@ -931,7 +951,15 @@ async function handleUploadGet(env, key) {
      HTML — but say so anyway, because the one type that would matter if the
      allow-list ever slipped is the one this stops. */
   headers.set('X-Content-Type-Options', 'nosniff');
-  return new Response(object.body, { headers });
+  /* D1 hands a BLOB back as a plain Array of byte values, not an ArrayBuffer.
+     Passing that array straight to Response() does NOT throw — it produces a
+     200 with an EMPTY body, so every photo would have served as a zero-byte
+     file with perfectly correct headers and nothing anywhere would have
+     logged a problem. Caught only by byte-comparing a round trip, which is
+     why the test does exactly that.
+     Uint8Array accepts both an Array and an ArrayBuffer, so this is correct
+     whichever shape a future D1 version returns. */
+  return new Response(new Uint8Array(row.bytes), { headers });
 }
 
 export default {

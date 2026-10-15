@@ -93,3 +93,18 @@ CREATE TABLE IF NOT EXISTS webhook_events (
 );
 CREATE INDEX IF NOT EXISTS idx_webhook_events_unmatched
   ON webhook_events(matched, received_at);
+
+-- 0005: brief photos, stored as bytes because R2 could not be enabled without
+-- a card and Drive needed a service account. D1 caps a BLOB at 2 MB, so the
+-- page downscales before uploading. See migrations/0005-brief-photos.sql.
+CREATE TABLE IF NOT EXISTS brief_photos (
+  id           TEXT PRIMARY KEY,
+  bytes        BLOB    NOT NULL,
+  content_type TEXT    NOT NULL,
+  file_name    TEXT,
+  reference    TEXT,
+  size_bytes   INTEGER NOT NULL,
+  created_at   TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_brief_photos_created   ON brief_photos(created_at);
+CREATE INDEX IF NOT EXISTS idx_brief_photos_reference ON brief_photos(reference);

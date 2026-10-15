@@ -81,15 +81,59 @@ function dlInitBranches(form) {
    What goes back into the field is a URL, because that is what the receiving
    end stores and hands on. See the comment in project-brief.html for why only
    the first URL goes in the field itself. */
-async function dlUploadFile(endpoint, file) {
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': file.type, 'X-File-Name': file.name },
-    body: file,
-  });
+/* Downscale before uploading.
+   ------------------------------------------------------------------
+   Not an optimisation. Photos are stored as rows in D1, which caps a single
+   value at 2 MB, and a modern phone camera produces 8 to 12 MB. Without this
+   step every real photo an installer takes would be refused.
+
+   1600px on the long edge at quality 0.82 lands a distribution board around
+   300 KB and is still legible enough to read a breaker label off, which is
+   the whole job these photos have to do.
+
+   Best effort, never fatal. A PDF passes straight through; a format the
+   browser cannot decode (HEIC outside Safari, mainly) throws in
+   createImageBitmap and the original is returned, where the size check gives
+   the installer a clear refusal rather than this failing silently. A
+   re-encode that somehow came out bigger is discarded too. */
+async function dlCompressImage(file, maxDim, quality) {
+  if (!file.type || file.type.indexOf('image/') !== 0) { return file; }
+  try {
+    const bitmap = await createImageBitmap(file);
+    const scale = Math.min(1, maxDim / Math.max(bitmap.width, bitmap.height));
+    const width = Math.round(bitmap.width * scale);
+    const height = Math.round(bitmap.height * scale);
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    canvas.getContext('2d').drawImage(bitmap, 0, 0, width, height);
+    const blob = await new Promise(function(resolve) {
+      canvas.toBlob(resolve, 'image/jpeg', quality);
+    });
+    bitmap.close();
+    if (!blob || blob.size >= file.size) { return file; }
+    /* Renamed to .jpg because that is now what it is. The extension is
+       cosmetic here, since the stored type comes from the content type, but a
+       listing showing "roof.heic" that opens as a JPEG is a small lie that
+       costs someone ten minutes one day. */
+    return new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' });
+  } catch (err) {
+    console.warn('Could not downscale ' + file.name + ', sending as is:', err);
+    return file;
+  }
+}
+
+async function dlUploadFile(endpoint, original, reference) {
+  const file = await dlCompressImage(original, 1600, 0.82);
+  const headers = { 'Content-Type': file.type, 'X-File-Name': file.name };
+  /* Names the photo after the job it belongs to, so it can be traced back to
+     a brief. Optional on purpose: an upload must never fail because this
+     field happened to be blank. */
+  if (reference) { headers['X-Brief-Reference'] = reference; }
+  const response = await fetch(endpoint, { method: 'POST', headers, body: file });
   const body = await response.json().catch(function() { return {}; });
   if (!response.ok || !body.url) {
-    throw new Error('Upload of ' + file.name + ' failed: ' + (body.error || response.status));
+    throw new Error('Upload of ' + original.name + ' failed: ' + (body.error || response.status));
   }
   return body.url;
 }
@@ -113,6 +157,9 @@ function dlUploadNote(form, text) {
 async function dlUploadFields(form, endpoint) {
   const values = {};
   const extras = [];
+  const refField = form.getAttribute('data-dl-upload-reference');
+  const refEl = refField && form.querySelector('[name="' + refField + '"]');
+  const reference = refEl ? refEl.value.trim() : '';
   const inputs = Array.prototype.filter.call(
     form.querySelectorAll('input[type="file"]'),
     function(input) { return !input.disabled && input.files && input.files.length; });
@@ -124,7 +171,7 @@ async function dlUploadFields(form, endpoint) {
     const urls = [];
     for (const file of input.files) {
       dlUploadNote(form, 'Uploading photo ' + (done + 1) + ' of ' + total + '…');
-      urls.push(await dlUploadFile(endpoint, file));
+      urls.push(await dlUploadFile(endpoint, file, reference));
       done += 1;
     }
     values[input.name] = urls[0];

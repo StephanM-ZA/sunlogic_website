@@ -115,18 +115,65 @@ up, that block in `project-brief.html` is the only thing that changes.
 ## Photos
 
 The old form uploaded to WordPress and n8n fetched the file from
-`sunlogic.co.za`. That endpoint died with the site. Photos now go to R2:
+`sunlogic.co.za`. That endpoint died with the site. Photos now live as rows in
+**D1**, the database this Worker already uses for leads, and are served back
+by the Worker at `/uploads/<key>`.
 
-- `POST /uploads/brief` on the leads-relay Worker, raw body, one request per
-  file, `Content-Type` is the file's own and `X-File-Name` carries its name.
-  Answers `{"ok":true,"url":"…"}`.
-- `GET /uploads/<key>` serves it back. The bucket stays **private**; the
-  Worker is the only way in, so there is no public bucket domain to maintain.
-  The key is 32 random hex characters and that is the access control, the same
-  assumption `/claim/<token>` makes.
-- 15 MB per file. JPEG, PNG, WebP, HEIC, HEIF and PDF only. SVG is refused on
-  purpose: it is an image by content type and a script by behaviour, and this
-  is served back from our own origin.
+### Why D1, of all things
+
+Object storage is the right shape for this. Two attempts at it failed for
+reasons that had nothing to do with engineering:
+
+- **Cloudflare R2** — built and committed. Enabling R2 needs a card at
+  checkout even though the free tier would never bill at this volume, and the
+  owner declined. `wrangler r2 bucket create` fails with code 10042 until
+  then.
+- **Google Drive via a service account** — built, tested, reverted. It needed
+  a Google Cloud project and service account created from scratch.
+- **Google Drive via n8n**, which already holds a working Drive credential —
+  specified in `docs/project-brief-photo-upload-spec.md`, but it is an n8n
+  change and goes through `serverMonitor`, so it could not be done from here.
+
+D1 is already enabled, already bound, already deployed and already serving
+this Worker. **Using the storage that is actually available beat a
+better-shaped store that is not.** If R2 is ever enabled, moving is a small
+change in one handler and the page never knows.
+
+### What that costs, and how it is paid
+
+D1 caps a single value at **2 MB** and the free database at 500 MB. A modern
+phone camera produces 8 to 12 MB per photo, so without help every real photo
+would be refused.
+
+So **the page downscales before uploading**: `dlCompressImage` in
+`shared/forms.js` redraws the image to 1600px on the long edge and re-encodes
+as JPEG at quality 0.82. A distribution board lands around 300 KB and stays
+legible enough to read a breaker label off, which is the whole job.
+
+At that size the free database holds roughly 1,500 photos. If it ever gets
+close, the fix is a retention sweep of rows older than a year, which is why
+`brief_photos` is indexed on `created_at`.
+
+The downscale is best effort and never fatal: a PDF passes straight through, a
+format the browser cannot decode (HEIC outside Safari, mainly) falls back to
+the original, and the size check then gives a clear refusal rather than
+failing silently.
+
+### The route
+
+- `POST /uploads/brief`, raw body, one request per file. `Content-Type` is the
+  file's own; `X-File-Name` carries its name; `X-Brief-Reference` carries the
+  quote/invoice number so a photo can be traced back to its job and a
+  retention sweep can be selective. Answers `{"ok":true,"url":"…"}`.
+- `GET /uploads/<key>` serves it back from D1 with the stored content type,
+  `nosniff`, and a one-year immutable cache. No auth: the callers are Trello
+  fetching an attachment and a director opening a link from an email, neither
+  of which is a browser on our own origin. The key is 32 random hex
+  characters and that is the access control, the same assumption
+  `/claim/<token>` makes.
+- JPEG, PNG, WebP, HEIC, HEIF and PDF only. **SVG is refused on purpose**: it
+  is an image by content type and a script by behaviour, and these are served
+  back from our own origin.
 
 ### One URL per field, and what happens to the rest
 
@@ -141,18 +188,22 @@ change and belongs to `serverMonitor`.
 
 ## Deploying it
 
-The page ships with the site. The Worker needs the bucket to exist first:
+The page ships with the site. The Worker needs the migration applied first:
 
 ```bash
-npx wrangler r2 bucket create sunlogic-brief-uploads
-npx wrangler r2 bucket create sunlogic-brief-uploads-staging
+npx wrangler d1 execute sunlogic-leads --remote \
+  --file=workers/leads-relay/migrations/0005-brief-photos.sql
 npx wrangler deploy --config workers/leads-relay/wrangler.toml
 ```
 
-Until the bucket and the deploy are in place, `/uploads/brief` answers `503
-uploads not configured` and the page reports the upload as failed rather than
-silently submitting a brief with no photos. Everything else on the form works
-without it.
+The migration is additive only — one new table and two indexes, no existing
+table read or rewritten — so it is safe to apply while the database is
+serving.
+
+Until it is applied, `/uploads/brief` answers `503 uploads not configured`.
+Note the page treats an upload failure as fatal to the whole submission, so
+**a brief with a photo attached fails entirely while uploads are
+unconfigured**; a brief with no photos works.
 
 ## Known rot on the n8n side
 

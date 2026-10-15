@@ -155,44 +155,64 @@ posts to n8n normally and works end to end.
 Decision taken: leave the abort-on-failure behaviour as is; the team is being
 told not to attach photos until R2 is on.
 
-**Photos are still unresolved. Two routes were tried and both are parked.**
+**Photos are stored in D1. Code is done and verified; two production
+commands remain, and they need the owner to run them.**
 
-1. **R2.** Built, committed (`ed4c19b`), and cannot be deployed:
-   `wrangler r2 bucket create` returns "Please enable R2 through the
-   Cloudflare Dashboard. [code: 10042]", and the wrangler OAuth token has no
-   `r2` scope either. The owner does not want a card on file for storage.
-   **This is the code currently in the repo** — committed, undeployed, inert.
-2. **The Worker uploading to Drive with a Google service account.** Written
-   and tested in full, then **reverted on the owner's instruction** rather
-   than left as dead code. It needed a new Google Cloud project and service
-   account when n8n already holds a working Drive credential. Nothing of it
-   remains in the tree; it is recoverable from this session's history if the
-   third route stalls.
+Three stores were tried before this one, and each failed for a non-engineering
+reason:
 
-**The chosen route is n8n, and it is specified but not built:
-`docs/project-brief-photo-upload-spec.md`.**
+1. **R2** — enabling it needs a card at checkout. `wrangler r2 bucket create`
+   returns code 10042. Declined.
+2. **Drive via a Worker service account** — built, tested, reverted. Needed a
+   Google Cloud project created from scratch.
+3. **Drive via n8n**, which already has a Drive credential — specified in
+   `docs/project-brief-photo-upload-spec.md`, but it is an n8n change and goes
+   through `serverMonitor`.
 
-The shape of it, which took a while to see: the existing brief workflow
-**cannot** be the thing that uploads photos, because it runs *after* the brief
-is submitted and the photo URLs must already be in that payload. So this is a
-**second, separate workflow** — a webhook that takes one photo, puts it in
-Drive with the credential n8n already has (`googleDriveOAuth2Api`, id
-`vKudtoSOTzuYiM8K`), shares it, and returns the link.
+**D1 was already enabled, already bound, already deployed.** Photos are rows
+in `brief_photos`, served back by the Worker at `/uploads/<key>`. Using the
+storage that was actually available beat a better-shaped store that was not.
+If R2 is ever enabled, moving is a small change in one handler and the page
+never knows.
 
-`e86TQUi0qAbwqqVk` is **not edited**. Its two attach nodes already read
-whatever URL the column holds, so a Drive link works there untouched. The
-owner was explicit: do not affect that workflow.
+**The cost, and how it is paid:** D1 caps a value at 2 MB and a phone camera
+produces 8–12 MB. So the page downscales first — `dlCompressImage` in
+`shared/forms.js`, 1600px long edge, JPEG q0.82. A DB board lands ~300 KB and
+stays legible. ~1,500 photos fit the free 500 MB database; `brief_photos` is
+indexed on `created_at` so a retention sweep is easy later.
 
-Website side, once the webhook exists: point `data-dl-upload` at it, switch
-`dlUploadFile` from a raw body to `multipart/form-data`, bump `?v=`. All three
-are in the spec.
+**The bug worth remembering.** D1 returns a BLOB as a plain Array of byte
+values, not an ArrayBuffer. `new Response(row.bytes)` does **not** throw — it
+returns 200 with an EMPTY body. Every photo would have served as a zero-byte
+file with perfectly correct headers, and nothing would have logged anything.
+Caught only by byte-comparing a round trip. The fix is
+`new Response(new Uint8Array(row.bytes))`. **Keep byte-comparing round trips.**
 
-It is an n8n change, so **building it belongs to `serverMonitor`.**
+Verified locally against `wrangler dev` with a real 300 KB PNG: upload 201,
+fetch-back byte-identical, `size_bytes = length(bytes)` in the row, 3 MB
+refused 413, SVG refused 415.
 
-**Current live behaviour, unchanged by any of the above:** the form works for
-briefs with no photos; a brief WITH a photo attached fails entirely, because
-`/uploads/brief` 404s and the page treats an upload failure as fatal. The team
-has been told not to attach photos.
+### THE TWO COMMANDS LEFT (owner must run; the sandbox blocks production deploys)
+
+```bash
+cd workers/leads-relay
+npx wrangler d1 execute sunlogic-leads --remote --file=migrations/0005-brief-photos.sql
+npx wrangler deploy --env=""
+```
+
+The migration is additive only: one table, two indexes, nothing existing read
+or rewritten. Safe while the database is serving.
+
+Done when this returns 204 instead of 404:
+
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" -X OPTIONS \
+  https://leads.sunlogic.co.za/uploads/brief -H "Origin: https://sunlogic.co.za"
+```
+
+Until then the live form still works for briefs **without** photos, and a
+brief **with** a photo fails entirely, because the page treats an upload
+failure as fatal.
 
 ### Gas added as a fifth Job Category
 
