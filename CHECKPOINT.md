@@ -128,59 +128,71 @@ accumulate in that query.
 
 ---
 
-## Session 14 — Project Brief form rebuilt (not yet deployed)
+## Session 14 — Project Brief form rebuilt and LIVE
 
 **Task:** `https://sunlogic.co.za/project-brief/` 404ed. The old WordPress
 (Quform) brief form was gone. Rebuilt in the current design system, posting to
 the n8n webhook that was listening the whole time.
 
-**Built and verified locally. Nothing committed, nothing deployed.**
+**Committed as `88cdf51` and deployed.** `https://sunlogic.co.za/project-brief`
+answers 200; `/project-brief/` 301s to it and `/project-brief.html` 308s to it;
+noindex, canonical and the robots.txt disallow are all live; it is not in the
+sitemap. Verified on the live origin: five categories, branch switching
+correct, `SL_CHECK` 0 fails 0 warns, no console errors.
 
-### The finding that shaped it
+**ONE THING BLOCKS REAL USE: photo uploads are dead.**
+`https://leads.sunlogic.co.za/uploads/brief` returns **404** — the Worker has
+not been deployed with the upload route, because (per `ed4c19b`) **R2 is not
+enabled on the Cloudflare account** and `wrangler deploy` fails on the UPLOADS
+binding.
 
-The n8n workflow **`e86TQUi0qAbwqqVk` — "Sunlogic Project Brief (Webhook →
-PostgreSQL)"** is **active** and always was. Only the form was lost. It is a
-different workflow from `Sunlogic — Leads Relay` and shares nothing with it.
-Its CORS already allows `https://sunlogic.co.za`, so the page posts straight
-to it from the browser and the leads-relay Worker is not in that path.
+Consequence, and it is not graceful: `dlUploadFile` throws on the 404,
+`dlInitForm` catches it and calls `dlFormError`, so **a brief submitted with
+any photo attached fails completely** and shows "Something went wrong. Please
+call us instead." The brief is not sent. A brief submitted with NO photos
+posts to n8n normally and works end to end.
 
-Full contract, branch mapping, deploy steps and the three bits of known rot in
-that workflow: **`docs/project-brief.md`**. Read that before touching any of
-this. The short version: the JSON keys are human sentences
-(`Client Email address`, and one with an apostrophe and a full stop), they are
-mapped onto Postgres columns by hand, and a renamed key writes NULL silently.
+Decision taken: leave the abort-on-failure behaviour as is; the team is being
+told not to attach photos until R2 is on.
 
-### Files changed
+**Photos are still unresolved. Two routes were tried and both are parked.**
 
-| File | What |
-|---|---|
-| `site-main/project-brief.html` | new. The page and the form, 23 keys, three branches |
-| `shared/components.js` | `dl-field` gained textarea / date / file, `placeholder`, and a slugged id (the names contain spaces, so the old `id = 'sl-field-' + name` produced invalid ids) |
-| `shared/forms.js` | conditional branches, sequential photo upload, async submit, `data-success-title` / `-body` |
-| `shared/sunlogic.css` | `.sl-file`, `.sl-form-branch`, `.sl-form--wide` |
-| `workers/leads-relay/src/uploads.mjs` | new. Upload rules, all pure, all tested |
-| `workers/leads-relay/src/index.js` | `POST /uploads/brief`, `GET /uploads/<key>` |
-| `workers/leads-relay/wrangler.toml` | R2 binding, production and staging |
-| `workers/leads-relay/test/uploads.test.mjs` | new. 12 tests |
-| `site-main/robots.txt`, `_redirects`, `scripts/site-pages.js` | unlisted, and `/project-brief/` 301s to `/project-brief` |
-| `docs/project-brief.md` | new |
+1. **R2.** Built, committed (`ed4c19b`), and cannot be deployed:
+   `wrangler r2 bucket create` returns "Please enable R2 through the
+   Cloudflare Dashboard. [code: 10042]", and the wrangler OAuth token has no
+   `r2` scope either. The owner does not want a card on file for storage.
+   **This is the code currently in the repo** — committed, undeployed, inert.
+2. **The Worker uploading to Drive with a Google service account.** Written
+   and tested in full, then **reverted on the owner's instruction** rather
+   than left as dead code. It needed a new Google Cloud project and service
+   account when n8n already holds a working Drive credential. Nothing of it
+   remains in the tree; it is recoverable from this session's history if the
+   third route stalls.
 
-`?v=` bumped across all three sites: css and components to **45**, forms to
-**6**.
+**The chosen route is n8n, and it is specified but not built:
+`docs/project-brief-photo-upload-spec.md`.**
 
-### Verified
+The shape of it, which took a while to see: the existing brief workflow
+**cannot** be the thing that uploads photos, because it runs *after* the brief
+is submitted and the photo URLs must already be in that payload. So this is a
+**second, separate workflow** — a webhook that takes one photo, puts it in
+Drive with the credential n8n already has (`googleDriveOAuth2Api`, id
+`vKudtoSOTzuYiM8K`), shares it, and returns the link.
 
-- Branch logic: all three hidden at rest, exactly one shown and enabled per
-  Job Category, hidden branches disabled so they neither submit nor block.
-- **The payload.** Submitted with a stubbed `fetch` and read back: 19 keys for
-  the Renewable branch, every one matching the contract verbatim, to the right
-  URL, once.
-- `SL_CHECK.run()` on the page: 0 fails, 0 warns, 0 placeholders, desktop and
-  375px. No horizontal scroll.
-- `contact.html` unchanged by the forms.js rewrite: still 500px, 0 fails,
-  submits and lands on thank-you.
-- `workers/leads-relay/test/uploads.test.mjs`: 12/12.
-- Not in the sitemap.
+`e86TQUi0qAbwqqVk` is **not edited**. Its two attach nodes already read
+whatever URL the column holds, so a Drive link works there untouched. The
+owner was explicit: do not affect that workflow.
+
+Website side, once the webhook exists: point `data-dl-upload` at it, switch
+`dlUploadFile` from a raw body to `multipart/form-data`, bump `?v=`. All three
+are in the spec.
+
+It is an n8n change, so **building it belongs to `serverMonitor`.**
+
+**Current live behaviour, unchanged by any of the above:** the form works for
+briefs with no photos; a brief WITH a photo attached fails entirely, because
+`/uploads/brief` 404s and the page treats an upload failure as fatal. The team
+has been told not to attach photos.
 
 ### Gas added as a fifth Job Category
 
