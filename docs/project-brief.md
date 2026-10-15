@@ -228,9 +228,18 @@ still open: `serverMonitor/docs/changes/2026-10-15-sunlogic-brief-workflow/READM
    they were dropped rather than repointed; retention, if it is ever needed, is a sweep
    of `brief_photos` by `created_at`.
 
+3. **SMTP now points at a hostname whose certificate is valid.** `smtp.sunlogic.co.za`
+   is a vanity CNAME that presented `CN=sunlogic.co.za`, expired 3 October — which is why
+   brief emails were failing, and why it looked like a mail outage. The same server
+   answers on `www451.jnb1.host-h.net` (same IP) with a wildcard certificate that
+   verifies, and the owner changed that one `host` field in the n8n credential on
+   2026-10-15. It is shared by five active workflows, including n8n's own `Error Handler`
+   — which is why nothing raised the alarm when the brief failed. The sibling credential
+   behind `Sunlogic — Leads Relay` had the same defect and was fixed at the same time.
+
 ### Still open, and why it is partly ours
 
-3. **The webhook is still unauthenticated.** `authentication: none`, and one request
+4. **The webhook is still unauthenticated.** `authentication: none`, and one request
    writes a DB row, copies a Drive document, exports a PDF, emails two directors and
    opens a Trello card. The honeypot is in the browser and is trivially bypassed.
 
@@ -253,7 +262,7 @@ still open: `serverMonitor/docs/changes/2026-10-15-sunlogic-brief-workflow/READM
    Afterwards the brief no longer posts from the browser, so n8n's CORS allowance for
    `https://sunlogic.co.za` on this webhook can go too.
 
-4. **The form reports failure even when the brief fully processed.** `Respond to Webhook`
+5. **The form reports failure even when the brief fully processed.** `Respond to Webhook`
    sits on a second branch off `Webhook`, and n8n runs the insert branch to completion
    first, so any throw means the response node never runs and the webhook returns **500**.
    The 2026-10-15 verification replay returned 500 after 35.7 s with everything except
@@ -266,14 +275,8 @@ still open: `serverMonitor/docs/changes/2026-10-15-sunlogic-brief-workflow/READM
    form's wait from ~35 s to immediate. It was deliberately **not** applied, because it
    changes what this page can learn from a response: the form treats 500 as fatal today,
    and afterwards it would always see 200, so a genuine failure would read as success
-   too. That trade is this repo's call — and if the Worker proxy in 3 lands, the Worker
+   too. That trade is this repo's call — and if the Worker proxy in 4 lands, the Worker
    is the better place to make it.
-
-5. **SMTP still points at an expired vanity hostname.** `smtp.sunlogic.co.za` presents
-   `CN=sunlogic.co.za`, expired 3 October. The same server answers on
-   `www451.jnb1.host-h.net` (same IP) with a wildcard certificate that verifies. It is
-   one field in one n8n credential, shared by five active workflows, and needs the
-   owner — nothing here changes.
 
 ## Related
 
