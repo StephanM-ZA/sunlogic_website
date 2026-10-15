@@ -1,0 +1,1038 @@
+{
+  "name": "Sunlogic Project Brief (Webhook → PostgreSQL)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "sunlogic-project-brief",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        11040,
+        5936
+      ],
+      "id": "7938153a-a2d3-4fb3-bec0-3ff7f4f2df8a",
+      "name": "Webhook",
+      "webhookId": "sunlogic-project-brief"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={\"status\":\"success\",\"reference\":\"{{ $('Webhook').item.json.body['Quote or Invoice number'] }}\"}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        11232,
+        6160
+      ],
+      "id": "d5f53fea-2b00-4dab-b6b9-5ef73689d598",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "submissions",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "project_brief_submitted_by": "={{ $('Webhook').item.json.body['Project Brief Submitted By'] }}",
+            "job_category": "={{ $('Webhook').item.json.body['Job Category'] }}",
+            "business_or_personal": "={{ $('Webhook').item.json.body['Business or Personal'] }}",
+            "quote_invoice_number": "={{ $('Webhook').item.json.body['Quote or Invoice number'] }}",
+            "business_name": "={{ $('Webhook').item.json.body['Business name'] }}",
+            "street_address": "={{ $('Webhook').item.json.body['Street Address'] }}",
+            "gps_location": "={{ $('Webhook').item.json.body['GPS location'] }}",
+            "google_maps_link": "={{ $('Webhook').item.json.body['Google Maps Link'] }}",
+            "client_name": "={{ $('Webhook').item.json.body['Client Name'] }}",
+            "client_surname": "={{ $('Webhook').item.json.body['Client Surname'] }}",
+            "client_email": "={{ $('Webhook').item.json.body['Client Email address'] }}",
+            "client_contact_number": "={{ $('Webhook').item.json.body['Client Contact number'] }}",
+            "type": "={{ $('Webhook').item.json.body['Type'] }}",
+            "building_type": "={{ $('Webhook').item.json.body['Building Type'] }}",
+            "roof_type": "={{ $('Webhook').item.json.body['Roof Type'] }}",
+            "height_of_building": "={{ $('Webhook').item.json.body['Height of the building'] }}",
+            "roof_size": "={{ $('Webhook').item.json.body['Roof size'] }}",
+            "upload_photos_db": "={{ $('Webhook').item.json.body[\"Please upload photos of DB's, sub DB's, space and Roof etc.\"] }}",
+            "type_of_electrical_work": "={{ $('Webhook').item.json.body['Type of electrical work'] }}",
+            "phases": "={{ $('Webhook').item.json.body['Phases'] }}",
+            "upload_photos": "={{ $('Webhook').item.json.body['Please upload photos'] }}",
+            "proposed_date": "={{ $('Webhook').item.json.body['Proposed Date'] }}",
+            "comments_instructions": "={{ $('Webhook').item.json.body['Other comments and instructions'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "project_brief_submitted_by",
+              "displayName": "project_brief_submitted_by",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "job_category",
+              "displayName": "job_category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "business_or_personal",
+              "displayName": "business_or_personal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "quote_invoice_number",
+              "displayName": "quote_invoice_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "business_name",
+              "displayName": "business_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "street_address",
+              "displayName": "street_address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "gps_location",
+              "displayName": "gps_location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "google_maps_link",
+              "displayName": "google_maps_link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "client_name",
+              "displayName": "client_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "client_surname",
+              "displayName": "client_surname",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "client_email",
+              "displayName": "client_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "client_contact_number",
+              "displayName": "client_contact_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "building_type",
+              "displayName": "building_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "roof_type",
+              "displayName": "roof_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "height_of_building",
+              "displayName": "height_of_building",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "roof_size",
+              "displayName": "roof_size",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "upload_photos_db",
+              "displayName": "upload_photos_db",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "type_of_electrical_work",
+              "displayName": "type_of_electrical_work",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "phases",
+              "displayName": "phases",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "upload_photos",
+              "displayName": "upload_photos",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "proposed_date",
+              "displayName": "proposed_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "comments_instructions",
+              "displayName": "comments_instructions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        11232,
+        5936
+      ],
+      "id": "fad0b15d-fe80-487a-b6a4-0fe41caf17a1",
+      "name": "PostgreSQL Insert",
+      "retryOnFail": true,
+      "credentials": {
+        "postgres": {
+          "id": "b2VI8kRcw0P4hOkj",
+          "name": "Postgres - Sunlogic Briefs"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "1hDD4CDKH7rc1Rc9Grki_zC4-DcUKj8O2xMkh3yUEY4Q",
+          "mode": "list"
+        },
+        "name": "=PB - {{ $('PostgreSQL Insert').item.json.quote_invoice_number }}{{ $('PostgreSQL Insert').item.json.business_name ? ' - ' + $('PostgreSQL Insert').item.json.business_name : '' }} - {{ $('PostgreSQL Insert').item.json.client_name }} {{ $('PostgreSQL Insert').item.json.client_surname }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        11440,
+        5936
+      ],
+      "id": "b3a5a069-af4c-4769-ac66-0eed114baa23",
+      "name": "Copy file",
+      "retryOnFail": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vKudtoSOTzuYiM8K",
+          "name": "Google Drive account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "replaceAll",
+              "text": "[Reference Nr.]",
+              "replaceText": "={{ $('PostgreSQL Insert').item.json.quote_invoice_number }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Timestamp]",
+              "replaceText": "={{ $('PostgreSQL Insert').item.json.proposed_date }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Team Lead]",
+              "replaceText": "={{ $('PostgreSQL Insert').item.json.project_brief_submitted_by }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[BusinessName]",
+              "replaceText": "={{ $('PostgreSQL Insert').item.json.business_name }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Name]",
+              "replaceText": "={{ $('PostgreSQL Insert').item.json.client_name }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Surname]",
+              "replaceText": "={{ $('PostgreSQL Insert').item.json.client_surname }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Email]",
+              "replaceText": "={{ $('PostgreSQL Insert').item.json.client_email }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Address]",
+              "replaceText": "={{ $('PostgreSQL Insert').item.json.street_address }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Date]",
+              "replaceText": "={{ $('PostgreSQL Insert').item.json.proposed_date }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[JobCategory]",
+              "replaceText": "={{ $('PostgreSQL Insert').item.json.job_category }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Type]",
+              "replaceText": "={{ $('PostgreSQL Insert').item.json.type }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[BuildingType]",
+              "replaceText": "={{ $('PostgreSQL Insert').item.json.building_type }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[RoofType]",
+              "replaceText": "={{ $('PostgreSQL Insert').item.json.roof_type }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[BuildingHeight]",
+              "replaceText": "={{ $('PostgreSQL Insert').item.json.height_of_building }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[SupplyType]",
+              "replaceText": "={{ $('PostgreSQL Insert').item.json.type_of_electrical_work }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Instructions]",
+              "replaceText": "={{ $('PostgreSQL Insert').item.json.comments_instructions }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Uploads]",
+              "replaceText": "={{ $('PostgreSQL Insert').item.json.upload_photos_db }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[BusinessOrPersonal]",
+              "replaceText": "={{ $('PostgreSQL Insert').item.json.business_or_personal }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[GPSLocation]",
+              "replaceText": "={{ $('PostgreSQL Insert').item.json.gps_location }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[GoogleMapsLink]",
+              "replaceText": "={{ $('PostgreSQL Insert').item.json.google_maps_link }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[RoofSize]",
+              "replaceText": "={{ $('PostgreSQL Insert').item.json.roof_size }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[ElectricalWorkType]",
+              "replaceText": "={{ $('PostgreSQL Insert').item.json.type_of_electrical_work }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Phases]",
+              "replaceText": "={{ $('PostgreSQL Insert').item.json.phases }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[ContactNumber]",
+              "replaceText": "={{ $('PostgreSQL Insert').item.json.client_contact_number }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        11632,
+        5936
+      ],
+      "id": "3bbf7181-f75c-4dc5-8a19-2f48e9e3a583",
+      "name": "Update a document",
+      "retryOnFail": true,
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "gJN2iuqQQqKGARqJ",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "html": "<!DOCTYPE html>\n\n<html>\n<head>\n  <meta charset=\"UTF-8\" />\n</head>\n<body>\n  <div class=\"container\">\n    <h1>Project Brief</h1>\n    <h2></h2>\n    <p>Good day, a new Project Brief has been submitted by:\n{{ $('PostgreSQL Insert').item.json.project_brief_submitted_by }}. <br></br>\n    Below are the details of that project:<br>\n<br>\n<strong>Job Category:</strong> {{ $('PostgreSQL Insert').item.json.job_category }}<br>\n<strong>Business or Personal:</strong> {{ $('PostgreSQL Insert').item.json.business_or_personal }}<br>\n<strong>Quote/Invoice Nr:</strong> {{ $('PostgreSQL Insert').item.json.quote_invoice_number }}<br>\n<strong>Business Name:</strong> {{ $('PostgreSQL Insert').item.json.business_name }}<br>\n<strong>Client Name:</strong> {{ $('PostgreSQL Insert').item.json.client_name }}<br>\n<strong>Client Surname:</strong> {{ $('PostgreSQL Insert').item.json.client_surname }}<br>\n<strong>Client Email:</strong> {{ $('PostgreSQL Insert').item.json.client_email }}<br>\n<strong>Client Contact:</strong> {{ $('PostgreSQL Insert').item.json.client_contact_number }}<br>\n<strong>Street Address:</strong> {{ $('PostgreSQL Insert').item.json.street_address }}<br>\n<strong>GPS Location:</strong> {{ $('PostgreSQL Insert').item.json.gps_location }}<br>\n<strong>Google Maps:</strong> {{ $('PostgreSQL Insert').item.json.google_maps_link }}<br>\n<br>\n<strong>Proposed Date:</strong> {{ $('PostgreSQL Insert').item.json.proposed_date }}<br>\n<br>\n<strong>Type:</strong> {{ $('PostgreSQL Insert').item.json.type }}<br>\n<strong>Building Type:</strong> {{ $('PostgreSQL Insert').item.json.building_type }}<br>\n<strong>Roof Type:</strong> {{ $('PostgreSQL Insert').item.json.roof_type }}<br>\n<strong>Height of Building:</strong> {{ $('PostgreSQL Insert').item.json.height_of_building }}<br>\n<strong>Roof Size:</strong> {{ $('PostgreSQL Insert').item.json.roof_size }}<br>\n<strong>Type of Electrical Work:</strong> {{ $('PostgreSQL Insert').item.json.type_of_electrical_work }}<br>\n<strong>Phases:</strong> {{ $('PostgreSQL Insert').item.json.phases }}<br>\n<br>\nPlease note the following instructions!!<br>\n{{ $('PostgreSQL Insert').item.json.comments_instructions }}<br>\n<br>\nSupporting doc's can be found here:<br>\n{{ $('PostgreSQL Insert').item.json.upload_photos_db }}<br>\n{{ $('PostgreSQL Insert').item.json.upload_photos }}<br>\n<br>\nPlease go have a look at the Trello card to proceed with the job.<br>\n</p>\n  </div>\n</body>\n</html>\n\n<style>\n.container {\n  text-align: left;\n  padding: 16px;\n  border-radius: 8px;\n}\n\nh1 {\n  color: #ff8000;\n  font-size: 18px;\n  font-weight: bold;\n  padding: 0px;\n}\n\nh2 {\n  color: #909399;\n  font-size: 18px;\n  font-weight: bold;\n  padding: 0px;\n}\n</style>"
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        11840,
+        5936
+      ],
+      "id": "bbe23ef1-c2d5-4553-9784-ef0b32fab277",
+      "name": "HTML",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Update a document').item.json.documentId }}",
+          "mode": "id"
+        },
+        "options": {
+          "binaryPropertyName": "attachments",
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "application/pdf"
+            }
+          },
+          "fileName": "={{ $('Copy file').item.json.name }}.pdf"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        12032,
+        5936
+      ],
+      "id": "3b8e4e88-70c6-4f38-a82f-fb25a806a240",
+      "name": "Download file",
+      "retryOnFail": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vKudtoSOTzuYiM8K",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "attachments",
+        "name": "={{ $('Copy file').item.json.name }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1cDxvywgTfJfSfHW8E8MPTdhRChMJ1jQ-",
+          "mode": "list",
+          "cachedResultName": "Brief Documents",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1cDxvywgTfJfSfHW8E8MPTdhRChMJ1jQ-"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        11632,
+        6176
+      ],
+      "id": "aacaad81-ce7d-4fe2-abe7-4896c200324e",
+      "name": "Upload file",
+      "retryOnFail": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vKudtoSOTzuYiM8K",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "support@sunlogic.co.za, craig@sunlogic.co.za",
+        "toEmail": "stephan@sunlogic.co.za, craig@sunlogic.co.za",
+        "subject": "=PB - {{ $('PostgreSQL Insert').item.json.quote_invoice_number }}{{ $('PostgreSQL Insert').item.json.business_name ? ' - ' + $('PostgreSQL Insert').item.json.business_name : '' }} - {{ $('PostgreSQL Insert').item.json.client_name }} {{ $('PostgreSQL Insert').item.json.client_surname }}",
+        "html": "={{ $('HTML').item.json.html }}",
+        "options": {
+          "attachments": "attachments"
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        14048,
+        6208
+      ],
+      "id": "8e014e68-acba-4176-9bba-f4034a5af462",
+      "name": "Send email",
+      "webhookId": "430cb064-0e4b-4c1c-956e-b90bb42a6dbc",
+      "retryOnFail": true,
+      "credentials": {
+        "smtp": {
+          "id": "BPqmITln47pGjm3i",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "share",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.webViewLink }}",
+          "mode": "url"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "reader",
+            "type": "anyone"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        11840,
+        6176
+      ],
+      "id": "b56ad259-ac3e-4d44-bd81-bb10d2d1f16f",
+      "name": "Share file",
+      "retryOnFail": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vKudtoSOTzuYiM8K",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteFile",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Update a document').item.json.documentId }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        12032,
+        6176
+      ],
+      "id": "20a74d05-1194-4422-9085-0a36cf188520",
+      "name": "Delete temp file",
+      "retryOnFail": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vKudtoSOTzuYiM8K",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "listId": "68a481d528699577486f8ada",
+        "name": "={{ $('Copy file').item.json.name }}",
+        "description": "=ACCOUNTING NOTES:\n\n\nGood day, a new Project Brief has been submitted by:\n{{ $('PostgreSQL Insert').item.json.project_brief_submitted_by }}.\n    \nBelow are the details of that project:\n\nJob Category: {{ $('PostgreSQL Insert').item.json.job_category }}\nBusiness or Personal: {{ $('PostgreSQL Insert').item.json.business_or_personal }}\nQuote/Invoice Nr: {{ $('PostgreSQL Insert').item.json.quote_invoice_number }}\nBusiness Name: {{ $('PostgreSQL Insert').item.json.business_name }}\nClient Name: {{ $('PostgreSQL Insert').item.json.client_name }}\nClient Surname: {{ $('PostgreSQL Insert').item.json.client_surname }}\nClient Email: {{ $('PostgreSQL Insert').item.json.client_email }}\nClient Contact: {{ $('PostgreSQL Insert').item.json.client_contact_number }}\nStreet Address: {{ $('PostgreSQL Insert').item.json.street_address }}\nGPS Location: {{ $('PostgreSQL Insert').item.json.gps_location }}\nGoogle Maps: {{ $('PostgreSQL Insert').item.json.google_maps_link }}\n\nProposed Date: {{ $('PostgreSQL Insert').item.json.proposed_date }}\n\nType: {{ $('PostgreSQL Insert').item.json.type }}\nBuilding Type: {{ $('PostgreSQL Insert').item.json.building_type }}\nRoof Type: {{ $('PostgreSQL Insert').item.json.roof_type }}\nHeight of Building: {{ $('PostgreSQL Insert').item.json.height_of_building }}\nRoof Size: {{ $('PostgreSQL Insert').item.json.roof_size }}\nType of Electrical Work: {{ $('PostgreSQL Insert').item.json.type_of_electrical_work }}\nPhases: {{ $('PostgreSQL Insert').item.json.phases }}\n\nPlease note the following instructions!!\n{{ $('PostgreSQL Insert').item.json.comments_instructions }}\n\n{{ $('Upload file').item.json.webViewLink }}\n",
+        "additionalFields": {
+          "due": "=",
+          "idMembers": "={{ $('PostgreSQL Insert').item.json.project_brief_submitted_by === 'Craig Lewis' ? '62da708426950e1b0fe72560' : '55bdb2505ac6aafa4750ccd4' }}"
+        }
+      },
+      "type": "n8n-nodes-base.trello",
+      "typeVersion": 1,
+      "position": [
+        12240,
+        6176
+      ],
+      "id": "3366df29-84d2-4795-b9eb-e5376c1066ba",
+      "name": "Create Trello card",
+      "retryOnFail": true,
+      "credentials": {
+        "trelloApi": {
+          "id": "DkjCCyPA0aE5Uwy9",
+          "name": "Trello account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": ""
+          },
+          "conditions": [
+            {
+              "id": "condition-photo1",
+              "leftValue": "={{ $('PostgreSQL Insert').item.json.upload_photos_db }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        12432,
+        6176
+      ],
+      "id": "c2c7d5e0-409b-473b-83a8-37e80007ad24",
+      "name": "IF Has DB Photos"
+    },
+    {
+      "parameters": {
+        "resource": "attachment",
+        "operation": "create",
+        "cardId": "={{ $('Create Trello card').item.json.id }}",
+        "url": "={{ $('PostgreSQL Insert').item.json.upload_photos_db }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.trello",
+      "typeVersion": 1,
+      "position": [
+        12624,
+        6048
+      ],
+      "id": "410126c2-563a-452e-a730-6356dbc2e429",
+      "name": "Attach DB Photos",
+      "retryOnFail": true,
+      "credentials": {
+        "trelloApi": {
+          "id": "DkjCCyPA0aE5Uwy9",
+          "name": "Trello account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": ""
+          },
+          "conditions": [
+            {
+              "id": "condition-photo2",
+              "leftValue": "={{ $('PostgreSQL Insert').item.json.upload_photos }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        13040,
+        6192
+      ],
+      "id": "899f66ca-72b9-43cc-ac3d-6732d2663451",
+      "name": "IF Has Other Photos"
+    },
+    {
+      "parameters": {
+        "resource": "attachment",
+        "operation": "create",
+        "cardId": "={{ $('Create Trello card').item.json.id }}",
+        "url": "={{ $('PostgreSQL Insert').item.json.upload_photos }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.trello",
+      "typeVersion": 1,
+      "position": [
+        13232,
+        6048
+      ],
+      "id": "95cac789-ef1d-46e1-a667-84f6acc58aa4",
+      "name": "Attach Other Photos",
+      "retryOnFail": true,
+      "credentials": {
+        "trelloApi": {
+          "id": "DkjCCyPA0aE5Uwy9",
+          "name": "Trello account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE submissions SET processed = true, processed_at = NOW() WHERE id = {{ $('PostgreSQL Insert').item.json.id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        13664,
+        6208
+      ],
+      "id": "6552ee31-893b-409a-b514-b09649f989e4",
+      "name": "PostgreSQL Update",
+      "retryOnFail": true,
+      "credentials": {
+        "postgres": {
+          "id": "b2VI8kRcw0P4hOkj",
+          "name": "Postgres - Sunlogic Briefs"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Upload file').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "binaryPropertyName": "attachments",
+          "fileName": "={{ $('Copy file').item.json.name }}.pdf"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        13856,
+        6208
+      ],
+      "id": "f7703b3f-7b81-4563-90b1-2f186a7b6a81",
+      "name": "Download PDF for email",
+      "retryOnFail": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vKudtoSOTzuYiM8K",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "PostgreSQL Insert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PostgreSQL Insert": {
+      "main": [
+        [
+          {
+            "node": "Copy file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copy file": {
+      "main": [
+        [
+          {
+            "node": "Update a document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document": {
+      "main": [
+        [
+          {
+            "node": "HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Share file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Share file": {
+      "main": [
+        [
+          {
+            "node": "Delete temp file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete temp file": {
+      "main": [
+        [
+          {
+            "node": "Create Trello card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Trello card": {
+      "main": [
+        [
+          {
+            "node": "IF Has DB Photos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Has DB Photos": {
+      "main": [
+        [
+          {
+            "node": "Attach DB Photos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "IF Has Other Photos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach DB Photos": {
+      "main": [
+        [
+          {
+            "node": "IF Has Other Photos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Has Other Photos": {
+      "main": [
+        [
+          {
+            "node": "Attach Other Photos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "PostgreSQL Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach Other Photos": {
+      "main": [
+        [
+          {
+            "node": "PostgreSQL Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PostgreSQL Update": {
+      "main": [
+        [
+          {
+            "node": "Download PDF for email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download PDF for email": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

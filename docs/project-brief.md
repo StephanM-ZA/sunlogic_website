@@ -205,23 +205,75 @@ Note the page treats an upload failure as fatal to the whole submission, so
 **a brief with a photo attached fails entirely while uploads are
 unconfigured**; a brief with no photos works.
 
-## Known rot on the n8n side
+## The n8n side
 
-Flagged rather than fixed, because all three are iMac changes and go through
-`serverMonitor`:
+Changed on 2026-10-15 through `serverMonitor` (`bin/deploy-n8n-workflow`). The
+authoritative workflow JSON now lives at `n8n/sunlogic-project-brief.json` in this
+repo, next to the leads-relay one. Full record, including the reasoning and what is
+still open: `serverMonitor/docs/changes/2026-10-15-sunlogic-brief-workflow/README.md`.
 
-1. `Delete WP Photo 1` and `Delete WP Photo 2` still POST to
-   `https://sunlogic.co.za/wp-json/sunlogic/v1/delete-upload`, which no longer
-   exists. Harmless today: both carry `onError: continueRegularOutput`, so the
-   run finishes and only the cleanup no-ops. They should be removed, or
-   repointed at a delete route on the Worker.
-2. Those two nodes carry a **hard-coded `X-Delete-Secret` value in the workflow
-   JSON**. It authenticates nothing now. Remove it, and rotate it anywhere else
-   it was used.
-3. The webhook is **unauthenticated** and one request writes a DB row, copies a
-   Drive document, sends an email and opens a Trello card. The form's honeypot
-   is the only thing in the way. The leads webhook next door uses Header Auth
-   with a shared secret; this one should too.
+### Fixed
+
+1. **Email runs last.** `Download file` used to fan out to `Send email` and the Trello
+   chain in parallel, and n8n ran the mail first — so when the SMTP certificate lapsed
+   on 3 October the throw aborted the execution and cost the Trello card, the photo
+   attachment and the `processed` flag as well as the mail. The chain is now linear and
+   ends `PostgreSQL Update → Download PDF for email → Send email`. A mail failure costs
+   only the mail. (`Download PDF for email` is a new node: `Send email` attaches a
+   binary that only a Drive download produces, so moving it to the end meant re-fetching
+   the PDF — the uploaded one, since `Delete temp file` has removed the Doc by then.)
+2. **`Delete WP Photo 1` / `Delete WP Photo 2` removed**, along with the hard-coded
+   `X-Delete-Secret` header value they carried. They POSTed to the dead WordPress
+   endpoint and failed on every run. Photos live in D1 and there is no delete route, so
+   they were dropped rather than repointed; retention, if it is ever needed, is a sweep
+   of `brief_photos` by `created_at`.
+
+### Still open, and why it is partly ours
+
+3. **The webhook is still unauthenticated.** `authentication: none`, and one request
+   writes a DB row, copies a Drive document, exports a PDF, emails two directors and
+   opens a Trello card. The honeypot is in the browser and is trivially bypassed.
+
+   This cannot be fixed on the n8n side alone: `site-main/project-brief.html` posts
+   straight from the browser, and a browser cannot hold a shared secret, so the Header
+   Auth the leads webhook uses would simply break the live form. **The decision taken is
+   a Worker proxy** — a `POST /brief` route on leads-relay that forwards to n8n with the
+   header from a secret binding, since that Worker is already in this form's path and
+   already trusted for our origin. Turnstile was rejected (bot mitigation, not
+   authentication, and a challenge in front of staff on a phone in the field);
+   proxy-level rate limiting is worth adding anyway but bounds volume, not writes.
+
+   Steps 1 and 2 are **this repo's** work and must land first:
+
+   1. add the `POST /brief` forwarding route to leads-relay and deploy it — both paths
+      work at this point, so nothing breaks;
+   2. point `project-brief.html` at it, deploy, and verify a real submission;
+   3. *then* `serverMonitor` switches the webhook to Header Auth.
+
+   Afterwards the brief no longer posts from the browser, so n8n's CORS allowance for
+   `https://sunlogic.co.za` on this webhook can go too.
+
+4. **The form reports failure even when the brief fully processed.** `Respond to Webhook`
+   sits on a second branch off `Webhook`, and n8n runs the insert branch to completion
+   first, so any throw means the response node never runs and the webhook returns **500**.
+   The 2026-10-15 verification replay returned 500 after 35.7 s with everything except
+   the mail succeeded — the brief, the card, the photo and `processed` all landed, and the
+   page still told the user it had failed. Someone on site will reasonably submit again
+   and get a duplicate brief, card and email.
+
+   The n8n-side fix is to chain `Webhook → Respond to Webhook → PostgreSQL Insert`, which
+   is safe (the insert reads `$('Webhook')` by absolute reference) and also drops the
+   form's wait from ~35 s to immediate. It was deliberately **not** applied, because it
+   changes what this page can learn from a response: the form treats 500 as fatal today,
+   and afterwards it would always see 200, so a genuine failure would read as success
+   too. That trade is this repo's call — and if the Worker proxy in 3 lands, the Worker
+   is the better place to make it.
+
+5. **SMTP still points at an expired vanity hostname.** `smtp.sunlogic.co.za` presents
+   `CN=sunlogic.co.za`, expired 3 October. The same server answers on
+   `www451.jnb1.host-h.net` (same IP) with a wildcard certificate that verifies. It is
+   one field in one n8n credential, shared by five active workflows, and needs the
+   owner — nothing here changes.
 
 ## Related
 
