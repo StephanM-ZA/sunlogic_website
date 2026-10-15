@@ -243,6 +243,24 @@ It says nothing when there is nothing — unlike the rest of the digest, which
 reports zeros on purpose. The zeros prove the digest ran; this line only needs
 to appear when there is something to act on.
 
+### And one false alarm removed before it ever fired
+
+`queued_now` counts leads at `status='pending'`. Internal submissions
+(`@sunlogic.co.za`) are stored but deliberately never offered to a director,
+and `handleLeadRoute` used to return without marking them — so they stayed
+pending forever. `retryPendingLeads` rescanned them every five minutes
+finding nothing to do, and the digest would have reported them as "queued for
+sending" every morning, climbing with every test anyone ran.
+
+They are now marked out of the queue at submission. `'sent'` there means the
+lead needs nothing further, **not** that a director was told; no offer row and
+a NULL `claimed_by` are what distinguish it. Leads 29 and 30 were backfilled.
+
+Caught before the first digest ever arrived, which was luck rather than
+process: a watchdog whose first appearance cries wolf is one people learn to
+ignore, and nothing would have flagged it except someone reading the number
+and knowing it was wrong.
+
 ---
 
 ## Configuration still required

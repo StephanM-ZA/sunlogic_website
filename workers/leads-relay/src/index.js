@@ -229,6 +229,33 @@ async function handleLeadRoute(request, env, ctx, type) {
       event: 'internal_submission_skipped', lead_id: leadId, type, division,
       reason: 'sender is a sunlogic.co.za address; stored but not offered',
     }));
+
+    /* Out of the queue immediately, because nothing is ever coming for it.
+       ------------------------------------------------------------------
+       'pending' means "a director still has to be told". For an internal
+       submission nobody ever will be, by design — so leaving the row
+       pending was a claim that could never come true, and it cost twice.
+       retryPendingLeads rescanned these rows every five minutes forever,
+       found no pending_send offer, and did nothing (attempts never even
+       incremented, because notify was never reached). Worse, the daily
+       digest counted them under "queued for sending": the one signal built
+       to be trusted would have opened every morning with a false alarm
+       that grew with every test anybody ran. A watchdog that cries wolf on
+       its first appearance is one people learn to ignore, and this digest
+       had not appeared once before now.
+
+       'sent' here means this lead needs nothing further — NOT that a
+       director was notified. No offer row and a NULL claimed_by are what
+       distinguish it, and the sender's own address still says why.
+
+       Set before the replies rather than after, deliberately: the retry
+       machinery cannot help an internal submission whatever happens next,
+       so making the row's state depend on the reply would only reintroduce
+       a pending row nothing will ever clear. A failed reply still records
+       itself on the lead. */
+    await env.DB.prepare(
+      "UPDATE leads SET status='sent', last_attempt_at=datetime('now') WHERE id=?",
+    ).bind(leadId).run();
     /* Two replies, and both are wanted. The estimate is the thing a
        calculator tester actually asked for; the test confirmation is the
        thing that tells them the exclusion worked rather than the form
