@@ -81,6 +81,21 @@ losing a row costs a line in a spreadsheet, losing an email costs a lead.
 **`needsSend` defaults to true when absent.** An older Worker, or a replayed
 request, keeps the previous behaviour rather than silently going quiet.
 
+## This workflow does NOT handle the digest
+
+There is no digest branch, and there never was. A `{event:'digest'}` payload
+sends no `to`/`subject`/`html` and no `needsSend`, so `Extract Body`'s
+`b.needsSend !== false` makes it **true**, the IF takes the sending branch,
+and `Relay Send` attempts an SMTP send with an empty recipient and an empty
+body. Every digest to date also wrote a sheet row with a blank Lead ID, which
+— the match being *on* Lead ID — collapsed all of them into one row.
+
+The digest is rendered and sent by the Worker as of the delivery-confirmation
+work; it reaches here with `needsSend: false` and `leadId: 'digest'`, so it is
+logged to its own row and not sent from here. **No change to this workflow is
+needed.** Full reasoning and evidence:
+[`docs/lead-delivery-confirmation.md`](lead-delivery-confirmation.md).
+
 ## The payload
 
 ```json
