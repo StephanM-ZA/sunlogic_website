@@ -4,6 +4,10 @@ import {
   formatSast,
 } from './logic.mjs';
 import { handleClaimGet, handleClaimPost } from './claim.mjs';
+import {
+  isAllowedType, uploadKey, isUploadKey, declaredSizeExceedsLimit, randomHex,
+  uploadBaseUrl, MAX_UPLOAD_BYTES,
+} from './uploads.mjs';
 import { compose, recipients, send, ADDRESS_OF } from './mailer.mjs';
 import { divisionLabel } from './logic.mjs';
 import { handleResendWebhook, recordSentMessage } from './webhook.mjs';
@@ -30,6 +34,14 @@ function corsHeaders(origin) {
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
   };
+}
+
+/* The upload route needs one header the lead routes do not: the browser sends
+   the original filename in X-File-Name, because the body is the raw file and
+   there is nowhere else to put it. Allow-list, not a wildcard — a wildcard
+   here would also permit whatever a future bug sends. */
+function uploadCorsHeaders(origin) {
+  return { ...corsHeaders(origin), 'Access-Control-Allow-Headers': 'Content-Type, X-File-Name' };
 }
 
 function jsonResponse(body, status, origin) {
@@ -804,9 +816,91 @@ async function retryPendingLeads(env) {
   }
 }
 
+/* POST /uploads/brief — one photo per request, raw body, returns its URL.
+   ------------------------------------------------------------------
+   One request per file rather than one multipart request for all of them. A
+   brief is submitted from a phone on site, where the connection drops: with
+   one request per photo a failure costs that photo and the page can say which
+   one, while a single 60 MB multipart body costs the whole submission and
+   reports nothing useful. The page uploads them in sequence and only then
+   posts the brief itself. */
+async function handleUploadPost(request, env) {
+  const origin = request.headers.get('Origin') || '';
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: uploadCorsHeaders(origin) });
+  }
+  if (request.method !== 'POST') {
+    return jsonResponse({ ok: false, error: 'method not allowed' }, 405, origin);
+  }
+  if (!env.UPLOADS) {
+    /* The binding is absent, which means the bucket was never created or the
+       deploy predates it. Said plainly: a 500 here reads as a transient fault
+       and would have the installer retrying a photo that can never land. */
+    return jsonResponse({ ok: false, error: 'uploads not configured' }, 503, origin);
+  }
+
+  const contentType = request.headers.get('Content-Type') || '';
+  if (!isAllowedType(contentType)) {
+    return jsonResponse({ ok: false, error: 'unsupported file type' }, 415, origin);
+  }
+  if (declaredSizeExceedsLimit(request.headers.get('Content-Length'))) {
+    return jsonResponse({ ok: false, error: 'file too large', maxBytes: MAX_UPLOAD_BYTES }, 413, origin);
+  }
+
+  const key = uploadKey(Date.now(), randomHex(), contentType);
+  /* The submitted filename is metadata, never part of the key. See uploads.mjs. */
+  const originalName = (request.headers.get('X-File-Name') || '').slice(0, 200);
+
+  try {
+    await env.UPLOADS.put(key, request.body, {
+      httpMetadata: { contentType: contentType.split(';')[0].trim() },
+      customMetadata: originalName ? { originalName } : undefined,
+    });
+  } catch (err) {
+    console.log(JSON.stringify({ event: 'upload_failed', key, error: String(err) }));
+    return jsonResponse({ ok: false, error: 'upload failed' }, 502, origin);
+  }
+
+  const base = uploadBaseUrl(env);
+  return new Response(JSON.stringify({ ok: true, url: base + '/uploads/' + key }), {
+    status: 201,
+    headers: { 'Content-Type': 'application/json', ...uploadCorsHeaders(origin) },
+  });
+}
+
+/* GET /uploads/<key> — serve it back.
+   No CORS and no auth: the callers are Trello fetching an attachment and a
+   director opening the link from an email, neither of which is a browser on
+   our own origin. The key is the access control. */
+async function handleUploadGet(env, key) {
+  if (!env.UPLOADS) return new Response('not found', { status: 404 });
+  const object = await env.UPLOADS.get(key);
+  if (!object) return new Response('not found', { status: 404 });
+
+  const headers = new Headers();
+  object.writeHttpMetadata(headers);
+  headers.set('etag', object.httpEtag);
+  /* Immutable: the key is random and an object at a given key is never
+     replaced, so this can be cached for as long as anyone will keep it. */
+  headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+  /* A brief photo is displayed, not downloaded, and nothing here is ever
+     HTML — but say so anyway, because the one type that would matter if the
+     allow-list ever slipped is the one this stops. */
+  headers.set('X-Content-Type-Options', 'nosniff');
+  return new Response(object.body, { headers });
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    if (url.pathname === '/uploads/brief') {
+      return handleUploadPost(request, env);
+    }
+    if (url.pathname.startsWith('/uploads/') && request.method === 'GET') {
+      const key = decodeURIComponent(url.pathname.slice('/uploads/'.length));
+      if (!isUploadKey(key)) return new Response('not found', { status: 404 });
+      return handleUploadGet(env, key);
+    }
     /* Resend tells us what became of a message. POST only, no CORS: this is
        called by Resend's servers, never by a browser, so an Origin has no
        business here and granting one would only widen the surface.

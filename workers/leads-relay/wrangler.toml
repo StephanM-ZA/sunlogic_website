@@ -16,10 +16,31 @@ CLAIM_BASE_URL = "https://leads.sunlogic.co.za"
 # disappear with it; see mailer.mjs and sendDailyDigest.
 N8N_WEBHOOK_URL = "https://hooks.digitaloperations.co.za/webhook/sunlogic-leads"
 
+# Secrets are NOT here — RELAY_SECRET, RESEND_API_KEY and
+# RESEND_WEBHOOK_SECRET are all set with `wrangler secret put`.
+#
+# RESEND_WEBHOOK_SECRET is Svix's signing secret (whsec_…), shown once when
+# the endpoint is created in the Resend dashboard against
+# https://leads.sunlogic.co.za/resend/webhook for email.delivered,
+# email.bounced and email.complained.
+#
+# Without it the endpoint answers 503 and records nothing. That is deliberate
+# and is the opposite of the bug it exists to fix: a handler that accepted
+# every payload and quietly stored none would look perfectly healthy from
+# Resend's dashboard. See src/webhook.mjs.
+
 [[d1_databases]]
 binding = "DB"
 database_name = "sunlogic-leads"
 database_id = "3a7d8834-4e84-4fa0-9377-f2b3da573be6"
+
+# Brief photos. The bucket stays PRIVATE: /uploads/<key> serves objects back
+# through this Worker, so there is no public bucket domain and no DNS record to
+# keep. See src/uploads.mjs for why, and docs/project-brief.md for the
+# `wrangler r2 bucket create` this expects to already have been run.
+[[r2_buckets]]
+binding = "UPLOADS"
+bucket_name = "sunlogic-brief-uploads"
 
 [triggers]
 # */5 sweeps expiries and retries the relay queue.
@@ -67,6 +88,12 @@ crons = ["*/5 * * * *"]
 binding = "DB"
 database_name = "sunlogic-leads-staging"
 database_id = "9251e67a-9ae5-4d3f-9b89-3aeed2a75e7a"
+
+# A separate bucket, for the same reason as the separate database: a staging
+# run must not leave objects in the bucket a real brief's Trello card links to.
+[[env.staging.r2_buckets]]
+binding = "UPLOADS"
+bucket_name = "sunlogic-brief-uploads-staging"
 
 [[env.staging.rules]]
 type = "Text"
