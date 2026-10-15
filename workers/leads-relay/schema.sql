@@ -58,3 +58,31 @@ CREATE TABLE IF NOT EXISTS rotation (
   last_offered_to TEXT
 );
 INSERT OR IGNORE INTO rotation (id, last_offered_to) VALUES (1, NULL);
+
+-- 0003 --------------------------------------------------------------------
+-- Delivery confirmation. Mirrors migrations/0003-delivery-confirmation.sql;
+-- the reasoning for each column lives there. In short: Resend's 2xx meant
+-- "accepted", we read it as "delivered", and lead 28 was lost in the gap.
+
+CREATE TABLE IF NOT EXISTS messages (
+  id          TEXT PRIMARY KEY,           -- Resend's message id
+  lead_id     INTEGER REFERENCES leads(id),
+  offer_id    INTEGER REFERENCES offers(id),
+  event       TEXT    NOT NULL,
+  assignee    TEXT,
+  recipient   TEXT,
+  status      TEXT    NOT NULL DEFAULT 'sent'
+                      CHECK (status IN ('sent','delivered','bounced','complained')),
+  status_at   TEXT,
+  detail      TEXT,
+  alerted_at  TEXT,
+  created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_messages_lead   ON messages(lead_id);
+CREATE INDEX IF NOT EXISTS idx_messages_status ON messages(status);
+
+CREATE TABLE IF NOT EXISTS webhook_events (
+  id          TEXT PRIMARY KEY,           -- svix-id
+  type        TEXT,
+  received_at TEXT NOT NULL DEFAULT (datetime('now'))
+);

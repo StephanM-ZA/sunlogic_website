@@ -122,7 +122,27 @@ async function sendViaResend(env, { to, replyTo, subject, html, originalTo }) {
         html: redirectBanner(env, html, originalTo),
       }),
     });
-    if (res.ok) return { ok: true, via: 'resend' };
+    if (res.ok) {
+      /* Keep the id. It is the ONLY handle on a message once it leaves here.
+         ------------------------------------------------------------------
+         This response body used to be discarded, and that is the whole of
+         the lead 28 problem: a 2xx here means Resend ACCEPTED the message,
+         not that anyone received it, and with the id thrown away there was
+         nothing to ask Resend about afterwards and nothing to match an
+         incoming webhook against. The id is what makes the delivery
+         webhook possible at all — see src/webhook.mjs.
+
+         A missing or unparseable body is not a failed send: the message is
+         accepted either way. It only means this one cannot be traced, so
+         report the send as the success it is and let the caller record a
+         null id. */
+      let messageId = null;
+      try {
+        const body = await res.json();
+        if (body && typeof body.id === 'string') messageId = body.id;
+      } catch { /* accepted but untraceable */ }
+      return { ok: true, via: 'resend', messageId };
+    }
     return { ok: false, why: 'resend ' + res.status + ' ' + (await res.text()).slice(0, 200) };
   } catch (err) {
     return { ok: false, why: 'resend threw: ' + String(err) };
@@ -200,6 +220,10 @@ export async function send(env, message) {
     return first;
   }
   const second = await sendViaN8n(env, { ...msg, needsSend: true });
+  /* No messageId on this path, deliberately: the fallback is Xneelo SMTP via
+     n8n and Resend never saw the message, so no delivery webhook will ever
+     arrive for it. A lead with no row in `messages` was carried by the
+     fallback — that absence is information, not a gap. */
   if (second.ok) return { ok: true, via: 'n8n', primaryFailed: first.why };
   return { ok: false, why: first.why + ' | ' + second.why };
 }

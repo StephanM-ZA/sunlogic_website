@@ -6,6 +6,7 @@ import {
 import { handleClaimGet, handleClaimPost } from './claim.mjs';
 import { compose, recipients, send, ADDRESS_OF } from './mailer.mjs';
 import { divisionLabel } from './logic.mjs';
+import { handleResendWebhook, recordSentMessage } from './webhook.mjs';
 
 /* Any Sunlogic host over https, rather than a list.
    The list this replaces held sunlogic.co.za and www.sunlogic.co.za — correct
@@ -265,18 +266,28 @@ async function sweepExpiredOffers(env) {
     if (done.meta.changes !== 1) continue;
 
     await notify(env, offer.lead_id, 'expired', offer.assignee, null, offer.round);
-
-    if (offer.round === 1) {
-      /* To the OTHER director specifically, not to whoever the rotation
-         pointer happens to name — a lead that has already been past one
-         person must not be offered back to them. */
-      const next = await createOffer(env, offer.lead_id, 2, OTHER[offer.assignee]);
-      await notify(env, offer.lead_id, 'offer', next.assignee, next.token, 2);
-    } else {
-      await reviveBothOffers(env, offer.lead_id);
-    }
+    await handOnOffer(env, offer);
   }
   return results.length;
+}
+
+/* Hand a lead on, once its current offer is dead.
+   ------------------------------------------------------------------------
+   Factored out of the sweeper because a bounce needs precisely the same
+   thing the clock running out needs: this offer is finished, somebody else
+   must get a live link. The caller is responsible for having moved the offer
+   to 'expired' first — and for deciding whether the departing director is
+   worth emailing, which the sweeper does and a bounce does not. */
+async function handOnOffer(env, offer) {
+  if (offer.round === 1) {
+    /* To the OTHER director specifically, not to whoever the rotation
+       pointer happens to name — a lead that has already been past one
+       person must not be offered back to them. */
+    const next = await createOffer(env, offer.lead_id, 2, OTHER[offer.assignee]);
+    await notify(env, offer.lead_id, 'offer', next.assignee, next.token, 2);
+  } else {
+    await reviveBothOffers(env, offer.lead_id);
+  }
 }
 
 /* Round 2 expiring does not create a round 3. Both tokens come back to life
@@ -427,6 +438,97 @@ async function assignmentState(env, leadId) {
   };
 }
 
+/* ---- Delivery confirmation --------------------------------------------
+   Resend accepting a message is not Resend delivering it. Lead 28 is the
+   proof: accepted 2026-10-15 08:01:21 UTC, handed to Resend, 2xx returned,
+   director got nothing, and leads.last_error was NULL because by our own
+   test the send had worked. The id we now keep is what lets Resend's webhook
+   tell us otherwise. See src/webhook.mjs. */
+
+/* Against the lead AND against the offer, because they answer different
+   questions. The lead link answers "what happened to this enquiry's mail".
+   The offer link is what makes a bounce actionable: handing the lead to the
+   other director needs to know which offer the dead email was carrying.
+
+   Never allowed to fail a send. The message has already gone; losing the
+   row costs traceability, and refusing the send would cost the lead. Same
+   ordering as the sheet row, for the same reason. */
+async function rememberMessage(env, { result, leadId, event, assignee, token, to }) {
+  if (!result.messageId) return;
+  try {
+    const offer = token
+      ? await env.DB.prepare('SELECT id FROM offers WHERE token=?').bind(token).first()
+      : null;
+    await recordSentMessage(env.DB, {
+      messageId: result.messageId,
+      leadId,
+      offerId: offer ? offer.id : null,
+      event,
+      assignee,
+      recipient: Array.isArray(to) ? to.join(', ') : (to || null),
+    });
+  } catch { /* traceable is better than not; sent is better than traceable */ }
+}
+
+/* A bounce or a complaint, after the fact.
+   ------------------------------------------------------------------------
+   Called by the webhook once per message, claimed in the database so it
+   cannot alert twice. Two things have to happen and the order matters: the
+   lead carries the record whatever else goes wrong, and only then does
+   anyone get told. */
+async function handleEmailFailure(env, row, status, detail) {
+  const note = ('email ' + status + ' — ' + (row.event || 'notification') +
+    ' to ' + (row.recipient || 'unknown') + (detail ? ': ' + detail : '')).slice(0, 400);
+
+  if (row.lead_id) {
+    await env.DB.prepare(
+      "UPDATE leads SET last_error=?, last_attempt_at=datetime('now') WHERE id=?",
+    ).bind(note, row.lead_id).run();
+  }
+
+  /* Only a director's mail is escalated. A visitor's estimate bouncing is a
+     wrong address they typed: worth recording against the lead, and not
+     something to wake a director over. */
+  if (!row.assignee || !row.lead_id) return false;
+
+  const offer = row.offer_id
+    ? await env.DB.prepare(
+      "SELECT id, lead_id, assignee, round, state FROM offers " +
+      "WHERE id=? AND state IN ('offered','pending_send')",
+    ).bind(row.offer_id).first()
+    : null;
+
+  if (offer) {
+    /* The serious case: a bounced OFFER. That director's 24 hours are
+       already running and they were never told anything, so the clock is
+       counting down on silence — exactly the shape of failure this whole
+       feature exists to prevent.
+       So do not wait for it. Expire the offer now and hand the lead on the
+       way the sweeper would have in 24 hours' time; the only difference is
+       that we KNOW the wait would be pointless.
+       Deliberately no 'expired' email to them: the address it would go to
+       is the one that just bounced. */
+    const done = await env.DB.prepare(
+      "UPDATE offers SET state='expired' WHERE id=? AND state IN ('offered','pending_send')",
+    ).bind(offer.id).run();
+    if (done.meta.changes !== 1) return false;
+    await handOnOffer(env, offer);
+    return true;
+  }
+
+  /* No live offer, so there is no 24-hour clock to rescue. If the lead is
+     one of the revived ones, alertUnclaimed already knows how to find the
+     live tokens and mail each director their own — reuse it rather than
+     inventing a second way to say the same thing.
+     If the lead is accepted, this is lead 28's own case and there is
+     deliberately no new email: the owner saw the full details on the claim
+     page when they accepted (see claim.mjs), and the other director has
+     nothing to act on. The record above and the digest's delivery notice
+     are what carry it. */
+  await alertUnclaimed(env, row.lead_id);
+  return true;
+}
+
 async function notify(env, leadId, event, assignee, token, round) {
   const lead = await env.DB.prepare('SELECT type, payload_json, division, created_at FROM leads WHERE id=?')
     .bind(leadId).first();
@@ -494,6 +596,10 @@ async function notify(env, leadId, event, assignee, token, round) {
   });
 
   if (result.ok) {
+    await rememberMessage(env, {
+      result, leadId, event, assignee, token, to: recipients(env, assignee),
+    });
+
     /* The offer is the one event that moves the lead out of the queue and
        starts the director's 24 hours. The others are notifications about a
        lead whose state is already settled. */
@@ -533,6 +639,10 @@ async function sendDailyDigest(env) {
     " (SELECT COUNT(*) FROM offers o WHERE o.state='offered' AND o.expires_at IS NULL) AS unclaimed," +
     " (SELECT COUNT(*) FROM leads WHERE status='failed') AS failed," +
     " (SELECT COUNT(*) FROM leads WHERE status='pending') AS queued," +
+    /* Mail Resend accepted and then failed to deliver. Before this existed
+       the number was unknowable and assumed to be zero; it was not. */
+    " (SELECT COUNT(*) FROM messages WHERE status IN ('bounced','complained')" +
+    "   AND created_at >= datetime('now','-1 day')) AS undelivered," +
     " (SELECT COUNT(*) FROM leads) AS total"
   ).first();
 
@@ -579,9 +689,26 @@ async function sendDailyDigest(env) {
     unclaimed: row.unclaimed,
     failed_all_time: row.failed,
     queued_now: row.queued,
+    undelivered_24h: row.undelivered,
     total_leads: row.total,
     oldest_open_lead: oldest ? oldest.lead_id : null,
     oldest_open_hours: oldest ? oldest.hours : null,
+    /* The template asks for a sentence, not two numbers. It has always asked
+       for one — {{oldestLine}} has been in body-daily-digest.html since the
+       template was written, and nothing ever supplied it, because until now
+       nothing rendered this template at all. */
+    oldestLine: oldest && oldest.lead_id
+      ? 'Oldest still open: lead ' + oldest.lead_id + ', ' + oldest.hours + ' hours ago.'
+      : 'Nothing is sitting unaccepted.',
+    /* Silence here is the good case, so it says nothing when there is
+       nothing — unlike the rest of the digest, which reports zeros on
+       purpose. The zeros prove the digest ran; this line only needs to
+       appear when there is something to act on. */
+    delivery_notice: row.undelivered
+      ? row.undelivered + ' email' + (row.undelivered === 1 ? '' : 's') +
+        ' sent in the last 24 hours did not arrive (bounced or marked as spam).' +
+        ' The affected leads carry the reason in the database.'
+      : '',
     split_30d: line('stephan') + ' · ' + line('craig'),
     /* Loud, and it removes itself: the line only exists while the variable
        does. A redirect left on by accident means one director is told
@@ -593,19 +720,60 @@ async function sendDailyDigest(env) {
       : '',
   };
 
-  try {
-    const res = await fetch(env.N8N_WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Relay-Secret': env.RELAY_SECRET },
-      body: JSON.stringify({ event: 'digest', type: 'digest', ...summary }),
-    });
-    return res.ok;
-  } catch {
-    /* Nothing to escalate to. A digest that cannot be sent is exactly the
-       situation the digest exists to reveal, and the reader learns it by not
-       receiving one. */
+  /* Through send(), like every other email.
+     ------------------------------------------------------------------
+     This used to POST to n8n and nothing else, which made the dead-man's
+     switch useless in the one direction that mattered: it never touched
+     Resend, so if Resend died the digest would keep arriving and would
+     report nothing wrong. A switch that cannot detect the failure it is
+     watching for is decoration.
+
+     Worse, it never arrived at all. n8n has no digest branch — six nodes,
+     Webhook → Extract Body → Log Row → Needs sending? → Relay Send →
+     Respond (see n8n/sunlogic-leads-relay.json, the committed definition).
+     A digest payload carries no `needsSend`, and Extract Body reads
+     `b.needsSend !== false`, so undefined became TRUE and every digest went
+     down the sending branch — into Relay Send, with `to` and `html` both
+     empty strings, because the digest never sent those fields. An SMTP send
+     with no recipient and no body. Nobody has ever received this email, and
+     the acceptance test for the entire feature ("confirm the digest arrives
+     the next morning") is the one unticked box in the 2026-09-04 plan.
+
+     So routing it through send() is not a risk of double-sending: it is the
+     first time this template has been rendered. send() announces a
+     successful Resend send to n8n with needsSend false — log it, do not
+     send it — which is also what stops Relay Send being reached with an
+     empty envelope. n8n needs no change.
+
+     leadId 'digest' rather than blank: the sheet is append-or-update on Lead
+     ID, so every digest to date collided into one blank-keyed row. A stable
+     key gives the digest its own row and leaves real leads alone. */
+  const result = await send(env, {
+    to: recipients(env, 'both'),
+    subject: 'Sunlogic leads — daily summary',
+    html: compose('digest', {
+      ...summary,
+      preheader: summary.arrived_24h + ' arrived, ' + summary.accepted_24h + ' accepted',
+      footnote: 'Sunlogic lead system &middot; sunlogic.co.za',
+    }),
+    leadId: 'digest',
+    event: 'digest',
+    extra: { type: 'digest', status: 'digest', ...summary },
+  });
+
+  /* Nothing to escalate to, and deliberately so. A digest that cannot be
+     sent is exactly the situation the digest exists to reveal, and the
+     reader learns it by not receiving one. Recorded, though — there is no
+     lead to hang it on, so the Worker's own log is the only place it can
+     go. */
+  if (!result.ok) {
+    console.error('digest send failed: ' + result.why);
     return false;
   }
+  await rememberMessage(env, {
+    result, leadId: null, event: 'digest', assignee: 'both', to: recipients(env, 'both'),
+  });
+  return true;
 }
 
 async function retryPendingLeads(env) {
@@ -639,6 +807,27 @@ async function retryPendingLeads(env) {
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    /* Resend tells us what became of a message. POST only, no CORS: this is
+       called by Resend's servers, never by a browser, so an Origin has no
+       business here and granting one would only widen the surface.
+
+       The raw text is passed through untouched because the Svix signature
+       covers the exact bytes — parsing and re-serialising changes key order
+       and the signature can never match again. */
+    if (url.pathname === '/resend/webhook') {
+      if (request.method !== 'POST') return new Response('method not allowed', { status: 405 });
+      const rawBody = await request.text();
+      const { status, body } = await handleResendWebhook({
+        db: env.DB,
+        secret: env.RESEND_WEBHOOK_SECRET,
+        headers: request.headers,
+        rawBody,
+        nowMs: Date.now(),
+        onFailure: (row, failure, detail) => handleEmailFailure(env, row, failure, detail),
+      });
+      return new Response(body, { status });
+    }
+
     if (url.pathname === '/leads/contact') {
       return handleLeadRoute(request, env, ctx, 'contact');
     }
