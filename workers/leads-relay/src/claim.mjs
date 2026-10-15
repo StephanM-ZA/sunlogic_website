@@ -29,7 +29,15 @@ text-transform:uppercase;color:#B85300;margin:0 0 16px}
 button{font:600 16px/1 inherit;background:#F66F00;color:#fff;border:0;border-radius:4px;
 padding:16px 28px;min-height:48px;cursor:pointer}
 button:hover{background:#B85300}
-.t{font:600 13px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:#A09B93;margin-top:24px}`;
+.t{font:600 13px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:#A09B93;margin-top:24px}
+.d{text-align:left;background:#fff;border:1px solid #EADFC8;border-radius:6px;
+padding:18px 20px;margin:0 0 20px}
+.d dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 14px}
+.d dt{font:600 12px/1.5 inherit;letter-spacing:.04em;text-transform:uppercase;color:#A09B93}
+.d dd{margin:0;font:500 15px/1.5 inherit;color:#0D2028;word-break:break-word}
+.d .m{margin:16px 0 0;padding-top:14px;border-top:1px solid #EADFC8;
+white-space:pre-wrap;text-align:left;color:#0D2028}
+.d a{color:#B85300}`;
 
 /* Counts down and then tries to close the tab.
    ------------------------------------------------------------------
@@ -112,6 +120,68 @@ async function loadOffer(env, token) {
   ).bind(token).first();
 }
 
+/* Everything below arrived through a public form, so it is rendered as text
+   and never as markup. The customer's own message is the obvious case; the
+   name field is the one that bites, because it looks harmless. */
+function esc(value) {
+  return String(value == null ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/* The lead, on the page, at the moment of accepting.
+   ------------------------------------------------------------------
+   This exists because an email is a second channel that can fail after we
+   have been told it succeeded. Lead 28 was accepted, Resend returned
+   success, and the details never arrived; the director had nothing and the
+   client happened to write to us directly. The one moment we know the
+   director is here and looking is this one, so the lead goes here.
+
+   It returns '' rather than throwing if the payload cannot be read. By the
+   time this runs the offer is already accepted and the sibling offers are
+   closed — a rendering problem must not be able to undo that, and a page
+   that says "Accepted" with no detail is still better than a 500 that
+   leaves the director unsure whether they have the job. */
+async function detailsBlock(env, leadId) {
+  let payload;
+  try {
+    const row = await env.DB
+      .prepare('SELECT payload_json FROM leads WHERE id=?')
+      .bind(leadId)
+      .first();
+    if (!row || !row.payload_json) return '';
+    payload = JSON.parse(row.payload_json);
+  } catch {
+    return '';
+  }
+  if (!payload || typeof payload !== 'object') return '';
+
+  /* Phone first, and both it and the email are links: this page is opened on
+     a phone more often than not, and the next action is a call. */
+  const fields = [
+    ['Name', esc(payload.name)],
+    ['Phone', payload.phone
+      ? `<a href="tel:${esc(String(payload.phone).replace(/[^+0-9]/g, ''))}">${esc(payload.phone)}</a>`
+      : ''],
+    ['Email', payload.email
+      ? `<a href="mailto:${esc(payload.email)}">${esc(payload.email)}</a>`
+      : ''],
+    ['Suburb', esc(payload.suburb)],
+    ['Property', esc(payload['property-type'])],
+  ].filter(([, v]) => v);
+
+  if (!fields.length && !payload.message) return '';
+
+  const rows = fields.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
+  const message = payload.message
+    ? `<p class="m">${esc(payload.message)}</p>`
+    : '';
+  return `<div class="d"><dl>${rows}</dl>${message}</div>`;
+}
+
 /* Read-only. This function must never write. */
 export async function handleClaimGet(env, token) {
   const offer = await loadOffer(env, token);
@@ -192,8 +262,14 @@ export async function handleClaimPost(env, token, onAccepted) {
   if (onAccepted) await onAccepted(offer);
 
   const label = divisionLabel(offer.division);
+  const details = await detailsBlock(env, offer.lead_id);
+  /* Deliberately NOT AUTOCLOSE. The countdown was right when this page said
+     nothing worth keeping; closing the tab on the details five seconds after
+     showing them would throw away the only copy the director is holding. */
   return page(
     `<p class="e">${label} enquiry</p><h1>Accepted</h1>
-     <p>It is yours. The full details are on their way to your inbox now.</p>` + AUTOCLOSE
+     <p>It is yours. A copy is on its way to your inbox too.</p>` +
+    details +
+    `<p class="t">You can close this tab now</p>`
   );
 }

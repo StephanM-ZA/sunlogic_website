@@ -655,7 +655,19 @@ export default {
       if (request.method === 'GET') return handleClaimGet(env, token);
       if (request.method === 'POST') {
         return handleClaimPost(env, token, async (offer) => {
-          ctx.waitUntil(notify(env, offer.lead_id, 'accepted', offer.assignee, null, offer.round));
+          /* .catch, because this runs AFTER the response has gone out.
+             notify() already records a failed send on the lead, but a throw —
+             or anything that stops it reaching send() at all — left no trace
+             anywhere. That is precisely why the lead 28 incident could not be
+             answered from the data: "no error recorded" had to mean both
+             "it sent" and "it never got that far". It now means one thing. */
+          ctx.waitUntil(
+            notify(env, offer.lead_id, 'accepted', offer.assignee, null, offer.round)
+              .catch((err) => env.DB
+                .prepare("UPDATE leads SET last_error=?, last_attempt_at=datetime('now') WHERE id=?")
+                .bind(('accepted notify threw: ' + String(err)).slice(0, 400), offer.lead_id)
+                .run()),
+          );
         });
       }
       return new Response('method not allowed', { status: 405 });
