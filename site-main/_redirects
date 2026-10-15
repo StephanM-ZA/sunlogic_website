@@ -18,8 +18,8 @@
 # the sitemap only), so what is written here is what ships.
 
 # --- Energy: solar, batteries, backup, energy management -------------------
-/solar                      https://energy.sunlogic.co.za/solar                 301
-/solar.html                 https://energy.sunlogic.co.za/solar                 301
+/solar                      https://energy.sunlogic.co.za/energy                301
+/solar.html                 https://energy.sunlogic.co.za/energy                301
 /energy-management          https://energy.sunlogic.co.za/energy-management     301
 /energy-management.html     https://energy.sunlogic.co.za/energy-management     301
 

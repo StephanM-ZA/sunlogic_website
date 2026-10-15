@@ -21,6 +21,20 @@ vital.
 
 Production Worker version history for 2026-10-15, newest first:
 
+- `97943215-28f1-4f24-b02a-73a08d73c5d1` — **the race fix.** Migration 0006
+  (applied). A real bounce test found that Resend's webhook can arrive BEFORE
+  the `messages` row exists (observed: event 13:49:20, row 13:49:22), so a
+  genuine bounce matched nothing and escalated to nobody. On a director
+  notification that IS lead 28 — bounced offer, director never told, 24-hour
+  clock running on silence — and it was live in production. 79 tests had all
+  seeded the row before the event, so the suite was evidence about its own
+  assumption. `reconcileUnmatched` now applies events that arrived early, as
+  soon as the send is recorded. It was only visible because unmatched events
+  are recorded (cae7079); before that it would have been accepted and
+  discarded.
+- `e6b1ea36-8376-45fa-9de8-383391b4a042` — internal submissions marked out of
+  the pending queue at submit time.
+
 - `11981630-57d6-4cb1-bd41-d120267ce323` — every send() site records its
   message id; unmatched webhook events kept. Needs migration 0004 (applied).
 - `d867ea9a-e716-49a5-8fbd-3c33eb782ffc` — delivery confirmation. Built by
@@ -42,8 +56,20 @@ submissions from this session; both sat `status='pending'` forever because
 `handleLeadRoute` returns early for internal submissions without marking the
 lead, so the digest would have reported "2 queued for sending" every morning
 and climbed with each test. Both were set to `status='sent'` on 2026-10-15
-(queued count back to 0). THE CODE WART REMAINS: the next internal test
-recreates the false alarm. Fix is in `handleLeadRoute`, not in the data.
+(queued count back to 0). The CODE is fixed too, as of `e6b1ea36`: verified in
+production with lead 31, which landed `status='sent'` with no offer.
+
+Leads 32 and 33 were bounce-test leads created and then deleted by the
+delivery session, along with their offers, messages and events. Production
+leads are now 26, 27, 28 (real) and 29, 30, 31 (internal tests from this
+session, all `sent`). Tomorrow's first digest reports arrived_24h 3,
+open_offers 0, queued_now 0, failed 0, unmatched 0 — the 3 are those internal
+tests, not real enquiries.
+
+**Still not proven by a real bounce:** the DIRECTOR branch (offer expires,
+lead hands to the other director with a live token). 8 unit tests cover it,
+and `workers/leads-relay/scripts/manual-bounce.mjs` is committed for when
+Stephan wants it driven for real — it emails Craig, so it needs his say-so.
 
 Deployed from a THROWAWAY WORKTREE at HEAD with only two files patched, because
 the main working tree carries two other sessions' uncommitted work and R2 is
@@ -390,6 +416,64 @@ hand instead.
 3. The three n8n defects in `docs/project-brief.md` (dead WordPress delete
    calls, a hard-coded secret in the workflow JSON, an unauthenticated
    webhook) are iMac changes and belong to `serverMonitor`.
+
+---
+
+## /solar became /energy, 2026-10-15
+
+The division rename (Solar → Energy) had been applied to the nav and footer
+labels but never to the page itself. Every label said Energy; the address said
+`/solar`, and the page's own eyebrow and `<title>` still said Solar. Clicking
+"Run the Sums Yourself" on the Energy home page therefore landed you on a URL
+and a hero that both announced a division the site no longer has — which read
+as the header changing rather than as a page you had navigated to.
+
+`site-energy/solar.html` is now `site-energy/energy.html`, served at `/energy`.
+
+| Changed | Detail |
+|---|---|
+| The page | `git mv`, plus its canonical, `og:url` and `<dl-nav-bar active>` |
+| `sites.config.js` | nav and footer entries: `solar.html` → `energy.html`, key `solar` → `energy` |
+| 7 in-site links | home page x4 (`#home-cost`, `#at-home`, `#small-business`, `#larger-sites`), 404 page, and 4 blog posts linking `#calculator-home` |
+| `sitemap.xml`, `llms.txt` | the page's own URL |
+| `site-energy/_redirects` | **new** `/solar` and `/solar.html` → `/energy` 301 |
+| `site-main/_redirects` | its `/solar` 301s now target `energy.sunlogic.co.za/energy` |
+| `site-electrical/_redirects` | same |
+
+The apex and Electrical both already carried `/solar` → Energy redirects. Those
+are the "all three sites" part — retargeted, not removed, so an old apex link
+still lands in one hop.
+
+**Deliberately NOT changed — visible copy.** The page still calls itself Solar
+in three places: the hero eyebrow `SOLAR`, the `<title>` "Solar Sized On What
+You Use | …", and button labels like "Solar at home" on the home page. That is
+copy, and copy on this site runs through the skills that own it — and "solar"
+is still the correct word for the technology even where it is the wrong word
+for the division. Needs a decision, not a find-and-replace.
+
+**Also left alone, on purpose**
+- `shared/components.js` fallback nav/footer — pre-rename throughout
+  (`Home · Solar · Electrical · Energy`), used only when a page is opened off
+  disk with no `SL_SITE`. Renaming one entry of four would make it incoherent;
+  it wants its own pass.
+- `shared/sunlogic-check.js:432` names `solar.html` in a note about a past
+  fix. Changing it would falsify the history it records.
+- `docs/` (plans, specs, copy reviews) and `archive/site-tailwind/` — dated
+  records of what was true then. `docs/site-architecture.md` describes the
+  pre-split single site and is stale for other reasons too.
+- `test/site-pages.test.js` uses `solar.html` as an invented fixture filename,
+  not a reference to this page.
+- `/energy-management` is still named for the pre-rename "Energy management"
+  division, now called Smart Solutions — the page content already says Smart
+  solutions, only the URL is stale. Same job, not done.
+
+Verified: conformance 25/25 pages, 0 fails / 0 warns at both viewports; sweep
+575 combinations, 0 findings; `npm test` 137/138, the one failure still the
+untracked doc-builder harness. Locally `/energy` is 200. Nav highlighting
+survives the key rename — `Energy` carries `aria-current="page"` and
+`data-has-active="true"`. No `href` to the old page survives in any built page
+of any site; the three remaining "solar" matches are an image filename, an
+external citation, and a `mailto:` subject.
 
 ---
 

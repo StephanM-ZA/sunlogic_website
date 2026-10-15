@@ -82,14 +82,14 @@ const SITES = [
        footer link — Worth knowing — exactly where it already was. */
     nav: [
       { href: 'index.html', key: 'home', label: 'Home' },
-      { href: 'solar.html', key: 'solar', label: 'Energy' },
+      { href: 'energy.html', key: 'energy', label: 'Energy' },
       { href: 'energy-management.html', key: 'smart', label: 'Smart Solutions' },
       /* Absolute, so the build's extensionless rewrite leaves it alone and it
          crosses to the other host. Navy wherever Electrical appears. */
       { href: 'https://electrical.sunlogic.co.za', key: 'electrical', label: 'Electrical', accent: 'navy' },
     ],
     footer: [
-      [['Energy', 'solar.html'], ['Smart Solutions', 'energy-management.html'],
+      [['Energy', 'energy.html'], ['Smart Solutions', 'energy-management.html'],
        ['Worth knowing', 'blog.html'], ['Electrical', 'https://electrical.sunlogic.co.za']],
       [['Contact', 'contact.html'], ['Legal', 'legal.html']],
     ],

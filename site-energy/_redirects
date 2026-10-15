@@ -24,6 +24,22 @@
 /electrical                        https://electrical.sunlogic.co.za/electrical                  301
 /electrical.html                   https://electrical.sunlogic.co.za/electrical                  301
 
+# --- The solar page became /energy ----------------------------------------
+# The division was renamed Solar -> Energy. The nav, the footer and this
+# site's own links were renamed with it; the file, the URL and the canonical
+# were not, so every label said Energy while the address said /solar. The page
+# is energy.html now.
+#
+# These keep the old address working for anything already indexed, bookmarked
+# or linked from somewhere we do not control. 301, like every other rule here:
+# the move is permanent and only a 301 passes ranking on. Both spellings, for
+# the reason given above.
+#
+# Above the blog rules and below Electrical: order only matters against a
+# wildcard, and /solar collides with nothing on either side.
+/solar                             /energy                                                       301
+/solar.html                        /energy                                                       301
+
 # --- Posts that moved to Electrical ---------------------------------------
 /blog-3-essential-checks           https://electrical.sunlogic.co.za/blog-3-essential-checks     301
 /blog-3-essential-checks.html      https://electrical.sunlogic.co.za/blog-3-essential-checks     301

@@ -9,8 +9,8 @@
 # Not processed by the build (no file extension); what is here is what ships.
 
 # --- Energy: solar, batteries, backup -------------------------------------
-/solar                             https://energy.sunlogic.co.za/solar                            301
-/solar.html                        https://energy.sunlogic.co.za/solar                            301
+/solar                             https://energy.sunlogic.co.za/energy                           301
+/solar.html                        https://energy.sunlogic.co.za/energy                           301
 
 # --- Posts that moved to Energy -------------------------------------------
 /blog-rent-to-own                  https://energy.sunlogic.co.za/blog-rent-to-own                 301
