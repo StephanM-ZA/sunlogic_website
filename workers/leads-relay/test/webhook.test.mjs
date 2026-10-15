@@ -367,6 +367,84 @@ test('a webhook about a message we never recorded is accepted, not an error', as
   assert.equal(alerts, 0, 'nothing to escalate about a lead we cannot identify');
 });
 
+test('an unmatched event is recorded as unmatched, not dropped', async () => {
+  /* The first real event this system received was exactly this: a genuine,
+     correctly signed email.delivered on 2026-10-15 13:13:27 for a send that
+     kept no id. It verified, it was accepted, and the only trace was an
+     orphan row. Now that every send records its id, an unmatched event is a
+     signal — mail is leaving by a route nothing here records — so the fact
+     has to survive the request. */
+  const db = makeDb();
+  const res = await post(db, { type: 'email.delivered', data: { email_id: 'ghost' } });
+  assert.equal(res.status, 200);
+  const row = db.sqlite.prepare('SELECT type, message_id, matched FROM webhook_events').get();
+  assert.equal(row.type, 'email.delivered');
+  assert.equal(row.message_id, 'ghost');
+  assert.equal(row.matched, 0, 'the whole point is that this is queryable');
+});
+
+test('a matched event is recorded as matched', async () => {
+  const db = makeDb();
+  seedLead(db);
+  await recordSentMessage(db, { messageId: 'known', leadId: 28, event: 'visitor_report' });
+  await post(db, { type: 'email.delivered', data: { email_id: 'known' } });
+  const row = db.sqlite.prepare('SELECT message_id, matched FROM webhook_events').get();
+  assert.equal(row.message_id, 'known');
+  assert.equal(row.matched, 1);
+});
+
+/* ---- Customer-facing mail --------------------------------------------- */
+
+test('a bounced visitor estimate is recorded but never reassigns the lead', async () => {
+  /* The estimate goes to the CUSTOMER, so it is stored with no assignee.
+     handleEmailFailure keys off that: a prospect mistyping their address
+     must not expire an offer or hand the lead to the other director. The
+     failure is in reaching the customer, which is a different problem with
+     a different answer. */
+  const db = makeDb();
+  seedLead(db);
+  seedOffer(db);
+  await recordSentMessage(db, {
+    messageId: 'est-1', leadId: 28, offerId: null,
+    event: 'visitor_report', assignee: null, recipient: 'tpyo@example.com',
+  });
+
+  const seen = [];
+  await post(db, bouncePayload('est-1', 'tpyo@example.com'),
+    { onFailure: (row, status, detail) => { seen.push({ row, status, detail }); } });
+
+  assert.equal(seen.length, 1, 'it is still a failure worth handling');
+  assert.equal(seen[0].row.assignee, null, 'no director owns this message');
+  assert.equal(seen[0].row.offer_id, null, 'and no offer rides on it');
+  assert.equal(
+    db.sqlite.prepare('SELECT state FROM offers WHERE id=17').get().state,
+    'offered',
+    'the live offer must be untouched by a customer-side bounce',
+  );
+  assert.equal(
+    db.sqlite.prepare('SELECT status, detail FROM messages WHERE id=?').get('est-1').status,
+    'bounced',
+  );
+});
+
+test('a director-less message row is representable at all', async () => {
+  /* Guards the schema rather than the logic: if `messages` ever gained a
+     NOT NULL on assignee, every customer-facing send would start failing
+     silently inside rememberMessage's catch. */
+  const db = makeDb();
+  seedLead(db);
+  assert.equal(
+    await recordSentMessage(db, {
+      messageId: 'no-director', leadId: 28, event: 'visitor_report',
+    }),
+    true,
+  );
+  const row = db.sqlite.prepare('SELECT assignee, offer_id, status FROM messages WHERE id=?').get('no-director');
+  assert.equal(row.assignee, null);
+  assert.equal(row.offer_id, null);
+  assert.equal(row.status, 'sent');
+});
+
 test('malformed json past a valid signature is a 400', async () => {
   const db = makeDb();
   const ts = String(Math.floor(NOW_MS / 1000));

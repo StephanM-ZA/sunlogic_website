@@ -84,5 +84,12 @@ CREATE INDEX IF NOT EXISTS idx_messages_status ON messages(status);
 CREATE TABLE IF NOT EXISTS webhook_events (
   id          TEXT PRIMARY KEY,           -- svix-id
   type        TEXT,
-  received_at TEXT NOT NULL DEFAULT (datetime('now'))
+  received_at TEXT NOT NULL DEFAULT (datetime('now')),
+  -- 0004: whether the event named a message we have a record of. An
+  -- unmatched event means mail is going out by a path this Worker does not
+  -- record, or an id was dropped on the way out. See migration 0004.
+  message_id  TEXT,
+  matched     INTEGER NOT NULL DEFAULT 0
 );
+CREATE INDEX IF NOT EXISTS idx_webhook_events_unmatched
+  ON webhook_events(matched, received_at);

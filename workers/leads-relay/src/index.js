@@ -381,6 +381,14 @@ async function sendInternalTestReply(env, leadId, email, division, receivedOn) {
     leadId,
     event: 'internal_test',
   });
+  /* Lower stakes than the estimate, but recorded for the same reason, and
+     because an unrecorded send is what made a real delivered event arrive
+     at the webhook with nothing to match it to. */
+  if (result.ok) {
+    await rememberMessage(env, {
+      result, leadId, event: 'internal_test', to: [email],
+    });
+  }
   if (!result.ok) {
     await env.DB.prepare("UPDATE leads SET last_error=? WHERE id=?")
       .bind(('internal test reply failed: ' + result.why).slice(0, 400), leadId).run();
@@ -401,6 +409,19 @@ async function sendVisitorReport(env, leadId, payload) {
     leadId,
     event: 'visitor_report',
   });
+  /* The customer's own estimate, traced like everything else.
+     ------------------------------------------------------------------
+     This was the remaining blind spot after the director side was closed:
+     a prospect's estimate could be accepted by Resend and never arrive,
+     and the first anyone would know is that a warm lead went cold. It is
+     recorded with no assignee, so a bounce here is never mistaken for a
+     dead offer and cannot reassign the lead — the failure is in reaching
+     the CUSTOMER, which is a different problem with a different answer. */
+  if (result.ok) {
+    await rememberMessage(env, {
+      result, leadId, event: 'visitor_report', to: [payload.email],
+    });
+  }
   if (!result.ok) {
     await env.DB.prepare(
       "UPDATE leads SET last_error=? WHERE id=?"
@@ -465,6 +486,8 @@ async function assignmentState(env, leadId) {
    Never allowed to fail a send. The message has already gone; losing the
    row costs traceability, and refusing the send would cost the lead. Same
    ordering as the sheet row, for the same reason. */
+const addressList = (to) => (Array.isArray(to) ? to.join(', ') : (to || null));
+
 async function rememberMessage(env, { result, leadId, event, assignee, token, to }) {
   if (!result.messageId) return;
   try {
@@ -476,8 +499,14 @@ async function rememberMessage(env, { result, leadId, event, assignee, token, to
       leadId,
       offerId: offer ? offer.id : null,
       event,
-      assignee,
-      recipient: Array.isArray(to) ? to.join(', ') : (to || null),
+      /* NULL for anything not addressed to a director — the visitor's own
+         estimate, the internal test reply. handleEmailFailure keys off this:
+         a row with no assignee is never treated as a dead offer, so a
+         customer mistyping their address cannot reassign a lead. */
+      assignee: assignee || null,
+      /* What send() actually used, not what we asked for. They differ under
+         MAIL_REDIRECT_TO, and the real address is the useful one. */
+      recipient: addressList(result.to ?? to),
     });
   } catch { /* traceable is better than not; sent is better than traceable */ }
 }
@@ -655,6 +684,11 @@ async function sendDailyDigest(env) {
        the number was unknowable and assumed to be zero; it was not. */
     " (SELECT COUNT(*) FROM messages WHERE status IN ('bounced','complained')" +
     "   AND created_at >= datetime('now','-1 day')) AS undelivered," +
+    /* Delivery news about a message we have no record of sending. Should be
+       zero now that every send records its id; if it is not, mail is going
+       out by a path this Worker does not know about. */
+    " (SELECT COUNT(*) FROM webhook_events WHERE matched=0" +
+    "   AND received_at >= datetime('now','-1 day')) AS unmatched," +
     " (SELECT COUNT(*) FROM leads) AS total"
   ).first();
 
@@ -702,6 +736,7 @@ async function sendDailyDigest(env) {
     failed_all_time: row.failed,
     queued_now: row.queued,
     undelivered_24h: row.undelivered,
+    unmatched_events_24h: row.unmatched,
     total_leads: row.total,
     oldest_open_lead: oldest ? oldest.lead_id : null,
     oldest_open_hours: oldest ? oldest.hours : null,
@@ -716,11 +751,20 @@ async function sendDailyDigest(env) {
        nothing — unlike the rest of the digest, which reports zeros on
        purpose. The zeros prove the digest ran; this line only needs to
        appear when there is something to act on. */
-    delivery_notice: row.undelivered
-      ? row.undelivered + ' email' + (row.undelivered === 1 ? '' : 's') +
-        ' sent in the last 24 hours did not arrive (bounced or marked as spam).' +
-        ' The affected leads carry the reason in the database.'
-      : '',
+    delivery_notice: [
+      row.undelivered
+        ? row.undelivered + ' email' + (row.undelivered === 1 ? '' : 's') +
+          ' sent in the last 24 hours did not arrive (bounced or marked as spam).' +
+          ' The affected leads carry the reason in the database.'
+        : '',
+      /* A quieter problem than a bounce, and a worse sign: it means mail is
+         leaving by a route nothing here records, so the counts above are
+         measuring less than they appear to. */
+      row.unmatched
+        ? row.unmatched + ' delivery notice' + (row.unmatched === 1 ? '' : 's') +
+          ' arrived for messages this system has no record of sending.'
+        : '',
+    ].filter(Boolean).join(' '),
     split_30d: line('stephan') + ' · ' + line('craig'),
     /* Loud, and it removes itself: the line only exists while the variable
        does. A redirect left on by accident means one director is told

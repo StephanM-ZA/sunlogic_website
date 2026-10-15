@@ -214,16 +214,22 @@ export async function send(env, message) {
   const msg = to === message.to
     ? message
     : { ...message, to, originalTo: message.to };
+  /* `to` travels back out with the result, because it is the address the
+     message ACTUALLY went to and the caller only knows the one it asked
+     for. Under MAIL_REDIRECT_TO those differ, and a `messages` row naming
+     a customer who was never written to would be a record that lies —
+     precisely the kind of "the data says it was fine" this feature exists
+     to stop. */
   const first = await sendViaResend(env, msg);
   if (first.ok) {
     await sendViaN8n(env, { ...msg, needsSend: false });
-    return first;
+    return { ...first, to };
   }
   const second = await sendViaN8n(env, { ...msg, needsSend: true });
   /* No messageId on this path, deliberately: the fallback is Xneelo SMTP via
      n8n and Resend never saw the message, so no delivery webhook will ever
      arrive for it. A lead with no row in `messages` was carried by the
      fallback — that absence is information, not a gap. */
-  if (second.ok) return { ok: true, via: 'n8n', primaryFailed: first.why };
-  return { ok: false, why: first.why + ' | ' + second.why };
+  if (second.ok) return { ok: true, via: 'n8n', primaryFailed: first.why, to };
+  return { ok: false, why: first.why + ' | ' + second.why, to };
 }

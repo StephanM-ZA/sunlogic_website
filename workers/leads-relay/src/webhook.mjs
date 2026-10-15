@@ -243,10 +243,16 @@ export async function alreadyHandled(db, svixId) {
   return !!row;
 }
 
-export async function markHandled(db, svixId, type) {
+/* Records WHAT the event was about, not just that it happened.
+   ------------------------------------------------------------------------
+   `matched` is the useful column. Now that every send records its id, an
+   event matching nothing means mail is leaving by a path this Worker does
+   not know about, or an id was lost on the way out. Dropping such an event
+   silently is how the first one went unnoticed. */
+export async function markHandled(db, svixId, type, messageId = null, matched = false) {
   await db.prepare(
-    'INSERT OR IGNORE INTO webhook_events (id, type) VALUES (?, ?)',
-  ).bind(svixId, type || '').run();
+    'INSERT OR IGNORE INTO webhook_events (id, type, message_id, matched) VALUES (?, ?, ?, ?)',
+  ).bind(svixId, type || '', messageId, matched ? 1 : 0).run();
 }
 
 /* ---- The handler ------------------------------------------------------- */
@@ -294,6 +300,7 @@ export async function handleResendWebhook({ db, secret, headers, rawBody, nowMs,
     return { status: 200, body: 'no message id' };
   }
 
+
   const detail = detailOf(payload);
   const applied = await applyEmailEvent(db, messageId, status, detail);
 
@@ -313,6 +320,8 @@ export async function handleResendWebhook({ db, secret, headers, rawBody, nowMs,
     }
   }
 
-  await markHandled(db, id, payload.type);
+  await markHandled(db, id, payload.type, messageId, applied.known);
+  /* Still 200 for an unmatched event. Resend is not at fault and retrying
+     would not help — the record above is how a human finds out. */
   return { status: 200, body: applied.known ? 'ok' : 'unknown message' };
 }
