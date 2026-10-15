@@ -291,6 +291,108 @@ npx wrangler d1 execute sunlogic-leads --remote \
   --command "DELETE FROM brief_photos WHERE reference IN ('VERIFY-TEST','LIVE-CHECK')"
 ```
 
+### First SUCCESSFUL submission — and why there is still no Trello card
+
+Row **41** in `sunlogic_briefs.submissions`: Stephan Marais, Renewable, with
+`upload_photos_db` set to a real URL that serves 200 / image/jpeg / 215 KB.
+**The form, the upload, the D1 store and the n8n webhook all work.**
+
+The n8n execution (`332352`) then **errored**, so `processed` is false and no
+Trello card was created. The failing node and its reason, pulled out of
+`execution_data` (which n8n stores index-encoded, so it needs dereferencing):
+
+```
+FAILED NODE: Send email  (n8n-nodes-base.emailSend)
+NodeApiError: "certificate has expired"   httpCode: ESOCKET
+```
+
+Confirmed independently, not taken on trust:
+
+```
+smtp.sunlogic.co.za → CN=sunlogic.co.za
+notAfter = Oct  3 09:10:37 2026 GMT        (expired)
+```
+
+**Why that kills the Trello card.** `Send email` and the Trello chain are two
+parallel branches off `Download file`. The email node throws, the execution
+aborts, and `Upload file → Share file → Delete temp file → Create Trello card
+→ attach photos → PostgreSQL Update` never runs. Nothing is wrong with the
+Trello side.
+
+**Blast radius is one brief.** 39 processed, 2 not: row 1 (ancient) and row 41
+(this one). Yours is the first brief submitted since the certificate expired,
+because the form was dead for the whole period in between.
+
+**The fix is not in this repo.** Either renew the Xneelo certificate for
+`sunlogic.co.za` (the real fix, and it also affects anything else sending
+through that mailbox), or set "Ignore SSL Issues" on the Send email node as a
+stopgap — an n8n change, so `serverMonitor`. Worth considering at the same
+time: putting Trello **before** email in that workflow, so a mail outage stops
+costing the card and the `processed` flag.
+
+Row 41 can be replayed from the n8n UI once mail works.
+
+### Two fixes from that session
+
+- **The page goes to the confirmation after a successful send.** Submit sits
+  at the foot of a twenty-field form, so the success panel replaced the form
+  well above the fold and the page appeared to do nothing.
+- **The street number survives.** OSM frequently holds the road but not the
+  house, so "9 Chesham Road" came back as "Chesham Road, Wyndover…" and the
+  one part a driver needs was dropped. `dlAddressLabel` uses OSM's
+  `house_number` when it exists and otherwise puts the typed leading number
+  back. Verified: "9 Chesham Road Claremont" → "9 Chesham Road, Wyndover,
+  Claremont…", while "Long Street Cape Town" gains no invented number.
+
+### "Load failed" on the retest — a STALE DEPLOY, not a code fault
+
+2026-10-15. The brief failed again with Safari's wording for a dead `fetch()`.
+Caught on a live `wrangler tail`, which is the only reason it took minutes
+rather than a day — the Worker has no observability block, so nothing is
+queryable after the fact.
+
+```
+OPTIONS https://leads.sunlogic.co.za/uploads/brief  -> 404
+```
+
+The CORS preflight 404s, so the browser never sends the POST and reports
+"Load failed" with no detail. Probing the deployed routes shows whose code is
+live:
+
+| Route | OPTIONS | POST |
+|---|---|---|
+| `/uploads/brief` | **404** | **404** |
+| `/leads/contact` | 204 | 400 |
+| `/leads/calculator` | 204 | 400 |
+| `/resend/webhook` | 405 | 401 |
+
+**The Resend webhook is deployed and the photo uploads are not.** Another
+session ran `wrangler deploy` from a tree that predated commit `63c1366`, and
+that deploy replaced the one verified working at 13:37. Both features are
+present in HEAD and the working tree is clean, so a single redeploy from here
+restores both.
+
+**The operational hazard, which will recur:** two sessions deploy this same
+Worker. `wrangler deploy` ships a whole script, not a diff, so whoever
+deploys from a stale checkout silently removes the other's routes. Nothing
+errors. The only symptom is a 404 on a route that worked an hour ago. Before
+deploying this Worker: `git pull`, confirm the tree is clean, and afterwards
+probe the routes you did not touch.
+
+**Redeployed and verified** (version `853d6299`): all four routes answer
+correctly with both features present at last —
+
+| Route | OPTIONS |
+|---|---|
+| `/uploads/brief` | 204 |
+| `/leads/contact` | 204 |
+| `/leads/calculator` | 204 |
+| `/resend/webhook` | 405 (POST only, as designed) |
+
+A 300 KB PNG uploaded to production returns 201 and fetches back
+byte-identical, and `dlUploadFile` called from the live page itself returns a
+real URL.
+
 ### The first real submission FAILED, and what came out of it
 
 Submitted 2026-10-15 with photos. It showed "Something went wrong. Please call

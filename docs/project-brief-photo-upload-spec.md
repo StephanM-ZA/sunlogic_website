@@ -1,10 +1,24 @@
 # Spec: Brief photo upload workflow (n8n)
 
-**For the `serverMonitor` project to build.** Everything here is an iMac
-change and goes through that gate; this document is written from the website
-side, which owns the other half of the contract.
+> **SUPERSEDED — do not build this.** Photos are live and working, stored as
+> rows in D1 and served by the leads-relay Worker. See `docs/project-brief.md`.
+>
+> This was written when the n8n route looked like the only option left. It was
+> overtaken the same day by a simpler answer: the Worker already had a D1
+> binding, enabled and deployed, so no new store and no n8n change were needed
+> at all.
+>
+> Kept rather than deleted because the reasoning is still worth something if
+> the storage question is ever reopened — in particular the timing constraint
+> in "Why this has to be a second workflow", which is a property of the
+> existing workflow and remains true: it runs *after* the brief is submitted,
+> so it can never be the thing that uploads the photos.
 
-Status: specified, not built. Written 2026-10-15.
+**Originally: for the `serverMonitor` project to build.** Everything here is
+an iMac change and goes through that gate; this document is written from the
+website side, which owns the other half of the contract.
+
+Status: **superseded 2026-10-15, never built.**
 
 ---
 

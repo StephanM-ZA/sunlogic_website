@@ -20,6 +20,12 @@ function dlFormSuccessInline(form) {
     (form.getAttribute('data-success-body') ||
       'We will come back to you shortly. This will close on its own.') + '</p>';
   form.replaceWith(panel);
+  /* Take the reader to the confirmation.
+     Submit sits at the foot of a twenty-field form, so without this the panel
+     replaces the form well above the fold and the page appears to do nothing
+     at all. Reported as "after successful send, jump to the top", which is
+     exactly what it feels like from down there. */
+  panel.scrollIntoView({ block: 'center', behavior: 'smooth' });
   /* Dispatched from the panel, which is in the document — the form is detached
      by this point and an event from it would reach nothing. The modal listens
      for this to start its own dismiss timer. */
@@ -209,7 +215,28 @@ function dlFillRelated(form, input, place) {
     ? 'https://www.google.com/maps/search/?api=1&query=' + place.lat + ',' + place.lon : '');
 }
 
-function dlRenderSuggestions(form, input, places) {
+/* Put the street number back.
+   ------------------------------------------------------------------
+   OpenStreetMap often holds the road but not the individual house, so
+   searching "9 Chesham Road" returns "Chesham Road, Wyndover, Claremont…"
+   and the number — the one part a driver actually needs — is silently
+   dropped. If OSM gave us a house number we use it; otherwise we take the
+   number the person typed and put it back on the front.
+
+   Only a LEADING number is taken, so "9 Chesham Road" gives 9 while
+   "Chesham Road 7708" does not turn a postcode into a street number. */
+function dlAddressLabel(place, typed) {
+  const full = place.display_name || '';
+  const houseNumber = (place.address && place.address.house_number) || '';
+  if (houseNumber) { return full; }
+  const typedNumber = (typed.trim().match(/^(\d+[a-zA-Z]?)\b/) || [])[1];
+  if (!typedNumber) { return full; }
+  /* Do not double it up if the result already starts with that number. */
+  if (full.indexOf(typedNumber + ' ') === 0) { return full; }
+  return typedNumber + ' ' + full;
+}
+
+function dlRenderSuggestions(form, input, places, typed) {
   dlCloseSuggestions(input);
   if (!places.length) { return; }
   const list = document.createElement('ul');
@@ -219,12 +246,13 @@ function dlRenderSuggestions(form, input, places) {
     const item = document.createElement('li');
     item.className = 'sl-suggest__item';
     item.setAttribute('role', 'option');
-    item.textContent = place.display_name;
+    const label = dlAddressLabel(place, typed);
+    item.textContent = label;
     item.addEventListener('mousedown', function(e) {
       /* mousedown, not click: blur fires first on a click and would close the
          list before the selection landed. */
       e.preventDefault();
-      input.value = place.display_name;
+      input.value = label;
       dlClearFieldError(input);
       dlFillRelated(form, input, place);
       dlCloseSuggestions(input);
@@ -249,14 +277,14 @@ function dlInitAddress(form) {
       timer = setTimeout(async function() {
         const mine = ++latest;
         try {
-          const url = DL_ADDRESS_ENDPOINT + '?format=jsonv2&countrycodes=za&limit=6&q=' +
+          const url = DL_ADDRESS_ENDPOINT + '?format=jsonv2&countrycodes=za&addressdetails=1&limit=6&q=' +
             encodeURIComponent(query);
           const response = await fetch(url);
           const places = await response.json();
           /* An earlier, slower request must not overwrite a later one's
              results. Typing outruns the network constantly. */
           if (mine !== latest) { return; }
-          dlRenderSuggestions(form, input, Array.isArray(places) ? places : []);
+          dlRenderSuggestions(form, input, Array.isArray(places) ? places : [], query);
         } catch (err) {
           /* Lookup is a convenience. If it is down, the field is still a
              plain text box and the brief still sends. */
