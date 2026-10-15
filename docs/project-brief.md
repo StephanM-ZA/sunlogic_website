@@ -228,14 +228,26 @@ still open: `serverMonitor/docs/changes/2026-10-15-sunlogic-brief-workflow/READM
    they were dropped rather than repointed; retention, if it is ever needed, is a sweep
    of `brief_photos` by `created_at`.
 
-3. **SMTP now points at a hostname whose certificate is valid.** `smtp.sunlogic.co.za`
-   is a vanity CNAME that presented `CN=sunlogic.co.za`, expired 3 October — which is why
-   brief emails were failing, and why it looked like a mail outage. The same server
-   answers on `www451.jnb1.host-h.net` (same IP) with a wildcard certificate that
-   verifies, and the owner changed that one `host` field in the n8n credential on
-   2026-10-15. It is shared by five active workflows, including n8n's own `Error Handler`
-   — which is why nothing raised the alarm when the brief failed. The sibling credential
-   behind `Sunlogic — Leads Relay` had the same defect and was fixed at the same time.
+3. **SMTP now points at a hostname whose certificate is valid** — for now.
+   `smtp.sunlogic.co.za` is a vanity CNAME that presented `CN=sunlogic.co.za`, expired
+   3 October, which is why brief emails were failing and why it looked like a mail
+   outage rather than one wrong hostname. The same server answers on
+   `www451.jnb1.host-h.net` (same IP) under a wildcard certificate that verifies, and
+   that `host` field was changed on 2026-10-15 in n8n's credential UI. It is shared by
+   five active workflows including n8n's own `Error Handler` — which is why nothing
+   raised the alarm when the brief failed. The credential behind
+   `Sunlogic — Leads Relay` had the same defect and was fixed at the same time, so the
+   leads pipeline's mail was broken too.
+
+   **Treat this as a workaround.** `www451.jnb1.host-h.net` is a host-specific Xneelo
+   name, not a name this domain owns, so it needs changing again if Xneelo moves the
+   mailbox. The durable fix is Xneelo renewing the certificate for `sunlogic.co.za`,
+   which has not renewed since 3 October and looks stuck — worth raising with their
+   support, after which both credentials can go back to `smtp.sunlogic.co.za`.
+
+   Verified by n8n's own credential test (TLS with certificate verification, plus AUTH).
+   **Not** yet verified by a message the mail server actually accepted — nothing has run
+   on either credential since.
 
 ### Still open, and why it is partly ours
 
