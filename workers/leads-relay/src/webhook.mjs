@@ -249,10 +249,54 @@ export async function alreadyHandled(db, svixId) {
    event matching nothing means mail is leaving by a path this Worker does
    not know about, or an id was lost on the way out. Dropping such an event
    silently is how the first one went unnoticed. */
-export async function markHandled(db, svixId, type, messageId = null, matched = false) {
+export async function markHandled(db, svixId, type, messageId = null, matched = false, detail = null) {
   await db.prepare(
-    'INSERT OR IGNORE INTO webhook_events (id, type, message_id, matched) VALUES (?, ?, ?, ?)',
-  ).bind(svixId, type || '', messageId, matched ? 1 : 0).run();
+    'INSERT OR IGNORE INTO webhook_events (id, type, message_id, matched, detail) VALUES (?, ?, ?, ?, ?)',
+  ).bind(svixId, type || '', messageId, matched ? 1 : 0, detail || null).run();
+}
+
+/* Replay events that arrived before we had recorded the send.
+   ------------------------------------------------------------------------
+   The webhook can and does beat our own INSERT. Measured in production:
+   lead 32's visitor_report row was written at 13:49:22 and its
+   email.bounced arrived at 13:49:20 — two seconds earlier. The event
+   verified, matched nothing, and escalated to nobody. On a director
+   notification that is exactly lead 28 again.
+
+   Every unit test seeded the message row first, so every one of them agreed
+   with an ordering nothing actually guarantees: the send goes out from
+   Cloudflare and the bounce comes back through Resend, and no part of that
+   is sequenced.
+
+   Called right after a send is recorded. Returns what it applied, so the
+   caller can escalate a failure exactly as the live path would — the caller
+   owns escalation because it owns the templates and the rotation. */
+export async function reconcileUnmatched(db, messageId) {
+  if (!messageId) return null;
+  const { results } = await db.prepare(
+    'SELECT id, type, detail FROM webhook_events WHERE message_id=? AND matched=0 ORDER BY received_at',
+  ).bind(messageId).all();
+  if (!results || !results.length) return null;
+
+  /* Oldest first, through the same monotonic nextStatus as the live path, so
+     a delivered followed by a bounce ends on the bounce and the reverse does
+     not undo it. */
+  let applied = null;
+  for (const event of results) {
+    const status = classifyEvent(event.type);
+    if (!status) continue;
+    const res = await applyEmailEvent(db, messageId, status, event.detail);
+    if (res.changed) applied = { status, detail: event.detail, row: res.row };
+  }
+
+  /* Matched now, whether or not anything changed: they have been looked at
+     against a message that exists, so leaving them unmatched would keep
+     reporting a problem that has been dealt with. */
+  await db.prepare(
+    'UPDATE webhook_events SET matched=1 WHERE message_id=? AND matched=0',
+  ).bind(messageId).run();
+
+  return applied;
 }
 
 /* ---- The handler ------------------------------------------------------- */
@@ -320,7 +364,9 @@ export async function handleResendWebhook({ db, secret, headers, rawBody, nowMs,
     }
   }
 
-  await markHandled(db, id, payload.type, messageId, applied.known);
+  /* detail is stored even when the event matched, so an unmatched one can be
+     replayed later with Resend's diagnosis rather than just its status. */
+  await markHandled(db, id, payload.type, messageId, applied.known, detail);
   /* Still 200 for an unmatched event. Resend is not at fault and retrying
      would not help — the record above is how a human finds out. */
   return { status: 200, body: applied.known ? 'ok' : 'unknown message' };

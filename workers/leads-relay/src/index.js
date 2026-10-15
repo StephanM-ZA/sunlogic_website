@@ -10,7 +10,10 @@ import {
 } from './uploads.mjs';
 import { compose, recipients, send, ADDRESS_OF } from './mailer.mjs';
 import { divisionLabel } from './logic.mjs';
-import { handleResendWebhook, recordSentMessage } from './webhook.mjs';
+import {
+  handleResendWebhook, recordSentMessage, reconcileUnmatched,
+  claimFailureAlert, releaseFailureAlert, isFailure,
+} from './webhook.mjs';
 
 /* Any Sunlogic host over https, rather than a list.
    The list this replaces held sunlogic.co.za and www.sunlogic.co.za — correct
@@ -538,7 +541,39 @@ async function rememberMessage(env, { result, leadId, event, assignee, token, to
          MAIL_REDIRECT_TO, and the real address is the useful one. */
       recipient: addressList(result.to ?? to),
     });
-  } catch { /* traceable is better than not; sent is better than traceable */ }
+  } catch (err) {
+    /* Sent is better than traceable, so this never fails a send — but it says
+       so rather than vanishing, because an untraceable send is how the
+       original blind spot looked from the inside. */
+    console.error('rememberMessage failed for ' + result.messageId + ': ' + String(err));
+    return;
+  }
+
+  /* The news may already be here.
+     ------------------------------------------------------------------
+     Resend's webhook can arrive before this row existed — two seconds
+     before, in the one production measurement we have. Such an event
+     verified correctly, matched nothing and escalated to nobody, which on a
+     director notification is lead 28 over again. So having just created the
+     row, look for anything that was waiting for it.
+     Same claim discipline as the live webhook path: claimed in the database
+     so one bounce escalates once, and handed back if the escalation throws,
+     or the retry would find the status already applied and stay silent. */
+  try {
+    const replayed = await reconcileUnmatched(env.DB, result.messageId);
+    if (replayed && isFailure(replayed.status)) {
+      if (await claimFailureAlert(env.DB, result.messageId)) {
+        try {
+          await handleEmailFailure(env, replayed.row, replayed.status, replayed.detail);
+        } catch (err) {
+          await releaseFailureAlert(env.DB, result.messageId);
+          throw err;
+        }
+      }
+    }
+  } catch (err) {
+    console.error('replaying early events for ' + result.messageId + ' failed: ' + String(err));
+  }
 }
 
 /* A bounce or a complaint, after the fact.

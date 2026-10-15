@@ -27,7 +27,7 @@ import { readFileSync } from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
 import {
   handleResendWebhook, verifySvix, classifyEvent, nextStatus, messageIdOf, detailOf,
-  recordSentMessage, applyEmailEvent, claimFailureAlert,
+  recordSentMessage, applyEmailEvent, claimFailureAlert, reconcileUnmatched, isFailure,
 } from '../src/webhook.mjs';
 
 const SECRET = 'whsec_' + btoa('a-signing-secret-of-no-importance');
@@ -517,6 +517,108 @@ test('the message id is read from where Resend puts it', () => {
   assert.equal(messageIdOf({ data: {} }), null);
   assert.equal(messageIdOf({}), null);
   assert.equal(messageIdOf(null), null);
+});
+
+/* ---- When the webhook arrives first -----------------------------------
+   Every test above this point seeds the message row before the event, and
+   that is an assumption, not a fact. Production disagreed with it: lead 32's
+   visitor_report row was written at 13:49:22 and its email.bounced arrived
+   at 13:49:20. The event verified, matched nothing and escalated to nobody.
+   The send goes out from Cloudflare and the bounce comes back through
+   Resend; nothing sequences the two. */
+
+test('a bounce arriving BEFORE the send is recorded is still applied, and still escalates', async () => {
+  const db = makeDb();
+  seedLead(db);
+  seedOffer(db);
+
+  /* The event first, with no message row anywhere — exactly what production
+     did. It is accepted and filed as unmatched. */
+  const early = await post(db, bouncePayload('msg-late'), { svixId: 'early' });
+  assert.equal(early.status, 200);
+  assert.equal(early.body, 'unknown message');
+  const filed = db.sqlite.prepare('SELECT matched, detail FROM webhook_events WHERE id=?').get('early');
+  assert.equal(filed.matched, 0);
+  assert.match(filed.detail, /550 mailbox unavailable/, 'the diagnosis has to survive to be replayed');
+
+  /* Now the send gets recorded, as rememberMessage would. */
+  await recordSentMessage(db, {
+    messageId: 'msg-late', leadId: 28, offerId: 17, event: 'offer',
+    assignee: 'stephan', recipient: 'stephan@sunlogic.co.za',
+  });
+
+  const replayed = await reconcileUnmatched(db, 'msg-late');
+  assert.ok(replayed, 'the waiting event must be found');
+  assert.equal(replayed.status, 'bounced');
+  assert.equal(replayed.row.offer_id, 17, 'and must carry the offer, or nothing can be handed on');
+  assert.equal(replayed.row.assignee, 'stephan');
+  assert.match(replayed.detail, /550 mailbox unavailable/);
+  assert.ok(isFailure(replayed.status), 'the caller escalates on this');
+
+  assert.equal(db.sqlite.prepare('SELECT status FROM messages WHERE id=?').get('msg-late').status, 'bounced');
+  assert.equal(
+    db.sqlite.prepare('SELECT matched FROM webhook_events WHERE id=?').get('early').matched, 1,
+    'and it stops being reported as unmatched',
+  );
+});
+
+test('replaying claims the alert once, so the caller cannot escalate twice', async () => {
+  const db = makeDb();
+  seedLead(db);
+  await recordSentMessage(db, { messageId: 'm', leadId: 28, event: 'offer', assignee: 'stephan' });
+  db.sqlite.prepare("INSERT INTO webhook_events (id, type, message_id, matched, detail) VALUES ('e','email.bounced','m',0,'x')").run();
+
+  const replayed = await reconcileUnmatched(db, 'm');
+  assert.equal(replayed.status, 'bounced');
+  assert.equal(await claimFailureAlert(db, 'm'), true);
+  assert.equal(await claimFailureAlert(db, 'm'), false);
+});
+
+test('replaying a delivered event escalates nothing', async () => {
+  const db = makeDb();
+  seedLead(db);
+  await recordSentMessage(db, { messageId: 'm', leadId: 28, event: 'visitor_report' });
+  db.sqlite.prepare("INSERT INTO webhook_events (id, type, message_id, matched) VALUES ('e','email.delivered','m',0)").run();
+
+  const replayed = await reconcileUnmatched(db, 'm');
+  assert.equal(replayed.status, 'delivered');
+  assert.equal(isFailure(replayed.status), false);
+  assert.equal(db.sqlite.prepare('SELECT status FROM messages WHERE id=?').get('m').status, 'delivered');
+});
+
+test('replaying several early events ends on the most severe, whatever order they came in', async () => {
+  const db = makeDb();
+  seedLead(db);
+  await recordSentMessage(db, { messageId: 'm', leadId: 28, event: 'offer', assignee: 'craig' });
+  db.sqlite.prepare("INSERT INTO webhook_events (id, type, message_id, matched, received_at) VALUES ('e1','email.bounced','m',0,'2026-10-15 10:00:00')").run();
+  db.sqlite.prepare("INSERT INTO webhook_events (id, type, message_id, matched, received_at) VALUES ('e2','email.delivered','m',0,'2026-10-15 10:00:05')").run();
+
+  const replayed = await reconcileUnmatched(db, 'm');
+  assert.equal(
+    db.sqlite.prepare('SELECT status FROM messages WHERE id=?').get('m').status,
+    'bounced',
+    'a later delivered must not erase an earlier bounce',
+  );
+  assert.equal(replayed.status, 'bounced', 'and the caller is told about the bounce, not the delivery');
+});
+
+test('with nothing waiting, replaying is a no-op', async () => {
+  const db = makeDb();
+  seedLead(db);
+  await recordSentMessage(db, { messageId: 'm', leadId: 28, event: 'offer', assignee: 'stephan' });
+  assert.equal(await reconcileUnmatched(db, 'm'), null);
+  assert.equal(await reconcileUnmatched(db, null), null);
+  assert.equal(db.sqlite.prepare('SELECT status FROM messages WHERE id=?').get('m').status, 'sent');
+});
+
+test('an already-matched event is not replayed a second time', async () => {
+  const db = makeDb();
+  seedLead(db);
+  await recordSentMessage(db, { messageId: 'm', leadId: 28, event: 'offer', assignee: 'stephan' });
+  await post(db, bouncePayload('m'), { svixId: 'live', onFailure: () => {} });
+  /* Handled live, so it is matched; a later replay must find nothing and
+     must not report a second failure to escalate. */
+  assert.equal(await reconcileUnmatched(db, 'm'), null);
 });
 
 test('the failure detail keeps the diagnosis, not just the status', () => {

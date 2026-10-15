@@ -89,10 +89,17 @@ CREATE TABLE IF NOT EXISTS webhook_events (
   -- unmatched event means mail is going out by a path this Worker does not
   -- record, or an id was dropped on the way out. See migration 0004.
   message_id  TEXT,
-  matched     INTEGER NOT NULL DEFAULT 0
+  matched     INTEGER NOT NULL DEFAULT 0,
+  -- 0006: Resend's own words about a failure, kept so an event that arrives
+  -- BEFORE the send is recorded can be replayed with its diagnosis intact.
+  -- Measured in production: a bounce landed two seconds before the message
+  -- row existed. See migration 0006.
+  detail      TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_webhook_events_unmatched
   ON webhook_events(matched, received_at);
+CREATE INDEX IF NOT EXISTS idx_webhook_events_message
+  ON webhook_events(message_id, matched);
 
 -- 0005: brief photos, stored as bytes because R2 could not be enabled without
 -- a card and Drive needed a service account. D1 caps a BLOB at 2 MB, so the

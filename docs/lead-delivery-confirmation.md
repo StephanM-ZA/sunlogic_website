@@ -404,7 +404,12 @@ moves off R2, deploy from `HEAD` normally and delete this section.
 cd workers/leads-relay && node --test test/*.mjs
 ```
 
-79 pass (50 before this work, 29 in `test/webhook.test.mjs`).
+85 pass (50 before this work, 35 in `test/webhook.test.mjs`).
+
+`scripts/manual-bounce.mjs` is a hand-signed bounce for the director branch,
+kept OUT of `test/` on purpose — `node --test test/*.mjs` globs that
+directory and would run it as a test. It reads the signing secret from the
+environment and never prints it.
 
 `src/index.js` imports `emails/*.html` through the bundler's Text rule, so it
 cannot be imported by `node --test` at all. That is why the verification and
@@ -435,6 +440,70 @@ exposes only `/webhook` (`/rest` and `/api/v1` are 404 there; on
 no longer needs reading: the committed definition, the unticked acceptance
 test and the owner's answer all say the same thing.
 
+## The bounce path, end to end — and the bug it found
+
+Delivery was proven against a real payload early on. The **failure** path, the
+one that cost us lead 28, was only ever covered by unit tests. Proving it
+found a defect that the unit tests could not have caught.
+
+### How it was tested
+
+Director addresses are hardcoded in `mailer.mjs`, and `MAIL_REDIRECT_TO` must
+never be set in production, so a director notification cannot be aimed at a
+bounce simulator. But the **calculator's estimate goes to the customer's own
+address**, so that one can be:
+
+```bash
+curl -s -X POST https://leads.sunlogic.co.za/leads/calculator \
+  -H 'Content-Type: application/json' \
+  -d '{"mode":"residential","email":"bounced@resend.dev","name":"BOUNCE PATH TEST"}'
+```
+
+`bounced@resend.dev` is Resend's documented simulator (with
+`delivered@resend.dev` and `complained@resend.dev`), and it emits a genuine
+`email.bounced`. That produced lead 32 in production: an offer to Stephan
+(which Resend delivered, matched, recorded) and a visitor report to the
+simulator.
+
+Note the cost of this test: it creates a real lead, emails a director, and
+**consumes the rotation pointer**. Put the pointer back afterwards.
+
+### What it found: the webhook can beat our own record of the send
+
+| | |
+|---|---|
+| `messages` row written | 2026-10-15 13:49:**22** |
+| `email.bounced` arrived | 2026-10-15 13:49:**20** |
+
+Two seconds early. The event verified correctly, matched nothing, and was
+filed as unmatched — **escalating to nobody**. The same lead's offer
+notification matched fine, because its `delivered` happened to arrive nine
+seconds *after* its row.
+
+On a director notification this is lead 28 exactly: a bounced offer, a
+director who was never told, and a 24-hour clock running on silence. The only
+reason it was visible at all is the unmatched-event record added in `cae7079`
+— without it the event would have been accepted and discarded, and this would
+still be unknown.
+
+**Every unit test had seeded the message row before the event**, so all of
+them agreed with an ordering nothing guarantees. The send leaves from
+Cloudflare and the bounce returns through Resend; no part of that is
+sequenced. A passing suite was evidence about the tests' assumptions, not
+about production.
+
+### The fix: replay
+
+`webhook_events` keeps Resend's `detail` (migration 0006), and
+`reconcileUnmatched` runs immediately after a send is recorded: anything
+already waiting for that message id is applied through the same monotonic
+`nextStatus`, and a failure escalates through the same claim-once discipline
+as the live path, with the claim handed back if escalation throws.
+
+Deliberately **not** fixed by returning a non-2xx so Resend retries. That
+would make correctness depend on an external retry schedule, and on this path
+a lost bounce is a lost lead.
+
 ## Still unverified
 
 - ~~No webhook has been received end to end.~~ **Settled 2026-10-15.** A
@@ -442,8 +511,13 @@ test and the owner's answer all say the same thing.
   verification, so the signature path is proven against a real Resend
   payload rather than only against the test suite's own signer. It matched no
   message, which is what prompted items 4 and 5 above.
-- No **bounce** has been seen end to end. Delivery is proven; the failure path
-  is still only covered by tests.
+- A real bounce is now proven as far as verification, matching and recording
+  (see above), but the **director** branch — offer expires, lead hands on to
+  the other director with a live token — has still only run in tests. It
+  cannot be driven by a real bounce without either `MAIL_REDIRECT_TO` on
+  staging plus a second Resend endpoint, or a hand-signed event in production
+  (`scripts/manual-bounce.mjs`), which reassigns a lead and therefore emails
+  the other director for real.
 - The digest has not been seen arriving *through the new path* either. The
   first one is due at 07:00 SAST the morning after this deploys, and it is
   still the acceptance test for the whole feature.
