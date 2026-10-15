@@ -234,15 +234,24 @@ Staging uses the same two commands with `--env staging` and
 
 ## Deploying
 
-**Do not deploy from a dirty tree.** `wrangler deploy` bundles the *working
-tree*, not `HEAD`. At the time of writing, `src/index.js` and `wrangler.toml`
-also carry another session's unfinished Project Brief uploads work — an R2
-binding for `sunlogic-brief-uploads` plus `src/uploads.mjs`. A dry run
-confirms it: `env.UPLOADS (sunlogic-brief-uploads)` appears in the bundle's
-bindings. Deploying from here ships that feature.
+**`wrangler deploy` bundles the working tree, not `HEAD`** — worth keeping in
+mind in a repository several sessions work in at once. While this feature was
+being written, `src/index.js` and `wrangler.toml` also carried another
+session's then-uncommitted Project Brief uploads work, and a dry run showed it
+plainly: `env.UPLOADS (sunlogic-brief-uploads)` in the bundle's bindings.
 
-Deploy from a clean checkout of `HEAD` plus these changes only, or wait for
-the uploads work to land first.
+That work has since landed in `ed4c19b`, so it is no longer a stray — but it
+is still in the bundle, and it is **not** deployed either. **The next deploy
+of this Worker ships the Project Brief uploads feature as well.** Its R2
+bucket has to exist first, or `/uploads/brief` fails at runtime:
+
+```bash
+npx wrangler r2 bucket create sunlogic-brief-uploads
+```
+
+See `docs/project-brief.md` for the rest of that feature's requirements.
+Before deploying, check `git status` and a dry run so it is a deliberate
+decision which features go out, rather than whatever happened to be on disk.
 
 Build check, which does not deploy:
 
