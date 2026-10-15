@@ -51,3 +51,10 @@
 /blog-ev-home-charging.html       https://electrical.sunlogic.co.za/blog-ev-home-charging         301
 /blog-3-essential-checks          https://electrical.sunlogic.co.za/blog-3-essential-checks       301
 /blog-3-essential-checks.html     https://electrical.sunlogic.co.za/blog-3-essential-checks       301
+
+# --- The project brief form ------------------------------------------------
+# The WordPress page lived at /project-brief/ WITH a trailing slash, and that
+# is the spelling in every link and bookmark the team already has. Cloudflare
+# Pages serves the rebuilt page at /project-brief, so the slashed form needs
+# saying explicitly or it 404s exactly as it did before this was rebuilt.
+/project-brief/             /project-brief                                      301

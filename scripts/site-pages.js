@@ -17,8 +17,12 @@ const path = require('path');
 /* Deliberately not indexable, so Lighthouse's is-crawlable audit correctly
  * fails on them: thank-you.html is reachable only after a submit,
  * ci-guide.html is an internal design document, and landing-preview.html
- * carries its own noindex while the apex rebuild is in progress. */
-const EXCLUDED_PAGES = new Set(['thank-you.html', 'ci-guide.html', 'landing-preview.html']);
+ * carries its own noindex while the apex rebuild is in progress, and
+ * project-brief.html is the team's own internal brief form, reached by a link
+ * we send them rather than from the site. */
+const EXCLUDED_PAGES = new Set([
+  'thank-you.html', 'ci-guide.html', 'landing-preview.html', 'project-brief.html',
+]);
 
 /* `options.sites` narrows the set to the named site directories. It exists for
  * local iteration only — checking 11 pages instead of 34 while editing one

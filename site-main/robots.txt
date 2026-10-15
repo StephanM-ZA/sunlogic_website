@@ -2,6 +2,9 @@ User-agent: *
 Allow: /
 Disallow: /ci-guide.html
 Disallow: /thank-you.html
+# Internal form for our own team, reached by a link we send them.
+Disallow: /project-brief
+Disallow: /project-brief.html
 
 # AI crawlers / answer engines — explicitly allowed for discoverability
 User-agent: GPTBot

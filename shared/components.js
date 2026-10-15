@@ -464,19 +464,52 @@ class DlCreds extends SLElement {
 }
 customElements.define('dl-creds', DlCreds);
 
-/* --- Field --------------------------------------------------- */
+/* --- Field ---------------------------------------------------
+   <dl-field label="Email address" name="email" type="email" required></dl-field>
+
+   `type` also takes "textarea", "date" and "file"; `options="A|B|C"` makes it a
+   select regardless. `multiple` and `accept` apply to a file field, `rows` to
+   a textarea, `placeholder` to anything that is not a select (a select's
+   placeholder is its disabled first option).
+
+   The id is derived from the name but is NOT the name. The project brief posts
+   to an n8n webhook whose body keys are human sentences — "Client Email
+   address", and one with an apostrophe and a full stop in it — because that
+   workflow has been live and reading those exact keys since the WordPress
+   form. Those names are the wire contract and are written verbatim in the
+   page; an id, by contrast, cannot contain a space and still be addressable
+   by a `for` attribute or a selector, so it is slugged here. */
+const SL_FIELD_ID = (name) =>
+  'sl-field-' + (name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'x');
+
 class DlField extends SLElement {
   render() {
     const name = SL_ATTR(this, 'name');
-    const id = 'sl-field-' + name;
+    const id = SL_FIELD_ID(name);
     const hint = this.getAttribute('hint');
     const options = this.getAttribute('options');
+    const type = SL_ATTR(this, 'type', 'text');
     const req = this.hasAttribute('required') ? ' required' : '';
-    const control = options
-      ? '<select class="sl-select" id="' + id + '" name="' + name + '"' + req + '>' +
+    const ph = this.getAttribute('placeholder');
+    const phAttr = ph ? ' placeholder="' + ph + '"' : '';
+    const common = ' id="' + id + '" name="' + name + '"' + req;
+
+    let control;
+    if (options) {
+      control = '<select class="sl-select"' + common + '>' +
         '<option value="" disabled selected>' + SL_ATTR(this, 'placeholder', 'Select an option') + '</option>' +
-        options.split('|').map((o) => '<option>' + o + '</option>').join('') + '</select>'
-      : '<input class="sl-input" id="' + id + '" name="' + name + '" type="' + SL_ATTR(this, 'type', 'text') + '"' + req + ' />';
+        options.split('|').map((o) => '<option>' + o + '</option>').join('') + '</select>';
+    } else if (type === 'textarea') {
+      control = '<textarea class="sl-input sl-textarea"' + common +
+        ' rows="' + SL_ATTR(this, 'rows', '4') + '"' + phAttr + '></textarea>';
+    } else if (type === 'file') {
+      control = '<input class="sl-input sl-file"' + common + ' type="file"' +
+        (this.hasAttribute('multiple') ? ' multiple' : '') +
+        ' accept="' + SL_ATTR(this, 'accept', 'image/*,application/pdf') + '" />';
+    } else {
+      control = '<input class="sl-input"' + common + ' type="' + type + '"' + phAttr + ' />';
+    }
+
     this.innerHTML =
       '<div class="sl-field"><label class="sl-label" for="' + id + '">' + SL_ATTR(this, 'label') + '</label>' +
       control + (hint ? '<p class="sl-hint">' + hint + '</p>' : '') + '</div>';

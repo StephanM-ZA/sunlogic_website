@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Project Brief | Sunlogic SA</title>
+<meta name="description" content="Internal project brief for the Sunlogic team. Capture a client's job details, site address and photos so a quote and a work pack can be raised."/>
+<!-- Unlisted, not secret. It is reached by a link we send to our own team, is
+     absent from nav, footer and sitemap, and is listed in robots.txt and in
+     scripts/site-pages.js EXCLUDED_PAGES. The old WordPress page at
+     /project-brief/ was unlisted in exactly the same way. -->
+<meta name="robots" content="noindex, nofollow"/>
+<link rel="canonical" href="https://sunlogic.co.za/project-brief.html"/>
+<link rel="icon" type="image/png" href="images/fav_icon.png"/>
+<link rel="preload" href="shared/fonts/HankenGrotesk-400-latin.woff2" as="font" type="font/woff2" crossorigin/>
+<link rel="preload" href="shared/fonts/HankenGrotesk-700-latin.woff2" as="font" type="font/woff2" crossorigin/>
+<link rel="preload" href="shared/fonts/HankenGrotesk-800-latin.woff2" as="font" type="font/woff2" crossorigin/>
+<link rel="preload" href="shared/fonts/HankenGrotesk-900-latin.woff2" as="font" type="font/woff2" crossorigin/>
+<link rel="preload" href="shared/fonts/JetBrainsMono-400-latin.woff2" as="font" type="font/woff2" crossorigin/>
+<link rel="preload" href="shared/fonts/JetBrainsMono-700-latin.woff2" as="font" type="font/woff2" crossorigin/>
+<link rel="stylesheet" href="shared/sunlogic.css?v=45"/>
+<script src="shared/icons.js?v=3" defer></script>
+<script src="shared/components.js?v=45" defer></script>
+<script src="shared/forms.js?v=6" defer></script>
+<script src="shared/analytics.js?v=5" defer></script>
+<script src="shared/sunlogic-check.js?v=7" defer></script>
+</head>
+<body>
+<a class="sl-skip-link" href="#main-content">Skip to main content</a>
+<dl-nav-bar active="project-brief"></dl-nav-bar>
+<main id="main-content">
+
+<dl-section bg="page">
+  <dl-reveal>
+    <dl-stack level="hero" eyebrow="Internal"
+      heading="Project Brief"
+      body="Capture what the team needs to quote and plan a job: who the client is, where the site is, what is being installed, and the photos that answer the questions nobody wants to drive back out for. Submitting this raises the brief document, emails it, and opens the card."></dl-stack>
+  </dl-reveal>
+</dl-section>
+
+<dl-section bg="alt" id="brief">
+  <dl-reveal>
+    <dl-card>
+      <div class="sl-card__stack">
+        <h2 class="sl-title">Submit a Brief</h2>
+        <p class="sl-body">Pick the job category first. The rest of the form follows from it.</p>
+      </div>
+
+      <!-- WHY THE FIELD NAMES READ LIKE SENTENCES
+           ==================================================================
+           Every `name` below is a wire contract, not a label. The n8n
+           workflow "Sunlogic Project Brief (Webhook -> PostgreSQL)" has been
+           live and reading these exact keys since the WordPress form, and it
+           maps each one onto a column of public.submissions by hand:
+
+               body['Client Email address']  ->  client_email
+
+           A key spelled any other way does not error. It writes NULL, the
+           brief document renders with an empty line, and nobody finds out
+           until a client is phoned on a number that was never saved. So the
+           spacing, the apostrophes and the full stop in the upload field are
+           all deliberate, and the full table is in docs/project-brief.md.
+
+           ONE URL PER UPLOAD FIELD, NOT A LIST
+           ------------------------------------------------------------------
+           n8n puts the value of an upload field into a text column and hands
+           it to Trello's attach-by-URL node, which takes a single URL. So the
+           first photo's URL goes in the field and every further URL is
+           appended to the comments by data-dl-upload-extras-into, where it
+           reaches the email, the Trello card and the brief document as text.
+           Nothing uploaded is dropped. Attaching all of them properly is a
+           change to that workflow, which is an iMac change and belongs to the
+           serverMonitor project. -->
+      <form data-dl-form class="sl-form sl-form--wide"
+        data-webhook="https://hooks.digitaloperations.co.za/webhook/sunlogic-project-brief"
+        data-dl-upload="https://leads.sunlogic.co.za/uploads/brief"
+        data-dl-branch-on="Job Category"
+        data-dl-upload-extras-into="Other comments and instructions"
+        data-success="inline"
+        data-success-title="Brief Submitted"
+        data-success-body="The brief document, the email and the Trello card are on their way. Reload this page to submit another.">
+
+        <dl-field label="Project Brief Submitted By" name="Project Brief Submitted By" required
+          placeholder="Your name"
+          hint="Named as team lead on the brief document"></dl-field>
+
+        <dl-field label="Job Category" name="Job Category" required placeholder="Please select"
+          options="Renewable|Electrical|Gas|Quote Request|Other"></dl-field>
+
+        <dl-field label="Business or Personal" name="Business or Personal" required placeholder="Please select"
+          options="Business|Personal"></dl-field>
+
+        <dl-field label="Business name" name="Business name" required></dl-field>
+
+        <dl-field label="Client Name" name="Client Name"
+          placeholder="Please provide us with a client name"></dl-field>
+
+        <dl-field label="Client Surname" name="Client Surname"
+          placeholder="Please enter your clients surname"></dl-field>
+
+        <dl-field label="Client Email address" name="Client Email address" type="email"
+          placeholder="Where can we write to you"></dl-field>
+
+        <dl-field label="Client Contact number" name="Client Contact number" type="tel"
+          placeholder="Should we need to contact you, please share your number"></dl-field>
+
+        <dl-field label="Quote or Invoice number" name="Quote or Invoice number" required
+          hint="Please add our quote of invoice numbers so that I can locate the requirements"></dl-field>
+
+        <!-- RENEWABLE ---------------------------------------------------- -->
+        <div class="sl-form-branch" data-dl-branch="Renewable">
+          <dl-field label="Street Address" name="Street Address" required></dl-field>
+          <dl-field label="GPS location" name="GPS location"></dl-field>
+          <dl-field label="Google Maps Link" name="Google Maps Link" type="url"></dl-field>
+
+          <dl-field label="Type" name="Type" required placeholder="Please select"
+            options="Inverter Only|Inverter and Battery|Battery Only|Inverter, Battery and Panels|Panels Only|CoC|Electrical|Snags|Other"></dl-field>
+
+          <dl-field label="Building Type" name="Building Type" required placeholder="Please select"
+            options="Town House|Residential House|Farm|Business|Commercial Property|Other"></dl-field>
+
+          <dl-field label="Roof Type" name="Roof Type" placeholder="Please select"
+            options="Plain Tiles|Slate|Modren Interlocking|Pantile|Corrugated Metal|Metal Standing Seam|Flat|Free Standing|Corrugated Iron Roof Sheeting|IBR Roof Sheeting / Trapezoidal|Novotexi 440|Thatched roof|Clip Lock"></dl-field>
+
+          <dl-field label="Height of the building" name="Height of the building" placeholder="Please select"
+            options="Single storey|Double Storey|More than 3 levels"
+            hint="From a cost and safety point of view this is vital to our costing"></dl-field>
+
+          <dl-field label="Roof size" name="Roof size"></dl-field>
+
+          <dl-field label="Proposed Date" name="Proposed Date" type="date"></dl-field>
+
+          <div class="sl-card__stack">
+            <p class="sl-body">It is important that we know as much as we can about the install.</p>
+            <dl-checklist items="For the inverter and battery, please take a photo of the DB as well as all sub DB's.|Please upload image of the positioning of the install to that of the DB|For Panels, please share photo's of the roof and the positioning to where the inverter is if possible as well as the approved design"></dl-checklist>
+          </div>
+
+          <dl-field type="file" multiple
+            label="Please upload photos of DB's, sub DB's, space and Roof etc."
+            name="Please upload photos of DB's, sub DB's, space and Roof etc."
+            hint="Up to 15 MB each"></dl-field>
+
+          <dl-field label="Other comments and instructions" name="Other comments and instructions"
+            type="textarea" rows="5" required
+            hint="This could be the discussed route or any additional info we will need"></dl-field>
+        </div>
+
+        <!-- ELECTRICAL --------------------------------------------------- -->
+        <div class="sl-form-branch" data-dl-branch="Electrical">
+          <dl-field label="Street Address" name="Street Address" required></dl-field>
+          <dl-field label="GPS location" name="GPS location"></dl-field>
+          <dl-field label="Google Maps Link" name="Google Maps Link" type="url"></dl-field>
+
+          <dl-field label="Type of electrical work" name="Type of electrical work" required placeholder="Please select"
+            options="Emergency|Call-out|Certificate of Compliance (CoC)|Inspection|Work Commissioned|Snag|To quote|Other"></dl-field>
+
+          <dl-field label="Building Type" name="Building Type" required placeholder="Please select"
+            options="Town House|Residential House|Farm|Business|Commercial Property|Other"></dl-field>
+
+          <dl-field label="Phases" name="Phases" placeholder="Please select"
+            options="Single|3 Phase"></dl-field>
+
+          <dl-field label="Proposed Date" name="Proposed Date" type="date"></dl-field>
+
+          <div class="sl-card__stack">
+            <p class="sl-body">It is important that we know as much as we can about the project. Please add as many photos as possible that will assist with the planning.</p>
+          </div>
+
+          <dl-field type="file" multiple
+            label="Please upload photos of DB's, sub DB's etc."
+            name="Please upload photos"
+            hint="Up to 15 MB each"></dl-field>
+
+          <dl-field label="Other comments and instructions" name="Other comments and instructions"
+            type="textarea" rows="5" required
+            hint="This could be the discussed route or any additional info we will need"></dl-field>
+        </div>
+
+        <!-- GAS -----------------------------------------------------------
+             No Residential/Commercial field here, deliberately. "Business or
+             Personal" is asked of every brief above and is the same question:
+             Business is a commercial job and Personal is a residential one.
+             Asking it twice in different words is how two fields end up
+             disagreeing with each other on the same brief. -->
+        <div class="sl-form-branch" data-dl-branch="Gas">
+          <dl-field label="Street Address" name="Street Address" required></dl-field>
+          <dl-field label="GPS location" name="GPS location"></dl-field>
+          <dl-field label="Google Maps Link" name="Google Maps Link" type="url"></dl-field>
+
+          <dl-field label="Building Type" name="Building Type" placeholder="Please select"
+            options="Town House|Residential House|Farm|Business|Commercial Property|Other"></dl-field>
+
+          <dl-field label="Proposed Date" name="Proposed Date" type="date"></dl-field>
+
+          <div class="sl-card__stack">
+            <p class="sl-body">It is important that we know as much as we can about the installation. Please add photos of the bottle or tank position, the appliances being fed, and the route between them.</p>
+          </div>
+
+          <dl-field type="file" multiple
+            label="Please upload photos of the installation"
+            name="Please upload photos"
+            hint="Up to 15 MB each"></dl-field>
+
+          <dl-field label="Other comments and instructions" name="Other comments and instructions"
+            type="textarea" rows="5" required
+            hint="This could be the discussed route or any additional info we will need"></dl-field>
+        </div>
+
+        <!-- QUOTE REQUEST AND OTHER --------------------------------------
+             The original form's conditional logic was not recoverable from the
+             archived page: the fields are all there in the markup but which
+             category revealed which block is not. Renewable and Electrical are
+             unambiguous because each block carries that trade's own fields.
+             These two categories get the fields common to both rather than a
+             guess at a trade, and the comments box carries the rest. If the
+             real mapping turns up, this block is what changes. -->
+        <div class="sl-form-branch" data-dl-branch="Quote Request|Other">
+          <dl-field label="Street Address" name="Street Address" required></dl-field>
+          <dl-field label="GPS location" name="GPS location"></dl-field>
+          <dl-field label="Google Maps Link" name="Google Maps Link" type="url"></dl-field>
+          <dl-field label="Proposed Date" name="Proposed Date" type="date"></dl-field>
+
+          <dl-field type="file" multiple
+            label="Please upload any photos that will help"
+            name="Please upload photos"
+            hint="Up to 15 MB each"></dl-field>
+
+          <dl-field label="Other comments and instructions" name="Other comments and instructions"
+            type="textarea" rows="5" required
+            hint="This could be the discussed route or any additional info we will need"></dl-field>
+        </div>
+
+        <!-- Honeypot: a real person never fills this, a bot fills everything.
+             The receiving webhook is unauthenticated, so this is the only
+             thing between a crawler and a Trello card. -->
+        <label for="sl-brief-website" style="position:absolute;left:-9999px">Website</label>
+        <input id="sl-brief-website" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px"/>
+
+        <dl-button variant="outline" icon="arrow-right" type="submit" full>Submit Brief</dl-button>
+      </form>
+    </dl-card>
+  </dl-reveal>
+</dl-section>
+
+</main>
+<dl-footer></dl-footer>
+<dl-dock></dl-dock>
+</body>
+</html>
