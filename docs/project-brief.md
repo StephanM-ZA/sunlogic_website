@@ -20,15 +20,18 @@ snapshot of 2026-01-14 and checked against the live workflow's own key names.
 
 ```
 project-brief.html
-  ├── one POST per photo  →  leads-relay Worker  /uploads/brief   →  R2
+  ├── one POST per photo  →  leads-relay Worker  /uploads/brief   →  D1
   │                             answers with the URL to fetch it back
   └── one POST with the brief  →  n8n  /webhook/sunlogic-project-brief
                                    ├── INSERT public.submissions
                                    ├── copy the Google Doc template, fill it
-                                   ├── export PDF → Drive "Brief Documents"
-                                   ├── email stephan@ + craig@ with the PDF
-                                   ├── Trello card + attach the photos by URL
-                                   └── UPDATE processed = true
+                                   ├── Drive folder "Brief Documents/<brief name>/"
+                                   ├── every photo → that folder, and embedded
+                                   │     into the doc at a uniform width
+                                   ├── export PDF → that same folder
+                                   ├── Trello card + every photo attached
+                                   ├── UPDATE processed = true
+                                   └── email stephan@ + craig@ with the PDF
 ```
 
 The brief post goes **straight from the browser to n8n**. The leads-relay
@@ -175,16 +178,38 @@ failing silently.
   is an image by content type and a script by behaviour, and these are served
   back from our own origin.
 
-### One URL per field, and what happens to the rest
+### One URL per field, and the ones after it
 
-n8n puts the field's value in a text column and hands it to Trello's
-attach-by-URL node, which takes **one** URL. So the first photo's URL goes in
-the field, and every URL after that is appended to
-`Other comments and instructions` by `data-dl-upload-extras-into`, where it
-reaches the email, the Trello card and the brief document as text. Nothing
-uploaded is lost, but only the first photo is a real Trello attachment.
-Attaching all of them properly means a loop in that workflow, which is an iMac
-change and belongs to `serverMonitor`.
+A photo field is a single text column, so the page puts the **first** photo's
+URL in the field and appends the rest to `Other comments and instructions`
+("Further photos uploaded:", one URL per line) via
+`data-dl-upload-extras-into`.
+
+That is still how they travel, but it no longer decides what happens to them.
+The workflow's `Collect Photos` step scans both photo columns *and* the
+comments for `leads.sunlogic.co.za/uploads/` URLs, de-duplicates them and keeps
+the order, so **every** uploaded photo is now treated the same: filed in the
+brief's Drive folder, embedded in the brief document, and attached to the
+Trello card. The comments text is left as it is — it is the audit trail of what
+was uploaded, and it is what the parser reads.
+
+So a second and third photo are no longer "mentioned in the comments"; they are
+first-class. The only thing the field order still decides is which photo is
+listed first.
+
+### What the photos look like in the brief document
+
+They are appended to the end of the document, each at a **uniform 300 pt
+width** with the height left to follow the image's own proportions — so a
+portrait shot is tall and a landscape one short, but they all line up on the
+same left and right edges and nothing is stretched. The width is one constant
+(`PHOTO_WIDTH_PT`) in the generator for `n8n/sunlogic-project-brief.json`.
+
+Google will only fetch PNG, JPEG and GIF by URL for an inline image. The page
+re-encodes to JPEG when it downscales, so that is nearly always what arrives; a
+PDF attachment or a HEIC the browser could not decode simply does not embed,
+and `Embed Photo in Doc` carries `onError: continueRegularOutput` so the brief
+still completes. That file is still filed in Drive and still on the Trello card.
 
 ## Deploying it
 
@@ -248,6 +273,17 @@ still open: `serverMonitor/docs/changes/2026-10-15-sunlogic-brief-workflow/READM
    Verified by n8n's own credential test (TLS with certificate verification, plus AUTH).
    **Not** yet verified by a message the mail server actually accepted — nothing has run
    on either credential since.
+
+4. **Photos are now filed in Drive, embedded in the PDF, and all attached to
+   Trello.** Previously the workflow only ever passed the photo *URL* around:
+   nothing was saved to Drive, the brief document showed a link where a picture
+   belonged, and only the first photo per field became a real Trello
+   attachment. Now each brief gets its own Drive folder
+   (`Brief Documents/PB - <quote> - <business> - <name> <surname>/`) holding the
+   PDF and every photo, each photo is inserted into the document at a uniform
+   width before the PDF is exported, and every photo is attached to the card.
+   See "One URL per field" and "What the photos look like in the brief document"
+   above.
 
 ### Still open, and why it is partly ours
 

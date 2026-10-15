@@ -341,7 +341,7 @@
     {
       "parameters": {
         "operation": "update",
-        "documentURL": "={{ $json.id }}",
+        "documentURL": "={{ $('Copy file').item.json.id }}",
         "actionsUi": {
           "actionFields": [
             {
@@ -427,7 +427,7 @@
             {
               "action": "replaceAll",
               "text": "[Uploads]",
-              "replaceText": "={{ $('PostgreSQL Insert').item.json.upload_photos_db }}"
+              "replaceText": "={{ $('Collect Photos').first().json.photoCount }} photo(s), embedded below and filed in https://drive.google.com/drive/folders/{{ $('Create Brief Folder').first().json.id }}"
             },
             {
               "action": "replaceAll",
@@ -542,10 +542,8 @@
         },
         "folderId": {
           "__rl": true,
-          "value": "1cDxvywgTfJfSfHW8E8MPTdhRChMJ1jQ-",
-          "mode": "list",
-          "cachedResultName": "Brief Documents",
-          "cachedResultUrl": "https://drive.google.com/drive/folders/1cDxvywgTfJfSfHW8E8MPTdhRChMJ1jQ-"
+          "value": "={{ $('Create Brief Folder').first().json.id }}",
+          "mode": "id"
         },
         "options": {}
       },
@@ -678,116 +676,6 @@
     },
     {
       "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": ""
-          },
-          "conditions": [
-            {
-              "id": "condition-photo1",
-              "leftValue": "={{ $('PostgreSQL Insert').item.json.upload_photos_db }}",
-              "rightValue": "",
-              "operator": {
-                "type": "string",
-                "operation": "notEmpty"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [
-        12432,
-        6176
-      ],
-      "id": "c2c7d5e0-409b-473b-83a8-37e80007ad24",
-      "name": "IF Has DB Photos"
-    },
-    {
-      "parameters": {
-        "resource": "attachment",
-        "operation": "create",
-        "cardId": "={{ $('Create Trello card').item.json.id }}",
-        "url": "={{ $('PostgreSQL Insert').item.json.upload_photos_db }}",
-        "additionalFields": {}
-      },
-      "type": "n8n-nodes-base.trello",
-      "typeVersion": 1,
-      "position": [
-        12624,
-        6048
-      ],
-      "id": "410126c2-563a-452e-a730-6356dbc2e429",
-      "name": "Attach DB Photos",
-      "retryOnFail": true,
-      "credentials": {
-        "trelloApi": {
-          "id": "DkjCCyPA0aE5Uwy9",
-          "name": "Trello account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": ""
-          },
-          "conditions": [
-            {
-              "id": "condition-photo2",
-              "leftValue": "={{ $('PostgreSQL Insert').item.json.upload_photos }}",
-              "rightValue": "",
-              "operator": {
-                "type": "string",
-                "operation": "notEmpty"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [
-        13040,
-        6192
-      ],
-      "id": "899f66ca-72b9-43cc-ac3d-6732d2663451",
-      "name": "IF Has Other Photos"
-    },
-    {
-      "parameters": {
-        "resource": "attachment",
-        "operation": "create",
-        "cardId": "={{ $('Create Trello card').item.json.id }}",
-        "url": "={{ $('PostgreSQL Insert').item.json.upload_photos }}",
-        "additionalFields": {}
-      },
-      "type": "n8n-nodes-base.trello",
-      "typeVersion": 1,
-      "position": [
-        13232,
-        6048
-      ],
-      "id": "95cac789-ef1d-46e1-a667-84f6acc58aa4",
-      "name": "Attach Other Photos",
-      "retryOnFail": true,
-      "credentials": {
-        "trelloApi": {
-          "id": "DkjCCyPA0aE5Uwy9",
-          "name": "Trello account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "operation": "executeQuery",
         "query": "UPDATE submissions SET processed = true, processed_at = NOW() WHERE id = {{ $('PostgreSQL Insert').item.json.id }}",
         "options": {}
@@ -836,6 +724,270 @@
           "name": "Google Drive account"
         }
       }
+    },
+    {
+      "parameters": {
+        "jsCode": "const r = $('PostgreSQL Insert').first().json;\n// every uploaded photo is a leads-relay URL; the first of each field lands in\n// its own column and the rest are appended as text to the comments\nconst re = /https:\\/\\/leads\\.sunlogic\\.co\\.za\\/uploads\\/[^\\s\"'<>)]+/g;\nconst seen = new Set();\nconst photos = [];\nfor (const src of [r.upload_photos_db, r.upload_photos, r.comments_instructions]) {\n  if (!src) continue;\n  for (const hit of String(src).match(re) || []) {\n    const url = hit.replace(/[.,;:]+$/, '');\n    if (seen.has(url)) continue;\n    seen.add(url);\n    photos.push({ url, name: decodeURIComponent(url.split('/').pop()) });\n  }\n}\nreturn [{ json: { photos, photoCount: photos.length } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        11824,
+        5936
+      ],
+      "id": "0dbaf74d-b955-4416-81d4-cb9eb87e1c68",
+      "name": "Collect Photos"
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "={{ $('Copy file').item.json.name }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1cDxvywgTfJfSfHW8E8MPTdhRChMJ1jQ-",
+          "cachedResultName": "Brief Documents"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        12016,
+        5936
+      ],
+      "id": "4b816775-2037-4538-b484-21b5d6004f4b",
+      "name": "Create Brief Folder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vKudtoSOTzuYiM8K",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": ""
+          },
+          "conditions": [
+            {
+              "id": "has-photos",
+              "leftValue": "={{ $('Collect Photos').first().json.photoCount }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        12400,
+        5936
+      ],
+      "id": "8a0b65ea-a1b2-4f08-9eff-2534a2645201",
+      "name": "IF Has Photos"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $('Collect Photos').first().json.photos.map(p => ({ json: p }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        12592,
+        5824
+      ],
+      "id": "b989818f-6fad-4e33-963e-844458c143b3",
+      "name": "Fan Out Photos"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "photo"
+            }
+          },
+          "timeout": 30000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        12784,
+        5824
+      ],
+      "id": "61e2cb94-aa8a-49e2-aeb9-f77f7f853ece",
+      "name": "Download Photo"
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "photo",
+        "name": "={{ $('Fan Out Photos').item.json.name }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Create Brief Folder').first().json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        12976,
+        5824
+      ],
+      "id": "62d30bcf-8f44-4ba5-b89f-72698583ead3",
+      "name": "Upload Photo to Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vKudtoSOTzuYiM8K",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://docs.googleapis.com/v1/documents/{{ $('Update a document').first().json.documentId }}:batchUpdate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDocsOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ requests: [ { insertInlineImage: { uri: $('Fan Out Photos').item.json.url, endOfSegmentLocation: { segmentId: '' }, objectSize: { width: { magnitude: 300, unit: 'PT' } } } } ] }) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        13168,
+        5824
+      ],
+      "id": "555c9b05-9b71-47f7-886c-9f4498364572",
+      "name": "Embed Photo in Doc",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "gJN2iuqQQqKGARqJ",
+          "name": "Google Docs account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "maxItems": 1
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        13360,
+        5824
+      ],
+      "id": "9915e2c4-a8b1-425b-a373-f1a82888ef82",
+      "name": "Collapse Photos"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": ""
+          },
+          "conditions": [
+            {
+              "id": "has-photos",
+              "leftValue": "={{ $('Collect Photos').first().json.photoCount }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        12432,
+        6176
+      ],
+      "id": "b707434e-a659-4ced-bec1-e473ef703e59",
+      "name": "IF Has Photos For Trello"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $('Collect Photos').first().json.photos.map(p => ({ json: p }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        12624,
+        6064
+      ],
+      "id": "f1a77eaf-44a7-40ee-98b7-c2c45c4c1511",
+      "name": "Fan Out Photos For Trello"
+    },
+    {
+      "parameters": {
+        "resource": "attachment",
+        "operation": "create",
+        "cardId": "={{ $('Create Trello card').first().json.id }}",
+        "url": "={{ $json.url }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.trello",
+      "typeVersion": 1,
+      "position": [
+        12816,
+        6064
+      ],
+      "id": "638036ec-c833-4782-880c-0aed7d79ead1",
+      "name": "Attach Photo to Trello",
+      "credentials": {
+        "trelloApi": {
+          "id": "DkjCCyPA0aE5Uwy9",
+          "name": "Trello account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "maxItems": 1
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        13008,
+        6064
+      ],
+      "id": "38adc4a9-d315-44a3-9117-27015f63ccb2",
+      "name": "Collapse Trello Photos"
     }
   ],
   "connections": {
@@ -870,7 +1022,7 @@
       "main": [
         [
           {
-            "node": "Update a document",
+            "node": "Collect Photos",
             "type": "main",
             "index": 0
           }
@@ -881,7 +1033,7 @@
       "main": [
         [
           {
-            "node": "HTML",
+            "node": "IF Has Photos",
             "type": "main",
             "index": 0
           }
@@ -947,65 +1099,7 @@
       "main": [
         [
           {
-            "node": "IF Has DB Photos",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "IF Has DB Photos": {
-      "main": [
-        [
-          {
-            "node": "Attach DB Photos",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "IF Has Other Photos",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Attach DB Photos": {
-      "main": [
-        [
-          {
-            "node": "IF Has Other Photos",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "IF Has Other Photos": {
-      "main": [
-        [
-          {
-            "node": "Attach Other Photos",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "PostgreSQL Update",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Attach Other Photos": {
-      "main": [
-        [
-          {
-            "node": "PostgreSQL Update",
+            "node": "IF Has Photos For Trello",
             "type": "main",
             "index": 0
           }
@@ -1028,6 +1122,152 @@
         [
           {
             "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Collect Photos": {
+      "main": [
+        [
+          {
+            "node": "Create Brief Folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Brief Folder": {
+      "main": [
+        [
+          {
+            "node": "Update a document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Has Photos": {
+      "main": [
+        [
+          {
+            "node": "Fan Out Photos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fan Out Photos": {
+      "main": [
+        [
+          {
+            "node": "Download Photo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Photo": {
+      "main": [
+        [
+          {
+            "node": "Upload Photo to Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Photo to Drive": {
+      "main": [
+        [
+          {
+            "node": "Embed Photo in Doc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embed Photo in Doc": {
+      "main": [
+        [
+          {
+            "node": "Collapse Photos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Collapse Photos": {
+      "main": [
+        [
+          {
+            "node": "HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Has Photos For Trello": {
+      "main": [
+        [
+          {
+            "node": "Fan Out Photos For Trello",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "PostgreSQL Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fan Out Photos For Trello": {
+      "main": [
+        [
+          {
+            "node": "Attach Photo to Trello",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach Photo to Trello": {
+      "main": [
+        [
+          {
+            "node": "Collapse Trello Photos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Collapse Trello Photos": {
+      "main": [
+        [
+          {
+            "node": "PostgreSQL Update",
             "type": "main",
             "index": 0
           }
