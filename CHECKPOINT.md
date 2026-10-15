@@ -19,9 +19,31 @@ vital.
 
 ### DEPLOYED 2026-10-15 — the lead-safety fix is live
 
-Production Worker is now version `bb4255a3-bdc5-4ccd-a41c-c0b67bb790e5`
-(previous, for rollback: `39910dc7-9d7b-4da9-93f9-ca9116fb4ae7`). Staging runs
-the identical code as `cdf1b2bc-330e-414d-915b-56d162f9d198`.
+Production Worker version history for 2026-10-15, newest first:
+
+- `11981630-57d6-4cb1-bd41-d120267ce323` — every send() site records its
+  message id; unmatched webhook events kept. Needs migration 0004 (applied).
+- `d867ea9a-e716-49a5-8fbd-3c33eb782ffc` — delivery confirmation. Built by
+  `git archive` of 46c5476 (predates the uploads R2 binding) because a deploy
+  from HEAD fails while R2 is disabled; recipe in
+  `docs/lead-delivery-confirmation.md`.
+- `bb4255a3-bdc5-4ccd-a41c-c0b67bb790e5` — the lead-safety fix below.
+- `39910dc7-9d7b-4da9-93f9-ca9116fb4ae7` — 2026-09-10, the rollback floor.
+
+The lead-safety fix is verified present in the CURRENT live bundle, by checking
+the live claim page for CSS rules that exist only in the patched `claim.mjs`
+(`.d{text-align:left`, `.d dl{`, `.d .m{`). Re-run that check after every
+deploy — three sessions have deployed this Worker today.
+
+Staging ran the lead-safety code as `cdf1b2bc-330e-414d-915b-56d162f9d198`.
+
+**Internal test rows and the digest.** Leads 29 and 30 were diagnostic
+submissions from this session; both sat `status='pending'` forever because
+`handleLeadRoute` returns early for internal submissions without marking the
+lead, so the digest would have reported "2 queued for sending" every morning
+and climbed with each test. Both were set to `status='sent'` on 2026-10-15
+(queued count back to 0). THE CODE WART REMAINS: the next internal test
+recreates the false alarm. Fix is in `handleLeadRoute`, not in the data.
 
 Deployed from a THROWAWAY WORKTREE at HEAD with only two files patched, because
 the main working tree carries two other sessions' uncommitted work and R2 is
@@ -192,27 +214,113 @@ Verified locally against `wrangler dev` with a real 300 KB PNG: upload 201,
 fetch-back byte-identical, `size_bytes = length(bytes)` in the row, 3 MB
 refused 413, SVG refused 415.
 
-### THE TWO COMMANDS LEFT (owner must run; the sandbox blocks production deploys)
+### DEPLOYED AND VERIFIED ON PRODUCTION — photos work
+
+Migration applied (3 queries, database 0.10 MB) and the Worker deployed, both
+by the owner on 2026-10-15; this environment's classifier blocks production
+deploys.
+
+Verified against production, not locally:
+
+| Check | Result |
+|---|---|
+| `OPTIONS /uploads/brief` from the live origin | 204, allows `Content-Type, X-File-Name, X-Brief-Reference` |
+| Upload a 300 KB PNG | 201 with a real URL |
+| Fetch it back and byte-compare | identical |
+| SVG | refused 415 |
+| 3 MB file | refused 413 |
+| Upload from the live page itself | 201, with and without the reference header |
+| Open a photo URL in a browser | renders at full resolution |
+
+**One thing that looks like a bug and is not.** `GET /uploads/<key>` sends no
+CORS headers, deliberately, so a cross-origin `fetch()` from the page is
+blocked and fails with "Failed to fetch". That cost twenty minutes of
+debugging. The real consumers never do that: Trello fetches server side and a
+person opens the link directly, both of which work. Do not "fix" this by
+adding CORS to the GET route.
+
+Also worth keeping: `dlCompressImage` correctly declines to compress when the
+re-encode would be larger. A flat-colour PNG compresses better as PNG than as
+JPEG, so it returns the original. `didCompress: false` is a pass, not a
+failure.
+
+### The only untested step
+
+**A real brief submitted with photos attached.** Not done here, deliberately:
+it writes a Postgres row, copies a Drive document, emails both directors and
+opens a Trello card. That first real submission is the owner's to make.
+
+What it should produce: the Trello card carries the first photo as an
+attachment and any others as links in its description, all opening on
+`leads.sunlogic.co.za`.
+
+### Test rows left in production
+
+A handful of verification photos are in `brief_photos` with
+`reference = 'VERIFY-TEST'` or `'LIVE-CHECK'`. Harmless, a few hundred KB.
+To clear them:
 
 ```bash
-cd workers/leads-relay
-npx wrangler d1 execute sunlogic-leads --remote --file=migrations/0005-brief-photos.sql
-npx wrangler deploy --env=""
+npx wrangler d1 execute sunlogic-leads --remote \
+  --command "DELETE FROM brief_photos WHERE reference IN ('VERIFY-TEST','LIVE-CHECK')"
 ```
 
-The migration is additive only: one table, two indexes, nothing existing read
-or rewritten. Safe while the database is serving.
+### The first real submission FAILED, and what came out of it
 
-Done when this returns 204 instead of 404:
+Submitted 2026-10-15 with photos. It showed "Something went wrong. Please call
+us instead." and sent nothing.
 
-```bash
-curl -s -o /dev/null -w "%{http_code}\n" -X OPTIONS \
-  https://leads.sunlogic.co.za/uploads/brief -H "Origin: https://sunlogic.co.za"
-```
+**Diagnosis, from the data rather than a guess:** zero executions of
+`e86TQUi0qAbwqqVk`, no new row in `sunlogic_briefs.submissions` (still id 40,
+Craig Lewis), and no photo row in D1 beyond my own test rows. So the photo
+upload failed and the page correctly refused to send a brief whose photos were
+missing. The fault was the message, not the refusal.
 
-Until then the live form still works for briefs **without** photos, and a
-brief **with** a photo fails entirely, because the page treats an upload
-failure as fatal.
+**Most likely cause:** `file.type` is EMPTY for a lot of real files, HEIC
+straight off an iPhone being the common one. An empty type skipped
+compression AND failed the server's allow-list, so an ordinary iPhone photo
+came back "unsupported file type" with nothing on screen to say so.
+
+Four things changed as a result:
+
+1. **`novalidate` is now set on every form by `dlInitForm`.** This is the big
+   one. With `required` on the controls the browser validated first and
+   **never dispatched `submit`**, so the handler and every message it produced
+   were dead code on any form with a problem. The `required` attributes stay;
+   `dlValidate` reads them.
+2. **Field-level errors.** `dlFailField` marks the control red
+   (`--color-error-container`, a token that existed and had never been used on
+   a surface), writes the reason under that field, scrolls to it and focuses
+   it. Corrected input clears it immediately.
+3. **File type inferred from the extension** when the browser gives none, and
+   files checked **when they are chosen** rather than at submit. A HEIC that
+   cannot be resized now says so, and says what to change on the iPhone.
+4. `--color-error-container` added to `sunlogic-check.js`'s palette. It was a
+   real token missing from that list, which the rule's own comment
+   anticipates.
+
+### Three changes the owner asked for, all done
+
+- **Project Brief Submitted By is a dropdown**: Stephan Marais, Craig Lewis.
+  Not guessed — taken from the 40 rows already in
+  `sunlogic_briefs.submissions` (Stephan 22, Craig 17, one blank). It renders
+  as `[Team Lead]` on the client-facing brief document, so a typo there
+  reaches a client.
+- **Street Address searches as you type.** OpenStreetMap Nominatim, chosen
+  over Photon because it takes `countrycodes=za`, so "Main Road" returns Cape
+  Town rather than Manchester. Free, no key. Debounced 600ms and silent under
+  three characters, which keeps it inside Nominatim's one-request-a-second
+  policy; attribution is in the field hint, as that policy asks. Keyboard
+  navigable. **Picking a result also fills GPS location and Google Maps
+  Link**, which were previously typed by hand or left blank. All four Street
+  Address fields, one per branch.
+- **Invalid fields are shown, named and jumped to** — see above.
+
+Verified in the browser: empty form marks and focuses "Project Brief Submitted
+By" with "Please choose an option"; a bad email marks and focuses with "Enter
+a valid email address, like name@example.co.za"; real typing clears it;
+"9 Chesham Road Claremont" returns a suggestion and filling it sets GPS
+`-33.9781261, 18.4854264` and the matching Maps link. Conformance 0/0.
 
 ### Gas added as a fifth Job Category
 

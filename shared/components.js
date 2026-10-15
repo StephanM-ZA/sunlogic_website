@@ -507,7 +507,19 @@ class DlField extends SLElement {
         (this.hasAttribute('multiple') ? ' multiple' : '') +
         ' accept="' + SL_ATTR(this, 'accept', 'image/*,application/pdf') + '" />';
     } else {
-      control = '<input class="sl-input"' + common + ' type="' + type + '"' + phAttr + ' />';
+      /* Address lookup, when the page asks for it. Forwarded onto the input
+         itself rather than left on the wrapper, because forms.js binds to the
+         control and a <dl-field> is not one. `address-gps` and `address-map`
+         name the fields that get filled in when a suggestion is picked. */
+      let addr = '';
+      if (this.hasAttribute('address')) {
+        addr = ' data-dl-address';
+        const gps = this.getAttribute('address-gps');
+        const map = this.getAttribute('address-map');
+        if (gps) { addr += ' data-dl-address-gps="' + gps + '"'; }
+        if (map) { addr += ' data-dl-address-map="' + map + '"'; }
+      }
+      control = '<input class="sl-input"' + common + ' type="' + type + '"' + phAttr + addr + ' />';
     }
 
     this.innerHTML =

@@ -24,6 +24,14 @@
        --accent-highlight #F0A050. The callout tint. Beige carrying a little
        orange, so a block that has to interrupt actually does. */
     'rgb(254, 237, 217)', 'rgb(245, 214, 174)', 'rgb(240, 160, 80)',
+    /* --color-error-container #FFDAD6. The ground under an invalid field.
+       --color-error was already here as a text and border colour; the
+       container had been declared in the token file since the start and never
+       used on a surface, so it was never in this list. Added when the project
+       brief started filling an invalid field rather than only outlining it:
+       an orange outline on cream reads as emphasis on this site, not as a
+       failure. */
+    'rgb(255, 218, 214)',
   ]);
   const FACES = ['Hanken Grotesk', 'JetBrains Mono'];
 

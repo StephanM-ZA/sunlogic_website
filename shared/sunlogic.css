@@ -662,7 +662,45 @@ a.sl-card:hover, .sl-card:has(> a:hover) { border-color: var(--color-orange); }
   transition: border-color var(--dur-fast) var(--ease-default);
 }
 .sl-input:focus, .sl-select:focus { outline: none; border-color: var(--color-navy); box-shadow: var(--focus-ring); }
-.sl-input[aria-invalid="true"] { border-color: var(--color-orange); }
+/* Invalid is RED, not orange. Orange is the accent on this site — it marks
+   the thing you should click, so using it for a failure makes a broken field
+   look like the call to action. --color-error exists for exactly this and was
+   previously unused on inputs. */
+.sl-input[aria-invalid="true"],
+.sl-select[aria-invalid="true"] {
+  border-color: var(--color-error);
+  background: var(--color-error-container);
+}
+.sl-input[aria-invalid="true"]:focus,
+.sl-select[aria-invalid="true"]:focus { border-color: var(--color-error); }
+/* The message sits under its own field, so the reader never has to match an
+   error at the top of a form to a field further down. */
+/* Address suggestions. The list hangs under its input, so the field is the
+   positioning context. */
+.sl-field { position: relative; }
+.sl-suggest {
+  position: absolute; z-index: 20; top: 100%; left: 0; right: 0;
+  margin: 4px 0 0; padding: 0; list-style: none;
+  background: var(--color-white);
+  border: 1px solid var(--border-warm);
+  border-radius: var(--radius-sm);
+  max-height: 260px; overflow-y: auto;
+}
+.sl-suggest__item {
+  padding: 12px 16px; cursor: pointer;
+  font-family: var(--font-body); font-size: 15px; color: var(--text-primary);
+  border-bottom: 1px solid var(--border-hairline);
+}
+.sl-suggest__item:last-child { border-bottom: 0; }
+/* aria-selected rather than :hover alone, so the keyboard and the mouse
+   highlight the same way. */
+.sl-suggest__item:hover,
+.sl-suggest__item[aria-selected="true"] { background: var(--surface-highlight); }
+
+.sl-field-error {
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.05em;
+  text-transform: uppercase; color: var(--color-error);
+}
 .sl-hint { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-secondary); }
 .sl-hint--error { color: var(--color-error); }
 .sl-textarea { min-height: 120px; padding: 14px 16px; height: auto; }

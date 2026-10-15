@@ -81,8 +81,14 @@
         data-success-title="Brief Submitted"
         data-success-body="The brief document, the email and the Trello card are on their way. Reload this page to submit another.">
 
+        <!-- The two names come from the 40 briefs already in
+             sunlogic_briefs.submissions: Stephan 22, Craig 17, one blank. A
+             free-text box was the wrong call here — this value is rendered as
+             [Team Lead] on the brief document, and a typo there reaches the
+             client. -->
         <dl-field label="Project Brief Submitted By" name="Project Brief Submitted By" required
-          placeholder="Your name"
+          placeholder="Please select"
+          options="Stephan Marais|Craig Lewis"
           hint="Named as team lead on the brief document"></dl-field>
 
         <dl-field label="Job Category" name="Job Category" required placeholder="Please select"
@@ -110,7 +116,10 @@
 
         <!-- RENEWABLE ---------------------------------------------------- -->
         <div class="sl-form-branch" data-dl-branch="Renewable">
-          <dl-field label="Street Address" name="Street Address" required></dl-field>
+          <dl-field label="Street Address" name="Street Address" required
+            address address-gps="GPS location" address-map="Google Maps Link"
+            placeholder="Start typing the address"
+            hint="Suggestions from OpenStreetMap. Picking one fills GPS and the map link"></dl-field>
           <dl-field label="GPS location" name="GPS location"></dl-field>
           <dl-field label="Google Maps Link" name="Google Maps Link" type="url"></dl-field>
 
@@ -148,7 +157,10 @@
 
         <!-- ELECTRICAL --------------------------------------------------- -->
         <div class="sl-form-branch" data-dl-branch="Electrical">
-          <dl-field label="Street Address" name="Street Address" required></dl-field>
+          <dl-field label="Street Address" name="Street Address" required
+            address address-gps="GPS location" address-map="Google Maps Link"
+            placeholder="Start typing the address"
+            hint="Suggestions from OpenStreetMap. Picking one fills GPS and the map link"></dl-field>
           <dl-field label="GPS location" name="GPS location"></dl-field>
           <dl-field label="Google Maps Link" name="Google Maps Link" type="url"></dl-field>
 
@@ -184,7 +196,10 @@
              Asking it twice in different words is how two fields end up
              disagreeing with each other on the same brief. -->
         <div class="sl-form-branch" data-dl-branch="Gas">
-          <dl-field label="Street Address" name="Street Address" required></dl-field>
+          <dl-field label="Street Address" name="Street Address" required
+            address address-gps="GPS location" address-map="Google Maps Link"
+            placeholder="Start typing the address"
+            hint="Suggestions from OpenStreetMap. Picking one fills GPS and the map link"></dl-field>
           <dl-field label="GPS location" name="GPS location"></dl-field>
           <dl-field label="Google Maps Link" name="Google Maps Link" type="url"></dl-field>
 
@@ -216,7 +231,10 @@
              guess at a trade, and the comments box carries the rest. If the
              real mapping turns up, this block is what changes. -->
         <div class="sl-form-branch" data-dl-branch="Quote Request|Other">
-          <dl-field label="Street Address" name="Street Address" required></dl-field>
+          <dl-field label="Street Address" name="Street Address" required
+            address address-gps="GPS location" address-map="Google Maps Link"
+            placeholder="Start typing the address"
+            hint="Suggestions from OpenStreetMap. Picking one fills GPS and the map link"></dl-field>
           <dl-field label="GPS location" name="GPS location"></dl-field>
           <dl-field label="Google Maps Link" name="Google Maps Link" type="url"></dl-field>
           <dl-field label="Proposed Date" name="Proposed Date" type="date"></dl-field>

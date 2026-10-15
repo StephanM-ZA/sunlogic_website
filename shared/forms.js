@@ -26,6 +26,87 @@ function dlFormSuccessInline(form) {
   panel.dispatchEvent(new CustomEvent('dl-form-success', { bubbles: true }));
 }
 
+/* Field-level errors: say which field, say why, go there.
+   ------------------------------------------------------------------
+   The form used to fail with one line at the bottom — "Something went wrong.
+   Please call us instead." — for every cause there is. A required field left
+   blank, an email with no @, a photo that would not upload: all of them
+   looked identical, and none of them said where to look. On a twenty-field
+   form filled in on a phone that is not a message, it is a dead end.
+
+   So: mark the field, name the reason under it, and put the reader there. */
+function dlFieldError(control, message) {
+  control.setAttribute('aria-invalid', 'true');
+  const field = control.closest('.sl-field') || control.parentElement;
+  let note = field.querySelector('.sl-field-error');
+  if (!note) {
+    note = document.createElement('p');
+    note.className = 'sl-field-error';
+    /* role=alert so a screen reader announces it on arrival rather than
+       leaving a blind user to discover a silent red border. */
+    note.setAttribute('role', 'alert');
+    field.appendChild(note);
+  }
+  note.textContent = message;
+}
+
+function dlClearFieldError(control) {
+  control.removeAttribute('aria-invalid');
+  const field = control.closest('.sl-field') || control.parentElement;
+  const note = field && field.querySelector('.sl-field-error');
+  if (note) { note.remove(); }
+}
+
+function dlClearAllErrors(form) {
+  form.querySelectorAll('[aria-invalid="true"]').forEach(dlClearFieldError);
+  const banner = form.querySelector('[data-dl-form-error]');
+  if (banner) { banner.remove(); }
+}
+
+/* Mark it, explain it, scroll to it, focus it. The scroll matters more than
+   it looks: the offending field is usually above the submit button and off
+   screen, so without this the reader is told something is wrong and shown
+   nothing. */
+function dlFailField(control, message) {
+  dlFieldError(control, message);
+  control.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  control.focus({ preventScroll: true });
+  return false;
+}
+
+/* An email the browser would reject. Deliberately not a clever pattern:
+   something@something.something is the only shape worth enforcing, and
+   anything stricter starts rejecting real addresses. */
+function dlEmailLooksValid(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+
+function dlValidate(form) {
+  dlClearAllErrors(form);
+  const controls = form.querySelectorAll('input, select, textarea');
+  for (let i = 0; i < controls.length; i++) {
+    const el = controls[i];
+    /* Disabled means it is in a branch that is not showing. Hidden means the
+       honeypot. Neither is the reader's problem. */
+    if (el.disabled || el.name === 'website') { continue; }
+
+    if (el.hasAttribute('required')) {
+      if (el.type === 'file') {
+        if (!el.files.length) { return dlFailField(el, 'Please add at least one file'); }
+      } else if (!el.value.trim()) {
+        return dlFailField(el, el.tagName === 'SELECT' ? 'Please choose an option' : 'This field is required');
+      }
+    }
+    if (el.type === 'email' && el.value.trim() && !dlEmailLooksValid(el.value)) {
+      return dlFailField(el, 'Enter a valid email address, like name@example.co.za');
+    }
+    if (el.type === 'url' && el.value.trim() && !/^https?:\/\//i.test(el.value.trim())) {
+      return dlFailField(el, 'Enter a full link starting with https://');
+    }
+  }
+  return true;
+}
+
 function dlFormError(form) {
   if (form.querySelector('[data-dl-form-error]')) { return; }
   const p = document.createElement('p');
@@ -55,6 +136,157 @@ function dlApplyBranches(form, value) {
     branch.querySelectorAll('input, select, textarea').forEach(function(el) {
       el.disabled = !show;
     });
+  });
+}
+
+/* Check photos as soon as they are chosen.
+   ------------------------------------------------------------------
+   Finding out a photo is unusable only after filling in twenty fields and
+   pressing Submit is the worst possible moment. Compressing here also means
+   the result is cached on the input, so submit does not redo the work. */
+function dlInitFileChecks(form) {
+  form.querySelectorAll('input[type="file"]').forEach(function(input) {
+    input.addEventListener('change', async function() {
+      dlClearFieldError(input);
+      input._dlReady = null;
+      if (!input.files.length) { return; }
+      const ready = [];
+      for (const file of input.files) {
+        const small = await dlCompressImage(file, 1600, 0.82);
+        const problem = dlFileProblem(small, small.size);
+        if (problem) { dlFieldError(input, problem); return; }
+        ready.push(small);
+      }
+      input._dlReady = ready;
+      const saved = Array.prototype.reduce.call(input.files, function(n, f) { return n + f.size; }, 0) -
+        ready.reduce(function(n, f) { return n + f.size; }, 0);
+      if (saved > 0) {
+        dlFieldError(input, ready.length + (ready.length === 1 ? ' photo ready' : ' photos ready') +
+          ', resized to save ' + Math.round(saved / 1024 / 1024 * 10) / 10 + ' MB');
+        const note = input.closest('.sl-field').querySelector('.sl-field-error');
+        /* Not an error, so it must not look like one. Same slot, plain tone. */
+        if (note) { note.className = 'sl-hint'; note.removeAttribute('role'); }
+        input.removeAttribute('aria-invalid');
+      }
+    });
+  });
+}
+
+/* Address lookup as you type.
+   ------------------------------------------------------------------
+   OpenStreetMap's Nominatim, chosen over the alternatives for one reason
+   that matters here: it takes countrycodes=za, so "Main Road" returns Cape
+   Town rather than Manchester. It is free and needs no key, which is the
+   constraint this whole feature lives under.
+
+   Its usage policy asks for at most one request a second, so the input is
+   debounced at 600ms and nothing fires under three characters. For a form two
+   people fill in a few times a day that is comfortably inside it. Attribution
+   is in the field hint, which the policy also asks for.
+
+   Picking a result fills the GPS and Maps-link fields too. Those are already
+   on the form and were being typed by hand, or more often left blank. */
+const DL_ADDRESS_ENDPOINT = 'https://nominatim.openstreetmap.org/search';
+
+function dlCloseSuggestions(input) {
+  const list = input.parentElement.querySelector('.sl-suggest');
+  if (list) { list.remove(); }
+  input.removeAttribute('aria-expanded');
+}
+
+function dlFillRelated(form, input, place) {
+  const set = function(attr, value) {
+    const name = input.getAttribute(attr);
+    if (!name || !value) { return; }
+    const el = Array.prototype.find.call(
+      form.querySelectorAll('[name="' + name + '"]'), function(e) { return !e.disabled; });
+    /* Never overwrite something already typed. A filled field is somebody's
+       work; a blank one is an offer of help. */
+    if (el && !el.value.trim()) { el.value = value; }
+  };
+  set('data-dl-address-gps', place.lat && place.lon ? place.lat + ', ' + place.lon : '');
+  set('data-dl-address-map', place.lat && place.lon
+    ? 'https://www.google.com/maps/search/?api=1&query=' + place.lat + ',' + place.lon : '');
+}
+
+function dlRenderSuggestions(form, input, places) {
+  dlCloseSuggestions(input);
+  if (!places.length) { return; }
+  const list = document.createElement('ul');
+  list.className = 'sl-suggest';
+  list.setAttribute('role', 'listbox');
+  places.forEach(function(place) {
+    const item = document.createElement('li');
+    item.className = 'sl-suggest__item';
+    item.setAttribute('role', 'option');
+    item.textContent = place.display_name;
+    item.addEventListener('mousedown', function(e) {
+      /* mousedown, not click: blur fires first on a click and would close the
+         list before the selection landed. */
+      e.preventDefault();
+      input.value = place.display_name;
+      dlClearFieldError(input);
+      dlFillRelated(form, input, place);
+      dlCloseSuggestions(input);
+    });
+    list.appendChild(item);
+  });
+  input.parentElement.appendChild(list);
+  input.setAttribute('aria-expanded', 'true');
+}
+
+function dlInitAddress(form) {
+  form.querySelectorAll('[data-dl-address]').forEach(function(input) {
+    let timer = null;
+    let latest = 0;
+    input.setAttribute('autocomplete', 'off');
+    input.setAttribute('role', 'combobox');
+
+    input.addEventListener('input', function() {
+      if (timer) { clearTimeout(timer); }
+      const query = input.value.trim();
+      if (query.length < 3) { dlCloseSuggestions(input); return; }
+      timer = setTimeout(async function() {
+        const mine = ++latest;
+        try {
+          const url = DL_ADDRESS_ENDPOINT + '?format=jsonv2&countrycodes=za&limit=6&q=' +
+            encodeURIComponent(query);
+          const response = await fetch(url);
+          const places = await response.json();
+          /* An earlier, slower request must not overwrite a later one's
+             results. Typing outruns the network constantly. */
+          if (mine !== latest) { return; }
+          dlRenderSuggestions(form, input, Array.isArray(places) ? places : []);
+        } catch (err) {
+          /* Lookup is a convenience. If it is down, the field is still a
+             plain text box and the brief still sends. */
+          console.warn('Address lookup unavailable:', err);
+        }
+      }, 600);
+    });
+
+    input.addEventListener('keydown', function(e) {
+      const list = input.parentElement.querySelector('.sl-suggest');
+      if (!list) { return; }
+      const items = Array.prototype.slice.call(list.children);
+      const current = items.findIndex(function(i) { return i.getAttribute('aria-selected') === 'true'; });
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        const next = e.key === 'ArrowDown'
+          ? Math.min(current + 1, items.length - 1)
+          : Math.max(current - 1, 0);
+        items.forEach(function(i) { i.removeAttribute('aria-selected'); });
+        items[next].setAttribute('aria-selected', 'true');
+        items[next].scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'Enter' && current >= 0) {
+        e.preventDefault();
+        items[current].dispatchEvent(new MouseEvent('mousedown'));
+      } else if (e.key === 'Escape') {
+        dlCloseSuggestions(input);
+      }
+    });
+
+    input.addEventListener('blur', function() { setTimeout(function() { dlCloseSuggestions(input); }, 150); });
   });
 }
 
@@ -96,8 +328,57 @@ function dlInitBranches(form) {
    createImageBitmap and the original is returned, where the size check gives
    the installer a clear refusal rather than this failing silently. A
    re-encode that somehow came out bigger is discarded too. */
+/* What the browser says the file is, or what its name says when the browser
+   says nothing.
+   ------------------------------------------------------------------
+   file.type is EMPTY surprisingly often — a HEIC straight off an iPhone is
+   the common one, because a browser that cannot decode the format frequently
+   declines to name it either. An empty type skipped compression AND failed
+   the server's allow-list, so the photo was refused with "unsupported file
+   type" for a perfectly ordinary iPhone picture. Falling back to the
+   extension costs nothing and fixes that whole class. */
+const DL_TYPE_BY_EXTENSION = {
+  jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp',
+  heic: 'image/heic', heif: 'image/heif', pdf: 'application/pdf',
+};
+
+function dlFileType(file) {
+  if (file.type) { return file.type; }
+  const ext = (file.name.split('.').pop() || '').toLowerCase();
+  return DL_TYPE_BY_EXTENSION[ext] || '';
+}
+
+const DL_MAX_UPLOAD_BYTES = 1900000;
+
+/* Why a file cannot be sent, in words the person holding the phone can act
+   on. Returns null when it is fine. */
+function dlFileProblem(file, compressedSize) {
+  const type = dlFileType(file);
+  if (!type) {
+    return file.name + ': this file type is not supported. Use a JPEG, PNG or PDF.';
+  }
+  if (!DL_TYPE_BY_EXTENSION[(file.name.split('.').pop() || '').toLowerCase()] &&
+      type.indexOf('image/') !== 0 && type !== 'application/pdf') {
+    return file.name + ': this file type is not supported. Use a JPEG, PNG or PDF.';
+  }
+  if (compressedSize > DL_MAX_UPLOAD_BYTES) {
+    if (type === 'image/heic' || type === 'image/heif') {
+      /* The honest version of this failure. This browser cannot decode HEIC,
+         so it cannot be shrunk here, and the original is over the limit.
+         Telling them to change an iPhone setting is more use than "too
+         large". */
+      return file.name + ': iPhone HEIC photos cannot be resized in this browser. ' +
+        'On the iPhone set Settings > Camera > Formats > Most Compatible, or share the photo as JPEG.';
+    }
+    return file.name + ': still too large after resizing (' +
+      Math.round(compressedSize / 1024 / 1024 * 10) / 10 + ' MB). Please send a smaller photo.';
+  }
+  return null;
+}
+
 async function dlCompressImage(file, maxDim, quality) {
-  if (!file.type || file.type.indexOf('image/') !== 0) { return file; }
+  const type = dlFileType(file);
+  if (type.indexOf('image/') !== 0) { return file; }
   try {
     const bitmap = await createImageBitmap(file);
     const scale = Math.min(1, maxDim / Math.max(bitmap.width, bitmap.height));
@@ -125,7 +406,11 @@ async function dlCompressImage(file, maxDim, quality) {
 
 async function dlUploadFile(endpoint, original, reference) {
   const file = await dlCompressImage(original, 1600, 0.82);
-  const headers = { 'Content-Type': file.type, 'X-File-Name': file.name };
+  const problem = dlFileProblem(file, file.size);
+  /* Checked here as well as on the server so the reason is specific and
+     local. The server's 413/415 are correct but arrive as a number. */
+  if (problem) { const e = new Error(problem); e.dlFileProblem = true; throw e; }
+  const headers = { 'Content-Type': dlFileType(file), 'X-File-Name': file.name };
   /* Names the photo after the job it belongs to, so it can be traced back to
      a brief. Optional on purpose: an upload must never fail because this
      field happened to be blank. */
@@ -166,12 +451,22 @@ async function dlUploadFields(form, endpoint) {
   if (!inputs.length) { return { values: values, extras: extras }; }
 
   let done = 0;
-  const total = inputs.reduce(function(n, input) { return n + input.files.length; }, 0);
+  const total = inputs.reduce(function(n, input) { return n + (input._dlReady || input.files).length; }, 0);
   for (const input of inputs) {
     const urls = [];
-    for (const file of input.files) {
+    /* Compressed already when the file was chosen; fall back to the raw list
+       if that check has not run (a form built after load, say). */
+    for (const file of (input._dlReady || input.files)) {
       dlUploadNote(form, 'Uploading photo ' + (done + 1) + ' of ' + total + '…');
-      urls.push(await dlUploadFile(endpoint, file, reference));
+      try {
+        urls.push(await dlUploadFile(endpoint, file, reference));
+      } catch (err) {
+        /* Which field, so the submit handler can mark it and go there. An
+           upload that fails anonymously is the bug this whole pass exists to
+           fix. */
+        err.dlControl = input;
+        throw err;
+      }
       done += 1;
     }
     values[input.name] = urls[0];
@@ -182,7 +477,35 @@ async function dlUploadFields(form, endpoint) {
 }
 
 function dlInitForm(form) {
+  /* Turn the browser's own validation OFF, so ours runs.
+     ------------------------------------------------------------------
+     This is the reason a failing field showed nothing useful. With `required`
+     on the controls, the browser validates first and never dispatches
+     `submit`, so the handler below — and every message it produces — was dead
+     code on any form that had a problem. What the browser showed instead was
+     a transient native bubble that says "Please fill in this field", vanishes
+     on the next click, cannot be styled, and on a long form does not say
+     which field it means once it has gone.
+
+     Setting novalidate here rather than in the markup so that every form on
+     the site gets the same treatment, including ones built after load. The
+     `required` attributes stay exactly where they are: dlValidate reads them,
+     and they are still what tells a screen reader the field is mandatory. */
+  form.setAttribute('novalidate', '');
+
   dlInitBranches(form);
+  dlInitFileChecks(form);
+  dlInitAddress(form);
+
+  /* Clear a field's error the moment it is corrected, rather than leaving it
+     red until the next submit. A form that keeps shouting after you have
+     fixed the thing teaches people to ignore it. */
+  form.addEventListener('input', function(e) {
+    if (e.target.getAttribute('aria-invalid') === 'true') { dlClearFieldError(e.target); }
+  });
+  form.addEventListener('change', function(e) {
+    if (e.target.getAttribute('aria-invalid') === 'true') { dlClearFieldError(e.target); }
+  });
 
   form.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -190,20 +513,7 @@ function dlInitForm(form) {
     if (honeypot && honeypot.value) {
       return;
     }
-    const requiredFields = form.querySelectorAll('input[required], select[required], textarea[required]');
-    for (let i = 0; i < requiredFields.length; i++) {
-      /* A disabled control is in a branch that is not showing. Focusing it
-         would scroll to nothing and the submit would never complete. */
-      if (requiredFields[i].disabled) { continue; }
-      if (requiredFields[i].type === 'file') {
-        if (!requiredFields[i].files.length) { requiredFields[i].focus(); return; }
-        continue;
-      }
-      if (!requiredFields[i].value.trim()) {
-        requiredFields[i].focus();
-        return;
-      }
-    }
+    if (!dlValidate(form)) { return; }
     const data = {};
     new FormData(form).forEach(function(value, key) {
       /* A File object has no place in a JSON payload — the upload step below
@@ -254,7 +564,15 @@ function dlInitForm(form) {
       done();
     } catch (err) {
       console.warn('Form submission failed:', err);
-      dlFormError(form);
+      const note = form.querySelector('[data-dl-upload-status]');
+      if (note) { note.remove(); }
+      if (err.dlControl) {
+        /* A named file, a named reason, and the page scrolled to the field
+           that holds it. */
+        dlFailField(err.dlControl, err.message);
+      } else {
+        dlFormError(form);
+      }
     } finally {
       if (submit) { submit.removeAttribute('aria-busy'); }
     }
