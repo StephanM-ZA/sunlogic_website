@@ -163,9 +163,11 @@ export const isFailure = (status) => status === 'bounced' || status === 'complai
    templates in and make this module unimportable by `node --test` — which
    is the whole reason this logic lives in its own file. */
 
-/* "Sunlogic Leads <leads@send.sunlogic.co.za>" -> "leads@send.sunlogic.co.za".
+/* "Display Name <someone@example.com>" -> "someone@example.com".
    Resend sends the display-name form on events and the bare form is what we
-   can compare. */
+   can compare. Deliberately a generic example: the real address belongs to
+   mailer.mjs's FROM_ADDRESS and must not be repeated here, not even in a
+   comment that could quietly go stale. */
 export function senderAddress(from) {
   if (typeof from !== 'string' || !from) return '';
   const angled = from.match(/<([^>]+)>/);
