@@ -28,7 +28,14 @@ import { DatabaseSync } from 'node:sqlite';
 import {
   handleResendWebhook, verifySvix, classifyEvent, nextStatus, messageIdOf, detailOf,
   recordSentMessage, applyEmailEvent, claimFailureAlert, reconcileUnmatched, isFailure,
+  classifyOrigin, senderAddress, ORIGIN,
 } from '../src/webhook.mjs';
+
+/* Matches mailer.mjs's FROM_ADDRESS. Deliberately a literal here: if the
+   real address changes, these tests should fail and make someone look at the
+   webhook handler, rather than silently following it. */
+const OURS = 'leads@send.sunlogic.co.za';
+const US = { ourSender: OURS, ourEnv: 'production' };
 
 const SECRET = 'whsec_' + btoa('a-signing-secret-of-no-importance');
 
@@ -99,13 +106,33 @@ function bouncePayload(messageId = 'msg-28', to = 'stephan@sunlogic.co.za') {
     created_at: '2026-10-15T09:00:00.000Z',
     data: {
       email_id: messageId,
+      /* Shaped like Resend's real payload: display-name `from`, and tags as
+         an OBJECT on the way back even though sends pass an array. */
+      from: 'Sunlogic Leads <' + OURS + '>',
+      tags: { env: 'production' },
       to: [to],
       bounce: { type: 'Permanent', subType: 'General', message: '550 mailbox unavailable' },
     },
   };
 }
 
-async function post(db, payload, { secret = SECRET, svixId = 'msg_abc', nowMs = NOW_MS, onFailure, skew = 0, tamper } = {}) {
+function deliveredPayload(messageId, extra = {}) {
+  return {
+    type: 'email.delivered',
+    data: {
+      email_id: messageId,
+      from: 'Sunlogic Leads <' + OURS + '>',
+      tags: { env: 'production' },
+      to: ['someone@example.com'],
+      ...extra,
+    },
+  };
+}
+
+async function post(db, payload, {
+  secret = SECRET, svixId = 'msg_abc', nowMs = NOW_MS, onFailure, skew = 0, tamper,
+  ourSender = OURS, ourEnv = 'production',
+} = {}) {
   const rawBody = JSON.stringify(payload);
   const timestamp = String(Math.floor(nowMs / 1000) + skew);
   const signature = await sign(secret, svixId, timestamp, rawBody);
@@ -120,6 +147,8 @@ async function post(db, payload, { secret = SECRET, svixId = 'msg_abc', nowMs = 
     rawBody,
     nowMs,
     onFailure,
+    ourSender,
+    ourEnv,
   });
 }
 
@@ -214,7 +243,7 @@ test('a delivered event records delivery and alerts nobody', async () => {
   await recordSentMessage(db, { messageId: 'msg-28', leadId: 28, event: 'accepted', assignee: 'stephan' });
 
   let alerts = 0;
-  const res = await post(db, { type: 'email.delivered', data: { email_id: 'msg-28' } },
+  const res = await post(db, deliveredPayload('msg-28'),
     { onFailure: () => { alerts += 1; } });
 
   assert.equal(res.status, 200);
@@ -255,7 +284,7 @@ test('a complaint escalates like a bounce', async () => {
   seedLead(db);
   await recordSentMessage(db, { messageId: 'm', leadId: 28, event: 'offer', assignee: 'craig' });
   let alerts = 0;
-  await post(db, { type: 'email.complained', data: { email_id: 'm', to: ['craig@sunlogic.co.za'] } },
+  await post(db, { ...deliveredPayload('m'), type: 'email.complained' },
     { onFailure: () => { alerts += 1; } });
   assert.equal(alerts, 1);
   assert.equal(db.sqlite.prepare('SELECT status FROM messages WHERE id=?').get('m').status, 'complained');
@@ -321,7 +350,7 @@ test('a delivered arriving after a bounce does not erase the bounce', async () =
   await recordSentMessage(db, { messageId: 'm', leadId: 28, event: 'offer', assignee: 'stephan' });
 
   await post(db, bouncePayload('m'), { svixId: 'a', onFailure: () => {} });
-  await post(db, { type: 'email.delivered', data: { email_id: 'm' } }, { svixId: 'b' });
+  await post(db, deliveredPayload('m'), { svixId: 'b' });
 
   assert.equal(
     db.sqlite.prepare('SELECT status FROM messages WHERE id=?').get('m').status,
@@ -346,7 +375,7 @@ test('an event we do not act on is accepted and ignored', async () => {
   const db = makeDb();
   /* 200, not an error: a non-2xx makes Resend retry forever and eventually
      disable the endpoint, which would take the bounces down with it. */
-  const res = await post(db, { type: 'email.opened', data: { email_id: 'm' } });
+  const res = await post(db, { ...deliveredPayload('m'), type: 'email.opened' });
   assert.equal(res.status, 200);
   assert.equal(res.body, 'ignored');
 });
@@ -375,7 +404,7 @@ test('an unmatched event is recorded as unmatched, not dropped', async () => {
      signal — mail is leaving by a route nothing here records — so the fact
      has to survive the request. */
   const db = makeDb();
-  const res = await post(db, { type: 'email.delivered', data: { email_id: 'ghost' } });
+  const res = await post(db, deliveredPayload('ghost'));
   assert.equal(res.status, 200);
   const row = db.sqlite.prepare('SELECT type, message_id, matched FROM webhook_events').get();
   assert.equal(row.type, 'email.delivered');
@@ -387,7 +416,7 @@ test('a matched event is recorded as matched', async () => {
   const db = makeDb();
   seedLead(db);
   await recordSentMessage(db, { messageId: 'known', leadId: 28, event: 'visitor_report' });
-  await post(db, { type: 'email.delivered', data: { email_id: 'known' } });
+  await post(db, deliveredPayload('known'));
   const row = db.sqlite.prepare('SELECT message_id, matched FROM webhook_events').get();
   assert.equal(row.message_id, 'known');
   assert.equal(row.matched, 1);
@@ -463,10 +492,10 @@ test('a Headers object works as well as a plain object', async () => {
   const db = makeDb();
   seedLead(db);
   await recordSentMessage(db, { messageId: 'm', leadId: 28, event: 'offer', assignee: 'stephan' });
-  const rawBody = JSON.stringify({ type: 'email.delivered', data: { email_id: 'm' } });
+  const rawBody = JSON.stringify(deliveredPayload('m'));
   const ts = String(Math.floor(NOW_MS / 1000));
   const res = await handleResendWebhook({
-    db, secret: SECRET, rawBody, nowMs: NOW_MS,
+    db, secret: SECRET, rawBody, nowMs: NOW_MS, ...US,
     headers: new Headers({
       'svix-id': 'h1', 'svix-timestamp': ts,
       'svix-signature': await sign(SECRET, 'h1', ts, rawBody),
@@ -619,6 +648,130 @@ test('an already-matched event is not replayed a second time', async () => {
   /* Handled live, so it is matched; a later replay must find nothing and
      must not report a second failure to escalate. */
   assert.equal(await reconcileUnmatched(db, 'm'), null);
+});
+
+/* ---- Whose send is it? ------------------------------------------------
+   Resend's webhook endpoint is account-wide. A CricketIQ sign-in code, sent
+   from noreply@digitaloperations.co.za on the same Resend account, was
+   POSTed here on 2026-10-15 15:04:17 and filed as unmatched — a word that is
+   supposed to mean "a Sunlogic send went unrecorded". Left alone, every
+   email any other project sends would inflate that count daily until the
+   number meant nothing. */
+
+test('an address is read out of the display-name form Resend sends', () => {
+  assert.equal(senderAddress('Sunlogic Leads <leads@send.sunlogic.co.za>'), 'leads@send.sunlogic.co.za');
+  assert.equal(senderAddress('leads@send.sunlogic.co.za'), 'leads@send.sunlogic.co.za');
+  assert.equal(senderAddress('  LEADS@Send.Sunlogic.CO.ZA '), 'leads@send.sunlogic.co.za');
+  assert.equal(senderAddress(''), '');
+  assert.equal(senderAddress(undefined), '');
+});
+
+test("another project's event on the same account is foreign", () => {
+  const cricketiq = {
+    type: 'email.delivered',
+    data: {
+      email_id: '01a14016-e620-7873-a631-78425fbc318d',
+      from: 'CricketIQ <noreply@digitaloperations.co.za>',
+      to: ['smarais.za@gmail.com'],
+    },
+  };
+  assert.equal(classifyOrigin(cricketiq, US), ORIGIN.foreign);
+});
+
+test('a foreign event is recorded as foreign, kept, and left out of the alarm', async () => {
+  const db = makeDb();
+  let alerts = 0;
+  const res = await post(db, {
+    type: 'email.bounced',
+    data: { email_id: 'theirs', from: 'Someone <noreply@digitaloperations.co.za>', to: ['x@y.z'] },
+  }, { onFailure: () => { alerts += 1; } });
+
+  assert.equal(res.status, 200, 'Resend is doing the right thing; never make it retry');
+  assert.equal(res.body, 'foreign');
+  assert.equal(alerts, 0, 'another project bouncing is not our lead to reassign');
+
+  const row = db.sqlite.prepare('SELECT origin, matched, message_id FROM webhook_events').get();
+  assert.equal(row.origin, 'foreign');
+  assert.equal(row.message_id, 'theirs', 'kept, not discarded — a shared account is worth seeing');
+  /* The point of the whole exercise: this must not read as our alarm. */
+  const alarm = db.sqlite.prepare(
+    "SELECT COUNT(*) AS n FROM webhook_events WHERE matched=0 AND (origin='ours' OR origin IS NULL)",
+  ).get().n;
+  assert.equal(alarm, 0);
+});
+
+test('our own send is ours, and still counts toward the alarm when unmatched', async () => {
+  const db = makeDb();
+  const res = await post(db, deliveredPayload('ours-but-unrecorded'));
+  assert.equal(res.body, 'unknown message');
+  const row = db.sqlite.prepare('SELECT origin, matched FROM webhook_events').get();
+  assert.equal(row.origin, 'ours');
+  const alarm = db.sqlite.prepare(
+    "SELECT COUNT(*) AS n FROM webhook_events WHERE matched=0 AND (origin='ours' OR origin IS NULL)",
+  ).get().n;
+  assert.equal(alarm, 1, 'a Sunlogic send with no record is exactly what this must still catch');
+});
+
+test('staging and production are told apart by tag, not by sender', () => {
+  /* They share FROM_ADDRESS, so `from` cannot separate them. Without the tag
+     a staging send's event arriving at production is indistinguishable from a
+     production send whose record went missing. */
+  const stagingSend = deliveredPayload('m', { tags: { env: 'staging' } });
+  assert.equal(classifyOrigin(stagingSend, US), ORIGIN.otherEnv);
+  assert.equal(
+    classifyOrigin(stagingSend, { ourSender: OURS, ourEnv: 'staging' }), ORIGIN.ours,
+    "and on staging the same event IS staging's own",
+  );
+  const prodSend = deliveredPayload('m');
+  assert.equal(classifyOrigin(prodSend, { ourSender: OURS, ourEnv: 'staging' }), ORIGIN.otherEnv);
+  assert.equal(classifyOrigin(prodSend, US), ORIGIN.ours);
+});
+
+test('an untagged send of ours is production, since tagging postdates staging having any schema', () => {
+  const untagged = { type: 'email.delivered', data: { email_id: 'm', from: OURS } };
+  assert.equal(classifyOrigin(untagged, US), ORIGIN.ours);
+  assert.equal(classifyOrigin(untagged, { ourSender: OURS, ourEnv: 'staging' }), ORIGIN.otherEnv);
+});
+
+test('a payload with no usable sender is unknown, not quietly foreign', () => {
+  /* "We could not tell" is a different fact from "not ours", and collapsing
+     them would hide a payload shape we do not understand. */
+  assert.equal(classifyOrigin({ type: 'email.delivered', data: { email_id: 'm' } }, US), ORIGIN.unknown);
+  assert.equal(classifyOrigin({ data: {} }, US), ORIGIN.unknown);
+  assert.equal(classifyOrigin({}, US), ORIGIN.unknown);
+});
+
+test('attribution never depends on whether a row exists', async () => {
+  /* The trap: "unmatched implies foreign" would reintroduce the 0006 race,
+     because an event of ours legitimately arrives before its row. Our own
+     early bounce must stay 'ours' so reconcileUnmatched can still replay it. */
+  const db = makeDb();
+  seedLead(db);
+  seedOffer(db);
+  await post(db, bouncePayload('msg-later'), { svixId: 'early' });
+  assert.equal(
+    db.sqlite.prepare('SELECT origin FROM webhook_events WHERE id=?').get('early').origin,
+    'ours',
+  );
+
+  await recordSentMessage(db, {
+    messageId: 'msg-later', leadId: 28, offerId: 17, event: 'offer', assignee: 'stephan',
+  });
+  const replayed = await reconcileUnmatched(db, 'msg-later');
+  assert.ok(replayed, 'and the replay still finds it');
+  assert.equal(replayed.status, 'bounced');
+});
+
+test('a foreign event is never replayed, even if its id collided with ours', async () => {
+  const db = makeDb();
+  seedLead(db);
+  await recordSentMessage(db, { messageId: 'collide', leadId: 28, event: 'offer', assignee: 'stephan' });
+  db.sqlite.prepare(
+    "INSERT INTO webhook_events (id, type, message_id, matched, detail, origin) " +
+    "VALUES ('f','email.bounced','collide',0,'x','foreign')",
+  ).run();
+  assert.equal(await reconcileUnmatched(db, 'collide'), null);
+  assert.equal(db.sqlite.prepare('SELECT status FROM messages WHERE id=?').get('collide').status, 'sent');
 });
 
 test('the failure detail keeps the diagnosis, not just the status', () => {

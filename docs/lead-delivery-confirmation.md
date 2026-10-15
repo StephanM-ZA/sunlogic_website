@@ -291,6 +291,17 @@ cd workers/leads-relay && npx wrangler d1 execute sunlogic-leads --remote --file
 cd workers/leads-relay && npx wrangler d1 execute sunlogic-leads --remote --file migrations/0004-webhook-event-matching.sql
 ```
 
+```bash
+cd workers/leads-relay && npx wrangler d1 execute sunlogic-leads --remote --file migrations/0006-reconcile-early-events.sql
+```
+
+```bash
+cd workers/leads-relay && npx wrangler d1 execute sunlogic-leads --remote --file migrations/0007-event-origin.sql
+```
+
+All four are applied to production AND staging as of 2026-10-15. Swap
+`sunlogic-leads-staging` for the staging database.
+
 Staging uses the same two commands with `--env staging` and
 `sunlogic-leads-staging`, and a second endpoint pointed at the staging Worker.
 
@@ -404,7 +415,7 @@ moves off R2, deploy from `HEAD` normally and delete this section.
 cd workers/leads-relay && node --test test/*.mjs
 ```
 
-85 pass (50 before this work, 35 in `test/webhook.test.mjs`).
+94 pass (50 before this work, 44 in `test/webhook.test.mjs`).
 
 `scripts/manual-bounce.mjs` is a hand-signed bounce for the director branch,
 kept OUT of `test/` on purpose — `node --test test/*.mjs` globs that
@@ -503,6 +514,92 @@ as the live path, with the claim handed back if escalation throws.
 Deliberately **not** fixed by returning a non-2xx so Resend retries. That
 would make correctness depend on an external retry schedule, and on this path
 a lost bounce is a lost lead.
+
+## The Resend account is shared, and the endpoint is account-wide
+
+Resend's webhook endpoint is **not** scoped to a domain or a sender. Every
+project on the same Resend account POSTs its delivery events to
+`/resend/webhook`. One did:
+
+| | |
+|---|---|
+| `received_at` | 2026-10-15 15:04:17 |
+| `message_id` | `01a14016-e620-7873-a631-78425fbc318d` |
+| `detail` | `smarais.za@gmail.com` |
+| actually | a CricketIQ sign-in code, from `noreply@digitaloperations.co.za` |
+
+The handler did the right thing with it. The damage was to the **signal**:
+`unmatched` is supposed to mean "a Sunlogic send went unrecorded", which is a
+real alarm, and every unrelated email on the account was inflating it. Left
+alone the digest would have reported that number every morning until it meant
+nothing — this feature's own failure mode, one level up.
+
+Worth noting how the attribution was checked rather than assumed, because
+`smarais.za@gmail.com` is **also** staging's `MAIL_REDIRECT_TO`, so "a staging
+send" was a competing explanation. Resend's ids are UUIDv7, whose first 48
+bits are a millisecond timestamp: this one decodes to 15:03:24Z. Staging's
+newest lead is 08:54:11, more than six hours earlier, so no staging send could
+have produced it.
+
+### How events are attributed
+
+By **sender**, never by whether a row exists:
+
+| origin | what it is | counts toward `unmatched`? |
+|---|---|---|
+| `ours` | this deployment's send | **yes** |
+| `other_env` | staging's, seen by production, or vice versa | no |
+| `foreign` | another project on the account | no |
+| `unknown` | no usable `from` on the payload | no, but visible |
+
+`NULL` predates the column and is treated as ours.
+
+**The "never by row absence" part is load-bearing.** An event of ours can
+legitimately arrive before its row does — that is the race in migration 0006 —
+and those events must still be stored and replayed. If `unmatched` were ever
+allowed to imply `foreign`, that bug would come straight back.
+
+Two fields do the work, both confirmed against Resend's docs rather than
+assumed:
+
+- **`data.from`** separates us from other projects.
+- **`data.tags`** separates staging from production, which it has to, because
+  both send as `FROM_ADDRESS` and `from` alone cannot tell them apart. Every
+  send is now tagged `env=production` or `env=staging`; Resend takes tags as
+  an array of `{name, value}` and returns them as an object. Without this, a
+  staging send's event arriving at production is indistinguishable from a
+  production send whose record went missing — an alarm that is permanently,
+  quietly wrong.
+
+`FROM_ADDRESS` and `envTag` live in `mailer.mjs` and are passed **into** the
+handler. `webhook.mjs` must not import `mailer.mjs`: that would drag the email
+templates in and make the module unimportable by `node --test`, which is the
+entire reason this logic lives in its own file.
+
+A foreign event is recorded, not dropped — "another project sent this" is
+worth being able to see, and discarding it is how a shared account stays
+invisible — and still answers 200, because Resend is doing exactly what it
+should.
+
+## Staging
+
+Staging had **none** of this schema until 2026-10-15: `sunlogic-leads-staging`
+held only `leads`, `offers` and `rotation`. Migrations 0003, 0004, 0006 and
+0007 had been applied to production only, so every `rememberMessage` call on
+staging had been failing silently into its catch, and staging could not
+exercise or verify any of the delivery-confirmation work.
+
+All four are now applied. A full column-by-column diff against `schema.sql`
+reports **production: no drift**, and staging missing only `brief_photos`
+(migration 0005 — the Project Brief feature, deliberately not applied here).
+
+What staging can prove now: the schema, the recording, the matching and the
+replay. What it still cannot prove on its own is a real bounce reaching a
+**director**, because that needs `MAIL_REDIRECT_TO` pointed at
+`bounced@resend.dev` and a second Resend endpoint aimed at the staging Worker
+with its own signing secret. Staging's value remains mostly the timing paths —
+`OFFER_TTL_MINUTES = 2` lets expiry and reassignment be exercised in minutes
+instead of a day — and it is now at least capable of the rest.
 
 ## Still unverified
 

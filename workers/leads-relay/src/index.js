@@ -8,7 +8,7 @@ import {
   isAllowedType, uploadKey, isUploadKey, declaredSizeExceedsLimit, randomHex,
   uploadBaseUrl, MAX_UPLOAD_BYTES,
 } from './uploads.mjs';
-import { compose, recipients, send, ADDRESS_OF } from './mailer.mjs';
+import { compose, recipients, send, ADDRESS_OF, FROM_ADDRESS, envTag } from './mailer.mjs';
 import { divisionLabel } from './logic.mjs';
 import {
   handleResendWebhook, recordSentMessage, reconcileUnmatched,
@@ -752,7 +752,13 @@ async function sendDailyDigest(env) {
     /* Delivery news about a message we have no record of sending. Should be
        zero now that every send records its id; if it is not, mail is going
        out by a path this Worker does not know about. */
+    /* Scoped to OUR OWN sends. Resend's endpoint is account-wide, so without
+       the origin filter every email any other project on the account sends
+       inflates this, the digest reports it daily, and the number stops
+       meaning anything — which is this feature's own failure mode, one level
+       up. NULL origin predates the column and is ours. */
     " (SELECT COUNT(*) FROM webhook_events WHERE matched=0" +
+    "   AND (origin='ours' OR origin IS NULL)" +
     "   AND received_at >= datetime('now','-1 day')) AS unmatched," +
     " (SELECT COUNT(*) FROM leads) AS total"
   ).first();
@@ -1051,6 +1057,15 @@ export default {
         headers: request.headers,
         rawBody,
         nowMs: Date.now(),
+        /* Who we are, so the handler can tell our events from the rest.
+           Resend's endpoint is account-wide and every other project on the
+           account POSTs its events here too; `from` separates those, and the
+           env tag separates staging from production, which share the
+           address. Both come from mailer.mjs so there is one definition of
+           each — the handler cannot import it without dragging the email
+           templates in and becoming untestable. */
+        ourSender: FROM_ADDRESS,
+        ourEnv: envTag(env),
         onFailure: (row, failure, detail) => handleEmailFailure(env, row, failure, detail),
       });
       return new Response(body, { status });

@@ -145,6 +145,67 @@ export const classifyEvent = (type) => STATUS_OF_EVENT[type] || null;
 
 export const isFailure = (status) => status === 'bounced' || status === 'complained';
 
+/* ---- Whose send is this? ----------------------------------------------
+   Resend's webhook endpoint is account-wide: it is not scoped to a domain or
+   a sender, so every project on the same Resend account POSTs its delivery
+   events here. One did — a CricketIQ sign-in code from
+   noreply@digitaloperations.co.za — and was filed as unmatched, which is
+   supposed to mean "a Sunlogic send went unrecorded".
+
+   Attribution is decided from the SENDER, never from whether a row exists.
+   That is not a stylistic preference: an event of ours can legitimately
+   arrive before its row does, which is the race migration 0006 exists to
+   handle, and those events must still be stored and replayed. Were
+   "unmatched" ever allowed to imply "foreign", that bug would be back.
+
+   The expected sender and environment are passed IN rather than imported:
+   mailer.mjs owns FROM_ADDRESS, and importing it here would drag the email
+   templates in and make this module unimportable by `node --test` — which
+   is the whole reason this logic lives in its own file. */
+
+/* "Sunlogic Leads <leads@send.sunlogic.co.za>" -> "leads@send.sunlogic.co.za".
+   Resend sends the display-name form on events and the bare form is what we
+   can compare. */
+export function senderAddress(from) {
+  if (typeof from !== 'string' || !from) return '';
+  const angled = from.match(/<([^>]+)>/);
+  return (angled ? angled[1] : from).trim().toLowerCase();
+}
+
+/* Resend takes tags as an array of {name, value} and gives them back as an
+   object, so read the object form. */
+function envTagOf(payload) {
+  const tags = payload && payload.data && payload.data.tags;
+  if (!tags || typeof tags !== 'object' || Array.isArray(tags)) return '';
+  return typeof tags.env === 'string' ? tags.env : '';
+}
+
+export const ORIGIN = {
+  ours: 'ours',
+  otherEnv: 'other_env',
+  foreign: 'foreign',
+  unknown: 'unknown',
+};
+
+export function classifyOrigin(payload, { ourSender, ourEnv } = {}) {
+  const from = senderAddress(payload && payload.data && payload.data.from);
+  /* No usable sender. Excluded from the alarm but recorded as its own state,
+     because "we could not tell" is a different fact from "not ours" and
+     collapsing them would hide a payload shape we do not understand. */
+  if (!from) return ORIGIN.unknown;
+  if (!ourSender || from !== String(ourSender).trim().toLowerCase()) return ORIGIN.foreign;
+
+  /* Same sender, so it is Sunlogic's — but which deployment? Staging and
+     production share FROM_ADDRESS, which is why the tag exists. */
+  const tagged = envTagOf(payload);
+  if (!tagged) {
+    /* Untagged: sent before tagging existed. Those are all production's,
+       since staging had no delivery-confirmation schema at all until now. */
+    return ourEnv === 'production' ? ORIGIN.ours : ORIGIN.otherEnv;
+  }
+  return tagged === ourEnv ? ORIGIN.ours : ORIGIN.otherEnv;
+}
+
 export function messageIdOf(payload) {
   const id = payload && payload.data && payload.data.email_id;
   return typeof id === 'string' && id ? id : null;
@@ -249,10 +310,13 @@ export async function alreadyHandled(db, svixId) {
    event matching nothing means mail is leaving by a path this Worker does
    not know about, or an id was lost on the way out. Dropping such an event
    silently is how the first one went unnoticed. */
-export async function markHandled(db, svixId, type, messageId = null, matched = false, detail = null) {
+export async function markHandled(
+  db, svixId, type, messageId = null, matched = false, detail = null, origin = null,
+) {
   await db.prepare(
-    'INSERT OR IGNORE INTO webhook_events (id, type, message_id, matched, detail) VALUES (?, ?, ?, ?, ?)',
-  ).bind(svixId, type || '', messageId, matched ? 1 : 0, detail || null).run();
+    'INSERT OR IGNORE INTO webhook_events (id, type, message_id, matched, detail, origin) ' +
+    'VALUES (?, ?, ?, ?, ?, ?)',
+  ).bind(svixId, type || '', messageId, matched ? 1 : 0, detail || null, origin || null).run();
 }
 
 /* Replay events that arrived before we had recorded the send.
@@ -273,8 +337,14 @@ export async function markHandled(db, svixId, type, messageId = null, matched = 
    owns escalation because it owns the templates and the rotation. */
 export async function reconcileUnmatched(db, messageId) {
   if (!messageId) return null;
+  /* Only our own events are replayed. A foreign id could not collide with
+     ours in practice, but scoping it says what is intended rather than
+     relying on UUIDs to be lucky. NULL origin predates the column and is
+     ours. */
   const { results } = await db.prepare(
-    'SELECT id, type, detail FROM webhook_events WHERE message_id=? AND matched=0 ORDER BY received_at',
+    'SELECT id, type, detail FROM webhook_events ' +
+    "WHERE message_id=? AND matched=0 AND (origin='ours' OR origin IS NULL) " +
+    'ORDER BY received_at',
   ).bind(messageId).all();
   if (!results || !results.length) return null;
 
@@ -293,7 +363,8 @@ export async function reconcileUnmatched(db, messageId) {
      against a message that exists, so leaving them unmatched would keep
      reporting a problem that has been dealt with. */
   await db.prepare(
-    'UPDATE webhook_events SET matched=1 WHERE message_id=? AND matched=0',
+    "UPDATE webhook_events SET matched=1 " +
+    "WHERE message_id=? AND matched=0 AND (origin='ours' OR origin IS NULL)",
   ).bind(messageId).run();
 
   return applied;
@@ -311,7 +382,9 @@ export async function reconcileUnmatched(db, messageId) {
    is claimed separately. Marking a request handled first would be simpler and
    wrong — a crash after the mark and before the write loses the event
    permanently, and the one event we cannot afford to lose is the bounce. */
-export async function handleResendWebhook({ db, secret, headers, rawBody, nowMs, onFailure }) {
+export async function handleResendWebhook({
+  db, secret, headers, rawBody, nowMs, onFailure, ourSender, ourEnv,
+}) {
   if (!secret) {
     /* Say so rather than quietly returning 200. A webhook endpoint that
        accepts everything and records nothing looks healthy from Resend's
@@ -338,9 +411,22 @@ export async function handleResendWebhook({ db, secret, headers, rawBody, nowMs,
 
   if (await alreadyHandled(db, id)) return { status: 200, body: 'duplicate' };
 
+  const origin = classifyOrigin(payload, { ourSender, ourEnv });
   const messageId = messageIdOf(payload);
+
+  /* Not this deployment's message, so there is nothing of ours to match,
+     record against or escalate — and trying would be wrong rather than
+     merely useless. Recorded, not discarded: "another project sent this" is
+     worth being able to see, and silently dropping it is how the account
+     being shared would have stayed invisible. 200, because Resend is doing
+     exactly what it should. */
+  if (origin !== ORIGIN.ours) {
+    await markHandled(db, id, payload.type, messageId, false, detailOf(payload), origin);
+    return { status: 200, body: origin };
+  }
+
   if (!messageId) {
-    await markHandled(db, id, payload.type);
+    await markHandled(db, id, payload.type, null, false, null, origin);
     return { status: 200, body: 'no message id' };
   }
 
@@ -366,7 +452,7 @@ export async function handleResendWebhook({ db, secret, headers, rawBody, nowMs,
 
   /* detail is stored even when the event matched, so an unmatched one can be
      replayed later with Resend's diagnosis rather than just its status. */
-  await markHandled(db, id, payload.type, messageId, applied.known, detail);
+  await markHandled(db, id, payload.type, messageId, applied.known, detail, origin);
   /* Still 200 for an unmatched event. Resend is not at fault and retrying
      would not help — the record above is how a human finds out. */
   return { status: 200, body: applied.known ? 'ok' : 'unknown message' };

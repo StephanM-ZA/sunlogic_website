@@ -94,8 +94,17 @@ CREATE TABLE IF NOT EXISTS webhook_events (
   -- BEFORE the send is recorded can be replayed with its diagnosis intact.
   -- Measured in production: a bounce landed two seconds before the message
   -- row existed. See migration 0006.
-  detail      TEXT
+  detail      TEXT,
+  -- 0007: whose send this event was about — ours | other_env | foreign |
+  -- unknown, decided from the payload's `from` and `env` tag. Resend's
+  -- endpoint is account-wide, so other projects' events arrive here too and
+  -- were inflating the unmatched alarm. NULL predates the column. Decided
+  -- from the sender and NEVER from whether a row exists: an event of ours
+  -- can arrive before its row (see 0006). See migration 0007.
+  origin      TEXT
 );
+CREATE INDEX IF NOT EXISTS idx_webhook_events_origin
+  ON webhook_events(origin, matched, received_at);
 CREATE INDEX IF NOT EXISTS idx_webhook_events_unmatched
   ON webhook_events(matched, received_at);
 CREATE INDEX IF NOT EXISTS idx_webhook_events_message

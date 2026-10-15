@@ -41,7 +41,26 @@ const BODIES = {
    reputation are untouched by this: only send.sunlogic.co.za carries Resend's
    records, and mail to @sunlogic.co.za still goes to Xneelo exactly as before.
    If Resend ever has a deliverability problem it cannot reach the real mail. */
-const FROM = 'Sunlogic Leads <leads@send.sunlogic.co.za>';
+/* One definition of the address, because two things now depend on it: the
+   envelope, and telling OUR delivery events apart from every other project's.
+   Resend's webhook endpoint is account-wide, so this Worker is POSTed the
+   events of everything else sending on the same account. The handler decides
+   what is ours by comparing this address — it must never grow a second copy
+   of the string. */
+export const FROM_ADDRESS = 'leads@send.sunlogic.co.za';
+const FROM = 'Sunlogic Leads <' + FROM_ADDRESS + '>';
+
+/* Which deployment sent a message, carried on the message itself.
+   ------------------------------------------------------------------------
+   `from` separates us from other projects, and cannot separate staging from
+   production: both send as FROM_ADDRESS. So every send is tagged, and the
+   handler reads the tag back off the event. Without this a staging send's
+   delivery event arriving at production looks exactly like a production send
+   whose record went missing — an alarm that is permanently, quietly wrong.
+
+   'production' when ENV_LABEL is unset, because production deliberately has
+   no ENV_LABEL (see wrangler.toml); only staging sets one. */
+export const envTag = (env) => (env && env.ENV_LABEL) || 'production';
 
 const ADDRESS = {
   stephan: 'stephan@sunlogic.co.za',
@@ -120,6 +139,13 @@ async function sendViaResend(env, { to, replyTo, subject, html, originalTo }) {
         ...(replyTo ? { reply_to: replyTo } : {}),
         subject,
         html: redirectBanner(env, html, originalTo),
+        /* Resend echoes tags back on every webhook event for this message,
+           which is the only thing that tells a staging send from a
+           production one — they share FROM_ADDRESS. Array of {name, value}
+           on the way out; Resend returns it as an object on the way back.
+           Name and value are restricted to ASCII letters, numbers,
+           underscores and dashes, which 'env' and the labels satisfy. */
+        tags: [{ name: 'env', value: envTag(env) }],
       }),
     });
     if (res.ok) {
