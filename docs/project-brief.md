@@ -245,7 +245,7 @@ still completes. That file is still filed in Drive and still on the Trello card.
 every route afterwards, because `wrangler deploy` ships the whole script and a
 deploy from a stale checkout silently deletes another session's routes. That
 has happened twice to `/uploads/brief`. See
-`workers/leads-relay/DEPLOYING.md`. Migration `0006-brief-file-chunks.sql`
+`workers/leads-relay/DEPLOYING.md`. Migration `0009-brief-file-chunks.sql`
 must be applied as well as `0005`.
 
 The page ships with the site. The Worker needs both migrations applied first:
@@ -253,7 +253,7 @@ The page ships with the site. The Worker needs both migrations applied first:
 ```bash
 cd workers/leads-relay
 npx wrangler d1 execute sunlogic-leads --remote --file=migrations/0005-brief-photos.sql
-npx wrangler d1 execute sunlogic-leads --remote --file=migrations/0006-brief-file-chunks.sql
+npx wrangler d1 execute sunlogic-leads --remote --file=migrations/0009-brief-file-chunks.sql
 cd ../..
 npm run worker:deploy
 ```

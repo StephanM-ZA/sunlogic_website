@@ -458,7 +458,7 @@ that failed on most real files.
 
 So a file over one chunk is now **split**: chunk 0 stays in
 `brief_photos.bytes`, chunks 1..n go in the new `brief_file_chunks`
-(migration `0006`), and the GET reassembles in `ORDER BY chunk`. Asymmetrical
+(migration `0009`), and the GET reassembles in `ORDER BY chunk`. Asymmetrical
 on purpose — every existing row keeps working with no backfill, and a photo
 is still one primary-key lookup. Both written in a single `env.DB.batch`, so a
 file is wholly stored or not stored at all; a short reassembly logs
