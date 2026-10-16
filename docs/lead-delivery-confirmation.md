@@ -615,6 +615,16 @@ instead of a day — and it is now at least capable of the rest.
   staging plus a second Resend endpoint, or a hand-signed event in production
   (`scripts/manual-bounce.mjs`), which reassigns a lead and therefore emails
   the other director for real.
-- The digest has not been seen arriving *through the new path* either. The
-  first one is due at 07:00 SAST the morning after this deploys, and it is
-  still the acceptance test for the whole feature.
+- ~~The digest has not been seen arriving through the new path.~~
+  **Confirmed 2026-10-16 07:00 SAST — it arrived, and was read.** Sent
+  05:00:12 UTC to both directors, `delivered` confirmed by Resend's webhook at
+  05:00:24, and its contents matched the database ("4 arrived, 1 accepted").
+  The first time this template has ever rendered and reached a human, 36 days
+  after the system went live. The 2026-09-04 plan's Task 12 Step 4 is now
+  ticked, with the delay recorded there rather than smoothed over.
+
+  Worth stating what this does and does not prove. It proves the cron, the
+  render, `send()`, Resend's delivery and the webhook that confirmed it — one
+  firing of a dead man's switch proves the path. It does not prove the
+  property, which is that it keeps firing. That takes the second morning, and
+  the hundredth.

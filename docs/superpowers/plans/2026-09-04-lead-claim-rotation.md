@@ -899,8 +899,40 @@ need deleting.
 
 - [x] **Step 1:** Confirm with the human that `sales@` should stop receiving the full notification. **Confirmed 2026-09-10: yes, it should stop.**
 - [x] **Step 2:** Deploy the Worker. **Done 2026-09-10**, version `39910dc7`.
-- [ ] **Step 3:** Watch the first real lead end to end.
-- [ ] **Step 4:** Confirm the digest arrives the next morning. **This is the acceptance test for the whole feature** — if it does not arrive, something is broken and everything else was theatre.
+- [x] **Step 3:** Watch the first real lead end to end. **Done, over leads 26–28.** Lead 27 is the one that matters: offered to Stephan 2026-10-09, not accepted, expired, offered to Craig 2026-10-10, accepted 2026-10-11. The full lapse-and-reassign ran on a real enquiry with nobody intervening. Caveat recorded in the next step: lead 28 was accepted correctly and its details email never arrived, which is how the delivery gap was found.
+- [x] **Step 4:** Confirm the digest arrives the next morning. **This is the acceptance test for the whole feature** — if it does not arrive, something is broken and everything else was theatre. **Confirmed 2026-10-16 07:00 SAST**, and the honest version is worse than a tick suggests: this step was never carried out, and for 36 days the answer would have been no.
+
+### Step 4, and the 36 days nobody checked
+
+Left unticked on 2026-09-10 and not revisited. In that time the digest never
+sent once. n8n has no digest branch — a `{event:'digest'}` payload carries no
+`needsSend`, so `Extract Body`'s `b.needsSend !== false` read as true, the IF
+took the sending branch, and `Relay Send` attempted an SMTP send with an empty
+recipient and an empty body. Every morning. Silently.
+
+Lead 28 went missing inside that window, which is exactly what this step was
+written to catch. The step's own wording turned out to be the right call —
+"everything else was theatre" — and the only thing wrong with it was that
+nobody ran it.
+
+Fixed by routing the digest through `send()` so it goes out from Cloudflare
+via Resend like every other email, rather than depending on a branch n8n never
+had. First successful send:
+
+| | |
+|---|---|
+| sent | 2026-10-16 05:00:12 UTC (07:00 SAST) |
+| to | stephan@ and craig@sunlogic.co.za |
+| delivered | confirmed by Resend webhook 05:00:24 |
+| read | contents matched the database — "4 arrived, 1 accepted" |
+
+Delivery is *confirmed* rather than assumed, because the delivery-confirmation
+work landed first. See [`docs/lead-delivery-confirmation.md`](../../lead-delivery-confirmation.md).
+
+The lesson is about the test, not the feature: a passing suite and a deployed
+Worker proved nothing here, because the one check that would have caught it
+was a human action with a checkbox and no deadline. One firing proves the
+path; it is the second and the hundredth that prove the property.
 
 ### Step 1, and why it needed no code
 
