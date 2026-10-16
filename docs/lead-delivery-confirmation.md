@@ -199,10 +199,20 @@ Trace a digest payload — `{event:'digest', type:'digest', …summary}`, with n
 | `Relay Send` | SMTP send with `toEmail: ''` and `html: ''` → fails. `onError` is unset, so the workflow errors out |
 
 **Nobody has ever received this email.** Corroborated by the 2026-09-04 plan,
-where *"Step 4: Confirm the digest arrives the next morning. **This is the
-acceptance test for the whole feature** — if it does not arrive, something is
-broken and everything else was theatre"* is the **one unticked box** in the
-document. Every other step is `[x]`.
+whose Task 12 *"Step 4: Confirm the digest arrives the next morning. **This is
+the acceptance test for the whole feature** — if it does not arrive, something
+is broken and everything else was theatre"* was left unticked, along with Step
+3 beside it.
+
+An earlier version of this paragraph called it "the one unticked box in the
+document. Every other step is `[x]`." **That was wrong** — the plan has
+several other unticked boxes, for work that was in fact done (writing
+`mailer.mjs`, the sheet columns, pointing `CLAIM_BASE_URL`). It came from
+reading the line rather than grepping the file. The claim is corrected rather
+than quietly deleted because it was offered as evidence, and evidence that
+turns out to be overstated should say so. The conclusion does not rest on it:
+it rests on the node-by-node trace above and on the owner confirming directly
+that the digest had never arrived.
 
 Further corroboration in the template itself: `body-daily-digest.html` has
 always asked for `{{oldestLine}}`, and nothing ever supplied it — because
