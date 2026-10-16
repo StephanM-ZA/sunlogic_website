@@ -29,25 +29,55 @@
    behaviour, and these are served back from our own origin, where a script
    would run with our cookies. */
 const ALLOWED_TYPES = new Set([
+  /* Photographs, which the page downscales before sending. */
   'image/jpeg',
   'image/png',
   'image/webp',
   'image/heic',
   'image/heif',
+  /* Documents. These CANNOT be downscaled, which is the whole reason
+     brief_file_chunks exists — see migrations/0006. A scanned CoC or an
+     electrical layout plan is routinely several megabytes and there is
+     nothing to be done about that at the browser. */
   'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 ]);
 
-/* D1 caps a single BLOB at 2,000,000 bytes, and this is where photos are
-   stored — so unlike every other limit in this file, this one is not ours to
-   choose. A little headroom under it for the row's other columns.
+/* D1 caps a single BLOB at 2,000,000 bytes. That is not ours to choose, so a
+   file larger than this is SPLIT across rows rather than refused — chunk 0 in
+   brief_photos.bytes, the rest in brief_file_chunks. See migrations/0006 for
+   why the split is asymmetrical.
 
-   A raw 48MP phone photo is 8 to 12 MB and would be refused outright, which
-   is why the page downscales before uploading rather than sending what the
-   camera produced: a distribution board at 1600px lands around 300 KB and is
-   still legible enough to read a breaker label. See dlCompressImage in
-   shared/forms.js. A file that arrives over this has skipped that step, and
-   refusing it is correct. */
-export const MAX_UPLOAD_BYTES = 1_900_000;
+   A little headroom under the cap for the row's other columns. */
+export const CHUNK_BYTES = 1_900_000;
+
+/* The actual ceiling, and now a product decision again rather than a platform
+   one. 25 MB takes any scanned plan or CoC anyone has produced, and still
+   refuses a video picked by mistake — which is the only thing this limit is
+   really for now that size no longer breaks the store.
+
+   Images are still downscaled first (a 48MP photo is 8-12 MB and lands around
+   300 KB), so in practice only documents ever approach this. */
+export const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
+
+/* Where each chunk starts and ends. Pure, and tested, because an off-by-one
+   here corrupts a file in a way that nothing reports: the row count is right,
+   the total size is right, and the bytes are wrong. */
+export function chunkRanges(totalBytes, chunkBytes = CHUNK_BYTES) {
+  const ranges = [];
+  for (let start = 0; start < totalBytes; start += chunkBytes) {
+    ranges.push({ start, end: Math.min(start + chunkBytes, totalBytes) });
+  }
+  /* A zero-length file would otherwise produce no chunks at all and read back
+     as a 404 rather than as an empty file. It cannot happen through the route
+     (an empty body is refused), but the helper should not be the thing that
+     is wrong if it ever does. */
+  if (!ranges.length) ranges.push({ start: 0, end: 0 });
+  return ranges;
+}
 
 export function isAllowedType(contentType) {
   if (typeof contentType !== 'string') return false;
@@ -62,6 +92,10 @@ const EXTENSION_OF = {
   'image/heic': 'heic',
   'image/heif': 'heif',
   'application/pdf': 'pdf',
+  'application/msword': 'doc',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+  'application/vnd.ms-excel': 'xls',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
 };
 
 export function extensionFor(contentType) {
@@ -74,9 +108,9 @@ export function extensionFor(contentType) {
    It is tempting to keep it for the sake of a recognisable URL, and it is the
    wrong call: the name comes from the browser, it reaches Trello and an email
    client as a URL, and sanitising it correctly for a path, a URL and an
-   HTML attribute at once is three jobs. The original name is kept as R2
-   metadata instead, where it is data and never a path.
-   The date prefix is for a human listing the bucket in a year's time, not for
+   HTML attribute at once is three jobs. The original name is kept in the
+   file_name column instead, where it is data and never a path.
+   The date prefix is for a human reading the table in a year's time, not for
    routing — nothing parses it back out. */
 export function uploadKey(now, randomHex, contentType) {
   const d = new Date(now);
@@ -87,9 +121,13 @@ export function uploadKey(now, randomHex, contentType) {
 
 /* Matches what uploadKey writes and nothing else. Anchored, no dot segments,
    fixed hex length: a key is 32 hex characters and one known extension, so
-   '../' and an absolute path both fail here rather than at R2. */
+   '../' and an absolute path both fail here rather than at the database.
+
+   KEEP THIS IN STEP WITH EXTENSION_OF. A type added there but not here
+   uploads perfectly and then 404s on the way back out, because the GET route
+   validates the key before it looks anything up. */
 export const UPLOAD_KEY_PATTERN =
-  /^brief\/\d{4}\/\d{2}\/[0-9a-f]{32}\.(jpg|png|webp|heic|heif|pdf|bin)$/;
+  /^brief\/\d{4}\/\d{2}\/[0-9a-f]{32}\.(jpg|png|webp|heic|heif|pdf|doc|docx|xls|xlsx|bin)$/;
 
 export function isUploadKey(key) {
   return typeof key === 'string' && UPLOAD_KEY_PATTERN.test(key);

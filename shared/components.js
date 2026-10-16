@@ -28,7 +28,7 @@ const SL_ACCENT = (text) => {
    rolls between the two numbers via <dl-roll>; the dock also rolls the
    email in behind them. Change a number here and every instance follows. */
 const SL_PHONE_1 = { text: '+27 (82) 655 5371', href: 'tel:+27826555371', icon: 'phone' };
-const SL_PHONE_2 = { text: '+27 (82) 443 7799', href: 'tel:+27824437799', icon: 'phone' };
+const SL_PHONE_2 = { text: '+27 (83) 443 7799', href: 'tel:+27834437799', icon: 'phone' };
 const SL_EMAIL = { text: 'sales@sunlogic.co.za', href: 'mailto:sales@sunlogic.co.za', icon: 'envelope' };
 /* WhatsApp is how South Africans contact a trades business, and Craig's
    review calls it the cheapest conversion win on his list. It uses
@@ -505,7 +505,11 @@ class DlField extends SLElement {
     } else if (type === 'file') {
       control = '<input class="sl-input sl-file"' + common + ' type="file"' +
         (this.hasAttribute('multiple') ? ' multiple' : '') +
-        ' accept="' + SL_ATTR(this, 'accept', 'image/*,application/pdf') + '" />';
+        /* Extensions as well as MIME types: a .heic or .docx picked on some
+           platforms arrives with an empty type, and an accept list of MIME
+           types alone greys it out in the picker. */
+        ' accept="' + SL_ATTR(this, 'accept',
+          'image/*,.heic,.heif,application/pdf,.pdf,.doc,.docx,.xls,.xlsx') + '" />';
     } else {
       /* Address lookup, when the page asks for it. Forwarded onto the input
          itself rather than left on the wrapper, because forms.js binds to the

@@ -17,7 +17,13 @@ CREATE TABLE IF NOT EXISTS leads (
   -- assignee who accepted. Stored normalised so a future rename is this
   -- column, not four HTML files.
   division        TEXT,
-  claimed_by      TEXT
+  claimed_by      TEXT,
+  -- 0008: a submission from a sunlogic.co.za address. Deliberately never
+  -- offered to a director, so it can never be accepted — and therefore must
+  -- not be counted among the leads that "arrived", or the digest reads as a
+  -- funnel with leads hanging in it. Decided once at submission by
+  -- isInternalSubmission, not re-derived in SQL. See migration 0008.
+  internal        INTEGER NOT NULL DEFAULT 0
 );
 CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(status);
 
@@ -124,3 +130,15 @@ CREATE TABLE IF NOT EXISTS brief_photos (
 );
 CREATE INDEX IF NOT EXISTS idx_brief_photos_created   ON brief_photos(created_at);
 CREATE INDEX IF NOT EXISTS idx_brief_photos_reference ON brief_photos(reference);
+
+-- 0006: chunks 1..n of a file too large for a single D1 value (the cap is
+-- 2,000,000 bytes). Chunk 0 stays in brief_photos.bytes, so a photo is still
+-- one primary-key lookup and only large documents pay for the split. See
+-- migrations/0006-brief-file-chunks.sql.
+CREATE TABLE IF NOT EXISTS brief_file_chunks (
+  file_id TEXT    NOT NULL,
+  chunk   INTEGER NOT NULL,
+  bytes   BLOB    NOT NULL,
+  PRIMARY KEY (file_id, chunk)
+);
+CREATE INDEX IF NOT EXISTS idx_brief_file_chunks_file ON brief_file_chunks(file_id);

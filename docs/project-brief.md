@@ -142,6 +142,31 @@ this Worker. **Using the storage that is actually available beat a
 better-shaped store that is not.** If R2 is ever enabled, moving is a small
 change in one handler and the page never knows.
 
+### Documents, and why files are split
+
+D1 caps a single value at 2 MB. That is fine for a photo the page has already
+downscaled and useless for a document: a scanned Certificate of Compliance is
+routinely 1 to 5 MB and an electrical layout plan larger still, and there is
+nothing a browser can do to shrink either.
+
+So a file over one chunk is **split**: chunk 0 stays in `brief_photos.bytes`
+where it always was, chunks 1..n go in `brief_file_chunks`, and the GET route
+reassembles them in order. The asymmetry is deliberate — every existing row
+keeps working with no backfill, and a photo is still served by the single
+primary-key lookup it was before. The cost of supporting large files is paid
+only by large files.
+
+Both are written in **one `env.DB.batch`**, so a file is either wholly stored
+or not stored at all. Written separately, a dropped connection would leave a
+row whose `size_bytes` promises more bytes than exist, and the GET would serve
+a truncated document with a 200. For the same reason the read refuses to serve
+a short reassembly: it logs `upload_incomplete` and answers 500, because
+most of a PDF delivered as a success is worse than an honest failure.
+
+`chunkRanges` is pure and exhaustively tested. An off-by-one there corrupts a
+file in a way nothing reports — the row count is right, the recorded size is
+right, and the bytes are wrong.
+
 ### What that costs, and how it is paid
 
 D1 caps a single value at **2 MB** and the free database at 500 MB. A modern
@@ -174,9 +199,12 @@ failing silently.
   of which is a browser on our own origin. The key is 32 random hex
   characters and that is the access control, the same assumption
   `/claim/<token>` makes.
-- JPEG, PNG, WebP, HEIC, HEIF and PDF only. **SVG is refused on purpose**: it
-  is an image by content type and a script by behaviour, and these are served
-  back from our own origin.
+- JPEG, PNG, WebP, HEIC, HEIF, PDF, Word (.doc/.docx) and Excel
+  (.xls/.xlsx). **SVG is refused on purpose**: it is an image by content type
+  and a script by behaviour, and these are served back from our own origin.
+- **25 MB per file.** Images are downscaled in the browser first and land
+  around 300 KB; documents cannot be downscaled, which is what the chunking
+  below is for.
 
 ### One URL per field, and the ones after it
 
@@ -213,17 +241,26 @@ still completes. That file is still filed in Drive and still on the Trello card.
 
 ## Deploying it
 
-The page ships with the site. The Worker needs the migration applied first:
+**Use `npm run worker:deploy`, not a bare `wrangler deploy`** — it probes
+every route afterwards, because `wrangler deploy` ships the whole script and a
+deploy from a stale checkout silently deletes another session's routes. That
+has happened twice to `/uploads/brief`. See
+`workers/leads-relay/DEPLOYING.md`. Migration `0006-brief-file-chunks.sql`
+must be applied as well as `0005`.
+
+The page ships with the site. The Worker needs both migrations applied first:
 
 ```bash
-npx wrangler d1 execute sunlogic-leads --remote \
-  --file=workers/leads-relay/migrations/0005-brief-photos.sql
-npx wrangler deploy --config workers/leads-relay/wrangler.toml
+cd workers/leads-relay
+npx wrangler d1 execute sunlogic-leads --remote --file=migrations/0005-brief-photos.sql
+npx wrangler d1 execute sunlogic-leads --remote --file=migrations/0006-brief-file-chunks.sql
+cd ../..
+npm run worker:deploy
 ```
 
-The migration is additive only — one new table and two indexes, no existing
-table read or rewritten — so it is safe to apply while the database is
-serving.
+Both migrations are additive only — new tables and indexes, nothing existing
+read or rewritten — so they are safe to apply while the database is serving,
+and both are guarded by `IF NOT EXISTS` so re-running one is harmless.
 
 Until it is applied, `/uploads/brief` answers `503 uploads not configured`.
 Note the page treats an upload failure as fatal to the whole submission, so

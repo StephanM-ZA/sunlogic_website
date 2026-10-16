@@ -6,7 +6,7 @@ import {
 import { handleClaimGet, handleClaimPost } from './claim.mjs';
 import {
   isAllowedType, uploadKey, isUploadKey, declaredSizeExceedsLimit, randomHex,
-  uploadBaseUrl, MAX_UPLOAD_BYTES,
+  uploadBaseUrl, MAX_UPLOAD_BYTES, chunkRanges, CHUNK_BYTES,
 } from './uploads.mjs';
 import { compose, recipients, send, ADDRESS_OF, FROM_ADDRESS, envTag } from './mailer.mjs';
 import { divisionLabel } from './logic.mjs';
@@ -256,8 +256,11 @@ async function handleLeadRoute(request, env, ctx, type) {
        so making the row's state depend on the reply would only reintroduce
        a pending row nothing will ever clear. A failed reply still records
        itself on the lead. */
+    /* `internal` is recorded here, in the one place that decides it, so the
+       digest can exclude these without re-deriving the domain rule in SQL —
+       a second copy of that pattern is the thing that would drift. */
     await env.DB.prepare(
-      "UPDATE leads SET status='sent', last_attempt_at=datetime('now') WHERE id=?",
+      "UPDATE leads SET status='sent', internal=1, last_attempt_at=datetime('now') WHERE id=?",
     ).bind(leadId).run();
     /* Two replies, and both are wanted. The estimate is the thing a
        calculator tester actually asked for; the test confirmation is the
@@ -739,7 +742,23 @@ async function notify(env, leadId, event, assignee, token, round) {
 async function sendDailyDigest(env) {
   const row = await env.DB.prepare(
     "SELECT " +
-    " (SELECT COUNT(*) FROM leads WHERE created_at >= datetime('now','-1 day')) AS arrived," +
+    /* Real enquiries only.
+       ------------------------------------------------------------------
+       The first digest ever sent read "4 arrived · 1 accepted". Both
+       numbers were correct and the sentence was not: all four arrivals were
+       internal test submissions, which are never offered to anyone and so
+       can never be accepted, and the one acceptance was a lead from two
+       days earlier. Side by side they read as a funnel with three enquiries
+       hanging in it. Nothing was outstanding.
+       A digest that has to be explained before it can be trusted is the
+       same problem as one that does not arrive. */
+    " (SELECT COUNT(*) FROM leads WHERE internal=0" +
+    "   AND created_at >= datetime('now','-1 day')) AS arrived," +
+    /* Kept, but out of the email. The count still travels to the sheet in
+       `extra`, so a staff test is never invisible — it just does not
+       pretend to be an enquiry. */
+    " (SELECT COUNT(*) FROM leads WHERE internal=1" +
+    "   AND created_at >= datetime('now','-1 day')) AS internal_tests," +
     " (SELECT COUNT(*) FROM offers WHERE accepted_at >= datetime('now','-1 day')) AS accepted," +
     " (SELECT COUNT(*) FROM offers WHERE state='offered') AS open_offers," +
     " (SELECT COUNT(*) FROM offers o WHERE o.state='offered' AND o.expires_at IS NULL) AS unclaimed," +
@@ -808,6 +827,8 @@ async function sendDailyDigest(env) {
     queued_now: row.queued,
     undelivered_24h: row.undelivered,
     unmatched_events_24h: row.unmatched,
+    /* For the sheet, not the email — see the query above. */
+    internal_tests_24h: row.internal_tests,
     total_leads: row.total,
     oldest_open_lead: oldest ? oldest.lead_id : null,
     oldest_open_hours: oldest ? oldest.hours : null,
@@ -979,11 +1000,26 @@ async function handleUploadPost(request, env) {
   }
 
   try {
-    await env.DB
-      .prepare('INSERT INTO brief_photos (id, bytes, content_type, file_name, reference, size_bytes) VALUES (?, ?, ?, ?, ?, ?)')
-      .bind(key, bytes, contentType.split(';')[0].trim(), originalName || null,
-            reference || null, bytes.byteLength)
-      .run();
+    /* Chunk 0 goes in brief_photos, the rest in brief_file_chunks. A photo is
+       one chunk and takes the single-statement path it always did; only a
+       document large enough to need splitting pays for the rest. */
+    const ranges = chunkRanges(bytes.byteLength, CHUNK_BYTES);
+    const statements = [
+      env.DB
+        .prepare('INSERT INTO brief_photos (id, bytes, content_type, file_name, reference, size_bytes) VALUES (?, ?, ?, ?, ?, ?)')
+        .bind(key, bytes.slice(ranges[0].start, ranges[0].end), contentType.split(';')[0].trim(),
+              originalName || null, reference || null, bytes.byteLength),
+    ];
+    for (let i = 1; i < ranges.length; i++) {
+      statements.push(env.DB
+        .prepare('INSERT INTO brief_file_chunks (file_id, chunk, bytes) VALUES (?, ?, ?)')
+        .bind(key, i, bytes.slice(ranges[i].start, ranges[i].end)));
+    }
+    /* One batch, so a file is either wholly stored or not stored at all.
+       Written separately, a connection dropped midway would leave a row whose
+       size_bytes promises more bytes than exist, and the GET would serve a
+       truncated file with a 200. */
+    await env.DB.batch(statements);
   } catch (err) {
     console.log(JSON.stringify({ event: 'upload_failed', key, error: String(err) }));
     return jsonResponse({ ok: false, error: 'upload failed' }, 502, origin);
@@ -1003,10 +1039,40 @@ async function handleUploadPost(request, env) {
 async function handleUploadGet(env, key) {
   if (!env.DB) return new Response('not found', { status: 404 });
   const row = await env.DB
-    .prepare('SELECT bytes, content_type FROM brief_photos WHERE id = ?')
+    .prepare('SELECT bytes, content_type, size_bytes FROM brief_photos WHERE id = ?')
     .bind(key)
     .first();
   if (!row) return new Response('not found', { status: 404 });
+
+  /* D1 hands a BLOB back as a plain Array of byte values, not an ArrayBuffer.
+     Passing that array straight to Response() does NOT throw — it produces a
+     200 with an EMPTY body, so every file would serve as zero bytes with
+     perfectly correct headers and nothing would log a problem. Caught only by
+     byte-comparing a round trip, which is why the tests do exactly that. */
+  let body = new Uint8Array(row.bytes);
+
+  /* A document too large for one D1 value was split on the way in. Reassemble
+     in chunk order — ORDER BY is doing real work here, not decoration. */
+  if (row.size_bytes > body.length) {
+    const rest = await env.DB
+      .prepare('SELECT bytes FROM brief_file_chunks WHERE file_id = ? ORDER BY chunk ASC')
+      .bind(key)
+      .all();
+    const parts = [body, ...(rest.results || []).map((r) => new Uint8Array(r.bytes))];
+    const total = parts.reduce((n, p) => n + p.length, 0);
+    /* Refuse to serve a file we cannot serve whole. A short read here means a
+       chunk is missing, and answering 200 with most of a PDF is worse than
+       answering 500: the first corrupts silently, the second gets noticed. */
+    if (total !== row.size_bytes) {
+      console.log(JSON.stringify({
+        event: 'upload_incomplete', key, expected: row.size_bytes, got: total,
+      }));
+      return new Response('incomplete', { status: 500 });
+    }
+    body = new Uint8Array(total);
+    let at = 0;
+    for (const part of parts) { body.set(part, at); at += part.length; }
+  }
 
   const headers = new Headers();
   /* content_type was validated against the allow-list on the way in, so this
@@ -1019,15 +1085,7 @@ async function handleUploadGet(env, key) {
      HTML — but say so anyway, because the one type that would matter if the
      allow-list ever slipped is the one this stops. */
   headers.set('X-Content-Type-Options', 'nosniff');
-  /* D1 hands a BLOB back as a plain Array of byte values, not an ArrayBuffer.
-     Passing that array straight to Response() does NOT throw — it produces a
-     200 with an EMPTY body, so every photo would have served as a zero-byte
-     file with perfectly correct headers and nothing anywhere would have
-     logged a problem. Caught only by byte-comparing a round trip, which is
-     why the test does exactly that.
-     Uint8Array accepts both an Array and an ArrayBuffer, so this is correct
-     whichever shape a future D1 version returns. */
-  return new Response(new Uint8Array(row.bytes), { headers });
+  return new Response(body, { headers });
 }
 
 export default {

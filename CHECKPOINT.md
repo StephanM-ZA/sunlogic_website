@@ -12,6 +12,59 @@ them is fixed too.** Nothing is in flight. See "Where this stands" below.)
 
 ---
 
+## Session 16 — gas research pack (docs only, nothing in flight)
+
+**Task:** investigate gas installation and servicing in South Africa, residential
+and commercial, and produce a pack for adding it to the energy site.
+
+**Nothing was changed on any site.** No HTML, CSS, JS or Worker touched. Four new
+documents, all under `docs/`:
+
+- `docs/gas-service-pack-1.md` — the case, the position, the page map for `gas.html`
+- `docs/gas-service-pack-2.md` — draft copy section by section, FAQs, title/meta/schema,
+  the compliance buckets, the verification gate, and the review record in §7
+- `docs/research/reports/SA gas installation market pack.md` — 12,600-word research report
+- `docs/research/research_notes/SA gas installation market pack/` — five researcher note files
+
+**Key decisions taken in the pack:**
+
+- Gas is positioned as a **compliance and performance** product, not a savings product.
+  The research is unambiguous that gas loses on running cost against a heat pump, against
+  Eskom Homelight 20A and CoCT Lifeline, and against electric for cooking. The defensible
+  argument is price trajectory (regulated LPG flat 33 months vs electricity +22.6% in 24).
+- The position is **"one contractor, one certificate trail"** — unoccupied in the Western
+  Cape across seven competitor sites read in full.
+- **Load-shedding is not used anywhere.** 504 consecutive clear days as at early Oct 2026.
+- Nav recommendation is **Option A**: Gas takes the fourth slot, `energy-management.html`
+  moves to the footer. `dl-nav-bar` is capped at four links by the system.
+
+**Skills run:** `anthropic-skills:deep-research` (5 parallel researchers + report writer),
+`landing-page-copy` and `direct-response-copy` for the draft, `copychief` and
+`compliance-checker` for review. 11 fixes from the reviews are applied in part 2; the
+record of what changed and why is part 2 §7.
+
+**Blocked on the user, in priority order:**
+
+1. **Do we have, hire or register an SAQCC Gas authorised person?** Nothing is sellable
+   without one. Part 1 §0.
+2. Buy **SANS 10087-1 Edition 7 (2024)** and **Part 3**. Every distance, clearance,
+   ventilation area, test pressure and consumable age in the pack is verified only against
+   the superseded 2008 Edition 5, and all bulk-tank distances are a straight blank. Part 2 §5.1.
+3. Four phone calls: SAQCC Gas (CoC validity, category codes), City of Cape Town (gas
+   requirements + adopted 2026/27 tariffs — their servers refused connection), a cylinder
+   filler or LPGas SA (published SA LPG calorific value), GBP dashboard. Part 2 §5.2.
+4. Nav decision, and which certificates we can actually issue in-house.
+
+**Already in place, no work needed:** `site-main/project-brief.html` carries a Gas job
+category with its own branch, and `job_category` is free text in the relay, so Gas
+submissions already land without a migration.
+
+**One error to stamp out wherever it appears:** a gas CoC is issued by an authorised person
+registered with **SAQCC Gas**, not by someone registered with the LP Gas Safety Association.
+The wrong version is all over SA conveyancing and estate-agency pages.
+
+---
+
 ## Session 15 — IN FLIGHT: director mail to stephan@ not arriving
 
 **Reported:** the `accepted` details email for lead 28 never arrived. Called
@@ -392,6 +445,67 @@ correctly with both features present at last —
 A 300 KB PNG uploaded to production returns 201 and fetches back
 byte-identical, and `dlUploadFile` called from the live page itself returns a
 real URL.
+
+### Documents (PDF, Word, Excel) + files split across D1 rows
+
+2026-10-16. Asked for PDF/docx support. PDF was already allowed; Word and
+Excel were not. The real obstacle was size, not type.
+
+**D1 caps a single value at 2 MB.** Fine for a photo the page downscales to
+~300 KB, useless for a document: a scanned CoC is 1-5 MB and an electrical
+layout plan more. Widening the type list alone would have shipped a feature
+that failed on most real files.
+
+So a file over one chunk is now **split**: chunk 0 stays in
+`brief_photos.bytes`, chunks 1..n go in the new `brief_file_chunks`
+(migration `0006`), and the GET reassembles in `ORDER BY chunk`. Asymmetrical
+on purpose — every existing row keeps working with no backfill, and a photo
+is still one primary-key lookup. Both written in a single `env.DB.batch`, so a
+file is wholly stored or not stored at all; a short reassembly logs
+`upload_incomplete` and answers 500 rather than serving most of a PDF as a
+success.
+
+Limit raised 1.9 MB → **25 MB**, a product decision again rather than a
+platform one.
+
+**A lie the page had been telling:** the upload hint still read "Up to 15 MB
+each" from the R2 design, while the real limit had been 1.9 MB since the D1
+switch. Four occurrences, now "Photos, PDF, Word or Excel. Up to 25 MB each".
+
+Verified against a running Worker with the owner's actual filename: a 5 MB
+`E100 Electrical Layout Plan Rev-01 (1).PDF` stored as 3 chunks
+(1,900,000 + 2) and round-tripped **byte-identical**; a 300 KB `.docx` stored
+as 1 chunk, 0 extra, also byte-identical. Unit tests 20/20, including that
+every allowed type has an extension AND passes `UPLOAD_KEY_PATTERN` — a type
+added to one but not the other uploads fine and then 404s on the way out.
+
+### The deploy regression happened a SECOND time — now guarded
+
+The "Load failed" on the PDF was not the PDF. `/uploads/brief` was returning
+**404 again**: another `wrangler deploy` from a checkout behind `63c1366`,
+exactly as on 2026-10-15. `/resend/webhook` live, `/uploads/brief` gone.
+
+`wrangler deploy` ships the WHOLE script, not a diff. Two sessions deploy this
+Worker. A deploy from a stale checkout silently deletes the other's routes,
+prints success, and the only symptom is a 404 that reaches the browser as a
+bare "Load failed" with nothing to diagnose. Both times it cost a live
+`wrangler tail` and lucky timing to find.
+
+Guarded now, rather than just fixed again:
+
+- `workers/leads-relay/scripts/smoke.mjs` probes every route and exits
+  non-zero naming the missing one. It checks the routes you did NOT touch,
+  which is where this hides.
+- `npm run worker:deploy` = deploy + smoke. **Use it instead of a bare
+  `wrangler deploy`.**
+- `workers/leads-relay/DEPLOYING.md` explains why, with both incident dates.
+
+Proven: run against the currently-broken live Worker, the smoke test fails on
+`/uploads/brief -> 404 (expected 204)` and passes the other three.
+
+Still worth doing: there is no `[observability]` block in `wrangler.toml`, so
+Worker logs are not queryable after the fact. Both incidents needed a tail
+running at the moment someone retried.
 
 ### The first real submission FAILED, and what came out of it
 

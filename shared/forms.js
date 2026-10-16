@@ -367,7 +367,12 @@ function dlInitBranches(form) {
    extension costs nothing and fixes that whole class. */
 const DL_TYPE_BY_EXTENSION = {
   jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp',
-  heic: 'image/heic', heif: 'image/heif', pdf: 'application/pdf',
+  heic: 'image/heic', heif: 'image/heif',
+  pdf: 'application/pdf',
+  doc: 'application/msword',
+  docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  xls: 'application/vnd.ms-excel',
+  xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 };
 
 function dlFileType(file) {
@@ -376,20 +381,27 @@ function dlFileType(file) {
   return DL_TYPE_BY_EXTENSION[ext] || '';
 }
 
-const DL_MAX_UPLOAD_BYTES = 1900000;
+/* Must match MAX_UPLOAD_BYTES in workers/leads-relay/src/uploads.mjs. Files
+   over a single D1 value are split server side, so this is a product limit
+   again rather than a platform one. */
+const DL_MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
 
 /* Why a file cannot be sent, in words the person holding the phone can act
    on. Returns null when it is fine. */
-function dlFileProblem(file, compressedSize) {
+const DL_SUPPORTED_LIST = 'JPEG, PNG, HEIC, PDF, Word or Excel';
+
+function dlFileProblem(file, finalSize) {
   const type = dlFileType(file);
-  if (!type) {
-    return file.name + ': this file type is not supported. Use a JPEG, PNG or PDF.';
+  /* Unknown to the browser AND absent from the extension map, so neither we
+     nor the server can say what it is. One check, not two: dlFileType already
+     falls back to the extension, so an empty result means both failed. */
+  const known = type && Object.keys(DL_TYPE_BY_EXTENSION).some(function(ext) {
+    return DL_TYPE_BY_EXTENSION[ext] === type;
+  });
+  if (!known) {
+    return file.name + ': this file type is not supported. Use ' + DL_SUPPORTED_LIST + '.';
   }
-  if (!DL_TYPE_BY_EXTENSION[(file.name.split('.').pop() || '').toLowerCase()] &&
-      type.indexOf('image/') !== 0 && type !== 'application/pdf') {
-    return file.name + ': this file type is not supported. Use a JPEG, PNG or PDF.';
-  }
-  if (compressedSize > DL_MAX_UPLOAD_BYTES) {
+  if (finalSize > DL_MAX_UPLOAD_BYTES) {
     if (type === 'image/heic' || type === 'image/heif') {
       /* The honest version of this failure. This browser cannot decode HEIC,
          so it cannot be shrunk here, and the original is over the limit.
@@ -398,8 +410,13 @@ function dlFileProblem(file, compressedSize) {
       return file.name + ': iPhone HEIC photos cannot be resized in this browser. ' +
         'On the iPhone set Settings > Camera > Formats > Most Compatible, or share the photo as JPEG.';
     }
-    return file.name + ': still too large after resizing (' +
-      Math.round(compressedSize / 1024 / 1024 * 10) / 10 + ' MB). Please send a smaller photo.';
+    const mb = Math.round(finalSize / 1024 / 1024 * 10) / 10;
+    /* A document was never resized, so saying "still too large after
+       resizing" about a PDF is a lie that sends someone looking for a resize
+       option that does not exist. */
+    return type.indexOf('image/') === 0
+      ? file.name + ': still too large after resizing (' + mb + ' MB). Please send a smaller photo.'
+      : file.name + ': too large (' + mb + ' MB). The limit is 25 MB per file.';
   }
   return null;
 }

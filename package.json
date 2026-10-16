@@ -13,7 +13,9 @@
     "conformance:electrical": "node scripts/conformance.js electrical",
     "sweep:main": "node scripts/layout-sweep.js main",
     "sweep:energy": "node scripts/layout-sweep.js energy",
-    "sweep:electrical": "node scripts/layout-sweep.js electrical"
+    "sweep:electrical": "node scripts/layout-sweep.js electrical",
+    "worker:smoke": "node workers/leads-relay/scripts/smoke.mjs",
+    "worker:deploy": "cd workers/leads-relay && npx wrangler deploy --env=\"\" && cd ../.. && npm run worker:smoke"
   },
   "dependencies": {
     "playwright": "^1.62.1"
