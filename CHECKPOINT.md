@@ -233,7 +233,7 @@ rather than taking a nav slot.
 client copy, and the page now parents two trades while introducing itself as the solar page.
 Worth a decision.
 
-### Pre-existing bug found, NOT fixed: the nav collides at 768px
+### Pre-existing bug found and FIXED: the nav collided at 768px
 
 Reproduced on `energy.html` at exactly **768px**, the width at which `shared/sunlogic.css`
 switches the desktop nav on (`@media (min-width: 768px)`). The logo is 186px and the link list
@@ -244,9 +244,31 @@ At 800px there is an 11px gap; at 1100px, 311px.
 **This affects all three sites and has nothing to do with gas.** `conformance` misses it
 because it tests 412 and 1440, neither of which lands in the gap. **iPad portrait is 768px.**
 
-Fix options, none applied: raise the nav breakpoint above ~800px so the drawer covers the gap;
-shorten "Smart Solutions"; or reduce the logo width below that breakpoint. The first is the
-smallest change and the safest. It is a `shared/` change, so it touches all three sites.
+**Fixed by raising the nav breakpoint from 768px to 860px** in `shared/sunlogic.css` — one
+line, with the arithmetic written into the comment above it so it can be re-derived. 860 is
+789 + 71px of slack, and the slack is deliberate: the 555px link list is measured with
+JetBrains Mono loaded, and a fallback face renders wider. Everything from 768px to 859px now
+gets the drawer, which is the better control on a touch device anyway.
+
+Verified on all three sites: at 768 and 859 the drawer shows and the desktop nav is hidden; at
+860 the desktop nav returns with a 71px gap on Energy and Electrical, 230px on the apex, every
+link on one line. `npm run conformance` (all three sites, 26 pages) passes 0 fails, 0 warns at
+both viewports.
+
+**Only the nav query moved.** The other sixteen 768px queries in `shared/sunlogic.css` are
+layout — grids, hero heights, split panels — and were left alone deliberately.
+
+**No manual `?v=` bump was needed, and the CLAUDE.md instruction to do one is out of date.**
+`scripts/build-site.js` calls `hashAssetVersions()` after minification and rewrites every `?v=`
+from the hash of the bytes actually served; the build now emits `sunlogic.css?v=f61ad667` on
+all three sites. The `?v=45` in the source files is a dev-time placeholder, not the shipped
+value. The CLAUDE.md line "There is no build step, so nothing fingerprints these" predates that
+and should be corrected.
+
+**Worth doing, not done:** `scripts/conformance.js` tests 412 and 1440 only, which is why this
+survived. A third viewport in the 760-860 band would have caught it and would stop it
+regressing. That changes the deploy gate for every site, so it is a decision rather than an
+edit.
 
 ### Not committed
 
