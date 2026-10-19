@@ -761,7 +761,22 @@ dl-nav-bar { position: sticky; top: 0; z-index: var(--z-sticky); min-height: 72p
 }
 .sl-nav--dark { background: rgba(13,32,40,0.86); border-bottom-color: var(--border-inverse); color: var(--text-inverse); }
 .sl-nav__links { display: none; gap: 32px; align-items: center; }
-@media (min-width: 768px) { .sl-nav__links { display: flex; } .sl-nav__toggle { display: none; } }
+/* The horizontal nav needs 789px before anything overlaps: a 186px logo, a
+   555px link list on the two widest sites (Energy and Electrical, both
+   Home / <division> / Smart Solutions / <other division>), and 2 x 24px of
+   gutter. It used to switch on at 768px, which is 21px short, so between
+   768px and ~790px the wordmark ran into the first link and "Smart Solutions"
+   wrapped to two lines. iPad portrait is 768px, and conformance never caught
+   it because it tests 412 and 1440.
+
+   860px is 789 + 71px of slack. The slack is deliberate: the 555px is measured
+   with JetBrains Mono loaded, and a fallback face renders wider. Everything
+   from 768px to 859px now gets the drawer, which is the better control on a
+   touch device anyway.
+
+   If a nav label is ever lengthened, re-measure. The system caps the nav at
+   four links, which is what keeps 555px from growing. */
+@media (min-width: 860px) { .sl-nav__links { display: flex; } .sl-nav__toggle { display: none; } }
 .sl-nav__link {
   font-family: var(--font-mono); font-size: 14px; font-weight: 600;
   letter-spacing: 0.05em; text-transform: uppercase;
