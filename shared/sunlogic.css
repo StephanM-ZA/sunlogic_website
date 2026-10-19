@@ -805,8 +805,8 @@ dl-nav-bar { position: sticky; top: 0; z-index: var(--z-sticky); min-height: 72p
    Desktop only, because it is the only horizontal menu. The drawer is a
    vertical stack already separated by a border-bottom on each row, and
    the footer columns are vertical for the same reason. */
-.sl-nav__links .sl-nav__link + .sl-nav__link { position: relative; }
-.sl-nav__links .sl-nav__link + .sl-nav__link::before {
+.sl-nav__links > .sl-nav__item + .sl-nav__item { position: relative; }
+.sl-nav__links > .sl-nav__item + .sl-nav__item::before {
   content: "";
   /* -17, not -16: the gap is 32px and the rule is 2px wide, so half its
      own width comes off the midpoint to keep it centred between the two
@@ -816,7 +816,59 @@ dl-nav-bar { position: sticky; top: 0; z-index: var(--z-sticky); min-height: 72p
   width: 2px; height: 14px;
   background: var(--border-hairline);
 }
-.sl-nav--dark .sl-nav__link + .sl-nav__link::before { background: var(--border-inverse); }
+.sl-nav--dark .sl-nav__item + .sl-nav__item::before { background: var(--border-inverse); }
+
+/* ---- Nav submenu — a parent route with two ways into it ------
+   Energy is the division; Solar and Gas are the trades under it. Rather
+   than spend two of the four nav slots, the parent keeps its slot and the
+   children hang below it.
+
+   The group, not the link, owns :hover. It is the full height of the bar
+   and the panel sits flush against its underside, so there is no dead
+   gap for the pointer to cross on the way down.
+
+   :focus-within is what makes it work on a keyboard. The parent link is
+   itself inside the group, so tabbing to Energy opens the panel, which
+   makes the children visible and therefore focusable on the next Tab.
+   The panel is hidden with visibility, not display, so the transition
+   runs and the children stay out of the tab order while closed.
+
+   There is no hover on a touch device. The parent is a real link to a
+   real page, so a tap goes to Energy and the drawer carries the children
+   as indented rows below 860px, which is every phone and tablet. */
+.sl-nav__group { position: relative; display: flex; align-items: center; height: 72px; }
+.sl-nav__menu {
+  position: absolute; top: 100%; left: -20px;
+  min-width: 170px; padding: 8px 0;
+  display: flex; flex-direction: column;
+  background: var(--surface-card);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-float);
+  opacity: 0; visibility: hidden; transform: translateY(-4px);
+  transition: opacity var(--dur-hover) ease-out,
+              transform var(--dur-hover) ease-out,
+              visibility var(--dur-hover);
+}
+.sl-nav__group:hover .sl-nav__menu,
+.sl-nav__group:focus-within .sl-nav__menu {
+  opacity: 1; visibility: visible; transform: translateY(0);
+}
+.sl-nav__sublink {
+  font-family: var(--font-mono); font-size: 13px; font-weight: 600;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  padding: 10px 20px; color: var(--text-primary); white-space: nowrap;
+  transition: color var(--dur-hover) ease-out;
+}
+.sl-nav__sublink:hover { color: var(--color-orange-text); opacity: 1; }
+.sl-nav--dark .sl-nav__menu { background: var(--surface-inverse); border-color: var(--border-inverse); }
+.sl-nav--dark .sl-nav__sublink { color: var(--text-inverse); }
+@media (prefers-reduced-motion: reduce) {
+  .sl-nav__menu { transition: none; transform: none; }
+}
+
+/* Drawer rows for the same children: indented, one step down in size. */
+.sl-drawer__link--sub { padding-left: 20px; font-size: 13px; }
 
 .sl-nav__toggle { width: 48px; height: 48px; }
 

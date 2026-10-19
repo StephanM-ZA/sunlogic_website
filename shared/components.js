@@ -1434,15 +1434,46 @@ class DlNavBar extends SLElement {
       { href: 'energy-management.html', key: 'energy', label: 'Energy' },
     ];
     const hasActive = links.some((l) => l.key === active);
-    const navLinks = links.map((l) => '<a class="sl-nav__link' +
-      (l.accent === 'navy' ? ' sl-nav__link--navy' : '') + '" href="' + l.href + '"' +
-      SL_CROSS_SITE(l.href, l.label) +
-      (l.key === active ? ' aria-current="page"' : '') + '>' + l.label + '</a>').join('');
-    const drawerLinks = links.map((l) => '<a class="sl-drawer__link' +
-      (l.accent === 'navy' ? ' sl-drawer__link--navy' : '') + '" href="' + l.href + '"' +
-      SL_CROSS_SITE(l.href, l.label) +
-      (l.key === active ? ' aria-current="page"' : '') + '>' +
-      l.label + SL_ICON('arrow-right', 18) + '</a>').join('');
+
+    /* A nav entry with `children` renders as a group: the same link, plus a
+       panel under it on hover or keyboard focus.
+
+       The panel's links deliberately do NOT carry .sl-nav__link.
+       sunlogic-check.js counts that class to enforce the four-link cap, and a
+       submenu is not a fifth route — it is two ways into one. Every top-level
+       item, bare link or group, carries .sl-nav__item instead, which is what
+       the divider between items hangs off. */
+    const kidsOf = (l) => (Array.isArray(l.children) ? l.children : []);
+    const current = (l) => (l.key === active ? ' aria-current="page"' : '');
+
+    const navLinks = links.map((l) => {
+      const kids = kidsOf(l);
+      const anchor = '<a class="sl-nav__link' +
+        (l.accent === 'navy' ? ' sl-nav__link--navy' : '') +
+        (kids.length ? '' : ' sl-nav__item') + '" href="' + l.href + '"' +
+        SL_CROSS_SITE(l.href, l.label) + current(l) + '>' + l.label + '</a>';
+      if (!kids.length) return anchor;
+      /* The group, not the link, is the hover target: it spans the full bar
+         height and the panel sits flush under it, so the pointer can travel
+         from label to panel without crossing a dead gap that would close it. */
+      return '<div class="sl-nav__group sl-nav__item">' + anchor +
+        '<div class="sl-nav__menu">' +
+        kids.map((c) => '<a class="sl-nav__sublink" href="' + c.href + '"' +
+          SL_CROSS_SITE(c.href, c.label) + '>' + c.label + '</a>').join('') +
+        '</div></div>';
+    }).join('');
+
+    const drawerLinks = links.map((l) => {
+      const row = '<a class="sl-drawer__link' +
+        (l.accent === 'navy' ? ' sl-drawer__link--navy' : '') + '" href="' + l.href + '"' +
+        SL_CROSS_SITE(l.href, l.label) + current(l) + '>' +
+        l.label + SL_ICON('arrow-right', 18) + '</a>';
+      /* No hover on a touch device, so the drawer stacks the children as
+         indented rows instead of hiding them behind an interaction. */
+      return row + kidsOf(l).map((c) => '<a class="sl-drawer__link sl-drawer__link--sub" href="' +
+        c.href + '"' + SL_CROSS_SITE(c.href, c.label) + '>' +
+        c.label + SL_ICON('arrow-right', 18) + '</a>').join('');
+    }).join('');
 
     this.innerHTML =
       '<header class="sl-nav' + (this.hasAttribute('dark') ? ' sl-nav--dark' : '') + '">' +

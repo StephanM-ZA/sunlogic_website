@@ -82,7 +82,14 @@ const SITES = [
        footer link — Worth knowing — exactly where it already was. */
     nav: [
       { href: 'index.html', key: 'home', label: 'Home' },
-      { href: 'energy.html', key: 'energy', label: 'Energy' },
+      /* Energy is the parent of two trades, so it carries a submenu rather
+         than a fifth top-level link: the nav still caps at four routes.
+         Solar points at this same page, which is what Energy has always
+         been; Gas is the page added in October 2026. */
+      { href: 'energy.html', key: 'energy', label: 'Energy', children: [
+        { href: 'energy.html', label: 'Solar' },
+        { href: 'gas.html', label: 'Gas' },
+      ] },
       { href: 'energy-management.html', key: 'smart', label: 'Smart Solutions' },
       /* Absolute, so the build's extensionless rewrite leaves it alone and it
          crosses to the other host. Navy wherever Electrical appears. */
