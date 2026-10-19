@@ -89,7 +89,8 @@ const SITES = [
       { href: 'https://electrical.sunlogic.co.za', key: 'electrical', label: 'Electrical', accent: 'navy' },
     ],
     footer: [
-      [['Energy', 'energy.html'], ['Smart Solutions', 'energy-management.html'],
+      [['Energy', 'energy.html'], ['Gas', 'gas.html'],
+       ['Smart Solutions', 'energy-management.html'],
        ['Worth knowing', 'blog.html'], ['Electrical', 'https://electrical.sunlogic.co.za']],
       [['Contact', 'contact.html'], ['Legal', 'legal.html']],
     ],
