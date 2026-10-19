@@ -12,6 +12,65 @@ committed.** See "Session 17" below.)
 
 ---
 
+## Session 20 — Energy nav submenu, and the push confirmed live
+
+> **These notes were written once and lost before they were committed.** Another session
+> rewrote `CHECKPOINT.md` in between. Second time this file has collided today: session 18's
+> gas notes went up inside `b90b758`, a pitch-deck commit, rather than mine. **Two sessions are
+> appending to one file with no locking.** Worth splitting per-session notes into their own
+> files, or at least re-reading immediately before writing.
+>
+> The duplicate "Session 17" was mine, not theirs: 17 was already taken by the pitch-deck
+> session when I numbered the gas entry. My two headings are renumbered to 18 and 19; theirs is
+> untouched.
+
+### Live, verified 19 October 18:18 SAST
+
+The earlier push deployed. The first two checks returned 404 because the Cloudflare build was
+still queued — the free plan builds one project at a time and the deploy notes record ~400s of
+queueing. Confirmed against production, not assumed:
+
+- `https://energy.sunlogic.co.za/gas` -> **200**, correct title, the trust strip reading
+  "SAQCC Gas registered practitioner" with no number, `gas-hero` in the markup
+- `https://energy.sunlogic.co.za/energy` -> the `#solar-and-gas` routing section is present
+- Live stylesheet `shared/sunlogic.css?v=f61ad667` contains `min-width:860px`, so **the nav fix
+  is live**
+
+**The deploy gate is `build && npm test && conformance && sweep`, and I had only run
+conformance before pushing.** The rest were run afterwards and pass. Note for next time:
+**`sweep` tests 25 widths including 766, 767, 768, 859 and 860** — the tooling to catch the nav
+collision already existed, it just was not what I reached for.
+
+### Energy nav submenu — committed `451e728`, pushed
+
+"Energy" opens a submenu with **Solar** and **Gas** on hover or keyboard focus. Energy keeps its
+one nav slot and the children hang below it, so the nav still caps at four routes.
+
+- `sites.config.js` — the energy site's Energy entry gains `children`
+- `shared/components.js` — `DlNavBar` renders an entry with `children` as a group
+- `shared/sunlogic.css` — submenu styles, and the item divider retargeted
+
+Three things the next person should not undo:
+
+1. Submenu links carry `.sl-nav__sublink`, **not** `.sl-nav__link`. `sunlogic-check.js` counts
+   the latter to enforce the four-link cap, and a submenu is not a fifth route.
+2. The divider moved from `.sl-nav__link + .sl-nav__link` to `.sl-nav__item + .sl-nav__item`,
+   because wrapping one item in a group broke the adjacent-sibling chain for everything after
+   it. Bare links and groups both carry `.sl-nav__item`.
+3. The group, not the link, owns `:hover` — full bar height, panel flush underneath, no dead
+   gap. `:focus-within` is what makes it work on a keyboard. Hidden with `visibility`, not
+   `display`, so the children stay out of the tab order while closed and the transition runs.
+
+Below 860px there is no hover, so the drawer stacks Solar and Gas as indented rows.
+
+**Gate at time of commit:** build OK, `npm test` passes, `conformance` 26 pages 0 fails 0 warns
+at both viewports, `sweep` 650 page/width combinations 0 findings.
+
+**Still only on the energy site.** The apex and electrical navs link to Energy cross-site and
+could carry the same submenu; not done.
+
+---
+
 ## Session 17 — the pitch deck platform (new tool, nothing deployed)
 
 **Task:** a standardised HTML pitch deck and one-pager with an editable config,
@@ -217,7 +276,7 @@ left alone: the gas page and its sitemap, llms.txt, nav and index changes,
 
 ---
 
-## Session 18 — Energy becomes the parent of solar and gas
+## Session 19 — Energy becomes the parent of solar and gas
 
 **Stephan: "gas should go under energy. so solar and gas."** Gas is reached through Energy
 rather than taking a nav slot.
@@ -277,7 +336,7 @@ Session 17's work is committed (`214c7b8`, `aa4fea9`, `58d2604` on `main`, 6 ahe
 
 ---
 
-## Session 17 — gas.html built (site change, nothing in flight)
+## Session 18 — gas.html built (site change, nothing in flight)
 
 **Direction change from Stephan:** *"I don't want a gas vs discussion. I want a residential and
 commercial gas page and solution."* The running-cost comparison is **off the page** and should
