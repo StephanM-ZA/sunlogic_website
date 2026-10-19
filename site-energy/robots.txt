@@ -2,6 +2,12 @@ User-agent: *
 Allow: /
 Disallow: /ci-guide.html
 Disallow: /thank-you.html
+# Neither is public. The builder is staff, behind Cloudflare Access; a
+# /share link is one named client's priced quotation. robots.txt is a
+# request rather than a control, which is why both paths also carry
+# X-Robots-Tag and no-store in _headers and a noindex meta on the page.
+Disallow: /tools/
+Disallow: /share/
 
 # AI crawlers / answer engines — explicitly allowed for discoverability
 User-agent: GPTBot
