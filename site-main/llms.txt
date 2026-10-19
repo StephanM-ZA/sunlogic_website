@@ -8,7 +8,7 @@ sunlogic.co.za is the company page: it introduces Sunlogic and routes to the two
 
 ## Divisions
 
-- [Sunlogic Energy](https://energy.sunlogic.co.za): Solar sized on a property's real consumption, battery storage, backup power, and the Plentify smart controllers for geyser and solar/battery systems. Homes, small businesses and larger sites. Full page list: https://energy.sunlogic.co.za/llms.txt
+- [Sunlogic Energy](https://energy.sunlogic.co.za): Solar sized on a property's real consumption, battery storage, backup power, and the Plentify smart controllers for geyser and solar/battery systems. Also LPG gas installation, servicing and Certificates of Conformity: hobs, instant gas water heating, fireplaces and braais at home, and restaurant kitchens, guesthouses, bakeries and laundries for business. Homes, small businesses and larger sites. Full page list: https://energy.sunlogic.co.za/llms.txt
 - [Sunlogic Electrical](https://electrical.sunlogic.co.za): Certified electrical contracting: rewiring, distribution boards, fault finding, compliance inspections and Certificates of Compliance, surge protection, EV chargers, emergency lighting and maintenance. Full page list: https://electrical.sunlogic.co.za/llms.txt
 
 ## On this site
