@@ -154,10 +154,23 @@ place, picker opens with all 12 sections, `POST /pdf` 404s and falls back as
 designed, and a fresh tab logs no console output at all.
 `npm run conformance:energy`: 12/12 pages, 0 fails, 0 warns.
 
-**Committed, not pushed, not deployed.**
+**Deployed and verified live** at <https://energy.sunlogic.co.za/share/pitch>.
+
+Only the three pitch deck commits were pushed, with `git push origin f7b1d3a:main`
+rather than `git push`. By the time the push happened another session had
+committed three gas commits ON TOP of them, and a plain push would have put the
+gas page live. The gas commits remain local and unpushed.
+
+Checked against the live site, not the build: `SL_BUILD.short` reads `f7b1d3a`,
+the page returns 200 with `cache-control: no-store` and
+`x-robots-tag: noindex, nofollow`, live robots.txt disallows `/share/` and
+`/tools/`, the sitemap has no mention of it, `/gas` still 404s, and a fresh tab
+makes exactly one request for the page and logs nothing. The deck is one
+self-contained file, so there is no second request to fail.
 
 - `92f47c1` feat(pitch-deck): the tool and the hosted `/share/pitch` page, 18 files
 - `55a7ca9` chore(site-energy): disallow and no-store `/tools` and `/share`
+- `f7b1d3a` docs(checkpoint): this section
 
 The second was needed because the first was not safe on its own: the robots
 disallow and the `no-store` / `X-Robots-Tag` headers for `/share/` existed only
@@ -183,6 +196,14 @@ first match:
 
     /share/pitch    /share/pitch.html    200
 
+**Separate small defect, noticed in passing, not fixed.** The 404 page
+references `shared/sunlogic.css` and the shared scripts relatively, so when it
+is served for a missing path one level down, such as `/share/anything`, those
+resolve to `/share/shared/...` and 404. The 404 page then renders unstyled and
+logs half a dozen console errors. Harmless but visible, and it is what
+`/share/pitch` looked like during the two minutes before Pages finished
+deploying. Absolute paths would fix it.
+
 Everything else in the working tree is other sessions' unfinished work and was
 left alone: the gas page and its sitemap, llms.txt, nav and index changes,
 `site-energy/share/index.html`, `workers/doc-share/`, and the rest of `tools/`.
@@ -193,6 +214,44 @@ left alone: the gas page and its sitemap, llms.txt, nav and index changes,
 2. Decide whether `tools/pitch-deck/examples/*.pdf` should be committed or
    ignored. They are generated.
 3. Nothing is committed yet. Everything above is uncommitted working tree.
+
+---
+
+## Session 18 — Energy becomes the parent of solar and gas (uncommitted)
+
+**Stephan: "gas should go under energy. so solar and gas."** Gas is reached through Energy
+rather than taking a nav slot.
+
+- `site-energy/energy.html` — new `#solar-and-gas` routing section directly under the subnav:
+  "Energy Covers Solar and Gas", two cards, button to `gas.html`. `Solar and gas` added as the
+  first subnav item. The bottom "Also from Sunlogic" cross-sell was **removed** — superseded.
+  Meta description now covers both trades, in all three places it appears.
+- Nav unchanged: Home · Energy · Smart Solutions · Electrical.
+- `conformance:energy` passes 0 fails, 0 warns, both viewports. Verified in the browser.
+
+**Left alone deliberately:** `energy.html`'s `<title>` and hero are still solar-only. They are
+client copy, and the page now parents two trades while introducing itself as the solar page.
+Worth a decision.
+
+### Pre-existing bug found, NOT fixed: the nav collides at 768px
+
+Reproduced on `energy.html` at exactly **768px**, the width at which `shared/sunlogic.css`
+switches the desktop nav on (`@media (min-width: 768px)`). The logo is 186px and the link list
+is 555px, which needs roughly 790px with the gutters — so between **768px and ~790px** the
+wordmark runs into "HOME" and "Smart Solutions" wraps to two lines, making the bar 44px tall.
+At 800px there is an 11px gap; at 1100px, 311px.
+
+**This affects all three sites and has nothing to do with gas.** `conformance` misses it
+because it tests 412 and 1440, neither of which lands in the gap. **iPad portrait is 768px.**
+
+Fix options, none applied: raise the nav breakpoint above ~800px so the drawer covers the gap;
+shorten "Smart Solutions"; or reduce the logo width below that breakpoint. The first is the
+smallest change and the safest. It is a `shared/` change, so it touches all three sites.
+
+### Not committed
+
+Session 17's work is committed (`214c7b8`, `aa4fea9`, `58d2604` on `main`, 6 ahead of
+`origin/main`, **not pushed**). This session's `energy.html` change and these notes are not.
 
 ---
 
