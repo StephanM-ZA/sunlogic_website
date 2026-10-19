@@ -217,7 +217,7 @@ left alone: the gas page and its sitemap, llms.txt, nav and index changes,
 
 ---
 
-## Session 18 — Energy becomes the parent of solar and gas (uncommitted)
+## Session 18 — Energy becomes the parent of solar and gas
 
 **Stephan: "gas should go under energy. so solar and gas."** Gas is reached through Energy
 rather than taking a nav slot.
