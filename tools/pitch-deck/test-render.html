@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- Drawn inline, so the page asks the server for nothing. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2028%2028%22%3E%3Ccircle%20cx%3D%2214%22%20cy%3D%2214%22%20r%3D%228%22%20fill%3D%22%23F66F00%22/%3E%3Cg%20stroke%3D%22%23F66F00%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%3E%3Cpath%20d%3D%22M14%201v3M14%2024v3M1%2014h3M24%2014h3M4.8%204.8l2.1%202.1M21.1%2021.1l2.1%202.1M4.8%2023.2l2.1-2.1M21.1%206.9l2.1-2.1%22/%3E%3C/g%3E%3C/svg%3E">
+<title>Deck renderer test</title>
+<script src="deck-assets.js?v=2"></script>
+<script src="brand.sunlogic.js?v=2"></script>
+<script src="deck-style.js?v=2"></script>
+<script src="deck-render.js?v=2"></script>
+<script src="deck.data.js?v=2"></script>
+<style>
+ body{margin:0;background:#FFF7E9;font:14px/1.5 system-ui,sans-serif}
+ #out{padding:16px 18px 0}
+ .t{font-family:ui-monospace,monospace;font-size:12px;padding:3px 0}
+ .t b{display:inline-block;width:62px}
+ .pass b{color:#1e7a54}.fail b{color:#c0342b}
+ h1{font:700 18px system-ui;margin:18px}
+</style>
+</head>
+<body>
+<h1>Deck renderer test</h1>
+<div id="out"></div>
+<div id="deck"></div>
+<script>
+/* Every slide type on one page, and the house rules asserted, so a change
+   to deck-render.js is both visible and checkable here. The same job
+   doc-builder/test-render.html does for a document. */
+(function () {
+  var R = window.SLDeck, lines = [], pass = 0, fail = 0;
+
+  function is(name, got, want) {
+    var ok = got === want;
+    ok ? pass++ : fail++;
+    lines.push('<div class="t ' + (ok ? 'pass' : 'fail') + '"><b>' + (ok ? 'pass' : 'FAIL')
+      + '</b>' + name + (ok ? '' : '  got ' + JSON.stringify(got) + ', wanted ' + JSON.stringify(want)) + '</div>');
+  }
+  function ok(name, cond) { is(name, !!cond, true); }
+
+  var T = window.SL_DECK_TEMPLATE;
+
+  /* ---- every type is covered by the template, and every type renders */
+  R.slideTypes.forEach(function (type) {
+    var used = T.sections.some(function (s) {
+      return s.slides.some(function (x) { return x.type === type; });
+    });
+    ok('template uses ' + type, used);
+  });
+
+  var all = R.deckHtml(T, null);
+  R.slideTypes.forEach(function (type) {
+    ok(type + ' renders', all.indexOf('sl-d-slide--' + type) > -1);
+  });
+
+  /* ---- selection */
+  is('whole deck, sections', (R.select(T, null) || []).length, T.sections.length);
+  is('one section', R.select(T, { only: ['offer'] }).length, 1);
+  is('two sections', R.select(T, { only: ['cover', 'next'] }).length, 2);
+  is('a single slide', R.select(T, { only: ['proof'], slides: { proof: [1] } })[0].slides.length, 1);
+  is('the one-pager', R.select(T, { onePager: true }).length,
+     T.sections.filter(function (s) { return s.onePager; }).length);
+  is('an unknown key selects nothing', R.select(T, { only: ['nope'] }).length, 0);
+  is('a section with nothing ticked is dropped',
+     R.select(T, { only: ['proof'], slides: { proof: [] } }).length, 0);
+
+  /* ---- band rhythm: no two neighbours share a band */
+  var bands = (R.deckHtml(T, null).match(/sl-d-slide--b[01]/g) || []);
+  var clash = bands.some(function (b, i) { return i > 0 && b === bands[i - 1]; });
+  ok('no two neighbouring slides share a band', !clash);
+  ok('a cover carries its own colour, not a band',
+     all.indexOf('sl-d-slide sl-d-slide--cover sl-d-slide--b') < 0);
+
+  /* ---- escaping: copy is HTML, attributes are not */
+  var bad = { v: 1, meta: { title: 'x' },
+    company: { contactEmail: 'a"b@c.d', contactName: 'N', contactRole: 'R' },
+    sections: [{ k: 'c', n: 'C', d: '', slides: [{ type: 'contact', h: 'H', em: '' }] }] };
+  ok('an attribute is escaped', R.deckHtml(bad, null).indexOf('mailto:a&quot;b@c.d') > -1);
+  ok('copy keeps its markup',
+     R.deckHtml({ v: 1, meta: {}, company: {}, sections: [{ k: 'a', n: 'A', slides:
+       [{ type: 'bullets', items: ['a <strong>b</strong>'] }] }] }, null).indexOf('<strong>b</strong>') > -1);
+
+  /* ---- the house rules */
+  var rules = function (m) { return R.checkModel(m).map(function (x) { return x.rule; }); };
+
+  ok('the standard deck breaks no rule but its placeholders',
+     rules(T).every(function (r) { return r === 'todo'; }));
+  ok('placeholders are counted', rules(T).indexOf('todo') > -1);
+
+  ok('an em dash is reported', rules({ v: 1, meta: {}, company: {}, sections:
+    [{ k: 'a', n: 'A', slides: [{ type: 'bullets', items: ['a — b'] }] }] }).indexOf('dash') > -1);
+
+  ok('two covers are reported', rules({ v: 1, meta: {}, company: {}, sections:
+    [{ k: 'a', n: 'A', slides: [{ type: 'cover' }, { type: 'cover' }] }] }).indexOf('ceiling') > -1);
+
+  ok('two closing calls to action are reported', rules({ v: 1, meta: {}, company: {}, sections:
+    [{ k: 'a', n: 'A', slides: [{ type: 'cta' }, { type: 'cta' }] }] }).indexOf('ceiling') > -1);
+
+  ok('a fifth fact on the cover is reported', rules({ v: 1, meta: {}, company: {}, sections:
+    [{ k: 'a', n: 'A', slides: [{ type: 'cover', kv: [1, 2, 3, 4, 5].map(function (n) {
+      return { k: 'k' + n, v: 'v' }; }) }] }] }).indexOf('ceiling') > -1);
+
+  ok('a short card heading in sentence case is reported', rules({ v: 1, meta: {}, company: {}, sections:
+    [{ k: 'a', n: 'A', slides: [{ type: 'cards', items: [{ title: 'three word thing' }] }] }] })
+    .indexOf('case') > -1);
+
+  ok('an unwritten card heading is not reported as a case breach', rules({ v: 1, meta: {}, company: {}, sections:
+    [{ k: 'a', n: 'A', slides: [{ type: 'cards', items: [{ title: '[ Three words ]' }] }] }] })
+    .indexOf('case') < 0);
+
+  ok('a section with no slides is reported', rules({ v: 1, meta: {}, company: {}, sections:
+    [{ k: 'a', n: 'A', slides: [] }] }).indexOf('empty') > -1);
+
+  ok('an unknown slide type is reported', rules({ v: 1, meta: {}, company: {}, sections:
+    [{ k: 'a', n: 'A', slides: [{ type: 'nope' }] }] }).indexOf('type') > -1);
+
+  /* ---- the documents */
+  ok('the print document carries A4 landscape', R.printDoc(T, {}).indexOf('size:A4 landscape') > -1);
+  ok('the one-pager carries A4 portrait', R.printDoc(T, { onePager: true }).indexOf('size:A4 portrait') > -1);
+  ok('the sendable deck carries its own fonts', R.standalone(T, null).indexOf('@font-face') > -1);
+  ok('a real weight is declared, never a range',
+     R.fontsCss().indexOf('font-weight:900') > -1 && R.fontsCss().indexOf('100 900') < 0);
+
+  document.getElementById('out').innerHTML =
+    '<p class="t"><b>' + (fail ? 'FAIL' : 'pass') + '</b>' + pass + ' passed, ' + fail + ' failed</p>'
+    + lines.join('');
+  document.title = (fail ? fail + ' failed' : 'all passed') + ' - deck renderer test';
+
+  /* And the deck itself, every type, to look at. */
+  var style = document.createElement('style');
+  style.textContent = R.fontsCss() + R.tokensCss()
+    + window.SL_DECK_CSS.core + window.SL_DECK_CSS.screen;
+  document.head.appendChild(style);
+  document.getElementById('deck').innerHTML = R.deckHtml(T, null);
+}());
+</script>
+</body>
+</html>

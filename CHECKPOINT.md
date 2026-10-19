@@ -1,8 +1,8 @@
 # Checkpoint — Sunlogic Website
 
-**Saved:** 2026-10-06 (session 13 — **three mobile defects fixed, deployed and
-verified live on all three sites; the deploy gate that flaked while shipping
-them is fixed too.** Nothing is in flight. See "Where this stands" below.)
+**Saved:** 2026-10-19 (session 17 — **a pitch deck and one-pager tool built at
+`tools/pitch-deck/`, tested and verified; nothing deployed and nothing
+committed.** See "Session 17" below.)
 
 > Current as of commit `15de0bf`, which is on `origin/main` and deployed. The
 > session-10 checkpoint was left stale and cost most of a session: it reported
@@ -12,7 +12,283 @@ them is fixed too.** Nothing is in flight. See "Where this stands" below.)
 
 ---
 
-## Session 16 — gas research pack (docs only, nothing in flight)
+## Session 17 — the pitch deck platform (new tool, nothing deployed)
+
+**Task:** a standardised HTML pitch deck and one-pager with an editable config,
+and a download that gives the whole deck, one section, or any selection.
+
+**Nothing on any live site was touched.** No page, Worker or deploy. The work is
+a new tool at `tools/pitch-deck/`, a sibling of `tools/doc-builder/`.
+
+### What was built
+
+| File | What it is |
+|---|---|
+| `tools/pitch-deck/deck.data.js` | The standard deck: 12 sections, bracketed placeholder copy |
+| `tools/pitch-deck/brand.sunlogic.js` | Tokens and the two lockups, the swappable part |
+| `tools/pitch-deck/deck-render.js` | Model to markup. No DOM, so node loads it too |
+| `tools/pitch-deck/deck-style.js` | Three stylesheets as strings: screen, print, one-pager |
+| `tools/pitch-deck/deck-editor.js` | `<plugin-pitch-deck>`: panel, autosave, files, picker |
+| `tools/pitch-deck/deck-assets.js` | Generated. Fonts by weight and the icons |
+| `tools/pitch-deck/render.mjs` | Node entry, so the button and the CLI share one renderer |
+| `tools/pitch-deck/make-pdf.py` | WeasyPrint, with `--only` and `--one-pager` |
+| `tools/pitch-deck/make-assets.py` | Fonts and icons to `deck-assets.js` |
+| `tools/pitch-deck/serve.py` | Serves the folder, and `POST /pdf` for the button |
+| `tools/pitch-deck/test-render.html` | 47 assertions, every slide type |
+| `docs/superpowers/specs/2026-10-19-pitch-deck-design.md` | The design |
+| `.claude/launch.json` | A `pitch-deck` entry on port 8723 |
+
+### Key decisions
+
+- **One renderer, two callers.** `render.mjs` loads the browser files under node,
+  so `make-pdf.py` and the Download button cannot produce different documents.
+  The LearnIQ planner's rule, and the reason it has no date bugs any more.
+- **No WeasyPrint in the browser.** It cannot work there. `serve.py` renders, and
+  with no server the deck falls back to the print dialog.
+- **Stylesheets are strings in a .js file**, because a deck has to work from
+  `file://`, from an attachment, and on WeasyPrint's stdin.
+- **The deck carries its own fonts and icons.** `../doc-builder/doc-assets.js`
+  404s over http, and a deck set in 800 and 900 needs weights a proposal does
+  not. Icons stay single-sourced in `doc-builder/icons.json`.
+- **Fonts are declared one file per weight.** `font-weight:100 900` is rejected
+  outright by WeasyPrint, which then sets everything in a fallback face.
+
+### Verified
+
+- `test-render.html`: 47 passed, 0 failed.
+- PDFs rendered and page counts confirmed with `pdfinfo`: full deck 14 pages A4
+  landscape, one-pager 1 page A4 portrait, a single section 1 page, a single
+  slide 1 page. Samples in `tools/pitch-deck/examples/`.
+- The panel, the picker and the `POST /pdf` round trip driven in a browser: a
+  copy edit reaches the deck and `localStorage`, and the picker returns a real
+  PDF with the right filename in about six seconds.
+- Embedded fonts in the PDF checked: Hanken Grotesk 400/700/800/900 and
+  JetBrains Mono, no fallback face.
+
+### The copy, done in the same session
+
+`deck.data.js` now carries the site's own words, lifted verbatim from
+`site-energy/index.html`, `energy.html`, `energy-management.html` and
+`contact.html`. It is not a rewrite of them. Placeholders went from 107 to 41.
+
+`checkModel` was under-counting: it never walked `meta`, `company`, a cover's
+`kv` facts, or a quotation's `cite` and `role`. Fixed, and its count now agrees
+with an independent walk of the model.
+
+The one-pager went to two sides the moment real copy replaced the placeholders.
+Type came down to 8.3pt to win it back, and it now fits with about five per
+cent of the page spare. That margin is copy-dependent. Check it with
+`pdfinfo` after any substantial copy change.
+
+**The 41 fields still bracketed are facts nobody has recorded anywhere in this
+repo, and must not be invented:**
+
+1. **The numbers slide, all of it.** No saving, payback or yield figure exists
+   anywhere. `index.html` already says this about its own three jobs.
+2. **The cost table, all nine cells.** Prices are per job and belong in a
+   proposal, not a deck template.
+3. **A client quotation**, with a name and a role. Nobody has been quoted on
+   any page.
+4. **Insurance cover, and what happens on a callout.** The electrical proposal
+   boilerplate in `doc-builder/doc-templates.js` has terms, but they are the
+   electrical contracting terms and were deliberately not transplanted into an
+   energy deck.
+5. **What the offer excludes.**
+6. **How long each step of `How it works` takes.** The steps are the site's;
+   the durations are not written down.
+7. Per-recipient fields, which are meant to stay bracketed in the template:
+   client, date, reference, subtitle, and the VAT number.
+
+### The look, corrected in the same session
+
+First pass styled the deck off `doc-builder/doc-style.css`, which is the
+**document** house style, not the site's. It shared the colour tokens, so it
+looked plausible and was wrong: no photograph, a hand-drawn approximation of
+the lockup instead of the real one, and a type scale that was close but not
+the site's.
+
+Corrected against the live site, measured with `getComputedStyle` on the built
+page at 1440 rather than by eye:
+
+- The lockup is now `sl_logo_energy_blue.svg` and `sl_logo_energy_white.svg`,
+  baked into `deck-assets.js` by `make-assets.py`.
+- The cover carries `hero-energy-1440w.webp` under a two-stop scrim, as the
+  site's hero does. WeasyPrint embeds the webp without complaint.
+- Type scale matched: 48px/800 section headings at 1.166 and -0.01em, 72px/900
+  cover, eyebrows at 14px/600 and 0.05em, body 18px on 1.555, cards at 28px
+  padding and an 8px radius.
+- Two layout bugs found by rasterising the PDF with `pdftoppm` and looking:
+  a statement slide's footer rode up with its centred content, and every grid
+  was inset from the margin in print because `border-spacing` also spaces
+  before the first cell.
+
+A full-deck PDF is now about 1.7 MB because of the cover photograph. The
+one-pager drops it and stays under 40 kB.
+
+### Hosted as an unlinked page, same session
+
+`site-energy/share/pitch.html` -> `/share/pitch` on the energy site. Generated
+by `node tools/pitch-deck/render.mjs --share`, one file with every script
+inlined, never hand edited. **Re-run it after any copy change.**
+
+`<plugin-pitch-deck view>` is a new attribute: deck and download picker, no
+editor, and it does not touch the reader's localStorage.
+
+Unlinked by four separate things, three of which already existed for `/share/`:
+nothing links to it, it is not in the sitemap, `robots.txt` disallows `/share/`,
+`_headers` sets `no-store` and `X-Robots-Tag: noindex, nofollow` on `/share/*`,
+and the page carries its own noindex meta.
+
+**One trap worth remembering.** `build-site.js` stamps `SL_BUILD` in front of
+the first `</head>` it finds by plain text replace. `deck-render.js` carries
+that string in a JS literal, so the stamp landed *inside* the inlined script
+and cut it short, and the page rendered as a wall of source. `render.mjs`
+now rewrites `</head>`, `</body>`, `</html>` and `</script>` to `<\/...` when
+it inlines, which JavaScript reads identically and a text search does not find.
+Any future page that inlines JS containing those strings will hit the same
+thing.
+
+Verified on the built site: 14 slides, view mode on, no edit panel, nothing
+written to localStorage, noindex meta present, `SL_BUILD` stamped in the right
+place, picker opens with all 12 sections, `POST /pdf` 404s and falls back as
+designed, and a fresh tab logs no console output at all.
+`npm run conformance:energy`: 12/12 pages, 0 fails, 0 warns.
+
+**Not deployed.** Built into `dist/energy/` locally and nothing committed or
+pushed.
+
+### Next steps
+
+1. Stephan supplies the seven groups above, or decides a section comes out.
+2. Decide whether `tools/pitch-deck/examples/*.pdf` should be committed or
+   ignored. They are generated.
+3. Nothing is committed yet. Everything above is uncommitted working tree.
+
+---
+
+## Session 17 — gas.html built (site change, nothing in flight)
+
+**Direction change from Stephan:** *"I don't want a gas vs discussion. I want a residential and
+commercial gas page and solution."* The running-cost comparison is **off the page** and should
+not be re-added. The research behind it stays in `docs/gas-service-pack-1.md` §2 as internal
+guidance only, so nobody makes a saving claim the numbers do not support.
+
+**Built: `site-energy/gas.html`.** Three sectors mirroring `energy.html`: 01 At home, 02 For
+business, 03 Servicing and certificates. Sells flame control, hot water that does not run out,
+working through an outage, and a job that passes, rather than a saving.
+
+- `npm run conformance:energy` — **0 fails, 0 warns** at 412x823 and 1440x900
+- In-browser check script — all checks pass, 1 unresolved placeholder
+  (`[REGISTRATION NUMBER]`), which the checker itself calls correct until supplied
+- Verified in the browser at desktop and mobile
+
+**Four conformance failures were caught and fixed before it passed**, worth recording because
+they are easy to repeat:
+
+1. **No em dash in visible copy, ever.** Four `&mdash;` in the draft. Em dashes inside HTML
+   comments are fine and match existing pages.
+2. **A `dl-statement` with `warm` is itself an alt band** (`.sl-statement--warm` sets
+   `--surface-page-alt`), so the section after it cannot be `bg="alt"`. `dl-sector` is also a
+   band (`--surface-sunk`), which is why page → sector → page passes.
+3. **Card headings to five words are Title Case**, including ones that read like sentences
+   ("If You Are Selling").
+4. **The build refuses an absolute URL to a page or image the site does not ship.** `og:image`
+   pointed at `images/gas-hero.webp`, which does not exist; it points at `energy-hero.webp`
+   until gas photography is shot. There is a TODO in the head.
+
+**Also wired:** `Gas` column entry in the energy footer (`sites.config.js`), `gas.html` in
+`site-energy/sitemap.xml`, Gas service entry in `site-energy/llms.txt`. Footer link verified
+rendering on `energy.html`.
+
+**Nav unchanged.** The energy nav is Home · Energy · Smart Solutions · Electrical and the
+four-link cap is enforced by `sunlogic-check.js`, so Gas can only enter by displacing
+something. Recommendation in the pack: displace **Smart Solutions** — Gas is a trade people
+search for by name, Smart Solutions is a product they find once they are here. **Stephan's
+call, not taken.**
+
+### Decided 19 October, after the first build
+
+**The SAQCC registration number is never published.** The trust strip reads "SAQCC Gas
+registered practitioner" and carries no number. The research argued the other way (only two of
+seven competitors publish one) and was overruled. Both pack files are updated; do not
+reintroduce the placeholder.
+
+**Cross-sell is in, nav is not changed.**
+
+- `site-energy/energy.html` — a `bg="page"` section before the closing CTA, "We Do the Gas Side
+  of the Job Too", outline button to `gas.html`
+- `site-energy/index.html` — a `bg="page"` section with three cards (At Home, For Business,
+  Servicing and Certificates) before the closing CTA
+- Both are plain sections, not `dl-division-promo`: that component is for the *other division's
+  site* and the apex/electrical pages already use it that way
+
+**Gas is noted on the apex.** `site-main/index.html` — one item added to the Sunlogic Energy
+division's service list: "Gas installation, from hobs and hot water to commercial kitchens".
+`site-main/llms.txt` — gas added to the Sunlogic Energy description. `conformance:main` passes
+4/4, 0 fails, 0 warns, both viewports.
+
+**Flagged, not changed — apex copy that now under-describes the division.** Two lines predate
+gas and are the client's own copy, so they were left alone:
+
+1. The routing sentence in `#divisions`: *"If it makes power, stores it or controls it, that's
+   Energy."* Gas does none of those, so someone looking for gas is not routed by it.
+2. The Energy division card heading: *"Solar, Backup and Smart Control"*.
+
+Both are one-line changes whenever Stephan wants them.
+
+### Copy review of the as-built page — run 19 October, after Stephan asked
+
+The 15 October `copychief` / `compliance-checker` run covered the **pack draft**, not what
+shipped. Re-run against `gas.html` as rendered. **Report in `docs/gas-service-pack-2.md` §8.
+Seven fixes applied; conformance still 0/0.**
+
+**The finding that mattered, and it is a standing rule now:** three lines claimed an operating
+history in gas that Sunlogic does not have yet — *"the single most common thing we are called
+out to"*, *"most of what we service was installed by somebody else"*, *"it has saved people a
+great deal more than it costs"*. We are **entering** gas. Under CPA s41 a false representation
+about an enterprise's experience is actionable, and it is the kind of thing a customer can test
+in conversation. All three rewritten to argue from the fault or from logic instead.
+
+**CORRECTED, same day: Stephan said "keep the track record" and all three lines are restored.**
+The review assumed Sunlogic was entering gas and had no gas callouts or service book. That
+assumption was wrong, the claims are true, and there is no CPA issue. The "no track-record
+claims" rule written from that premise is **withdrawn**. The other four fixes stand — they were
+an internal contradiction, an unverifiable competitor claim, a wrong word and an unattributed
+figure, none of which depended on the assumption.
+
+**Also updated on the apex, on request:** the routing sentence now reads "If it makes power,
+stores it, controls it or runs on gas, that's Energy", and the Energy division card heading is
+"Solar, Backup, Gas and |Smart Control".
+
+Also fixed: the body claimed a gas geyser works in an outage while our own FAQ correctly says
+it depends on the model; a competitive claim ("almost nobody in this market sells this") sitting
+inside a process step; "the two moments when gas work gets inspected", where neither named
+moment is an inspection; and the indoor storage limit stated bare rather than attributed to the
+standard.
+
+**Worth noting:** cutting the economics section removed the entire financial-claims category.
+No price, tariff, saving or payback claim appears anywhere on the page.
+
+**Housekeeping:** `docs/gas-service-pack-2.md` is now ~11,400 words, which is at the
+Documentation Bible's 15,000-token ceiling. Split it into `-2` and `-3` if it grows again.
+
+**Open on the page:**
+
+1. Gas photography. Brief is in `docs/gas-service-pack-2.md` §1. `og:image` points at
+   `energy-hero.webp` until then, because the build refuses a reference to an image the site
+   does not ship.
+2. Nav decision. Energy nav is still Home · Energy · Smart Solutions · Electrical.
+3. The standards purchase (R2,589.80) still gates every SANS number. **No SANS distance,
+   clearance, ventilation area, test pressure or interval appears on the page** — the copy was
+   written to work without them, so this does not block publishing.
+
+**Nothing committed.** New and untracked: `site-energy/gas.html`. Modified: `sites.config.js`,
+`site-energy/index.html`, `site-energy/energy.html`, `site-energy/sitemap.xml`,
+`site-energy/llms.txt`, `site-main/index.html`, `site-main/llms.txt`.
+
+---
+
+## Session 16 — gas research pack + verification pass (docs only, nothing in flight)
 
 **Task:** investigate gas installation and servicing in South Africa, residential
 and commercial, and produce a pack for adding it to the energy site.
@@ -43,17 +319,58 @@ documents, all under `docs/`:
 `compliance-checker` for review. 11 fixes from the reviews are applied in part 2; the
 record of what changed and why is part 2 §7.
 
-**Blocked on the user, in priority order:**
+### 2026-10-19 — verification pass 2, and the SAQCC blocker lifted
 
-1. **Do we have, hire or register an SAQCC Gas authorised person?** Nothing is sellable
-   without one. Part 1 §0.
-2. Buy **SANS 10087-1 Edition 7 (2024)** and **Part 3**. Every distance, clearance,
-   ventilation area, test pressure and consumable age in the pack is verified only against
-   the superseded 2008 Edition 5, and all bulk-tank distances are a straight blank. Part 2 §5.1.
-3. Four phone calls: SAQCC Gas (CoC validity, category codes), City of Cape Town (gas
-   requirements + adopted 2026/27 tariffs — their servers refused connection), a cylinder
-   filler or LPGas SA (published SA LPG calorific value), GBP dashboard. Part 2 §5.2.
+A second session (`local_32de762d`) re-ran the lookups that had failed for tool reasons rather
+than availability. **Six of seven targets closed, and the Pressure Equipment Regulations were
+read in full.** Report: `docs/research/gas-verification-pass-2.md`. All 19 patches are applied
+to both pack files.
+
+**Stephan confirmed the SAQCC Gas authorised person is sorted.** Part 1 §0 is rewritten
+accordingly — it now only asks for the practitioner's name, registration number and category,
+which are placeholders in part 2's hero and trust strip.
+
+**Two things in the draft copy were factually wrong and are fixed:**
+
+1. Regulation 17(2) places the pre-commissioning inspection and leak-test duty on the
+   **user**, not the owner. On a tenanted property those differ.
+2. The City of Cape Town gas threshold sits under the **National Building Regulations and
+   Building Standards Act**, not the Community Fire Safety By-law.
+
+**Closed by the pass:** City of Cape Town tariffs settled (Domestic 2026/27 = 413.79 c/kWh to
+600 kWh, 493.90 above, incl. VAT — the 400.63/480.73 set circulating is wrong) · City gas
+thresholds verified · R.262 of 2017 read in full, and it pins **no edition year** for any
+standard, so "the current edition applies" is our reading · SANS 827 is **not** incorporated ·
+Part 1/2/3/7 scopes verbatim, and Part 7 was wrong in the research · MHI quantities are real SA
+figures, **20/50/200 t** · LPG calorific value sourced (Afrox Handigas, net 45.8 MJ/kg at 25 °C
+= 12.72 kWh/kg) · the gazetted Annexure 1 CoC form is **one page** with no expiry field, so the
+five-page version is registrar practice · servicing answered by reading reg 17: "service" and
+"maintain" appear nowhere, only 17(1)(c) requires an authorised person and it covers install
+and remove only.
+
+**Route notes worth keeping:** `resource.capetown.gov.za` refuses connections, but every
+document is served from `https://www.capetown.gov.za/_documents/resource.capetown.gov.za/<same
+path>`. SAQCC Gas spells the path `gas-practioners`, not `gas-practitioners`. `saflii.org`
+returns 403 — use `acts.co.za` for SA regulations. And a PDF that "could not be retrieved" was
+often just undecoded binary needing local extraction.
+
+**Still blocked, and it is now almost entirely one purchase:**
+
+1. **Buy SANS 10087-1:2026 (Ed. 7.01) R1,465.10 and SANS 10087-3:2015 (Ed. 5.00) R1,124.70 —
+   R2,589.80.** Note the edition: it is **not** "Edition 7 (2024)", which the first pass
+   assumed. Every distance, clearance, ventilation area, test pressure and consumable age is
+   still read only against the superseded 2008 Edition 5, and all bulk-tank distances are a
+   straight blank. Part 2 §5.1.
+2. **Appliance efficiencies** — entirely unverified, and the hob figures are what drive the
+   "gas cooking costs more" conclusion, so that claim stays gated even with the calorific
+   value sourced.
+3. **One email to SAQCC Gas** (drafted in the report §8): administrative CoC validity, category
+   codes, and the numeric trade boundary. **No longer a blocker** — each has publishable
+   wording already.
 4. Nav decision, and which certificates we can actually issue in-house.
+5. Who owns the monthly LPG price on the page, or it comes off.
+
+20 `[VERIFY]` markers remain in part 2, and essentially all of them sit behind item 1.
 
 **Already in place, no work needed:** `site-main/project-brief.html` carries a Gas job
 category with its own branch, and `job_category` is free text in the relay, so Gas

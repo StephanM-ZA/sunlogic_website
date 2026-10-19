@@ -1,0 +1,12 @@
+# Generated output, kept out of git because one command remakes it and
+# the full deck alone is 1.7 MB of cover photograph:
+#
+#   node ../render.mjs --share   > ../../../site-energy/share/pitch.html
+#   python3 ../make-pdf.py       -o Sunlogic-Pitch-full.pdf
+#   python3 ../make-pdf.py --one-pager -o Sunlogic-Pitch-one-pager.pdf
+#   node ../render.mjs --screen  > Sunlogic-Pitch.html
+#
+# standard-deck.json IS committed: it is small, and it is the fixture a
+# test or a bug report can be pointed at.
+*.pdf
+*.html
