@@ -228,6 +228,25 @@ and a service price would be a first in this market.
 
 ---
 
+## 5a. Settled, 19 October 2026: Energy is the parent, solar and gas sit under it
+
+Stephan: *"gas should go under energy. so solar and gas."* So the information architecture is
+**not** a fourth nav slot, and §5 below is superseded on that point.
+
+- `energy.html` opens with a routing section, `#solar-and-gas`, immediately under the subnav:
+  **"Energy Covers Solar and Gas"**, two cards, and a button through to `gas.html`.
+- `Solar and gas` is the first item in that page's subnav.
+- The "Also from Sunlogic" cross-sell that sat just above the closing CTA has been **removed** —
+  one route per page, high up, beats two.
+- Nav is unchanged at four: Home · Energy · Smart Solutions · Electrical. Gas is reached
+  through Energy, which is what the instruction asks for.
+- `energy.html`'s meta description now covers both trades. **Its `<title>` and hero are still
+  solar-only** ("Solar Sized On What You Use", "Sized On What You Use, Not What You Fear").
+  Those are client copy and were left alone — worth a decision, since the page is now the
+  parent of two trades but still introduces itself as the solar page.
+
+---
+
 ## 5. Where it lives on the site — and the one decision only you can make
 
 > **Stale as written, 19 October 2026.** The energy site was renamed between 15 and 19 October:

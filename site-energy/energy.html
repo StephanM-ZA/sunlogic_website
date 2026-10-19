@@ -4,17 +4,17 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Solar Sized On What You Use | Sunlogic SA, Cape Town</title>
-<meta name="description" content="Solar sized to what your property actually uses, installed and certified in Cape Town. Both directors run the teams and the projects. Straight numbers."/>
+<meta name="description" content="Solar and gas for homes and business in Cape Town. Sized on what your property actually uses, installed and certified by one team. Straight numbers."/>
 <link rel="canonical" href="https://sunlogic.co.za/energy.html"/>
 <meta property="og:type" content="website"/>
 <meta property="og:site_name" content="Sunlogic SA"/>
 <meta property="og:title" content="Solar Sized On What You Use | Sunlogic SA, Cape Town"/>
-<meta property="og:description" content="Solar sized to what your property actually uses, installed and certified in Cape Town. Both directors run the teams and the projects. Straight numbers."/>
+<meta property="og:description" content="Solar and gas for homes and business in Cape Town. Sized on what your property actually uses, installed and certified by one team. Straight numbers."/>
 <meta property="og:url" content="https://sunlogic.co.za/energy.html"/>
 <meta property="og:image" content="https://sunlogic.co.za/images/solar-hero.webp"/>
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="Solar Sized On What You Use | Sunlogic SA, Cape Town"/>
-<meta name="twitter:description" content="Solar sized to what your property actually uses, installed and certified in Cape Town. Both directors run the teams and the projects. Straight numbers."/>
+<meta name="twitter:description" content="Solar and gas for homes and business in Cape Town. Sized on what your property actually uses, installed and certified by one team. Straight numbers."/>
 <meta name="twitter:image" content="https://sunlogic.co.za/images/solar-hero.webp"/>
 <link rel="icon" type="image/png" href="images/fav_icon.png"/>
 <link rel="preload" href="shared/fonts/HankenGrotesk-400-latin.woff2" as="font" type="font/woff2" crossorigin/>
@@ -53,7 +53,35 @@
   </div>
 </dl-hero>
 
-<dl-subnav items="The long view=#why-now|At home=#at-home|Business=#small-business|Larger sites=#larger-sites"></dl-subnav>
+<dl-subnav items="Solar and gas=#solar-and-gas|The long view=#why-now|At home=#at-home|Business=#small-business|Larger sites=#larger-sites"></dl-subnav>
+
+<!-- Energy is the parent of two trades. Someone who clicks ENERGY in the nav
+     lands here and should see both before the page commits to solar. The gas
+     cross-sell that used to sit just above the closing CTA was removed when
+     this went in: one route per page, high up, rather than two. -->
+<dl-section bg="alt" id="solar-and-gas">
+  <dl-reveal>
+    <dl-stack eyebrow="Sunlogic Energy" heading="Energy Covers Solar |and Gas"
+      body="Solar for what a property uses as electricity. Gas for cooking, hot water and heat. Both designed, installed and certified by the same team, and on the properties that want both, on the same visit."></dl-stack>
+  </dl-reveal>
+  <dl-reveal>
+    <dl-grid cols="2">
+      <dl-card icon="sun" heading="Solar">
+        <p class="sl-body">Grid-tied, hybrid and off-grid systems sized on twelve months of what you actually use. Panels, inverter, batteries and backup changeover, with the council registration handled as part of the job.</p>
+        <p class="sl-body">That is the rest of this page.</p>
+      </dl-card>
+      <dl-card icon="archive-box" heading="Gas">
+        <p class="sl-body">Hobs, instant hot water, fireplaces and braais at home. Restaurant kitchens, guesthouses, bakeries and laundries for business. Installed, tested and certified, with the servicing afterwards.</p>
+        <p class="sl-body">A gas hob carries electrical work with it, which is the reason both trades sit in one division.</p>
+      </dl-card>
+    </dl-grid>
+  </dl-reveal>
+  <dl-reveal>
+    <dl-actions>
+      <dl-button variant="outline" icon="arrow-right" href="gas.html">See Gas Installation and Servicing</dl-button>
+    </dl-actions>
+  </dl-reveal>
+</dl-section>
 
 <!-- Why now — the argument that has changed -->
 <dl-section bg="page" id="why-now">
@@ -335,19 +363,6 @@
   </dl-reveal>
   <dl-reveal>
     <dl-faq items="Can you work across several sites?=Yes. The practical benefit is consistency: the same standard and the same paperwork everywhere, rather than a different contractor at each branch.|Can we sell surplus power back?=Yes, subject to registration, though the rate you're paid is well below the rate you buy at. That's why a sensible design prioritises using your own power over exporting it.|What if our consumption changes?=Tell us about planned expansion, new equipment or a vehicle fleet at the assessment stage. Allowing for it now costs far less than retrofitting later."></dl-faq>
-  </dl-reveal>
-</dl-section>
-
-<!-- Gas cross-sell. Same site, same team, so this is a section rather than a
-     dl-division-promo, which is reserved for the other division's site. -->
-<dl-section bg="page">
-  <dl-reveal>
-    <dl-stack eyebrow="Also from Sunlogic" heading="We Do the Gas Side |of the Job Too"
-      body="Gas hobs, instant hot water, fireplaces, braais and commercial kitchens. A gas hob needs an isolator and an oven circuit as well as a gas line, so holding both trades means one team, one visit and the certificates coming from one place.">
-      <dl-actions>
-        <dl-button variant="outline" icon="arrow-right" href="gas.html">See Gas Installation</dl-button>
-      </dl-actions>
-    </dl-stack>
   </dl-reveal>
 </dl-section>
 
