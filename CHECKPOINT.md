@@ -154,8 +154,38 @@ place, picker opens with all 12 sections, `POST /pdf` 404s and falls back as
 designed, and a fresh tab logs no console output at all.
 `npm run conformance:energy`: 12/12 pages, 0 fails, 0 warns.
 
-**Not deployed.** Built into `dist/energy/` locally and nothing committed or
-pushed.
+**Committed, not pushed, not deployed.**
+
+- `92f47c1` feat(pitch-deck): the tool and the hosted `/share/pitch` page, 18 files
+- `55a7ca9` chore(site-energy): disallow and no-store `/tools` and `/share`
+
+The second was needed because the first was not safe on its own: the robots
+disallow and the `no-store` / `X-Robots-Tag` headers for `/share/` existed only
+as uncommitted edits belonging to the document-gate work, so a deploy of the
+first commit alone would have left the page relying on its `noindex` meta and
+nothing else. Both are now in HEAD. Verified against HEAD rather than the
+working tree: robots disallows `/share/`, `_headers` sets no-store and
+`X-Robots-Tag: noindex, nofollow` on `/share/*`, the page carries its meta, and
+it is absent from the sitemap.
+
+**OPEN RISK, before deploying.** `site-energy/_redirects` is still uncommitted
+and belongs to the document-gate work. It adds:
+
+    /share/*    /share/index.html    200
+
+a catch-all rewrite. Cloudflare Pages is understood to serve a matching static
+asset before consulting `_redirects`, which is what makes the usual SPA
+fallback work, so `/share/pitch` should win on its own file. **That has not
+been tested on Pages.** The day that line is committed and deployed, open
+`/share/pitch` and check the deck appears rather than the document gate. If the
+gate appears, put an explicit rule ABOVE the wildcard, since Pages takes the
+first match:
+
+    /share/pitch    /share/pitch.html    200
+
+Everything else in the working tree is other sessions' unfinished work and was
+left alone: the gas page and its sitemap, llms.txt, nav and index changes,
+`site-energy/share/index.html`, `workers/doc-share/`, and the rest of `tools/`.
 
 ### Next steps
 
@@ -274,9 +304,14 @@ Documentation Bible's 15,000-token ceiling. Split it into `-2` and `-3` if it gr
 
 **Open on the page:**
 
-1. Gas photography. Brief is in `docs/gas-service-pack-2.md` §1. `og:image` points at
-   `energy-hero.webp` until then, because the build refuses a reference to an image the site
-   does not ship.
+1. ~~Gas photography.~~ **Hero placed 19 October** — Pexels 4063198 by Honye Sanges, Pexels
+   licence (free commercial use, no attribution required). Centre-cropped 6000x4000 to 2:1,
+   emitted at 640/1024/1440/1920 webp q80 as `site-energy/images/gas-hero*.webp`, preloaded,
+   and `og:image`/`twitter:image` now point at it. 88 KB for all four files; 35 KB at 1920,
+   because the frame is nearly all black. **It is still a flame shot**, which the research
+   called the competitor cliche, so the original brief stands as a replacement: a cylinder bank
+   or bulk tank against a Cape Town house wall, dusk register. Our own job photography would
+   beat it.
 2. Nav decision. Energy nav is still Home · Energy · Smart Solutions · Electrical.
 3. The standards purchase (R2,589.80) still gates every SANS number. **No SANS distance,
    clearance, ventilation area, test pressure or interval appears on the page** — the copy was
