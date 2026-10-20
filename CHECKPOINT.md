@@ -12,6 +12,225 @@ committed.** See "Session 17" below.)
 
 ---
 
+## Session 23 — the certificate reaches the appliances too (uncommitted)
+
+**Stephan's correction, and he is right.** The page led with "The certificate covers the
+installation, not the appliance." That came from the gazetted Annexure 1 form, which declares
+that *the installation* complies and is safe and says nothing about how an appliance was made.
+Technically defensible. **Practically misleading**, because a reader met it as a bold "Worth
+knowing" statement and took away *the certificate has nothing to do with my appliances* — the
+opposite of what matters to them.
+
+His point: an appliance failing inside its warranty needs the certificate before a supplier
+will act, and insurers want it specifically for gas appliances.
+
+**The distinction worth keeping** is between what the document *attests to* (the installation)
+and what it *gates* (warranty claims and insurance on the appliances). The page now leads with
+the second and keeps the first as the explanation.
+
+Changed in four places in `gas.html` — the "Worth knowing" statement, the "If You Are Buying"
+card, "Does the certificate cover my stove?", and the insurance answer. One new FAQ added,
+**"What happens to my appliance warranty?"**, which the research found is an empty topic across
+all seven Western Cape competitors.
+
+**Evidence, and why every sentence says "generally":**
+
+| Claim | Basis |
+|---|---|
+| Insurers can decline a gas-related claim with no CoC and an unregistered installer | Sourced, secondary. Existing bucket (b) wording, unchanged |
+| A supplier will generally want the certificate before acting on an appliance warranty claim | **Stephan's trade experience. No published SA source exists** — the research looked and found nothing on appliance-warranty handling |
+
+These are predictions about how third parties behave, not statements of law, so under CPA s41
+they carry a hedge. `compliance-checker` caught one line that had none — "are what a supplier
+will ask for" — and it was brought into line.
+
+**Do not re-flatten this to "the certificate does not cover the appliance."** It reads as
+correct and sends the customer the wrong way. Recorded in `docs/gas-service-pack-2.md` §8.0a.
+
+**Checks:** conformance:energy 12/12, 0 fails, 0 warns, both viewports.
+
+---
+
+## Session 22 — day feed gets gas, and a share-preview bug found (uncommitted)
+
+### Button layout on "Who we work for"
+
+The Homes card's two buttons sat side by side while the Businesses card's stacked, because
+`.sl-actions` wraps and "at home" is shorter than "for business". All five buttons in that
+section now carry `full`, so each takes its own row in all three cards at every width.
+
+### "Compliance" was the wrong eyebrow
+
+That section is two halves: the paperwork we carry, and the live "Today" job board beside it.
+"Compliance" named only the left one. Now **"Behind the scenes"**, which covers both. The HTML
+comment above the section records why.
+
+### Day feed now includes gas
+
+`site-energy/plugins/day-feed/schedule.data.js`. One `Gas 1` crew, 17 gas field jobs, 3 gas
+office lines. Gas jobs use `{suburb}` and `{municipality}` only — there is no cylinder or
+appliance token, and adding one means touching `day-feed-schedule.js`, which is byte-identical
+across all three sites and meant to stay that way.
+
+**Nothing in the pool quotes a clearance, test pressure or service interval**, for the same
+reason those are off the gas page: verified only against the superseded 2008 edition.
+
+**Re-measured, because the file says to.** 343 working days from 1 Jan 2026:
+
+| | solar | smart | office | gas | entries/day |
+|---|---|---|---|---|---|
+| before | 44.7% | 31.1% | 24.3% | — | 8.85 |
+| after | 41.3% | 25.7% | 19.9% | **13.0%** | 9.17 |
+
+The crew comment in the file now carries these numbers. Note they do **not** match the
+48/29/23 the comment used to quote, so the original was measured some other way; both of mine
+come from one method and are comparable with each other. Harness is in the session scratchpad.
+
+### Favicon replaced, and it can now bust its own cache
+
+**The mark.** Stephan picked the transparent sun. There was no standalone mark to use — the
+brand has wide lockups only — so it was cut from `site-main/images/sl_logo_main_blue.svg`
+(4612x1388) by rendering it, slicing the left 32% and trimming to the ink bounds, which came
+out 798x837. Padded to square with 14% breathing room so a circular crop does not clip the
+ring, output at 512x512. It replaces `images/fav_icon.png` on all three sites, which were all
+carrying the identical pre-rebrand icon (md5 `e2bb9b7d…`, 254x254, November 2025). Now md5
+`984db617…`. **No HTML change was needed for the swap** — same filename, same 30 references.
+
+**The cache problem, which was the less obvious half.** The reference was
+`href="images/fav_icon.png"` with no version, and browsers key favicon cache on URL, so a
+returning visitor could have kept the old mark indefinitely. `hashAssetVersions()` in
+`scripts/build-site.js` only matched `shared/` and `plugins/` `.css`/`.js`, so an image could
+never self-version. The pattern now also accepts `images/` and `png|svg|webp|jpe?g|ico`, and
+the favicon reference carries `?v=1` on all 30 pages. **The widened pattern changes nothing
+else**, because it still only rewrites references that already carry `?v=` — an asset has to
+opt in. The build now emits `fav_icon.png?v=30d284c6` on all three sites, and that hash will
+move on its own if the icon is ever changed again.
+
+**Gate:** build OK, `npm test` passes, `conformance` 26 pages 0 fails 0 warns, `sweep` 650
+page/width combinations 0 findings.
+
+### Share previews fixed — and the cause was the build, not the source files
+
+**The source files were never the problem.** Every `og:image` in `site-*/` pointed at a JPEG
+or a PNG. `optimizeImages()` in `scripts/build-site.js` converts every `.jpg`, `.jpeg` and
+`.gif` in the output to WebP, deletes the original, and then `rewriteImageReferences()`
+rewrites every reference to match — **and its own comment names `og:image` as one of the
+things it rewrites.** So the pipeline was turning correct share tags into broken ones on every
+build, and nothing in source looked wrong.
+
+I only caught it because the first attempt appeared to work: 26 pages updated, no webp left in
+`site-*/`. Checking `dist/` showed `gas-hero-og.jpg` had become `gas-hero-og.webp` and the tag
+had followed it. **Verify the built output, not the source.**
+
+**The fix.** A `SHARE_CARD = /-og\.jpe?g$/i` exemption in `build-site.js`, filtered out of the
+conversion list — the same kind of exemption the favicon already had for staying PNG. The
+constant carries a comment explaining why, because the next person to add a share image needs
+to know the suffix is load-bearing.
+
+**The assets.** 13 share images at **1200x630** (the size Facebook, WhatsApp, LinkedIn and X
+all use), JPEG at quality 82, mozjpeg, progressive. 28-186 KB each. Generated from the
+existing hero artwork with `fit: cover` and `position: attention`, which handled the two
+awkward sources well — `electrical-hero.webp` is portrait (1280x1920) and the crop found the
+distribution board. The exception is `energy-hero.webp`, a composed product diagram where
+cropping clipped the devices; that one is letterboxed on page beige instead.
+
+**The tags.** All 26 pages now carry `og:image` and `twitter:image` pointing at the JPEG, plus
+`og:image:type`, `og:image:width` and `og:image:height`. Scrapers use those to decide whether
+to render a large card at all.
+
+**Verified in `dist/`, not just in source:** zero webp `og:image` tags, 26 pages with
+`og:image:type`, and the file serves as `200 image/jpeg`.
+
+**Gate:** build OK, conformance 26 pages 0 fails 0 warns, sweep 650 combinations 0 findings.
+
+### One pre-existing test failure, not ours and not deployed
+
+`npm test` reports `# pass 154 # fail 1`. The failure is
+`tools/doc-builder/harness/api-test.mjs`, which opens a hardcoded
+`/home/claude/docbuilder/examples/...` path — a container path from another machine. It is
+**untracked**: only `tools/pitch-deck/*` is committed from `tools/`, so Cloudflare never sees
+it and the deploy gate is unaffected. It belongs to the other session's in-progress doc-builder
+work. Left alone.
+
+### Still open
+
+`og:image:alt` is not set on any page. Worth adding, but each page needs its own sentence, so
+it is a copy task rather than a build one.
+
+
+
+Worth being blunt, because the favicon swap looks like a fix and is not one.
+
+**25 of 26 `og:image` tags across all three sites point at `.webp` files, and no page declares
+`og:image:type`, `og:image:width` or `og:image:height`.** Scrapers that cannot read webp —
+WhatsApp among them — fall back to the favicon. That fallback is why the old logo appeared.
+After this change the fallback will show the *new* logo, which is better but still wrong: a
+share card should carry a photograph of the work, not an icon.
+
+**The fix, not applied:** emit a 1200x630 JPEG or PNG per page from the existing hero artwork
+and declare type and dimensions alongside it. One page already proves the point — a blog post
+uses a `.jpeg` og:image, and testing whether that one previews correctly in WhatsApp while the
+others do not would confirm the diagnosis outright before any work is done.
+
+
+
+Stephan reported the old logo appearing when sharing a link, and guessed the favicon. The
+favicon is indeed stale, but **it is not the whole cause**:
+
+1. **25 of 26 `og:image` tags across all three sites point at `.webp` files**, and **none of
+   the pages declares `og:image:type`, `og:image:width` or `og:image:height`**. Several major
+   link-preview scrapers, WhatsApp among them, do not render webp and fall back to the
+   favicon — which is exactly the behaviour reported.
+2. **The favicon is the pre-rebrand mark.** `images/fav_icon.png` is byte-identical across all
+   three sites (md5 `e2bb9b7d…`), 254x254, dated November 2025 on the apex, and it is the old
+   orange-ring-and-blue-disc logo from the screenshot. 30 pages reference it.
+
+**Fixing the favicon alone will not fix the share preview.** The og:image format is the
+actual cause; the favicon is what the fallback lands on.
+
+Both fixes need new image assets, and `site-energy/CLAUDE.md` lists the logo under "Open —
+flag, never guess" because **no standalone mark exists** — only wide lockups
+(`sl_logo_*_blue.svg`, 4612x1388). The sun is extractable from the left of the lockup, but
+cropping brand artwork into a new mark is a brand decision, so it is flagged rather than done.
+
+**Suggested fix, not applied:** generate a 1200x630 JPEG for `og:image` on each page from the
+existing hero artwork, declare `og:image:type`/`width`/`height`, and cut a square favicon from
+the current lockup's sun.
+
+---
+
+## Session 21 — energy home page rebalanced for gas (uncommitted)
+
+**Stephan: the home page was focused on solar and only said "we also install gas". Balance it,
+each section has its own.** So gas is now woven through `site-energy/index.html` rather than
+confined to one block near the bottom. Ten edits, additive wherever possible — existing solar
+copy was left standing, not rewritten.
+
+| Section | What gas got |
+|---|---|
+| Hero | Body now names both trades: "Gas for cooking, hot water and heat. Both installed, certified and serviced by the same company." |
+| Trust strip | A fourth item, "SAQCC Gas registered practitioner". Fits on one line at 1280 and sweeps clean |
+| Why now | A "Where gas comes into it" callout after the two sums — framed on what gas **does**, never on cost against electricity |
+| The whole job | A closing line: gas runs the same five steps minus the cleaning, with the readings in writing |
+| Why Sunlogic | Two of the four cards were already true of gas and now say so: the certify card and the take-on-someone-else's-work card |
+| Who we work for | Homes and Businesses each gained a second button, to `gas.html#at-home` and `gas.html#for-business`. Larger Sites keeps one, because there is no gas equivalent |
+| Compliance | Checklist went from three items to five: the gas Certificate of Conformity, and the City plans plus flammable substance application for commercial gas |
+| Gas section | Heading changed from "We Also Install and Certify Gas" to **"Gas for Cooking, Hot Water and Heat"** — the "we also" framing was the thing being objected to |
+
+**Deliberately left solar-only:** `#our-work` (three real installs, and there is no gas job
+photography to balance them with), `#smart-control` (a solar and electrical argument), and the
+live PV/battery hero stats.
+
+**Checks:** `conformance:energy` 12/12 pages, 0 fails, 0 warns at both viewports.
+`sweep:energy` 300 page/width combinations, 0 findings — which matters here because the
+four-item trust strip and the stacked double buttons are the two real layout risks. Verified in
+the browser at 1280 and at mobile.
+
+**Still open:** a gas job photograph would let `#our-work` carry one, and the gas hero is still
+the Pexels stand-in.
+
+---
+
 ## Session 20 — Energy nav submenu, and the push confirmed live
 
 > **These notes were written once and lost before they were committed.** Another session

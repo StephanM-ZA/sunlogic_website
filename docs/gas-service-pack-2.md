@@ -952,6 +952,45 @@ scope.
 reviews, no named practitioner, no completed-job evidence. Those are assets to gather, not
 copy to write.
 
+### 8.0a Correction — "covers the installation, not the appliance" was too flat, 20 October 2026
+
+**Stephan's correction:** the gas certificate reaches the appliances too. If an appliance fails
+inside its warranty the supplier can only act once a certificate has been issued, and insurers
+want it specifically for gas appliances.
+
+**He is right about what matters, and the old line was technically defensible but practically
+misleading.** The gazetted Annexure 1 form declares that *the installation* complies and is
+safe — it says nothing about how an appliance was manufactured, which is where "covers the
+installation, not the appliance" came from. But a reader met that as a bold "Worth knowing"
+statement and took away *the certificate has nothing to do with my appliances*, which is the
+opposite of the truth that matters to them.
+
+The distinction worth keeping is between **what the document attests to** (the installation)
+and **what it gates** (warranty claims and insurance on the appliances). The page now makes
+the second point the headline and keeps the first as the explanation.
+
+**Changed in four places in `gas.html`:** the "Worth knowing" statement, the "If You Are
+Buying" card, the "Does the certificate cover my stove?" answer, and the insurance answer. A
+fifth entry was added — **"What happens to my appliance warranty?"** — which the research
+identified as a completely empty topic across all seven Western Cape competitors, so it is
+cheap ground to own.
+
+**Evidence, stated honestly:**
+
+| Claim | Basis |
+|---|---|
+| Insurers can decline a gas-related claim where there is no CoC and the installer was not registered | Sourced, secondary. Existing bucket (b) wording, unchanged |
+| A supplier will generally want to see a certificate before acting on an appliance warranty claim | **Stephan's trade experience. No published South African source was found** — the research looked and found nothing at all on appliance-warranty handling |
+
+That second row is why every one of these sentences carries **"generally"**. They are
+predictions about how suppliers and insurers behave, not statements of law, and under CPA s41 a
+flat prediction about a third party is the kind of representation that has to be true. One
+line originally read "are what a supplier will ask for" with no hedge; it was brought into line
+with the rest.
+
+**Do not re-flatten this to "the certificate does not cover the appliance."** It reads as
+technically correct and sends the customer the wrong way.
+
 ### 8.1a Correction — the track-record lines are back, 19 October 2026
 
 **Fixes 1, 2 and 3 above were reverted on Stephan's instruction: "keep the track record".**
