@@ -148,6 +148,21 @@ async function walkAndMinify(dir) {
 // which needs to stay a PNG for OS/browser compatibility.
 const CONVERTIBLE_EXTENSIONS = new Set(['.jpg', '.jpeg', '.gif']);
 
+// Share-card images are exempt, and the exemption is load-bearing.
+//
+// og:image is read by link-preview scrapers, not by browsers. Several of
+// them — WhatsApp among them — cannot decode WebP, and when they cannot
+// read the image they fall back to the favicon. That is what used to
+// happen on every page of all three sites: the source files were JPEG,
+// this pass turned them into WebP, rewriteImageReferences rewrote the
+// og:image tags to match, and a shared link showed the site icon instead
+// of a photograph of the work.
+//
+// So anything named *-og.jpg stays JPEG, the same way the favicon stays
+// PNG. If you add a share image, use that suffix or it will be converted
+// out from under you with nothing to show for it.
+const SHARE_CARD = /-og\.jpe?g$/i;
+
 function findFiles(dir, extensions) {
   const found = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -167,7 +182,8 @@ function findFiles(dir, extensions) {
 // rewrite references with.
 async function optimizeImages(dir) {
   const renameMap = {};
-  const files = findFiles(dir, CONVERTIBLE_EXTENSIONS);
+  const files = findFiles(dir, CONVERTIBLE_EXTENSIONS)
+    .filter((f) => !SHARE_CARD.test(path.basename(f)));
   for (const file of files) {
     const ext = path.extname(file).toLowerCase();
     const outFile = file.slice(0, -ext.length) + '.webp';
@@ -367,7 +383,7 @@ function hashAssetVersions(outDir) {
       if (!/\.html$/.test(entry.name)) continue;
       const src = fs.readFileSync(full, 'utf8');
       const out = src.replace(
-        /(["'])((?:shared|plugins)\/[A-Za-z0-9_./-]+?\.(?:css|js))\?v=[^"']*\1/g,
+        /(["'])((?:shared|plugins|images)\/[A-Za-z0-9_./-]+?\.(?:css|js|png|svg|webp|jpe?g|ico))\?v=[^"']*\1/g,
         (whole, quote, asset) => {
           const v = versionFor(asset);
           if (!v) return whole;              /* missing file: leave it alone */
