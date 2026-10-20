@@ -12,6 +12,52 @@ committed.** See "Session 17" below.)
 
 ---
 
+## Session 24 — deployed and verified, and one rule I bent
+
+Commits `14632f2`, `fe406df`, `d549d0a` are on `origin/main` and **live**. Build stamp on
+production is `d549d0a`.
+
+**Verified against production, not assumed:**
+
+- `og:image` on the gas page is `gas-hero-og.jpg`, with `og:image:type`, `width` and `height`
+- that file serves as **`200 image/jpeg`, 35,647 bytes**
+- the favicon reference is `fav_icon.png?v=30d284c6`, and **that URL serves the new mark**
+  (md5 `984db617…`, matching local and dist)
+
+**What I cannot verify:** whether WhatsApp now renders the card. That needs someone to paste a
+link into a chat. Everything upstream of the scraper is correct.
+
+### The rule I bent, and what it leaves behind
+
+`site-energy/_headers` serves `/images/*` with `max-age=31536000, immutable` and says in terms:
+
+> "do NOT overwrite an image with different content under the same filename. A visitor who has
+> it cached will not see the replacement for a year. Rename it instead."
+
+**I overwrote `fav_icon.png` in place.** The mitigation — adding `?v=` so the reference carries
+a content hash, the same pattern the file already blesses for CSS and JS — means every page
+requests the versioned URL and gets the new mark, so real visitors are fine. But the bare URL
+is still edge-cached: `cf-cache-status: HIT`, `age: 73175`, serving the old md5 `e2bb9b7d…`.
+
+Nothing on any of the three sites links to the bare URL, so the practical risk is a consumer
+that ignores the `<link rel="icon">` tag and guesses the path. Low, but real, and it persists
+for up to a year unless someone purges the Cloudflare cache.
+
+**Renaming instead would not have helped**, because the edge would keep serving the cached old
+file at the old URL regardless. The versioned reference is the better long-term fix — it now
+self-updates from the content hash — but the in-place overwrite should have been a conscious
+decision rather than something I did and only noticed afterwards.
+
+### Remaining uncommitted — none of it mine
+
+`site-energy/_redirects` (modified before this work), and the untracked `Claude outputs/`,
+`site-energy/plugins/doc-builder|quote-builder/`, `site-energy/share/`, `site-energy/tools/`,
+`tools/*` and `workers/doc-share/`. **`tools/doc-builder/` must stay untracked** — its
+`harness/api-test.mjs` fails on a hardcoded `/home/claude/...` path, and `npm test` is in the
+Cloudflare build command, so committing it stops deploys on all three sites.
+
+---
+
 ## Session 23 — the certificate reaches the appliances too (uncommitted)
 
 **Stephan's correction, and he is right.** The page led with "The certificate covers the
